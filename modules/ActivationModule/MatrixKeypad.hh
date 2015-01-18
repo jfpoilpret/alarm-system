@@ -12,6 +12,7 @@
 
 #include "ArrayAlloc.hh"
 
+//TODO these initializer classes should be private!
 class InputsInit
 {
 public:
@@ -54,45 +55,13 @@ public:
 		detach();
 	}
 
-private:
+protected:
 	virtual void on_change(char key) = 0;
 
-	virtual void on_event(uint8_t type, uint16_t value)
-	{
-		UNUSED(value);
-		// Skip all but timeout events
-		if (type != Event::TIMEOUT_TYPE) return;
+private:
+	virtual void on_event(uint8_t type, uint16_t value);
 
-		// Update the button state
-		char old_key = _key;
-		_key = scan();
-		char new_key = _key;
-
-		// If changed according to mode call the pin change handler
-		if (old_key != new_key)
-			on_change(new_key);
-	}
-
-	char scan()
-	{
-		char result = 0;
-		for (int i = 0; i < OUTPUTS; i++)
-		{
-			_outputs[i].off();
-			for (int j = 0; j < INPUTS; j++)
-			{
-				if (_inputs[j].is_off())
-				{
-					result = _mapping[j * OUTPUTS + i];
-					break;
-				}
-			}
-			_outputs[i].on();
-			if (result)
-				break;
-		}
-		return result;
-	}
+	char scan();
 
 	/** Keypad sampling period in milli-seconds. */
 	static const uint16_t SAMPLE_MS = 64;
@@ -120,12 +89,10 @@ public:
 	BufferedMatrixKeypad(	const Board::DigitalPin inputs[INPUTS],
 							const Board::DigitalPin outputs[OUTPUTS],
 							const char mapping[INPUTS][OUTPUTS],
-							const char validate,
-							const char cancel = 0,
+							const char* validate,
 							const OverflowBehavior overflowBehavior = REJECT_KEY)
 		:	MatrixKeypad<INPUTS, OUTPUTS>(inputs, outputs, mapping),
 			_validate(validate),
-			_cancel(cancel),
 			_overflowBehavior(overflowBehavior)
 	{
 		clear();
@@ -137,69 +104,98 @@ public:
 	}
 
 	char* input(char* buffer) const
+		__attribute__((always_inline))
 	{
-		strcpy(buffer, _input);
-		return buffer;
+		return strcpy(buffer, _input);
 	}
 
-private:
-	virtual void on_input(const char* input) = 0;
-	virtual void on_cancel(const char* input)
-	{
-		UNUSED(input);
-	}
+protected:
+	virtual void on_input(const char* input, char validate) = 0;
 	virtual void on_overflow(const char* input, char key)
 	{
 		UNUSED(input);
 		UNUSED(key);
 	}
+	void on_change(char key);
 
-	void on_change(char key)
-	{
-		if (!key) return;
-		if (key == _cancel)
-		{
-			on_cancel(_input);
-			clear();
-		}
-		else if (key == _validate)
-		{
-			on_input(_input);
-			clear();
-		}
-		else if (_index < BUFSIZE)
-			_input[_index++] = key;
-		else
-		{
-			on_overflow(_input, key);
-			switch (_overflowBehavior)
-			{
-			case RESET_BUFFER:
-				clear();
-				_input[_index++] = key;
-				break;
-
-			case SHIFT_BUFFER:
-				strcpy(_input, _input + 1);
-				//FIXME Check that the replacement line is now OK
-//				_input[--_index] = key;
-				_input[_index - 1] = key;
-				break;
-
-			case REJECT_KEY:
-			default:
-				// Do nothing
-				break;
-			}
-		}
-	}
-
-	const char _validate;
-	const char _cancel;
+private:
+	const char* _validate;
 	const OverflowBehavior _overflowBehavior;
 	uint8_t _index;
 	char _input[BUFSIZE + 1];
 };
 
+template<int INPUTS, int OUTPUTS>
+void MatrixKeypad<INPUTS, OUTPUTS>::on_event(uint8_t type, uint16_t value)
+{
+	UNUSED(value);
+	// Skip all but timeout events
+	if (type != Event::TIMEOUT_TYPE) return;
+
+	// Update the button state
+	char old_key = _key;
+	_key = scan();
+	char new_key = _key;
+
+	// If changed according to mode call the pin change handler
+	if (old_key != new_key)
+		on_change(new_key);
+}
+
+template<int INPUTS, int OUTPUTS>
+char MatrixKeypad<INPUTS, OUTPUTS>::scan()
+{
+	char result = 0;
+	for (int i = 0; i < OUTPUTS; i++)
+	{
+		_outputs[i].off();
+		for (int j = 0; j < INPUTS; j++)
+		{
+			if (_inputs[j].is_off())
+			{
+				result = _mapping[j * OUTPUTS + i];
+				break;
+			}
+		}
+		_outputs[i].on();
+		if (result)
+			break;
+	}
+	return result;
+}
+
+template<int INPUTS, int OUTPUTS, int BUFSIZE>
+void BufferedMatrixKeypad<INPUTS, OUTPUTS, BUFSIZE>::on_change(char key)
+{
+	if (!key) return;
+	if (strchr(_validate, key) != 0)
+	{
+		on_input(_input, key);
+		clear();
+	}
+	else if (_index < BUFSIZE)
+		_input[_index++] = key;
+	else
+	{
+		on_overflow(_input, key);
+		switch (_overflowBehavior)
+		{
+		case RESET_BUFFER:
+			clear();
+			_input[_index++] = key;
+			break;
+
+		case SHIFT_BUFFER:
+			strcpy(_input, _input + 1);
+			_input[_index - 1] = key;
+			break;
+
+		case REJECT_KEY:
+		default:
+			// Do nothing
+			break;
+		}
+	}
+}
 
 #endif /* MATRIXKEYPAD_HH_ */
