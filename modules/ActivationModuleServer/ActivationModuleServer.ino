@@ -44,7 +44,7 @@ void loop()
 	uint8_t source = 0xFF;
 	uint8_t type = 0xFF;
 	int size = rf.recv(source, type, buffer, sizeof(buffer));
-	trace << ":recv source=" << hex << source << ", type=" << hex << type << ", size=" << size << endl;
+//	trace << ":recv source=" << hex << source << ", type=" << hex << type << ", size=" << size << endl;
 	if (size < 0) return;
 
 	uint16_t& level = *((uint16_t*) buffer);
@@ -71,8 +71,8 @@ void loop()
 		break;
 
 	default:
-		trace << "UNKNOWN type!" << endl;
+		trace << "UNKNOWN type! " << type << endl;
 		break;
 	}
-	trace << ":send size=" << rsize << endl;
+//	trace << ":send size=" << rsize << endl;
 }

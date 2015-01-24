@@ -32,7 +32,7 @@ static LockNotificationTask lockTask(transmitter, ledPanel);
 
 // Declare periodic tasks
 static PingTask pingTask(PING_PERIOD_SEC, transmitter, ledPanel);
-//static VoltageNotificationTask voltageTask(VOLTAGE_PERIOD_SEC, transmitter);
+static VoltageNotificationTask voltageTask(VOLTAGE_PERIOD_SEC, transmitter);
 
 // Watchdog period must be the minimum of periods required by all watchdog timer users:
 // - keypad scan		  64ms
@@ -45,10 +45,11 @@ void setup()
 {
 	// Initialize power settings
 	Power::twi_disable();
-	Power::adc_disable();
 	Power::timer1_disable();
 	Power::timer2_disable();
 	Power::usart0_disable();
+	// ADC is used to get the voltage level
+//	Power::adc_disable();
 	// Timer0 is used by intermittent RTC, no need to disable/re-enable it all the time
 //	Power::timer0_disable();
 	// SPI is used by NRF24L01
@@ -70,9 +71,9 @@ void setup()
 
 	// Start all tasks
 	pingTask.enable();
-//	voltageTask.enable();
+	voltageTask.enable();
 
-	keypad.attachLockListener(&lockTask);
+	keypad.attachListener(&lockTask);
 
 	// Start watchdog and keypad
 	Watchdog::begin(WATCHDOG_PERIOD, Watchdog::push_timeout_events);

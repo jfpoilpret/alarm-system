@@ -28,6 +28,8 @@ enum MessageType
 
 } __attribute__((packed));
 
+//FIXME system fails completely when server is down...
+//TODO add ciphering stuff
 // This class handles all communication with the alarm center, including ciphering
 class ActivationTransmitter: private NRF24L01P
 {

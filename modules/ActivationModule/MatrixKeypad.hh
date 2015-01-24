@@ -12,25 +12,6 @@
 
 #include "ArrayAlloc.hh"
 
-//TODO these initializer classes should be private!
-class InputsInit
-{
-public:
-	InputsInit(const Board::DigitalPin* pins):_pins(pins) {}
-	const InputPin operator()(int i) const { return InputPin(_pins[i], InputPin::Mode::PULLUP_MODE); }
-private:
-	const Board::DigitalPin* _pins;
-};
-
-class OutputsInit
-{
-public:
-	OutputsInit(const Board::DigitalPin* pins):_pins(pins) {}
-	const OutputPin operator()(int i) const { return OutputPin(_pins[i], 1); }
-private:
-	const Board::DigitalPin* _pins;
-};
-
 template<int INPUTS, int OUTPUTS>
 class MatrixKeypad: private Link
 {
@@ -59,6 +40,24 @@ protected:
 	virtual void on_change(char key) = 0;
 
 private:
+	class InputsInit
+	{
+	public:
+		InputsInit(const Board::DigitalPin* pins):_pins(pins) {}
+		const InputPin operator()(int i) const { return InputPin(_pins[i], InputPin::Mode::PULLUP_MODE); }
+	private:
+		const Board::DigitalPin* _pins;
+	};
+
+	class OutputsInit
+	{
+	public:
+		OutputsInit(const Board::DigitalPin* pins):_pins(pins) {}
+		const OutputPin operator()(int i) const { return OutputPin(_pins[i], 1); }
+	private:
+		const Board::DigitalPin* _pins;
+	};
+
 	virtual void on_event(uint8_t type, uint16_t value);
 
 	char scan();
@@ -74,23 +73,23 @@ private:
 	char _key;
 };
 
+enum BufferInputOverflowBehavior
+{
+	REJECT_KEY,
+	SHIFT_BUFFER,
+	RESET_BUFFER
+}
+__attribute__((packed));
+
 template<int INPUTS, int OUTPUTS, int BUFSIZE>
 class BufferedMatrixKeypad: public MatrixKeypad<INPUTS, OUTPUTS>
 {
 public:
-	enum OverflowBehavior
-	{
-		REJECT_KEY,
-		SHIFT_BUFFER,
-		RESET_BUFFER
-	}
-	__attribute__((packed));
-
 	BufferedMatrixKeypad(	const Board::DigitalPin inputs[INPUTS],
 							const Board::DigitalPin outputs[OUTPUTS],
 							const char mapping[INPUTS][OUTPUTS],
 							const char* validate,
-							const OverflowBehavior overflowBehavior = REJECT_KEY)
+							const BufferInputOverflowBehavior overflowBehavior = REJECT_KEY)
 		:	MatrixKeypad<INPUTS, OUTPUTS>(inputs, outputs, mapping),
 			_validate(validate),
 			_overflowBehavior(overflowBehavior)
@@ -120,7 +119,7 @@ protected:
 
 private:
 	const char* _validate;
-	const OverflowBehavior _overflowBehavior;
+	const BufferInputOverflowBehavior _overflowBehavior;
 	uint8_t _index;
 	char _input[BUFSIZE + 1];
 };
