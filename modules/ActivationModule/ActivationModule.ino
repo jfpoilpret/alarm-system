@@ -1,6 +1,6 @@
-#include <Cosa/Alarm.hh>
-#include <Cosa/RTC.hh>
 #include <Cosa/Watchdog.hh>
+
+#include "WDTAlarm.hh"
 
 #include "ActivationKeypad.hh"
 #include "ActivationNetwork.hh"
@@ -20,7 +20,7 @@ const uint32_t VOLTAGE_PERIOD_SEC = 60;
 //const uint32_t VOLTAGE_PERIOD_SEC = 3600;
 
 // Needed for Alarms to work properly
-static Alarm::Scheduler scheduler;
+static WDTAlarm::Scheduler scheduler;
 
 // Declare sensors and actuators
 static LedPanel ledPanel;
@@ -37,8 +37,6 @@ static PingTask pingTask(PING_PERIOD_SEC, transmitter, ledPanel);
 //The setup function is called once at startup of the sketch
 void setup()
 {
-//	RTC::begin();
-
 	// Initialize power settings
 	Power::twi_disable();
 	Power::adc_disable();
@@ -52,7 +50,7 @@ void setup()
 
 	// Sleep modes by order of increasing consumption
 	// Lowest consumption mode (works on Arduino, not tested yet on breadboard ATmega)
-//	Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
+	Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
 
 
 //	Power::set(SLEEP_MODE_STANDBY);			// 0.84mA
@@ -61,7 +59,7 @@ void setup()
 //	Power::set(SLEEP_MODE_ADC);				// 6.5 mA
 
 	// Only this mode works when using serial output and alarm/RF?
-	Power::set(SLEEP_MODE_IDLE);			// 15mA
+//	Power::set(SLEEP_MODE_IDLE);			// 15mA
 
 	// Additional setup for transmitter goes here...
 
@@ -72,7 +70,6 @@ void setup()
 //	keypad.attachLockListener(&lockTask);
 
 	// Start watchdog and keypad
-	RTC::begin();
 	Watchdog::begin(64, Watchdog::push_timeout_events);
 	scheduler.begin();
 //	keypad.begin();

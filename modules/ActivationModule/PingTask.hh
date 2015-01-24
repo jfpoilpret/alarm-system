@@ -8,16 +8,16 @@
 #ifndef PINGTASK_HH_
 #define PINGTASK_HH_
 
-#include <Cosa/Alarm.hh>
+#include "WDTAlarm.hh"
 
 #include "ActivationNetwork.hh"
 #include "LedPanel.hh"
 
-class PingTask: public Alarm
+class PingTask: public WDTAlarm
 {
 public:
 	PingTask(uint32_t period, ActivationTransmitter& transmitter, LedPanel& ledPanel)
-		:	Alarm(period),
+		:	WDTAlarm(period),
 		 	_transmitter(transmitter),
 		 	_ledPanel(ledPanel) {}
 

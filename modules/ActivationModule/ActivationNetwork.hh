@@ -9,6 +9,8 @@
 #define ACTIVATIONNETWORK_HH_
 
 #include <Cosa/Wireless/Driver/NRF24L01P.hh>
+
+#include "RTCAdapter.hh"
 #include "Pins.hh"
 
 //TODO isolate all Message Types, Devices IDs... in a specific header, shared among all projects
@@ -66,6 +68,9 @@ bool ActivationTransmitter::pingServerAndGetLockStatus()
 	uint8_t source;
 	uint8_t port;
 	bool lock;
+	// Now enable RTC just for the duration of this method
+	//TODO improve by just overriding recv() method...
+	RTCAdapter();
 	if (recv(source, port, &lock, sizeof(lock), RECV_TIMEOUT_MS) < 0)
 		// If problem receiving server response, we consider that system is unlocked
 		return false;
@@ -86,6 +91,8 @@ bool ActivationTransmitter::sendCodeAndGetLockStatus(const char* input, bool loc
 	uint8_t source;
 	uint8_t port;
 	bool lock;
+	// Now enable RTC just for the duration of this method
+	RTCAdapter();
 	if (recv(source, port, &lock, sizeof(lock), RECV_TIMEOUT_MS) < 0)
 		// If problem receiving server response, we consider that system is unlocked
 		return false;

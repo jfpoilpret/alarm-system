@@ -8,17 +8,17 @@
 #ifndef VOLTAGENOTIFICATIONTASK_HH_
 #define VOLTAGENOTIFICATIONTASK_HH_
 
-#include <Cosa/Alarm.hh>
 #include <Cosa/AnalogPin.hh>
 
+#include "WDTAlarm.hh"
 #include "ActivationNetwork.hh"
 #include "LedPanel.hh"
 
-class VoltageNotificationTask: public Alarm
+class VoltageNotificationTask: public WDTAlarm
 {
 public:
 	VoltageNotificationTask(uint32_t period, ActivationTransmitter& transmitter)
-		:	Alarm(period),
+		:	WDTAlarm(period),
 		 	_transmitter(transmitter) {}
 
 	virtual void run()
