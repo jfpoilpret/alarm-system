@@ -8,6 +8,8 @@
 #ifndef ACTIVATIONKEYPAD_HH_
 #define ACTIVATIONKEYPAD_HH_
 
+#include <Cosa/Linkage.hh>
+
 #include "LowPowerLed.hh"
 #include "MatrixKeypad.hh"
 
@@ -44,39 +46,45 @@ class ActivationKeypad: public BufferedMatrixKeypad<INPUTS, OUTPUTS, SIZE>
 public:
 	ActivationKeypad()
 		:	BufferedMatrixKeypad(INPUT_PINS, OUTPUT_PINS, KEYPAD_MAP, "#*", SHIFT_BUFFER),
-		 	locked(LED_LOCKED, 0),
-		 	unlocked(LED_UNLOCKED, 0),
-		 	typing(LED_TYPING, 0) {}
+		 	_typing(LED_TYPING, 0) {}
+
+	//TODO make it a parameter of the constructor?
+	static const uint8_t LOCK_EVENT = Event::USER_TYPE + 1;
+
+	struct LockEventParam
+	{
+		char input[SIZE + 1];
+		bool lock;
+	};
+
+	void attachLockListener(::Linkage *listener)
+	{
+		_listeners.attach(listener);
+	}
 
 protected:
 	virtual void on_change(char key);
 	virtual void on_input(const char* input, char validate);
 
 private:
-	LowPowerLed locked;
-	LowPowerLed unlocked;
-	OutputPin typing;
+	OutputPin _typing;
+	Head _listeners;
 };
 
 void ActivationKeypad::on_change(char key)
 {
-	typing.set(key);
+	_typing.set(key);
 	BufferedMatrixKeypad::on_change(key);
 }
 
 void ActivationKeypad::on_input(const char* input, char validate)
 {
-	//TODO this is for tests only
-	//TODO instead we should encrypt the input, send it to the center, wait for ack and update the LEDs
-	//TODO Maybe we should just trigger a user event here instead?
-	//TODO Maybe unlocked/locked LEDs should be handled somewhere else?
-	if (strcmp(input, "123456") == 0)
-	{
-		bool unlock = (validate == '#');
-		bool lock = (validate == '*');
-		unlocked.set(unlock);
-		locked.set(lock);
-	}
+	//TODO Not very good way to pass input...
+	static LockEventParam param;
+
+	strcpy(param.input, input);
+	param.lock = (validate == '*');
+	Event::push(LOCK_EVENT, &_listeners, &param);
 }
 
 #endif /* ACTIVATIONKEYPAD_HH_ */

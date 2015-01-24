@@ -1,3 +1,4 @@
+#include <util/delay.h>
 #include <Cosa/OutputPin.hh>
 
 class LowPowerLed: private Link, private OutputPin
@@ -45,7 +46,8 @@ void LowPowerLed::on_event(uint8_t type, uint16_t value)
 	if (type == Event::TIMEOUT_TYPE && _state)
 	{
 		OutputPin::on();
-		delay(DURATION_MS);
+		_delay_ms(DURATION_MS);
+//		Watchdog::delay(DURATION_MS);
 		OutputPin::off();
 	}
 }
