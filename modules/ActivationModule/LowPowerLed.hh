@@ -4,10 +4,13 @@
 class LowPowerLed: private Link, private OutputPin
 {
 public:
-	LowPowerLed(const Board::DigitalPin pin, uint8_t initial = 0):OutputPin(pin), _state(0)
+	LowPowerLed(const Board::DigitalPin pin,
+				uint8_t initial = 0,
+				uint16_t period = REFRESH_MS)
+		:	OutputPin(pin), _state(0)
 	{
 		_set(initial);
-		Watchdog::attach(this, REFRESH_MS);
+		Watchdog::attach(this, period);
 	}
 
 	void on()
@@ -34,6 +37,7 @@ private:
 	void _set(bool value);
 
 	// if REFRESH_MS > 64, then the LED will blink instead of appearing
+	// NB: that default value may be too long, depending on MCU activity...
 	static const uint16_t REFRESH_MS = 64;
 	static const uint16_t DURATION_MS = 1;
 

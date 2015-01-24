@@ -29,8 +29,6 @@ enum MessageType
 } __attribute__((packed));
 
 // This class handles all communication with the alarm center, including ciphering
-//TODO infer it should just react to events or if there should be another class in
-// charge of events dispatching
 class ActivationTransmitter: private NRF24L01P
 {
 public:
@@ -40,6 +38,11 @@ public:
 	{
 		begin();
 //		set_output_power_level(-18);
+	}
+
+	void standby()
+	{
+		NRF24L01P::standby();
 	}
 
 	//TODO improve return type: use enum with more possibilities (to handle error cases)
@@ -54,12 +57,32 @@ public:
 	void sendVoltageLevel(uint16_t level);
 
 private:
+	virtual int recv(uint8_t& src, uint8_t& port, void* buf, size_t count, uint32_t ms = 0L);
+
+	class auto_standby
+	{
+	public:
+		auto_standby(ActivationTransmitter& rf):_rf(rf) {}
+		~auto_standby() { _rf.standby(); }
+	private:
+		ActivationTransmitter& _rf;
+	};
+
 	static const uint8_t RECV_TIMEOUT_MS = 5;
 	const uint8_t _server;
 };
 
+int ActivationTransmitter::recv(uint8_t& src, uint8_t& port, void* buf, size_t count, uint32_t ms)
+{
+	if (ms == 0)
+		return NRF24L01P::recv(src, port, buf, count, ms);
+	RTCAdapter();
+	return NRF24L01P::recv(src, port, buf, count, ms);
+}
+
 bool ActivationTransmitter::pingServerAndGetLockStatus()
 {
+	auto_standby(*this);
 	// Ping server
 	if (send(_server, PING_SERVER, 0, 0) < 0)
 		// If server is down, we consider that system is unlocked
@@ -68,9 +91,6 @@ bool ActivationTransmitter::pingServerAndGetLockStatus()
 	uint8_t source;
 	uint8_t port;
 	bool lock;
-	// Now enable RTC just for the duration of this method
-	//TODO improve by just overriding recv() method...
-	RTCAdapter();
 	if (recv(source, port, &lock, sizeof(lock), RECV_TIMEOUT_MS) < 0)
 		// If problem receiving server response, we consider that system is unlocked
 		return false;
@@ -83,6 +103,7 @@ bool ActivationTransmitter::pingServerAndGetLockStatus()
 
 bool ActivationTransmitter::sendCodeAndGetLockStatus(const char* input, bool locking)
 {
+	auto_standby(*this);
 	// Send lock/unlock code to server
 	if (send(_server, (locking ? LOCK_CODE : UNLOCK_CODE), input, strlen(input) + 1) < 0)
 		// If server is down, we consider that the lock status did not change
@@ -91,8 +112,6 @@ bool ActivationTransmitter::sendCodeAndGetLockStatus(const char* input, bool loc
 	uint8_t source;
 	uint8_t port;
 	bool lock;
-	// Now enable RTC just for the duration of this method
-	RTCAdapter();
 	if (recv(source, port, &lock, sizeof(lock), RECV_TIMEOUT_MS) < 0)
 		// If problem receiving server response, we consider that system is unlocked
 		return false;
@@ -105,6 +124,7 @@ bool ActivationTransmitter::sendCodeAndGetLockStatus(const char* input, bool loc
 
 void ActivationTransmitter::sendVoltageLevel(uint16_t level)
 {
+	auto_standby(*this);
 	send(_server, VOLTAGE_LEVEL, &level, sizeof(level));
 }
 

@@ -25,14 +25,20 @@ static WDTAlarm::Scheduler scheduler;
 // Declare sensors and actuators
 static LedPanel ledPanel;
 static ActivationTransmitter transmitter(NETWORK, MODULE_ID, SERVER_ID);
-//static ActivationKeypad keypad;
+static ActivationKeypad keypad;
 
 // Declare listeners
-//static LockNotificationTask lockTask(transmitter, ledPanel);
+static LockNotificationTask lockTask(transmitter, ledPanel);
 
 // Declare periodic tasks
 static PingTask pingTask(PING_PERIOD_SEC, transmitter, ledPanel);
 //static VoltageNotificationTask voltageTask(VOLTAGE_PERIOD_SEC, transmitter);
+
+// Watchdog period must be the minimum of periods required by all watchdog timer users:
+// - keypad scan		  64ms
+// - LED low powering	  64ms
+// - WDTAlarm			1024ms
+static const uint16_t WATCHDOG_PERIOD = 64;
 
 //The setup function is called once at startup of the sketch
 void setup()
@@ -40,49 +46,46 @@ void setup()
 	// Initialize power settings
 	Power::twi_disable();
 	Power::adc_disable();
-//	Power::timer0_disable();
 	Power::timer1_disable();
 	Power::timer2_disable();
-	// SPI shall be enabled when adding RF
-//	Power::spi_disable();
-	// USART shall be disabled on final module
 	Power::usart0_disable();
+	// Timer0 is used by intermittent RTC, no need to disable/re-enable it all the time
+//	Power::timer0_disable();
+	// SPI is used by NRF24L01
+//	Power::spi_disable();
 
 	// Sleep modes by order of increasing consumption
 	// Lowest consumption mode (works on Arduino, not tested yet on breadboard ATmega)
 	Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
-
 
 //	Power::set(SLEEP_MODE_STANDBY);			// 0.84mA
 //	Power::set(SLEEP_MODE_PWR_SAVE);		// 1.65mA
 //	Power::set(SLEEP_MODE_EXT_STANDBY);		// 1.65mA
 //	Power::set(SLEEP_MODE_ADC);				// 6.5 mA
 
-	// Only this mode works when using serial output and alarm/RF?
+	// Only this mode works when using serial output and RTC
 //	Power::set(SLEEP_MODE_IDLE);			// 15mA
 
 	// Additional setup for transmitter goes here...
 
 	// Start all tasks
-//	pingTask.enable();
+	pingTask.enable();
 //	voltageTask.enable();
 
-//	keypad.attachLockListener(&lockTask);
+	keypad.attachLockListener(&lockTask);
 
 	// Start watchdog and keypad
-	Watchdog::begin(64, Watchdog::push_timeout_events);
+	Watchdog::begin(WATCHDOG_PERIOD, Watchdog::push_timeout_events);
 	scheduler.begin();
-//	keypad.begin();
+	keypad.begin();
 	pingTask.enable();
 }
 
 // The loop function is called in an endless loop
 void loop()
 {
-	//TODO not sure we really need Watchdog::await here, normally, Event::queue.await should be OK!
 	Watchdog::await();
 	Event event;
-//	Event::queue.await(&event);
 	while (Event::queue.dequeue(&event))
 		event.dispatch();
 }

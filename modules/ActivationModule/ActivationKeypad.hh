@@ -41,6 +41,8 @@ static const char KEYPAD_MAP[INPUTS][OUTPUTS] =
 // Size of secret code to activate/deactivate alarm
 static const uint8_t SIZE = 6;
 
+//TODO Create a generic Keypad4x3<SIZE>(inputs, outputs, eventype, const char* =, Overflow=) class
+// Then create a subclass for Activation
 class ActivationKeypad: public BufferedMatrixKeypad<INPUTS, OUTPUTS, SIZE>
 {
 public:

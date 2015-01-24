@@ -8,14 +8,11 @@
 #ifndef WDTALARM_HH_
 #define WDTALARM_HH_
 
-#include <Cosa/Linkage.hh>
-#include <Cosa/Watchdog.hh>
-
 #include <Cosa/Alarm.hh>
 
-//TODO equivalent of the Alarm class except it does not need RTC but just relies only on Watchdog;
-// Although that makes it less accurate, it allows usage of lower power modes that are not possible
-// when using RTC...
+// Equivalent Alarm class except it does not need RTC but just relies only on Watchdog;
+// Although that makes it a bit less accurate, it allows usage of all low power modes
+// that are not possible when using RTC...
 class WDTAlarm: public Alarm
 {
 public:
@@ -48,16 +45,5 @@ private:
 			return ticks;
 	}
 };
-
-
-//class WDTAlarm: private Link
-//{
-//
-//private:
-//	static clock_t s_ticks;
-//	static Head s_queue;
-//	uint32_t m_when;
-//	uint32_t m_period;
-//};
 
 #endif /* WDTALARM_HH_ */

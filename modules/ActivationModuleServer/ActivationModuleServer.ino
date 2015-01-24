@@ -55,7 +55,7 @@ void loop()
 	case PING_SERVER:
 		trace << "PING_SERVER" << endl;
 		rsize = rf.send(source, PING_SERVER, &locked, sizeof(locked));
-		locked = !locked;
+//		locked = !locked;
 		break;
 
 	case VOLTAGE_LEVEL:
