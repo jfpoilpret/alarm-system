@@ -10,6 +10,7 @@
 
 #include <Cosa/Wireless/Driver/NRF24L01P.hh>
 
+#include "Cipher.hh"
 #include "RTCAdapter.hh"
 #include "Pins.hh"
 
@@ -27,6 +28,17 @@ enum MessageType
 	// Other messages will go there
 
 } __attribute__((packed));
+
+struct RxPingServer
+{
+	bool locked;
+	uint8_t key[XTEA::KEY_SIZE];
+};
+
+union RxPayload
+{
+	RxPingServer pingServer;
+};
 
 //FIXME system fails completely when server is down...
 //TODO add ciphering stuff
@@ -72,6 +84,7 @@ private:
 
 	static const uint8_t RECV_TIMEOUT_MS = 5;
 	const uint8_t _server;
+	XTEA _cipher;
 };
 
 int ActivationTransmitter::recv(uint8_t& src, uint8_t& port, void* buf, size_t count, uint32_t ms)
@@ -92,12 +105,18 @@ bool ActivationTransmitter::pingServerAndGetLockStatus()
 	// Wait for acknowledge with lock status and optional cipher key
 	uint8_t source;
 	uint8_t port;
-	bool lock;
-	if (recv(source, port, &lock, sizeof(lock), RECV_TIMEOUT_MS) < 0)
+	RxPingServer response;
+	int size = recv(source, port, &response, sizeof(response), RECV_TIMEOUT_MS);
+	if (size <= 0)
 		// If problem receiving server response, we consider that system is unlocked
 		return false;
 	if (source == _server && port == PING_SERVER)
-		return lock;
+	{
+		if (size >= sizeof(response))
+			// Update key
+			_cipher.set_key(response.key);
+		return response.locked;
+	}
 	// We received a wrong message what do we do with it?
 	// For the moment just consider the system should be considered locked
 	return true;
@@ -107,7 +126,12 @@ bool ActivationTransmitter::sendCodeAndGetLockStatus(const char* input, bool loc
 {
 	auto_standby(*this);
 	// Send lock/unlock code to server
-	if (send(_server, (locking ? LOCK_CODE : UNLOCK_CODE), input, strlen(input) + 1) < 0)
+	//TODO use cipher!
+	char buffer[8];
+	strcpy(buffer, input);
+	_cipher.encipher((uint32_t*) buffer);
+//	if (send(_server, (locking ? LOCK_CODE : UNLOCK_CODE), input, strlen(input) + 1) < 0)
+	if (send(_server, (locking ? LOCK_CODE : UNLOCK_CODE), buffer, sizeof(buffer)) < 0)
 		// If server is down, we consider that the lock status did not change
 		return !locking;
 	// Wait for acknowledge with lock status
