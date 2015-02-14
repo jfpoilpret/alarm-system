@@ -41,9 +41,8 @@ union RxPayload
 };
 
 //FIXME system fails completely when server is down...
-//TODO add ciphering stuff
 // This class handles all communication with the alarm center, including ciphering
-class ActivationTransmitter: private NRF24L01P
+class ActivationTransmitter: public NRF24L01P
 {
 public:
 	ActivationTransmitter(uint16_t network, uint8_t device, uint8_t server)
@@ -52,11 +51,6 @@ public:
 	{
 		begin();
 //		set_output_power_level(-18);
-	}
-
-	void standby()
-	{
-		NRF24L01P::standby();
 	}
 
 	//TODO improve return type: use enum with more possibilities (to handle error cases)
@@ -112,7 +106,7 @@ bool ActivationTransmitter::pingServerAndGetLockStatus()
 		return false;
 	if (source == _server && port == PING_SERVER)
 	{
-		if (size >= sizeof(response))
+		if ((unsigned) size >= sizeof(response))
 			// Update key
 			_cipher.set_key(response.key);
 		return response.locked;
@@ -126,11 +120,9 @@ bool ActivationTransmitter::sendCodeAndGetLockStatus(const char* input, bool loc
 {
 	auto_standby(*this);
 	// Send lock/unlock code to server
-	//TODO use cipher!
 	char buffer[8];
 	strcpy(buffer, input);
 	_cipher.encipher((uint32_t*) buffer);
-//	if (send(_server, (locking ? LOCK_CODE : UNLOCK_CODE), input, strlen(input) + 1) < 0)
 	if (send(_server, (locking ? LOCK_CODE : UNLOCK_CODE), buffer, sizeof(buffer)) < 0)
 		// If server is down, we consider that the lock status did not change
 		return !locking;

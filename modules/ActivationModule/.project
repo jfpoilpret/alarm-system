@@ -34,7 +34,7 @@
 		<link>
 			<name>arduino/variant</name>
 			<type>2</type>
-			<locationURI>ArduinoPinPath/arduino/uno</locationURI>
+			<locationURI>ArduinoPinPath/arduino/atmega328p</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>

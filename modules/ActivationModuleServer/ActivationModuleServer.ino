@@ -62,16 +62,19 @@ void loop()
 	switch (type)
 	{
 	case PING_SERVER:
-		trace << "PING_SERVER" << endl;
+		trace << "P ";
+//		trace << "PING_SERVER" << endl;
 		if (RTC::seconds() > lastKeyGenTime)
 		{
 			RxPingServer payload;
 			cipher.generate_key(payload.key);
 			cipher.set_key(payload.key);
 			payload.locked = locked;
-			trace	<< "New key generated: " << hex
+			trace	<< endl << "New key generated: " << hex
 					<< payload.key[0] << payload.key[1] << payload.key[2] << payload.key[3]
-					<< payload.key[4] << payload.key[5] << payload.key[6] << payload.key[7] << endl;
+					<< payload.key[4] << payload.key[5] << payload.key[6] << payload.key[7]
+					<< payload.key[8] << payload.key[9] << payload.key[10] << payload.key[11]
+					<< payload.key[12] << payload.key[13] << payload.key[14] << payload.key[15] << endl;
 			rf.send(source, PING_SERVER, &payload, sizeof(payload));
 			lastKeyGenTime = RTC::seconds() + 120;//TODO avoid hardcoded constant!!!
 		}
@@ -82,7 +85,7 @@ void loop()
 		break;
 
 	case VOLTAGE_LEVEL:
-		trace << "VOLTAGE_LEVEL level=" << level << endl;
+		trace << endl << "VOLTAGE_LEVEL level=" << level << endl;
 		break;
 
 	case LOCK_CODE:
@@ -91,7 +94,7 @@ void loop()
 		// Decipher received code
 		cipher.decipher((uint32_t*) buffer);
 		char* input = (char*) buffer;
-		trace << (type == UNLOCK_CODE ? "UN": "") << "LOCK_CODE input=" << input << endl;
+		trace << endl << (type == UNLOCK_CODE ? "UN": "") << "LOCK_CODE input=" << input << endl;
 		if (strcmp(input, CODE) == 0)
 			locked = (type == LOCK_CODE);
 		rf.send(source, type, &locked, sizeof(locked));
@@ -99,7 +102,7 @@ void loop()
 	}
 
 	default:
-		trace << "UNKNOWN type! " << type << endl;
+		trace << endl << "UNKNOWN type! " << type << endl;
 		break;
 	}
 //	trace << ":send size=" << rsize << endl;

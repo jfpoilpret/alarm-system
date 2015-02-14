@@ -10,6 +10,9 @@
 #include "VoltageNotificationTask.hh"
 #include "LockNotificationTask.hh"
 
+#include "RTCAdapter.hh"
+#include "DebugLed.hh"
+
 //TODO Externalize these constants?
 const uint16_t NETWORK = 0xC05A;
 const uint8_t SERVER_ID = 0x01;
@@ -40,34 +43,51 @@ static VoltageNotificationTask voltageTask(VOLTAGE_PERIOD_SEC, transmitter);
 // - WDTAlarm			1024ms
 static const uint16_t WATCHDOG_PERIOD = 64;
 
+// Debug LED declaration
+OutputPin ledOutput(LED_DEBUG);
+
+// Get the device ID from DIP switch pins
+uint8_t readConfigId()
+{
+	InputPin::set_mode(CONFIG_ID1, InputPin::Mode::PULLUP_MODE);
+	InputPin::set_mode(CONFIG_ID2, InputPin::Mode::PULLUP_MODE);
+	uint8_t id = (InputPin::read(CONFIG_ID1) ? 0: 1);
+	id += (InputPin::read(CONFIG_ID2) ? 0 : 2);
+	InputPin::set_mode(CONFIG_ID1, InputPin::Mode::NORMAL_MODE);
+	InputPin::set_mode(CONFIG_ID2, InputPin::Mode::NORMAL_MODE);
+	return id;
+}
+
 //The setup function is called once at startup of the sketch
 void setup()
 {
-	// Initialize power settings
+	// Initialize power settings: disable every unneeded component
 	Power::twi_disable();
 	Power::timer1_disable();
 	Power::timer2_disable();
 	Power::usart0_disable();
 	// ADC is used to get the voltage level
-//	Power::adc_disable();
 	// Timer0 is used by intermittent RTC, no need to disable/re-enable it all the time
-//	Power::timer0_disable();
 	// SPI is used by NRF24L01
+//	Power::adc_disable();
+//	Power::timer0_disable();
 //	Power::spi_disable();
 
 	// Sleep modes by order of increasing consumption
 	// Lowest consumption mode (works on Arduino, not tested yet on breadboard ATmega)
 	Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
-
 //	Power::set(SLEEP_MODE_STANDBY);			// 0.84mA
 //	Power::set(SLEEP_MODE_PWR_SAVE);		// 1.65mA
 //	Power::set(SLEEP_MODE_EXT_STANDBY);		// 1.65mA
 //	Power::set(SLEEP_MODE_ADC);				// 6.5 mA
-
-	// Only this mode works when using serial output and RTC
+	// Only this mode works when using serial output and full-time RTC
 //	Power::set(SLEEP_MODE_IDLE);			// 15mA
 
+	// Initialize RTC adapter properly
+	RTCAdapter::init();
+
 	// Additional setup for transmitter goes here...
+	transmitter.set_address(NETWORK, MODULE_ID + readConfigId());
 
 	// Start all tasks
 	pingTask.enable();
@@ -86,6 +106,10 @@ void setup()
 void loop()
 {
 	Watchdog::await();
+
+	// Add small debug blink to show the loop is running
+	debug(1);
+
 	Event event;
 	while (Event::queue.dequeue(&event))
 		event.dispatch();

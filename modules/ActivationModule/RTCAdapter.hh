@@ -16,18 +16,25 @@
 class RTCAdapter
 {
 public:
+	static void init()
+	{
+		// At first time it is called, RTC::begin() sets ::delay to RTC::delay
+		// but we don't want it as default delay method, so restore the original method
+		void (*saveDelay)(uint32_t) = ::delay;
+		RTC::begin();
+		RTC::end();
+		::delay = saveDelay;
+	}
+
 	RTCAdapter()
 	{
-		if (!RTC::begin())
+		synchronized
 		{
-			synchronized
-			{
-				// And enable interrupt on overflow
-				TIMSK0 = _BV(TOIE0);
-				// Reset the counter and clear interrupts
-				TCNT0 = 0;
-				TIFR0 = 0;
-			}
+			// And enable interrupt on overflow
+			TIMSK0 = _BV(TOIE0);
+			// Reset the counter and clear interrupts
+			TCNT0 = 0;
+			TIFR0 = 0;
 		}
 	}
 
@@ -35,7 +42,11 @@ public:
 		__attribute__((always_inline))
 	{
 		// Disable interrupt on overflow
-		RTC::end();
+		synchronized
+		{
+			// And enable interrupt on overflow
+			TIMSK0 = 0;
+		}
 	}
 };
 
