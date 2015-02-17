@@ -14,6 +14,8 @@
 #include "RTCAdapter.hh"
 #include "Pins.hh"
 
+#include "DebugLed.hh"
+
 //TODO isolate all Message Types, Devices IDs... in a specific header, shared among all projects
 enum MessageType
 {
@@ -66,6 +68,7 @@ public:
 
 private:
 	virtual int recv(uint8_t& src, uint8_t& port, void* buf, size_t count, uint32_t ms = 0L);
+	virtual int send(uint8_t dest, uint8_t port, const void* buf, size_t len);
 
 	class auto_standby
 	{
@@ -81,12 +84,27 @@ private:
 	XTEA _cipher;
 };
 
+int ActivationTransmitter::send(uint8_t dest, uint8_t port, const void* buf, size_t len)
+{
+//	ledOutput.on();
+	int result = NRF24L01P::send(dest, port, buf, len);
+//	ledOutput.off();
+	return result;
+}
+
 int ActivationTransmitter::recv(uint8_t& src, uint8_t& port, void* buf, size_t count, uint32_t ms)
 {
+//	ledOutput.on();
+	int result;
 	if (ms == 0)
-		return NRF24L01P::recv(src, port, buf, count, ms);
-	RTCAdapter();
-	return NRF24L01P::recv(src, port, buf, count, ms);
+		result = NRF24L01P::recv(src, port, buf, count, ms);
+	else
+	{
+		RTCAdapter rtc;
+		result = NRF24L01P::recv(src, port, buf, count, ms);
+	}
+//	ledOutput.off();
+	return result;
 }
 
 bool ActivationTransmitter::pingServerAndGetLockStatus()

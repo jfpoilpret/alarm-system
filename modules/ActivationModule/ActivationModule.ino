@@ -108,7 +108,7 @@ void loop()
 	Watchdog::await();
 
 	// Add small debug blink to show the loop is running
-	debug(1);
+//	debug(1);
 
 	Event event;
 	while (Event::queue.dequeue(&event))

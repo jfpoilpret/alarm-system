@@ -109,6 +109,7 @@ public:
 	}
 
 protected:
+	virtual void on_typing(char key) { UNUSED(key); }
 	virtual void on_input(const char* input, char validate) = 0;
 	virtual void on_overflow(const char* input, char key)
 	{
@@ -166,11 +167,12 @@ char MatrixKeypad<INPUTS, OUTPUTS>::scan()
 template<int INPUTS, int OUTPUTS, int BUFSIZE>
 void BufferedMatrixKeypad<INPUTS, OUTPUTS, BUFSIZE>::on_change(char key)
 {
+	on_typing(key);
 	if (!key) return;
 	if (strchr(_validate, key) != 0)
 	{
 		on_input(_input, key);
-		clear();
+//		clear();
 	}
 	else if (_index < BUFSIZE)
 		_input[_index++] = key;

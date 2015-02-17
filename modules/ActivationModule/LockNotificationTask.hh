@@ -21,17 +21,21 @@ public:
 		 	_transmitter(transmitter),
 		 	_ledPanel(ledPanel) {}
 
-    virtual void on_event(uint8_t type, uint16_t value)
-    {
-    	if (type == ActivationKeypad::LOCK_EVENT)
-    	{
-    		// Notify server that a lock/unlock code has been input
-    		ActivationKeypad::LockEventParam* param = (ActivationKeypad::LockEventParam*) value;
-    		bool status = _transmitter.sendCodeAndGetLockStatus(param->input, param->lock);
-    		// Dispatch status to LedPanel
-    		_ledPanel.updateStatus(status);
-    	}
-    }
+	virtual void on_event(uint8_t type, uint16_t value)
+	{
+		if (type == ActivationKeypad::LOCK_EVENT)
+		{
+			// Notify server that a lock/unlock code has been input
+			ActivationKeypad* keypad = (ActivationKeypad*) value;
+			char input[ActivationKeypad::INPUT_SIZE + 1];
+			keypad->input(input);
+			bool lock = (keypad->validate() == '*');
+			keypad->clear();
+			bool status = _transmitter.sendCodeAndGetLockStatus(input, lock);
+			// Dispatch status to LedPanel
+			_ledPanel.updateStatus(status);
+		}
+	}
 
 private:
 	ActivationTransmitter& _transmitter;

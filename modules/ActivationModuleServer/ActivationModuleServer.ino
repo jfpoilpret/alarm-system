@@ -63,18 +63,21 @@ void loop()
 	{
 	case PING_SERVER:
 		trace << "P ";
-//		trace << "PING_SERVER" << endl;
 		if (RTC::seconds() > lastKeyGenTime)
 		{
 			RxPingServer payload;
 			cipher.generate_key(payload.key);
 			cipher.set_key(payload.key);
 			payload.locked = locked;
-			trace	<< endl << "New key generated: " << hex
-					<< payload.key[0] << payload.key[1] << payload.key[2] << payload.key[3]
-					<< payload.key[4] << payload.key[5] << payload.key[6] << payload.key[7]
-					<< payload.key[8] << payload.key[9] << payload.key[10] << payload.key[11]
-					<< payload.key[12] << payload.key[13] << payload.key[14] << payload.key[15] << endl;
+			trace	<< endl << "New key: "
+					<< hex << payload.key[0] << hex << payload.key[1]
+					<< hex << payload.key[2] << hex << payload.key[3]
+					<< hex << payload.key[4] << hex << payload.key[5]
+					<< hex << payload.key[6] << hex << payload.key[7]
+					<< hex << payload.key[8] << hex << payload.key[9]
+					<< hex << payload.key[10] << hex << payload.key[11]
+					<< hex << payload.key[12] << hex << payload.key[13]
+					<< hex << payload.key[14] << hex << payload.key[15] << endl;
 			rf.send(source, PING_SERVER, &payload, sizeof(payload));
 			lastKeyGenTime = RTC::seconds() + 120;//TODO avoid hardcoded constant!!!
 		}

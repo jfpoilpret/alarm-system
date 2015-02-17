@@ -32,45 +32,35 @@ public:
 						const BufferInputOverflowBehavior overflowBehavior = SHIFT_BUFFER)
 		:	BufferedMatrixKeypad<INPUTS, OUTPUTS, SIZE>(
 				inputs, outputs, KEYPAD_MAP, validate, overflowBehavior),
-		 	_eventType(eventType) {}
-
-	struct LockEventParam
-	{
-		char input[SIZE + 1];
-		bool lock;
-	};
+		 	_eventType(eventType), _validate(0) {}
 
 	void attachListener(::Linkage *listener)
 	{
 		_listeners.attach(listener);
 	}
 
+	char validate() const
+	{
+		return _validate;
+	}
+
+	static const uint8_t INPUT_SIZE = SIZE;
+
 protected:
-	virtual void on_typing(char key) { UNUSED(key); }
-	virtual void on_change(char key);
 	virtual void on_input(const char* input, char validate);
 
 private:
 	Head _listeners;
 	const uint8_t _eventType;
+	char _validate;
 };
-
-template<uint8_t SIZE>
-void SparkFunKeypad3x4<SIZE>::on_change(char key)
-{
-	on_typing(key);
-	BufferedMatrixKeypad<INPUTS, OUTPUTS, SIZE>::on_change(key);
-}
 
 template<uint8_t SIZE>
 void SparkFunKeypad3x4<SIZE>::on_input(const char* input, char validate)
 {
-	//FIXME Not very good way to pass input...
-	static LockEventParam param;
-
-	strcpy(param.input, input);
-	param.lock = (validate == '*');
-	Event::push(_eventType, &_listeners, &param);
+	UNUSED(input);
+	_validate = validate;
+	Event::push(_eventType, &_listeners, this);
 }
 
 #endif /* SPARKFUNKEYPAD3X4_HH_ */

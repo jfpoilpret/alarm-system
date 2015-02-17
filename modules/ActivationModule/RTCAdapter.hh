@@ -10,6 +10,10 @@
 
 #include <Cosa/RTC.hh>
 
+#include "DebugLed.hh"
+
+//TODO rename to auto_RTC
+//TODO refactor in 2 utility classes one for RTC enable, one for yield change
 // This class is used to automatically enable/disable RTC clock for programs where we need it sometimes
 // but don't want it working permanently (in order to benefit from lower power levels that are normally
 // not possible when using RTC all the time)
@@ -28,6 +32,10 @@ public:
 
 	RTCAdapter()
 	{
+		// Force our own yield() to use SLEEP_IDLE_MODE instead of SLEEP_MODE_PWR_DOWN,
+		// otherwise RTC will not work during ::yield() calls, failing several timeout waiting loops
+		_saveYield = ::yield;
+		::yield = RTCAdapter::yield;
 		synchronized
 		{
 			// And enable interrupt on overflow
@@ -36,6 +44,7 @@ public:
 			TCNT0 = 0;
 			TIFR0 = 0;
 		}
+		RTC::micros(0);
 	}
 
 	~RTCAdapter()
@@ -47,7 +56,17 @@ public:
 			// And enable interrupt on overflow
 			TIMSK0 = 0;
 		}
+		::yield = _saveYield;
 	}
+
+private:
+	static void yield()
+	{
+//		debug(3);
+		Power::sleep(SLEEP_MODE_IDLE);
+	}
+
+	void (*_saveYield)();
 };
 
 #endif /* RTCADAPTER_HH_ */

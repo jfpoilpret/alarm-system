@@ -19,6 +19,7 @@ void debug(uint8_t blinks = 1, uint16_t us = 200)
 		ledOutput.on();
 		DELAY(us);
 		ledOutput.off();
+		DELAY(us);
 	}
 }
 
