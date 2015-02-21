@@ -42,7 +42,6 @@ union RxPayload
 	RxPingServer pingServer;
 };
 
-//FIXME system fails completely when server is down...
 // This class handles all communication with the alarm center, including ciphering
 class ActivationTransmitter: public NRF24L01P
 {
