@@ -1,3 +1,6 @@
+#ifndef LOWPOWERLED_HH_
+#define LOWPOWERLED_HH_
+
 #include <util/delay.h>
 #include <Cosa/OutputPin.hh>
 
@@ -36,10 +39,10 @@ public:
 private:
 	void _set(bool value);
 
-	// if REFRESH_MS > 64, then the LED will blink instead of appearing
+	// if REFRESH_MS > 32, then the LED will blink instead of appearing
 	// NB: that default value may be too long, depending on MCU activity...
-	static const uint16_t REFRESH_MS = 64;
-	static const uint16_t DURATION_MS = 1;
+	static const uint16_t REFRESH_MS = 32;
+	static const uint16_t DURATION_US = 500;
 
     uint8_t _state;
 };
@@ -50,8 +53,8 @@ void LowPowerLed::on_event(uint8_t type, uint16_t value)
 	if (type == Event::TIMEOUT_TYPE && _state)
 	{
 		OutputPin::on();
-		_delay_ms(DURATION_MS);
-//		Watchdog::delay(DURATION_MS);
+		_delay_us(DURATION_US);
+//		_delay_ms(DURATION_MS);
 		OutputPin::off();
 	}
 }
@@ -62,3 +65,5 @@ void LowPowerLed::_set(bool value)
 	if (!_state)
 		OutputPin::off();
 }
+
+#endif /* LOWPOWERLED_HH_ */

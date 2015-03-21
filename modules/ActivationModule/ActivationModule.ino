@@ -39,9 +39,9 @@ static VoltageNotificationTask voltageTask(VOLTAGE_PERIOD_SEC, transmitter);
 
 // Watchdog period must be the minimum of periods required by all watchdog timer users:
 // - keypad scan		  64ms
-// - LED low powering	  64ms
+// - LED low powering	  32ms
 // - WDTAlarm			1024ms
-static const uint16_t WATCHDOG_PERIOD = 64;
+static const uint16_t WATCHDOG_PERIOD = 32;
 
 // Debug LED declaration
 OutputPin ledOutput(LED_DEBUG);
