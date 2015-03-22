@@ -32,9 +32,15 @@ def _BV(x):
 
 class Payload:
     def __init__(self, payload):
-        self.device = payload[0]
-        self.port = payload[1]
-        self.content = payload[2:]
+        # NB payload is:
+        # - status (NRF24L01)
+        # - source device (Cosa) 
+        # - port (Cosa)
+        # - actual content
+        self.status = payload[0]
+        self.device = payload[1]
+        self.port = payload[2]
+        self.content = payload[3:]
 
 class NRF24:
     BROADCAST = 0
@@ -188,13 +194,11 @@ class NRF24:
     pa_dbm_e_str_P = ["PA_MIN", "PA_LOW", "PA_MED", "PA_HIGH"]
 
     def __init__(self, network, device):
-        self.ce_pin = "P9_15"
-        self.channel = 64
+        self.set_channel(64)
         self.power = NRF24.RF_PWR_0DBM
-        self.network = network & 0xFFFF
-        self.device = device & 0xFF
+    	self.set_address(network, device)
         self.spidev = None
-        GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BCM)
 
     def set_address(self, network, device):
         self.network = network & 0xFFFF
@@ -264,7 +268,7 @@ class NRF24:
         # set receive mode
         self.ce(NRF24.LOW)
         self.write_register(NRF24.CONFIG,
-            _BV(NRF24.EN_CRC) | _BV(NRF24.CRC0) | _BV(NRF24.PWR_UP) | _BV(NRF24.PRIM_RX))
+            _BV(NRF24.EN_CRC) | _BV(NRF24.CRCO) | _BV(NRF24.PWR_UP) | _BV(NRF24.PRIM_RX))
         self.ce(NRF24.HIGH)
         # wait for the radio to come up (130us actually only needed)
         time.sleep(130 / 1000000.0)
@@ -446,9 +450,9 @@ class NRF24:
 
     def printDetails(self):
         self.print_status(self.get_status())
-        self.print_address_register("RX_ADDR_P0-1", NRF24.RX_ADDR_P0, 2)
-        self.print_byte_register("RX_ADDR_P2-5", NRF24.RX_ADDR_P2, 4)
-        self.print_address_register("TX_ADDR", NRF24.TX_ADDR)
+        #self.print_address_register("RX_ADDR_P0-1", NRF24.RX_ADDR_P0, 2)
+        #self.print_byte_register("RX_ADDR_P2-5", NRF24.RX_ADDR_P2, 4)
+        #self.print_address_register("TX_ADDR", NRF24.TX_ADDR)
 
         self.print_byte_register("RX_PW_P0-6", NRF24.RX_PW_P0, 6)
         self.print_byte_register("EN_AA", NRF24.EN_AA)
@@ -458,9 +462,6 @@ class NRF24:
         self.print_byte_register("CONFIG", NRF24.CONFIG)
         self.print_byte_register("DYNPD/FEATURE", NRF24.DYNPD, 2)
 
-        self.print_single_status_line("Data Rate", NRF24.datarate_e_str_P[self.getDataRate()])
-        self.print_single_status_line("Model", NRF24.model_e_str_P[self.isPVariant()])
-        self.print_single_status_line("CRC Length", NRF24.crclength_e_str_P[self.getCRCLength()])
         self.print_single_status_line("PA Power", NRF24.pa_dbm_e_str_P[self.getPALevel()])
 
     def getPALevel(self):

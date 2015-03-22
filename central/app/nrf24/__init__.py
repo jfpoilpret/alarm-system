@@ -1,1 +1,1 @@
-from . import NRF24
+from nrf24 import NRF24
