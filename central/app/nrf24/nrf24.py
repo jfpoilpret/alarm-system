@@ -26,7 +26,6 @@ except ImportError:
 
 import spidev
 import time
-import sys
 
 def _BV(x):
     return 1 << x
@@ -263,11 +262,13 @@ class NRF24:
     # Receive structured payload: device, port, content
     def recv(self, timeout_secs = 0.0):
         # set receive mode
+        self.ce(NRF24.LOW)
         self.write_register(NRF24.CONFIG,
             _BV(NRF24.EN_CRC) | _BV(NRF24.CRC0) | _BV(NRF24.PWR_UP) | _BV(NRF24.PRIM_RX))
         self.ce(NRF24.HIGH)
         # wait for the radio to come up (130us actually only needed)
         time.sleep(130 / 1000000.0)
+        # wait for payload reception
         now = time.time()
         while not self.available():
             if timeout_secs == 0.0 or time.time() - now > timeout_secs:
@@ -431,14 +432,6 @@ class NRF24:
             1 if status & _BV(NRF24.TX_FULL) else 0)
 
         self.print_single_status_line("STATUS", status_str)
-
-    def print_observe_tx(self, value):
-        tx_str = "OBSERVE_TX=0x{0:02x}: POLS_CNT={2:x} ARC_CNT={2:x}\r\n".format(
-            value,
-            (value >> NRF24.PLOS_CNT) & int("1111", 2),
-            (value >> NRF24.ARC_CNT) & int("1111", 2))
-
-        print(tx_str)
 
     def print_byte_register(self, name, reg, qty=1):
         registers = ["0x{:0>2x}".format(self.read_register(reg+r)) for r in range(0, qty)]

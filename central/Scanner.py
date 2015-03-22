@@ -8,8 +8,12 @@ SERVER_ID = 0x01
 CE_PIN = 25
 
 if __name__ == '__main__':
+    print "Scanner..."
     nrf = NRF24(NETWORK, SERVER_ID)
+    print "NRF24 instance created..."
     nrf.begin(0, 0, CE_PIN)
+    print "NRF24 instance started..."
+    nrf.printDetails()
     while True:
         payload = nrf.recv(1)
         if payload:
@@ -19,3 +23,6 @@ if __name__ == '__main__':
             for c in content:
                 output += '%02x ' % c
             print output
+            nrf.printDetails()
+        else:
+            print "Reception timed out"
