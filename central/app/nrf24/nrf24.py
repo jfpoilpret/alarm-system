@@ -216,7 +216,7 @@ class NRF24:
     def get_channel(self):
         return self.channel
             
-    def begin(self, major, minor, ce_pin):
+    def begin(self, major, minor, ce_pin, autoAck = True):
         # Initialize SPI bus
         self.spidev = spidev.SpiDev()
         self.spidev.open(major, minor)
@@ -224,13 +224,13 @@ class NRF24:
         GPIO.setup(self.ce_pin, GPIO.OUT)
         time.sleep(5 / 1000000.0)
 
-        # Setup hardware featues, channel, bitrate, retransmission, dynmic payload
+        # Setup hardware features, channel, bitrate, retransmission, dynmic payload
         self.write_register(NRF24.FEATURE,
             _BV(NRF24.EN_DPL) | _BV(NRF24.EN_ACK_PAY) | _BV(NRF24.EN_DYN_ACK))
         self.write_register(NRF24.RF_CH, self.channel)
         self.write_register(NRF24.RF_SETUP, NRF24.RF_DR_2MBPS | self.power)
         self.write_register(NRF24.SETUP_RETR,
-            (NRF24.DEFAULT_ARD) << NRF24.ARD | (NRF24.DEFAULT_ARC << NRF24.ARC))
+            (NRF24.DEFAULT_ARD << NRF24.ARD) | (NRF24.DEFAULT_ARC << NRF24.ARC))
         self.write_register(NRF24.DYNPD, NRF24.DPL_PA)
 
         # Setup hardware receive pipes address: network (16b), device (8b)
@@ -242,7 +242,11 @@ class NRF24:
         self.write_register(NRF24.RX_ADDR_P1, address)
         self.write_register(NRF24.RX_ADDR_P2, NRF24.BROADCAST)
         self.write_register(NRF24.EN_RXADDR, _BV(NRF24.ERX_P2) | _BV(NRF24.ERX_P1))
-        self.write_register(NRF24.EN_AA, _BV(NRF24.ENAA_P1) | _BV(NRF24.ENAA_P0))
+        if autoAck:
+            self.write_register(NRF24.EN_AA,
+                _BV(NRF24.ENAA_P1) | _BV(NRF24.ENAA_P0))
+        else:
+            self.write_register(NRF24.EN_AA, 0)
 
         self.powerUp()
 
@@ -278,12 +282,18 @@ class NRF24:
             if timeout_secs == 0.0 or time.time() - now > timeout_secs:
                 return None
             time.sleep(0.001)
+        self.write_register(NRF24.STATUS, _BV(NRF24.RX_DR))
         # read payload size
-        count = self.read_register(NRF24.R_RX_PL_WID)
+        count = self.get_payload_size()
+        print 'recv() -> count = %d' % count
+        if count > NRF24.MAX_PAYLOAD_SIZE:
+            self.flush_rx()
+            return None
         # read payload
-        txbuffer = [NRF24.NOP] * count
+        txbuffer = [NRF24.NOP] * (count + 1)
         txbuffer[0] = NRF24.R_RX_PAYLOAD
         payload = self.spidev.xfer2(txbuffer)
+        self.flush_rx()
         return Payload(payload)
 
     def send(self, dest, port, content):
@@ -328,11 +338,21 @@ class NRF24:
         return -2
 
     def powerDown(self):
-        self.write_register(NRF24.CONFIG, self.read_register(NRF24.CONFIG) & ~_BV(NRF24.PWR_UP))
+        time.sleep(32 / 1000.0)
+        self.ce(NRF24.LOW)
+        self.write_register(NRF24.CONFIG,
+            _BV(NRF24.EN_CRC) | _BV(NRF24.CRCO))
 
     def powerUp(self):
-        self.write_register(NRF24.CONFIG, self.read_register(NRF24.CONFIG) | _BV(NRF24.PWR_UP))
-        time.sleep(150 / 1000000.0)
+        self.ce(NRF24.LOW)
+        self.write_register(NRF24.CONFIG,
+            _BV(NRF24.EN_CRC) | _BV(NRF24.CRCO) | _BV(NRF24.PWR_UP))
+        time.sleep(3 / 1000.0)
+
+        self.write_register(NRF24.STATUS,
+            _BV(NRF24.RX_DR) | _BV(NRF24.TX_DS) | _BV(NRF24.MAX_RT))
+        self.flush_tx()
+        self.flush_rx()
 
     def testCarrier(self):
         return self.read_register(NRF24.CD) & 1
@@ -342,32 +362,36 @@ class NRF24:
     
     # Implementation methods
     #========================
-    def available(self, pipe_num=None):
-        if not pipe_num:
-            pipe_num = []
+    def available(self):
+        if self.get_fifo_status() & _BV(NRF24.RX_EMPTY):
+            return False
+        if self.get_payload_size() <= NRF24.MAX_PAYLOAD_SIZE:
+            return True
+        self.flush_rx()
+        return False
 
-        status = self.get_status()
-        result = False
-
-        # Sometimes the radio specifies that there is data in one pipe but
-        # doesn't set the RX flag...
-        if status & _BV(NRF24.RX_DR) or (status & 0b00001110 != 0b00001110):
-            result = True
-            # If the caller wants the pipe number, include that
-            if len(pipe_num) >= 1:
-                pipe_num[0] = (status >> NRF24.RX_P_NO) & 0b00000111
-
-                # Clear the status bit
-
-                # ??? Should this REALLY be cleared now?  Or wait until we
-                # actually READ the payload?
-        self.write_register(NRF24.STATUS, _BV(NRF24.RX_DR))
-
-        # Handle ack payload receipt
-        if status & _BV(NRF24.TX_DS):
-            self.write_register(NRF24.STATUS, _BV(NRF24.TX_DS))
-
-        return result
+#        status = self.get_status()
+#        result = False
+#
+#        # Sometimes the radio specifies that there is data in one pipe but
+#        # doesn't set the RX flag...
+#        if status & _BV(NRF24.RX_DR) or (status & 0b00001110 != 0b00001110):
+#            result = True
+#            # If the caller wants the pipe number, include that
+#            if len(pipe_num) >= 1:
+#                pipe_num[0] = (status >> NRF24.RX_P_NO) & 0b00000111
+#
+#                # Clear the status bit
+#
+#                # ??? Should this REALLY be cleared now?  Or wait until we
+#                # actually READ the payload?
+#        self.write_register(NRF24.STATUS, _BV(NRF24.RX_DR))
+#
+#        # Handle ack payload receipt
+#        if status & _BV(NRF24.TX_DS):
+#            self.write_register(NRF24.STATUS, _BV(NRF24.TX_DS))
+#
+#        return result
 
     def ce(self, level):
         if level == NRF24.HIGH:
@@ -375,6 +399,14 @@ class NRF24:
         else:
             GPIO.output(self.ce_pin, GPIO.LOW)
         return
+
+    def get_fifo_status(self):
+        return self.read_register(NRF24.FIFO_STATUS)
+
+    #TODO refactor xfer2 with generic read method...
+
+    def get_payload_size(self):
+        return self.spidev.xfer2([NRF24.R_RX_PL_WID, 0])[1]
 
     def read_register(self, reg, blen=1):
         buf = [NRF24.R_REGISTER | (NRF24.REGISTER_MASK & reg)]
