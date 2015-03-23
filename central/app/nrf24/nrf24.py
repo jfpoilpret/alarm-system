@@ -42,35 +42,7 @@ class Payload:
         self.port = payload[2]
         self.content = payload[3:]
 
-class NRF24:
-    BROADCAST = 0
-
-    MAX_CHANNEL = 127
-    MAX_PAYLOAD_SIZE = 32
-
-    # PA Levels
-    PA_MIN = 0
-    PA_LOW = 1
-    PA_HIGH = 2
-    PA_MAX = 3
-    PA_ERROR = 4
-    RF_PWR_18DBM = 0
-    RF_PWR_12DBM = 2
-    RF_PWR_6DBM = 4
-    RF_PWR_0DBM = 6
-
-    # Bit rates
-    BR_1MBPS = 0
-    BR_2MBPS = 1
-    BR_250KBPS = 2
-
-    # CRC
-    CRC_DISABLED = 0
-    CRC_8 = 1
-    CRC_16 = 2
-    CRC_ENABLED = 3
-
-    # Registers
+class Register:
     CONFIG = 0x00
     EN_AA = 0x01
     EN_RXADDR = 0x02
@@ -80,7 +52,7 @@ class NRF24:
     RF_SETUP = 0x06
     STATUS = 0x07
     OBSERVE_TX = 0x08
-    CD = 0x09
+    RPD = 0x09
     RX_ADDR_P0 = 0x0A
     RX_ADDR_P1 = 0x0B
     RX_ADDR_P2 = 0x0C
@@ -98,56 +70,7 @@ class NRF24:
     DYNPD = 0x1C
     FEATURE = 0x1D
 
-    # Bit Mnemonics */
-    MASK_RX_DR = 6
-    MASK_TX_DS = 5
-    MASK_MAX_RT = 4
-    EN_CRC = 3
-    CRCO = 2
-    PWR_UP = 1
-    PRIM_RX = 0
-    ENAA_P5 = 5
-    ENAA_P4 = 4
-    ENAA_P3 = 3
-    ENAA_P2 = 2
-    ENAA_P1 = 1
-    ENAA_P0 = 0
-    ERX_P5 = 5
-    ERX_P4 = 4
-    ERX_P3 = 3
-    ERX_P2 = 2
-    ERX_P1 = 1
-    ERX_P0 = 0
-    AW = 0
-    ARD = 4
-    ARC = 0
-    PLL_LOCK = 4
-    RF_DR = 3
-    RF_PWR = 6
-    RX_DR = 6
-    TX_DS = 5
-    MAX_RT = 4
-    RX_P_NO = 1
-    TX_FULL = 0
-    PLOS_CNT = 4
-    ARC_CNT = 0
-    TX_REUSE = 6
-    FIFO_FULL = 5
-    TX_EMPTY = 4
-    RX_FULL = 1
-    RX_EMPTY = 0
-    DPL_P5 = 5
-    DPL_P4 = 4
-    DPL_P3 = 3
-    DPL_P2 = 2
-    DPL_P1 = 1
-    DPL_P0 = 0
-    DPL_PA = 0x3F
-    EN_DPL = 2
-    EN_ACK_PAY = 1
-    EN_DYN_ACK = 0
-
-    # Instruction Mnemonics
+class Command:
     R_REGISTER = 0x00
     W_REGISTER = 0x20
     REGISTER_MASK = 0x1F
@@ -162,40 +85,112 @@ class NRF24:
     REUSE_TX_PL = 0xE3
     NOP = 0xFF
 
-    # Non-P omissions
-    LNA_HCURR = 0x00
+class PALevel:
+    RF_PWR_18DBM = 0
+    RF_PWR_12DBM = 2
+    RF_PWR_6DBM = 4
+    RF_PWR_0DBM = 6
 
-    # P model memory Map
-    RPD = 0x09
-
-    # P model bit Mnemonics
+class RF_SETUP:
+    CONT_WAVE = 7
     RF_DR_LOW = 5
+    PLL_LOCK_SIGNAL = 4
     RF_DR_HIGH = 3
-    RF_PWR_LOW = 1
-    RF_PWR_HIGH = 2
+    RF_PWR = 1
 
+class BitRate:
     RF_DR_1MBPS = 0
-    RF_DR_2MBPS = _BV(RF_DR_HIGH)
-    RF_DR_250KBPS = _BV(RF_DR_LOW)
+    RF_DR_2MBPS = _BV(RF_SETUP.RF_DR_HIGH)
+    RF_DR_250KBPS = _BV(RF_SETUP.RF_DR_LOW)
 
-    # Signal Mnemonics
-    LOW = 0
-    HIGH = 1
+class CONFIG:
+    EN_CRC = 3
+    CRCO = 2
+    MASK_RX_DR = 6
+    MASK_TX_DS = 5
+    MASK_MAX_RT = 4
+    PWR_UP = 1
+    PRIM_RX = 0
 
-    # defaults
+class EN_AA:
+    ENAA_P5 = 5
+    ENAA_P4 = 4
+    ENAA_P3 = 3
+    ENAA_P2 = 2
+    ENAA_P1 = 1
+    ENAA_P0 = 0
+    ENAA_PA = 0x3F
+
+class EN_RXADDR:
+    ERX_P5 = 5
+    ERX_P4 = 4
+    ERX_P3 = 3
+    ERX_P2 = 2
+    ERX_P1 = 1
+    ERX_P0 = 0
+    ERX_PA = 0x3F
+
+class SETUP_AW:
+    AW = 0
+    AW_3BYTES = 1
+    AW_4BYTES = 2
+    AW_5BYTES = 3
+
+class SETUP_RETR:
+    ARD = 4
+    ARC = 0
     # retransmit delay 500us
     DEFAULT_ARD = 2
     # retry count 15
     DEFAULT_ARC = 15
 
-    datarate_e_str_P = ["1MBPS", "2MBPS", "250KBPS"]
-    model_e_str_P = ["nRF24L01", "nRF24l01+"]
-    crclength_e_str_P = ["Disabled", "8 bits", "16 bits"]
-    pa_dbm_e_str_P = ["PA_MIN", "PA_LOW", "PA_MED", "PA_HIGH"]
+class STATUS:
+    RX_DR = 6
+    TX_DS = 5
+    MAX_RT = 4
+    RX_P_NO = 1
+    RX_P_NO_MASK = 0x0E
+    RX_P_NO_NONE = 0x07
+    TX_FIFO_FULL = 0
+
+class OBSERVE_TX:
+    PLOS_CNT = 4
+    ARC_CNT = 0
+
+class FIFO_STATUS:
+    TX_REUSE = 6
+    TX_FULL = 5
+    TX_EMPTY = 4
+    RX_FULL = 1
+    RX_EMPTY = 0
+
+class DYNPD:
+    DPL_P5 = 5
+    DPL_P4 = 4
+    DPL_P3 = 3
+    DPL_P2 = 2
+    DPL_P1 = 1
+    DPL_P0 = 0
+    DPL_PA = 0x3F
+
+class FEATURE:
+    EN_DPL = 2
+    EN_ACK_PAY = 1
+    EN_DYN_ACK = 0
+
+# Signal Mnemonics
+LOW = 0
+HIGH = 1
+
+class NRF24:
+    BROADCAST = 0
+
+    MAX_CHANNEL = 127
+    MAX_PAYLOAD_SIZE = 32
 
     def __init__(self, network, device):
         self.set_channel(64)
-        self.power = NRF24.RF_PWR_0DBM
+        self.power = PALevel.RF_PWR_0DBM
     	self.set_address(network, device)
         self.spidev = None
         GPIO.setmode(GPIO.BCM)
@@ -225,42 +220,45 @@ class NRF24:
         time.sleep(5 / 1000000.0)
 
         # Setup hardware features, channel, bitrate, retransmission, dynmic payload
-        self.write_register(NRF24.FEATURE,
-            _BV(NRF24.EN_DPL) | _BV(NRF24.EN_ACK_PAY) | _BV(NRF24.EN_DYN_ACK))
-        self.write_register(NRF24.RF_CH, self.channel)
-        self.write_register(NRF24.RF_SETUP, NRF24.RF_DR_2MBPS | self.power)
-        self.write_register(NRF24.SETUP_RETR,
-            (NRF24.DEFAULT_ARD << NRF24.ARD) | (NRF24.DEFAULT_ARC << NRF24.ARC))
-        self.write_register(NRF24.DYNPD, NRF24.DPL_PA)
+        self.write_register(Register.FEATURE,
+            _BV(FEATURE.EN_DPL) | _BV(FEATURE.EN_ACK_PAY) | _BV(FEATURE.EN_DYN_ACK))
+        self.write_register(Register.RF_CH, self.channel)
+        self.write_register(Register.RF_SETUP,
+            BitRate.RF_DR_2MBPS | self.power)
+        self.write_register(Register.SETUP_RETR,
+            (SETUP_RETR.DEFAULT_ARD << SETUP_RETR.ARD) | (SETUP_RETR.DEFAULT_ARC << SETUP_RETR.ARC))
+        self.write_register(Register.DYNPD, DYNPD.DPL_PA)
 
         # Setup hardware receive pipes address: network (16b), device (8b)
 #       P0: auto-acknowledge (see set_transmit_mode)
 #       P1: node address<network:device> with auto-acknowledge
 #       P2: broadcast<network:0>
-        self.write_register(NRF24.SETUP_AW, 3 - 2)
+        self.write_register(Register.SETUP_AW, SETUP_AW.AW_3BYTES)
         address = [(self.network >> 8) & 0xFF, self.network & 0xFF, self.device]
-        self.write_register(NRF24.RX_ADDR_P1, address)
-        self.write_register(NRF24.RX_ADDR_P2, NRF24.BROADCAST)
-        self.write_register(NRF24.EN_RXADDR, _BV(NRF24.ERX_P2) | _BV(NRF24.ERX_P1))
+        self.write_register(Register.RX_ADDR_P1, address)
+        self.write_register(Register.RX_ADDR_P2, NRF24.BROADCAST)
+        self.write_register(Register.EN_RXADDR,
+            _BV(EN_RXADDR.ERX_P2) | _BV(EN_RXADDR.ERX_P1))
         if autoAck:
-            self.write_register(NRF24.EN_AA,
-                _BV(NRF24.ENAA_P1) | _BV(NRF24.ENAA_P0))
+            self.write_register(Register.EN_AA,
+                _BV(EN_AA.ENAA_P1) | _BV(EN_AA.ENAA_P0))
         else:
-            self.write_register(NRF24.EN_AA, 0)
+            self.write_register(Register.EN_AA, 0)
 
         self.powerUp()
 
     def set_device_output_power(self, dBm):
         if dBm < -12:
-            self.power = NRF24.RF_PWR_18DBM
+            self.power = PALevel.RF_PWR_18DBM
         elif dBm < -6:
-            self.power = NRF24.RF_PWR_12DBM 
+            self.power = PALevel.RF_PWR_12DBM 
         elif dBm < 0:
-            self.power = NRF24.RF_PWR_6DBM
+            self.power = PALevel.RF_PWR_6DBM
         else:
-            self.power = NRF24.RF_PWR_0DBM
+            self.power = PALevel.RF_PWR_0DBM
         if self.spidev:
-            self.write_register(NRF24.RF_SETUP, NRF24.RF_DR_2MBPS | self.power)
+            self.write_register(Register.RF_SETUP,
+                BitRate.RF_DR_2MBPS | self.power)
         
     def end(self):
         if self.spidev:
@@ -270,10 +268,10 @@ class NRF24:
     # Receive structured payload: device, port, content
     def recv(self, timeout_secs = 0.0):
         # set receive mode
-        self.ce(NRF24.LOW)
-        self.write_register(NRF24.CONFIG,
-            _BV(NRF24.EN_CRC) | _BV(NRF24.CRCO) | _BV(NRF24.PWR_UP) | _BV(NRF24.PRIM_RX))
-        self.ce(NRF24.HIGH)
+        self.ce(LOW)
+        self.write_register(Register.CONFIG,
+            _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) | _BV(CONFIG.PWR_UP) | _BV(CONFIG.PRIM_RX))
+        self.ce(HIGH)
         # wait for the radio to come up (130us actually only needed)
         time.sleep(130 / 1000000.0)
         # wait for payload reception
@@ -282,16 +280,15 @@ class NRF24:
             if timeout_secs == 0.0 or time.time() - now > timeout_secs:
                 return None
             time.sleep(0.001)
-        self.write_register(NRF24.STATUS, _BV(NRF24.RX_DR))
+        self.write_register(Register.STATUS, _BV(STATUS.RX_DR))
         # read payload size
         count = self.get_payload_size()
-        print 'recv() -> count = %d' % count
         if count > NRF24.MAX_PAYLOAD_SIZE:
             self.flush_rx()
             return None
         # read payload
-        txbuffer = [NRF24.NOP] * (count + 1)
-        txbuffer[0] = NRF24.R_RX_PAYLOAD
+        txbuffer = [Command.NOP] * (count + 1)
+        txbuffer[0] = Command.R_RX_PAYLOAD
         payload = self.spidev.xfer2(txbuffer)
         self.flush_rx()
         return Payload(payload)
@@ -299,35 +296,35 @@ class NRF24:
     def send(self, dest, port, content):
         # set transmit mode
         address = [(self.network >> 8) & 0xFF, self.network & 0xFF, dest]
-        self.write_register(NRF24.TX_ADDR, address)
-        self.write_register(NRF24.CONFIG,
-            _BV(NRF24.EN_CRC) | _BV(NRF24.CRC0) | _BV(NRF24.PWR_UP))
-        self.ce(NRF24.HIGH)
+        self.write_register(Register.TX_ADDR, address)
+        self.write_register(Register.CONFIG,
+            _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRC0) | _BV(CONFIG.PWR_UP))
+        self.ce(HIGH)
         # wait for the radio to come up (130us actually only needed)
         time.sleep(130 / 1000000.0)
         # Write command, device, port, content
         if dest == NRF24.BROADCAST:
-            command = NRF24.W_TX_PAYLOAD_NO_ACK
+            command = Command.W_TX_PAYLOAD_NO_ACK
         else:
-            command = NRF24.W_TX_PAYLOAD
+            command = Command.W_TX_PAYLOAD
         txbuffer = [command, self.device, port]
         txbuffer += content
         self.spidev.xfer2(txbuffer)
         # Check auto acknowledge
         if dest != NRF24.BROADCAST:
-            self.write_register(NRF24.RX_ADDR_P0, address)
-            self.write_register(NRF24.EN_RXADDR,
-                _BV(NRF24.ERX_P2) | _BV(NRF24.ERX_P1) | _BV(NRF24.ERX_P0))
+            self.write_register(Register.RX_ADDR_P0, address)
+            self.write_register(Register.EN_RXADDR,
+                _BV(EN_RXADDR.ERX_P2) | _BV(EN_RXADDR.ERX_P1) | _BV(EN_RXADDR.ERX_P0))
         # Wait for transmission
         #TODO timeout???
-        while not (self.get_status() & (_BV(NRF24.TX_DS) | _BV(NRF24.MAX_RT))):
+        while not (self.get_status() & (_BV(STATUS.TX_DS) | _BV(STATUS.MAX_RT))):
             time.sleep(0.001)
-        data_sent = self.get_status() & _BV(NRF24.TX_DS)
+        data_sent = self.get_status() & _BV(STATUS.TX_DS)
 
         # Check for auto ack pipe disable
         if dest == NRF24.BROADCAST:
-            self.write_register(NRF24.EN_RXADDR,
-                _BV(NRF24.ERX_P2) | _BV(NRF24.ERX_P1))
+            self.write_register(Register.EN_RXADDR,
+                _BV(EN_RXADDR.ERX_P2) | _BV(EN_RXADDR.ERX_P1))
 
         #TODO
         # Reset status bits
@@ -339,78 +336,50 @@ class NRF24:
 
     def powerDown(self):
         time.sleep(32 / 1000.0)
-        self.ce(NRF24.LOW)
-        self.write_register(NRF24.CONFIG,
-            _BV(NRF24.EN_CRC) | _BV(NRF24.CRCO))
+        self.ce(LOW)
+        self.write_register(Register.CONFIG,
+            _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO))
 
     def powerUp(self):
-        self.ce(NRF24.LOW)
-        self.write_register(NRF24.CONFIG,
-            _BV(NRF24.EN_CRC) | _BV(NRF24.CRCO) | _BV(NRF24.PWR_UP))
+        self.ce(LOW)
+        self.write_register(Register.CONFIG,
+            _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) | _BV(CONFIG.PWR_UP))
         time.sleep(3 / 1000.0)
 
-        self.write_register(NRF24.STATUS,
-            _BV(NRF24.RX_DR) | _BV(NRF24.TX_DS) | _BV(NRF24.MAX_RT))
+        self.write_register(Register.STATUS,
+            _BV(STATUS.RX_DR) | _BV(STATUS.TX_DS) | _BV(STATUS.MAX_RT))
         self.flush_tx()
         self.flush_rx()
 
-    def testCarrier(self):
-        return self.read_register(NRF24.CD) & 1
-
     def testRPD(self):
-        return self.read_register(NRF24.RPD) & 1
+        return self.read_register(Register.RPD) & 1
     
     # Implementation methods
     #========================
     def available(self):
-        if self.get_fifo_status() & _BV(NRF24.RX_EMPTY):
+        if self.get_fifo_status() & _BV(FIFO_STATUS.RX_EMPTY):
             return False
         if self.get_payload_size() <= NRF24.MAX_PAYLOAD_SIZE:
             return True
         self.flush_rx()
         return False
 
-#        status = self.get_status()
-#        result = False
-#
-#        # Sometimes the radio specifies that there is data in one pipe but
-#        # doesn't set the RX flag...
-#        if status & _BV(NRF24.RX_DR) or (status & 0b00001110 != 0b00001110):
-#            result = True
-#            # If the caller wants the pipe number, include that
-#            if len(pipe_num) >= 1:
-#                pipe_num[0] = (status >> NRF24.RX_P_NO) & 0b00000111
-#
-#                # Clear the status bit
-#
-#                # ??? Should this REALLY be cleared now?  Or wait until we
-#                # actually READ the payload?
-#        self.write_register(NRF24.STATUS, _BV(NRF24.RX_DR))
-#
-#        # Handle ack payload receipt
-#        if status & _BV(NRF24.TX_DS):
-#            self.write_register(NRF24.STATUS, _BV(NRF24.TX_DS))
-#
-#        return result
-
     def ce(self, level):
-        if level == NRF24.HIGH:
+        if level == HIGH:
             GPIO.output(self.ce_pin, GPIO.HIGH)
         else:
             GPIO.output(self.ce_pin, GPIO.LOW)
         return
 
     def get_fifo_status(self):
-        return self.read_register(NRF24.FIFO_STATUS)
-
-    #TODO refactor xfer2 with generic read method...
+        return self.read_register(Register.FIFO_STATUS)
 
     def get_payload_size(self):
-        return self.spidev.xfer2([NRF24.R_RX_PL_WID, 0])[1]
+        return self.spidev.xfer2([Command.R_RX_PL_WID, 0])[1]
 
     def read_register(self, reg, blen=1):
-        buf = [NRF24.R_REGISTER | (NRF24.REGISTER_MASK & reg)]
-        buf += [NRF24.NOP] * max(1, blen)
+        buf = [Command.R_REGISTER | (Command.REGISTER_MASK & reg)]
+        buf += [Command.NOP] * max(1, blen)
 
         resp = self.spidev.xfer2(buf)
         if blen == 1:
@@ -419,7 +388,7 @@ class NRF24:
         return resp[1:]
 
     def write_register(self, reg, value, length=-1):
-        buf = [NRF24.W_REGISTER | (NRF24.REGISTER_MASK & reg)]
+        buf = [Command.W_REGISTER | (Command.REGISTER_MASK & reg)]
 
         if isinstance(value, (int, long)):
             if length < 0:
@@ -445,65 +414,11 @@ class NRF24:
         return self.spidev.xfer2(buf)[0]
 
     def flush_rx(self):
-        return self.spidev.xfer2([NRF24.FLUSH_RX])[0]
+        return self.spidev.xfer2([Command.FLUSH_RX])[0]
 
     def flush_tx(self):
-        return self.spidev.xfer2([NRF24.FLUSH_TX])[0]
+        return self.spidev.xfer2([Command.FLUSH_TX])[0]
 
     def get_status(self):
-        return self.spidev.xfer2([NRF24.NOP])[0]
+        return self.spidev.xfer2([Command.NOP])[0]
 
-    # Debugging methods
-    #===================
-    def print_single_status_line(self, name, value):
-        print("{0:<16}= {1}".format(name, value))
-
-    def print_status(self, status):
-        status_str = "0x{0:02x} RX_DR={1:x} TX_DS={2:x} MAX_RT={3:x} RX_P_NO={4:x} TX_FULL={5:x}".format(
-            status,
-            1 if status & _BV(NRF24.RX_DR) else 0,
-            1 if status & _BV(NRF24.TX_DS) else 0,
-            1 if status & _BV(NRF24.MAX_RT) else 0,
-            ((status >> NRF24.RX_P_NO) & int("111", 2)),
-            1 if status & _BV(NRF24.TX_FULL) else 0)
-
-        self.print_single_status_line("STATUS", status_str)
-
-    def print_byte_register(self, name, reg, qty=1):
-        registers = ["0x{:0>2x}".format(self.read_register(reg+r)) for r in range(0, qty)]
-        self.print_single_status_line(name, " ".join(registers))
-
-    def print_address_register(self, name, reg, qty=1):
-        address_registers = ["0x{4:>2x}{3:>2x}{2:>2x}{1:>2x}{0:>2x}".format(
-            *self.read_register(reg+r, 5))
-            for r in range(0, qty)]
-
-        self.print_single_status_line(name, " ".join(address_registers))
-
-    def printDetails(self):
-        self.print_status(self.get_status())
-        #self.print_address_register("RX_ADDR_P0-1", NRF24.RX_ADDR_P0, 2)
-        #self.print_byte_register("RX_ADDR_P2-5", NRF24.RX_ADDR_P2, 4)
-        #self.print_address_register("TX_ADDR", NRF24.TX_ADDR)
-
-        self.print_byte_register("RX_PW_P0-6", NRF24.RX_PW_P0, 6)
-        self.print_byte_register("EN_AA", NRF24.EN_AA)
-        self.print_byte_register("EN_RXADDR", NRF24.EN_RXADDR)
-        self.print_byte_register("RF_CH", NRF24.RF_CH)
-        self.print_byte_register("RF_SETUP", NRF24.RF_SETUP)
-        self.print_byte_register("CONFIG", NRF24.CONFIG)
-        self.print_byte_register("DYNPD/FEATURE", NRF24.DYNPD, 2)
-
-        self.print_single_status_line("PA Power", NRF24.pa_dbm_e_str_P[self.getPALevel()])
-
-    def getPALevel(self):
-        power = self.read_register(NRF24.RF_SETUP) & (_BV(NRF24.RF_PWR_LOW) | _BV(NRF24.RF_PWR_HIGH))
-
-        if power == (_BV(NRF24.RF_PWR_LOW) | _BV(NRF24.RF_PWR_HIGH)):
-            return NRF24.PA_MAX
-        elif power == _BV(NRF24.RF_PWR_HIGH):
-            return NRF24.PA_HIGH
-        elif power == _BV(NRF24.RF_PWR_LOW):
-            return NRF24.PA_LOW
-        else:
-            return NRF24.PA_MIN
