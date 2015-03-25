@@ -191,7 +191,7 @@ class NRF24:
     def __init__(self, network, device):
         self.set_channel(64)
         self.power = PALevel.RF_PWR_0DBM
-    	self.set_address(network, device)
+        self.set_address(network, device)
         self.spidev = None
         GPIO.setmode(GPIO.BCM)
 
@@ -277,7 +277,7 @@ class NRF24:
         # wait for payload reception
         now = time.time()
         while not self.available():
-            if timeout_secs == 0.0 or time.time() - now > timeout_secs:
+            if timeout_secs != 0.0 and time.time() - now > timeout_secs:
                 return None
             time.sleep(0.001)
         self.write_register(Register.STATUS, _BV(STATUS.RX_DR))
