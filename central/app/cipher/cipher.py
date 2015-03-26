@@ -11,7 +11,7 @@ class XTEA:
     def generate_key():
         key = []
         for i in range(4):
-            key[i] = random.getrandbits(32)
+            key.append(random.getrandbits(32))
         return key
 
     def __init__(self, rounds = DEFAULT_ROUNDS):

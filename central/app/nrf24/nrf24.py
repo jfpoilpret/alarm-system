@@ -297,8 +297,9 @@ class NRF24:
         # set transmit mode
         address = [(self.network >> 8) & 0xFF, self.network & 0xFF, dest]
         self.write_register(Register.TX_ADDR, address)
+        self.ce(LOW)
         self.write_register(Register.CONFIG,
-            _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRC0) | _BV(CONFIG.PWR_UP))
+            _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) | _BV(CONFIG.PWR_UP))
         self.ce(HIGH)
         # wait for the radio to come up (130us actually only needed)
         time.sleep(130 / 1000000.0)
@@ -317,7 +318,10 @@ class NRF24:
                 _BV(EN_RXADDR.ERX_P2) | _BV(EN_RXADDR.ERX_P1) | _BV(EN_RXADDR.ERX_P0))
         # Wait for transmission
         #TODO timeout???
-        while not (self.get_status() & (_BV(STATUS.TX_DS) | _BV(STATUS.MAX_RT))):
+        while True:
+            status = self.get_status()
+            if status & (_BV(STATUS.TX_DS) | _BV(STATUS.MAX_RT)):
+                break
             time.sleep(0.001)
         data_sent = self.get_status() & _BV(STATUS.TX_DS)
 

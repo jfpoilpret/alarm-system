@@ -20,16 +20,19 @@ CODE = '123456'
 
 #TODO refactor all conversion methods into a common place
 def byte(val):
-    return val & 0xFF
+    return int(val & 0xFF)
 
 def to_int(val):
-    return (byte(val[0]) << 8) + byte(val[1])
+    return (byte(val[1]) << 8) + byte(val[0])
+    #return (byte(val[0]) << 8) + byte(val[1])
 
 def to_long(val):
-    return (byte(val[0]) << 24) + (byte(val[1]) << 16) + (byte(val[2]) << 8) + byte(val[3])
+    return (byte(val[3]) << 24L) + (byte(val[2]) << 16L) + (byte(val[1]) << 8L) + byte(val[0])
+    #return (byte(val[0]) << 24) + (byte(val[1]) << 16) + (byte(val[2]) << 8) + byte(val[3])
 
 def from_long(val):
-    return [byte(val >> 24), byte(val >> 16), byte(val >> 8), byte (val)]
+    return [byte(val), byte(val >> 8), byte(val >> 16), byte (val >> 24)]
+    #return [byte(val >> 24), byte(val >> 16), byte(val >> 8), byte (val)]
     
 def convert_key(key):
     key2 = []
@@ -48,7 +51,7 @@ class Device:
 keys = {}
 
 # Current alarm status
-locked = True
+locked = 1
 
 if __name__ == '__main__':
     print "Alarm System Central Prototype..."
@@ -74,7 +77,7 @@ if __name__ == '__main__':
             if not device:
                 device = Device()
                 keys[device_id] = device
-            print "Source %02X, port %02X" % (device, port)
+            print "Source %02x, port %02x" % (device_id, port)
 
             # Manage received message based on its type (port)
             if port == MessageType.PING_SERVER:
@@ -85,20 +88,20 @@ if __name__ == '__main__':
                     key = XTEA.generate_key()
                     device.cipher.set_key(key)
                     device.next_key_time = now + PERIOD_REFRESH_KEY_SECS
-                    payload = [locked]
                     payload += convert_key(key)
+                    print 'Generated new key, payload = %s' % payload
                 nrf.send(device_id, port, payload)
             elif port == MessageType.VOLTAGE_LEVEL:
                 device.latest_voltage_level = to_int(content)
-                print "Source %02X, voltage = %d mV" % (device, device.latest_voltage_level)
+                print "Source %02x, voltage = %d mV" % (device_id, device.latest_voltage_level)
             elif port in [MessageType.LOCK_CODE, MessageType.UNLOCK_CODE]:
                 #TODO decipher
                 code = device.cipher.decipher([to_long(content[0:4]), to_long(content[4:8])])
                 code = from_long(code[0]) + from_long(code[1])
-                print "Source %02X, code = %s" % (device, code)
+                print "Source %02x, code = %s" % (device_id, code)
                 #TODO convert to string and compare to CODE
                 # Send current lock status
                 nrf.send(device_id, port, [locked])
             else:
-                print "Source %02X, unknown port %02X!" % (device, port)
+                print "Source %02x, unknown port %02x!" % (device_id, port)
 
