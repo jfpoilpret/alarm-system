@@ -8,6 +8,7 @@
 #ifndef DEBUGLED_HH_
 #define DEBUGLED_HH_
 
+#ifdef DEBUGLED_ENABLED
 #include <Cosa/OutputPin.hh>
 
 extern OutputPin ledOutput;
@@ -22,6 +23,6 @@ void debug(uint8_t blinks = 1, uint16_t us = 200)
 		DELAY(us);
 	}
 }
-
+#endif
 
 #endif /* DEBUGLED_HH_ */

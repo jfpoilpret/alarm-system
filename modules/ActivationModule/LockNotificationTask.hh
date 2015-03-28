@@ -31,9 +31,26 @@ public:
 			keypad->input(input);
 			bool lock = (keypad->validate() == '*');
 			keypad->clear();
-			bool status = _transmitter.sendCodeAndGetLockStatus(input, lock);
+			LockStatus status = _transmitter.sendCodeAndGetLockStatus(input, lock);
 			// Dispatch status to LedPanel
-			_ledPanel.updateStatus(status);
+			//TODO refactor this code (same in PingTask.hh)
+			switch (status)
+			{
+			case UNKNOWN:
+				_ledPanel.setLocked(false);
+				_ledPanel.setUnlocked(false);
+				break;
+
+			case LOCKED:
+				_ledPanel.setLocked(true);
+				_ledPanel.setUnlocked(false);
+				break;
+
+			case UNLOCKED:
+				_ledPanel.setLocked(false);
+				_ledPanel.setUnlocked(true);
+				break;
+			}
 		}
 	}
 

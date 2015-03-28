@@ -24,9 +24,25 @@ public:
 	virtual void run()
 	{
 		// Get lock status from server
-		bool status = _transmitter.pingServerAndGetLockStatus();
+		LockStatus status = _transmitter.pingServerAndGetLockStatus();
 		// Dispatch status to LedPanel
-		_ledPanel.updateStatus(status);
+		switch (status)
+		{
+		case UNKNOWN:
+			_ledPanel.setLocked(false);
+			_ledPanel.setUnlocked(false);
+			break;
+
+		case LOCKED:
+			_ledPanel.setLocked(true);
+			_ledPanel.setUnlocked(false);
+			break;
+
+		case UNLOCKED:
+			_ledPanel.setLocked(false);
+			_ledPanel.setUnlocked(true);
+			break;
+		}
 	}
 
 private:

@@ -16,10 +16,13 @@ public:
 	LedPanel()
 		:_locked(LED_LOCKED, 0), _unlocked(LED_UNLOCKED, 0) {}
 
-	void updateStatus(bool lock)
+	void setLocked(bool on)
 	{
-		_locked.set(lock);
-		_unlocked.set(!lock);
+		_locked.set(on);
+	}
+	void setUnlocked(bool on)
+	{
+		_unlocked.set(on);
 	}
 
 private:

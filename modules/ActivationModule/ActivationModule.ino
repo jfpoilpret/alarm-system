@@ -11,7 +11,6 @@
 #include "LockNotificationTask.hh"
 
 #include "RTCAdapter.hh"
-#include "DebugLed.hh"
 
 //TODO Externalize these constants?
 const uint16_t NETWORK = 0xC05A;
@@ -42,9 +41,6 @@ static VoltageNotificationTask voltageTask(VOLTAGE_PERIOD_SEC, transmitter);
 // - LED low powering	  32ms
 // - WDTAlarm			1024ms
 static const uint16_t WATCHDOG_PERIOD = 32;
-
-// Debug LED declaration
-OutputPin ledOutput(LED_DEBUG);
 
 // Get the device ID from DIP switch pins
 uint8_t readConfigId()
@@ -106,9 +102,6 @@ void setup()
 void loop()
 {
 	Watchdog::await();
-
-	// Add small debug blink to show the loop is running
-//	debug(1);
 
 	Event event;
 	while (Event::queue.dequeue(&event))
