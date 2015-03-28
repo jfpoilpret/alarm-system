@@ -101,4 +101,4 @@ if __name__ == '__main__':
                 nrf.send(device_id, port, [locked])
             else:
                 print "Source %02x, unknown port %02x!" % (device_id, port)
-
+        print "Processing time = %f seconds" % (time.clock() - now)
