@@ -11,15 +11,11 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# Python port of Maniacbug NRF24L01 library
-# Author: Joao Paulo Barraca <jpbarraca@gmail.com>
+# Python port of Cosa NRF24L01 library for Raspberry Pi
+# Author: Jean-Francois Poilpret <jfpoilpret@gmail.com>
 #
-# BeagleBoneBlack and Raspberry Pi use different GPIO access methods.
-# Select the most appropriate for you by uncommenting one of the
-# two imports.
 
 try:
-    # For Raspberry Pi
     import RPi.GPIO as GPIO
 except ImportError:
     raise ImportError('RPi.GPIO module not found.')
@@ -30,6 +26,7 @@ import time
 def _BV(x):
     return 1 << x
 
+# Type returned by NRF24.recv()
 class Payload:
     def __init__(self, payload):
         # NB payload is:
@@ -42,6 +39,7 @@ class Payload:
         self.port = payload[2]
         self.content = payload[3:]
 
+# Internal classes defining NRF24L01+ specific constants
 class Register:
     CONFIG = 0x00
     EN_AA = 0x01
@@ -178,6 +176,12 @@ class FEATURE:
     EN_ACK_PAY = 1
     EN_DYN_ACK = 0
 
+class STATE:
+    POWER_DOWN_STATE = 0
+    STANDBY_STATE = 1
+    RX_STATE = 2
+    TX_STATE = 3
+
 # Signal Mnemonics
 LOW = 0
 HIGH = 1
@@ -185,11 +189,18 @@ HIGH = 1
 class NRF24:
     BROADCAST = 0
 
+    DEFAULT_CHANNEL = 64
     MAX_CHANNEL = 127
-    MAX_PAYLOAD_SIZE = 32
+    DEVICE_PAYLOAD_MAX = 32
+    PAYLOAD_MAX = DEVICE_PAYLOAD_MAX - 2
 
     def __init__(self, network, device):
-        self.set_channel(64)
+        self.state = STATE.POWER_DOWN_STATE
+        self.dest = 0
+        self.trans = 0
+        self.retrans = 0
+        self.drops = 0
+        self.set_channel(NRF24.DEFAULT_CHANNEL)
         self.power = PALevel.RF_PWR_0DBM
         self.set_address(network, device)
         self.spidev = None
@@ -210,6 +221,15 @@ class NRF24:
             
     def get_channel(self):
         return self.channel
+
+    def get_trans(self):
+        return self.trans
+            
+    def get_retrans(self):
+        return self.retrans
+            
+    def get_drops(self):
+        return self.drops
             
     def begin(self, major, minor, ce_pin, autoAck = True):
         # Initialize SPI bus
@@ -219,7 +239,8 @@ class NRF24:
         GPIO.setup(self.ce_pin, GPIO.OUT)
         time.sleep(5 / 1000000.0)
 
-        # Setup hardware features, channel, bitrate, retransmission, dynmic payload
+        # Setup hardware features:
+        # channel, bitrate, retransmission, dynamic payload
         self.write_register(Register.FEATURE,
             _BV(FEATURE.EN_DPL) | _BV(FEATURE.EN_ACK_PAY) | _BV(FEATURE.EN_DYN_ACK))
         self.write_register(Register.RF_CH, self.channel)
@@ -230,9 +251,9 @@ class NRF24:
         self.write_register(Register.DYNPD, DYNPD.DPL_PA)
 
         # Setup hardware receive pipes address: network (16b), device (8b)
-#       P0: auto-acknowledge (see set_transmit_mode)
-#       P1: node address<network:device> with auto-acknowledge
-#       P2: broadcast<network:0>
+        #  P0: auto-acknowledge (see set_transmit_mode)
+        #  P1: node address<network:device> with auto-acknowledge
+        #  P2: broadcast<network:0>
         self.write_register(Register.SETUP_AW, SETUP_AW.AW_3BYTES)
         address = [(self.network >> 8) & 0xFF, self.network & 0xFF, self.device]
         self.write_register(Register.RX_ADDR_P1, address)
@@ -262,28 +283,31 @@ class NRF24:
         
     def end(self):
         if self.spidev:
+            self.standby()
             self.spidev.close()
             self.spidev = None
 
     # Receive structured payload: device, port, content
     def recv(self, timeout_secs = 0.0):
-        # set receive mode
-        self.ce(LOW)
-        self.write_register(Register.CONFIG,
-            _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) | _BV(CONFIG.PWR_UP) | _BV(CONFIG.PRIM_RX))
-        self.ce(HIGH)
-        # wait for the radio to come up (130us actually only needed)
-        time.sleep(130 / 1000000.0)
+        # run in receiver mode
+        self.set_receiver_mode()
         # wait for payload reception
         now = time.time()
         while not self.available():
             if timeout_secs != 0.0 and time.time() - now > timeout_secs:
                 return None
             time.sleep(0.001)
+
+        status = self.get_status()
+        if ((status & STATUS.RX_P_NO_MASK) >> STATUS.RX_P_NO) == 1:
+            self.dest = self.device
+        else:
+            self.dest = NRF24.BROADCAST
+
         self.write_register(Register.STATUS, _BV(STATUS.RX_DR))
         # read payload size
         count = self.get_payload_size()
-        if count > NRF24.MAX_PAYLOAD_SIZE:
+        if count > NRF24.DEVICE_PAYLOAD_MAX:
             self.flush_rx()
             return None
         # read payload
@@ -293,16 +317,19 @@ class NRF24:
         self.flush_rx()
         return Payload(payload)
 
+    def is_broadcast(self):
+        return self.dest == NRF24.BROADCAST
+
+    def broadcast(self, port, content):
+        return self.send(NRF24.BROADCAST, port, content)
+
     def send(self, dest, port, content):
-        # set transmit mode
-        address = [(self.network >> 8) & 0xFF, self.network & 0xFF, dest]
-        self.write_register(Register.TX_ADDR, address)
-        self.ce(LOW)
-        self.write_register(Register.CONFIG,
-            _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) | _BV(CONFIG.PWR_UP))
-        self.ce(HIGH)
-        # wait for the radio to come up (130us actually only needed)
-        time.sleep(130 / 1000000.0)
+        # sanity check the payload size
+        if (not content) or (len(content) > NRF24.PAYLOAD_MAX):
+            return -1
+        # setting transmit destination
+        self.set_transmit_mode(dest)
+
         # Write command, device, port, content
         if dest == NRF24.BROADCAST:
             command = Command.W_TX_PAYLOAD_NO_ACK
@@ -311,13 +338,17 @@ class NRF24:
         txbuffer = [command, self.device, port]
         txbuffer += content
         self.spidev.xfer2(txbuffer)
+        self.trans += 1
+
         # Check auto acknowledge
         if dest != NRF24.BROADCAST:
+            address = [(self.network >> 8) & 0xFF, self.network & 0xFF, dest]
             self.write_register(Register.RX_ADDR_P0, address)
             self.write_register(Register.EN_RXADDR,
-                _BV(EN_RXADDR.ERX_P2) | _BV(EN_RXADDR.ERX_P1) | _BV(EN_RXADDR.ERX_P0))
+                _BV(EN_RXADDR.ERX_P2) | _BV(EN_RXADDR.ERX_P1) |
+                _BV(EN_RXADDR.ERX_P0))
+
         # Wait for transmission
-        #TODO timeout???
         while True:
             status = self.get_status()
             if status & (_BV(STATUS.TX_DS) | _BV(STATUS.MAX_RT)):
@@ -330,25 +361,39 @@ class NRF24:
             self.write_register(Register.EN_RXADDR,
                 _BV(EN_RXADDR.ERX_P2) | _BV(EN_RXADDR.ERX_P1))
 
-        #TODO
         # Reset status bits
+        self.write_register(Register.STATUS,
+            _BV(STATUS.MAX_RT) | _BV(STATUS.TX_DS))
+        # Read retransmission counter
+        observe = self.read_register(Register.OBSERVE_TX)
+        self.retrans += observe & 0x0F
 
         if data_sent:
             return len(content)
         self.flush_tx()
+        self.drops += 1
         return -2
+
+    def standby(self):
+        self.ce(LOW)
+        time.sleep(10 / 1000.0)
+        self.state = STATE.STANDBY_STATE
 
     def powerDown(self):
         time.sleep(32 / 1000.0)
         self.ce(LOW)
         self.write_register(Register.CONFIG,
             _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO))
+        self.state = STATE.POWER_DOWN_STATE
 
     def powerUp(self):
+        if self.state != STATE.POWER_DOWN_STATE:
+            return
         self.ce(LOW)
         self.write_register(Register.CONFIG,
             _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) | _BV(CONFIG.PWR_UP))
         time.sleep(3 / 1000.0)
+        self.state = STATE.STANDBY_STATE
 
         self.write_register(Register.STATUS,
             _BV(STATUS.RX_DR) | _BV(STATUS.TX_DS) | _BV(STATUS.MAX_RT))
@@ -363,10 +408,40 @@ class NRF24:
     def available(self):
         if self.get_fifo_status() & _BV(FIFO_STATUS.RX_EMPTY):
             return False
-        if self.get_payload_size() <= NRF24.MAX_PAYLOAD_SIZE:
+        if self.get_payload_size() <= NRF24.DEVICE_PAYLOAD_MAX:
             return True
         self.flush_rx()
         return False
+
+    def set_receiver_mode(self):
+        if self.state == STATE.RX_STATE:
+            return
+        #self.ce(LOW)
+        self.write_register(Register.CONFIG,
+            _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) |
+            _BV(CONFIG.PWR_UP) | _BV(CONFIG.PRIM_RX))
+        self.ce(HIGH)
+        if self.state == STATE.STANDBY_STATE:
+            # wait for the radio to come up (130us actually only needed)
+            time.sleep(130 / 1000000.0)
+        self.state = STATE.RX_STATE
+
+    def set_transmit_mode(self, dest):
+        # setup primary transmit address
+        address = [(self.network >> 8) & 0xFF, self.network & 0xFF, dest]
+        self.write_register(Register.TX_ADDR, address)
+
+        # trigger the transmitter mode
+        if self.state != STATE.TX_STATE:
+            self.ce(LOW)
+            self.write_register(Register.CONFIG,
+                _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) | _BV(CONFIG.PWR_UP))
+            self.ce(HIGH)
+
+        # wait for the transmitter to become active
+        if self.state == STATE.STANDBY_STATE:
+            time.sleep(130 / 1000000.0)
+        self.state = STATE.TX_STATE
 
     def ce(self, level):
         if level == HIGH:

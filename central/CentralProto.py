@@ -46,6 +46,9 @@ if __name__ == '__main__':
     nrf.begin(0, 0, CE_PIN)
     print "NRF24 instance started..."
     while True:
+        # Print some RF status
+        print 'NRF24 trans = %d, retrans = %d, drops = %d' % (
+            nrf.get_trans(), nrf.get_retrans(), nrf.get_drops())
         # Wait forever for remote modules calls
         #FIXME we should limit the timeout in order to frequently check that all known devices
         # are pinging as expected...
