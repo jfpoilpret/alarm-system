@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import struct
 import time
 
 from app.nrf24 import NRF24
@@ -18,27 +19,12 @@ PERIOD_REFRESH_KEY_SECS = 120.0
 
 CODE = '123456'
 
-#TODO refactor all conversion methods into a common place
-def byte(val):
-    return int(val & 0xFF)
+# Utility functions to pack/unpack payload
+def ppack(format, *args):
+    return [ord(x) for x in struct.pack(format, *args)]
 
-def to_int(val):
-    return (byte(val[1]) << 8) + byte(val[0])
-    #return (byte(val[0]) << 8) + byte(val[1])
-
-def to_long(val):
-    return (byte(val[3]) << 24L) + (byte(val[2]) << 16L) + (byte(val[1]) << 8L) + byte(val[0])
-    #return (byte(val[0]) << 24) + (byte(val[1]) << 16) + (byte(val[2]) << 8) + byte(val[3])
-
-def from_long(val):
-    return [byte(val), byte(val >> 8), byte(val >> 16), byte (val >> 24)]
-    #return [byte(val >> 24), byte(val >> 16), byte(val >> 8), byte (val)]
-    
-def convert_key(key):
-    key2 = []
-    for i in key:
-        key2 += from_long(i)
-    return key2
+def punpack(format, input):
+    return struct.unpack(format, ''.join([chr(x) for x in input]))
 
 class Device:
     def __init__(self):
@@ -71,6 +57,7 @@ if __name__ == '__main__':
             device_id = payload.device
             port = payload.port
             content = payload.content
+            #content = bytearray(payload.content)
 
             # Add the device if first time
             device = keys.get(device_id)
@@ -88,18 +75,24 @@ if __name__ == '__main__':
                     key = XTEA.generate_key()
                     device.cipher.set_key(key)
                     device.next_key_time = now + PERIOD_REFRESH_KEY_SECS
-                    payload += convert_key(key)
+                    payload += ppack('<4L', key[0], key[1], key[2], key[3])
                     print 'Generated new key, payload = %s' % payload
                 nrf.send(device_id, port, payload)
             elif port == MessageType.VOLTAGE_LEVEL:
-                device.latest_voltage_level = to_int(content)
+                device.latest_voltage_level = punpack('<H', content)[0]
                 print "Source %02x, voltage = %d mV" % (device_id, device.latest_voltage_level)
             elif port in [MessageType.LOCK_CODE, MessageType.UNLOCK_CODE]:
-                #TODO decipher
-                code = device.cipher.decipher([to_long(content[0:4]), to_long(content[4:8])])
-                code = from_long(code[0]) + from_long(code[1])
+                code = punpack('<2L', content)
+                code = device.cipher.decipher(code)
+                code = struct.pack('2L', code[0], code[1])
+                code = struct.pack('6s', code[0:6])
                 print "Source %02x, code = %s" % (device_id, code)
-                #TODO convert to string and compare to CODE
+                # compare to CODE and update locked if needed
+                if CODE == code:
+                    if port == MessageType.LOCK_CODE:
+                        locked = 1
+                    else:
+                        locked = 0
                 # Send current lock status
                 nrf.send(device_id, port, [locked])
             else:

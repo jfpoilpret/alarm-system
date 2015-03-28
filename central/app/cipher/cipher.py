@@ -27,25 +27,27 @@ class XTEA:
         v1 = v[1]
         sumval = 0
         delta = XTEA.KEY_SCHEDULE
+        MASK = 0xFFFFFFFFL
         for i in range(self.rounds):
-            v0 += (((v1 << 4) ^ (v1 >> 5)) + v1) ^ (sumval + self.key[sumval & 3])
-            sumval += delta
-            v1 += (((v0 << 4) ^ (v0 >> 5)) + v0) ^ (sumval + self.key[(sumval >> 11) & 3])
-        v[0] = v0
-        v[1] = v1
-        return v
+            t = (((v1<<4) ^ (v1>>5)) + v1) ^ (sumval + self.key[sumval&3])
+            v0 = (v0 + t) & MASK
+            sumval = (sumval + delta) & MASK
+            t = (((v0<<4) ^ (v0>>5)) + v0) ^ (sumval + self.key[(sumval>>11)&3])
+            v1 = (v1 + t) & MASK
+        return [v0, v1]
 
     def decipher(self, v):
         v0 = v[0]
         v1 = v[1]
         delta = XTEA.KEY_SCHEDULE
         sumval = delta * self.rounds
+        MASK = 0xFFFFFFFFL
         for i in range(self.rounds):
-            v1 -= (((v0 << 4) ^ (v0 >> 5)) + v0) ^ (sumval + self.key[(sumval >> 11) & 3])
-            sumval -= delta
-            v0 -= (((v1 << 4) ^ (v1 >> 5)) + v1) ^ (sumval + self.key[sumval & 3])
-        v[0] = v0
-        v[1] = v1
-        return v
+            t = (((v0<<4) ^ (v0>>5)) + v0) ^ (sumval + self.key[(sumval>>11)&3])
+            v1 = (v1 - t) & MASK
+            sumval = (sumval - delta) & MASK
+            t = (((v1<<4) ^ (v1>>5)) + v1) ^ (sumval + self.key[sumval&3])
+            v0 = (v0 - t) & MASK
+        return [v0, v1]
 
 
