@@ -81,7 +81,8 @@ private:
 		ActivationTransmitter& _rf;
 	};
 
-	static const uint8_t RECV_TIMEOUT_MS = 5;
+//	static const uint8_t RECV_TIMEOUT_MS = 5;
+	static const uint8_t RECV_TIMEOUT_MS = 10;
 	const uint8_t _server;
 	XTEA _cipher;
 };
