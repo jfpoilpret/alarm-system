@@ -60,7 +60,6 @@ if __name__ == '__main__':
             device_id = payload.device
             port = payload.port
             content = payload.content
-            #content = bytearray(payload.content)
 
             # Add the device if first time
             device = keys.get(device_id)
@@ -76,11 +75,13 @@ if __name__ == '__main__':
                 # Check if need to generate and send new cipher key
                 if now >= device.next_key_time:
                     key = XTEA.generate_key()
-                    device.cipher.set_key(key)
-                    device.next_key_time = now + PERIOD_REFRESH_KEY_SECS
                     payload += ppack('<4L', key[0], key[1], key[2], key[3])
                     print 'Generated new key, payload = %s' % payload
-                nrf.send(device_id, port, payload)
+                    if nrf.send(device_id, port, payload) > 0:
+                        device.cipher.set_key(key)
+                        device.next_key_time = now + PERIOD_REFRESH_KEY_SECS
+                else:
+                    nrf.send(device_id, port, payload)
             elif port == MessageType.VOLTAGE_LEVEL:
                 device.latest_voltage_level = punpack('<H', content)[0]
                 print "Source %02x, voltage = %d mV" % (device_id, device.latest_voltage_level)
