@@ -17,7 +17,6 @@ class XTEA:
     def __init__(self, rounds = DEFAULT_ROUNDS):
         self.rounds = rounds
         self.key = [0L, 0L, 0L, 0L]
-        pass
 
     def set_key(self, key):
         self.key = key

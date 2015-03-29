@@ -242,12 +242,14 @@ class NRF24:
         # Setup hardware features:
         # channel, bitrate, retransmission, dynamic payload
         self.write_register(Register.FEATURE,
-            _BV(FEATURE.EN_DPL) | _BV(FEATURE.EN_ACK_PAY) | _BV(FEATURE.EN_DYN_ACK))
+            _BV(FEATURE.EN_DPL) |
+            _BV(FEATURE.EN_ACK_PAY) | _BV(FEATURE.EN_DYN_ACK))
         self.write_register(Register.RF_CH, self.channel)
         self.write_register(Register.RF_SETUP,
             BitRate.RF_DR_2MBPS | self.power)
         self.write_register(Register.SETUP_RETR,
-            (SETUP_RETR.DEFAULT_ARD << SETUP_RETR.ARD) | (SETUP_RETR.DEFAULT_ARC << SETUP_RETR.ARC))
+            (SETUP_RETR.DEFAULT_ARD << SETUP_RETR.ARD) |
+            (SETUP_RETR.DEFAULT_ARC << SETUP_RETR.ARC))
         self.write_register(Register.DYNPD, DYNPD.DPL_PA)
 
         # Setup hardware receive pipes address: network (16b), device (8b)
@@ -376,7 +378,7 @@ class NRF24:
 
     def standby(self):
         self.ce(LOW)
-        time.sleep(10 / 1000.0)
+        time.sleep(10 / 1000000.0)
         self.state = STATE.STANDBY_STATE
 
     def powerDown(self):

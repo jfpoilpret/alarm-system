@@ -39,6 +39,12 @@ keys = {}
 # Current alarm status
 locked = 1
 
+def send(nrf, device, port, payload):
+    now = time.time()
+    count = nrf.send(device, port, payload)
+    print "Send time = %.02f ms" % ((time.time() - now)*1000.0)
+    return count
+
 if __name__ == '__main__':
     print "Alarm System Central Prototype..."
     nrf = NRF24(NETWORK, SERVER_ID)
@@ -49,11 +55,11 @@ if __name__ == '__main__':
         # Print some RF status
         print 'NRF24 trans = %d, retrans = %d, drops = %d' % (
             nrf.get_trans(), nrf.get_retrans(), nrf.get_drops())
-        # Wait forever for remote modules calls
-        #FIXME we should limit the timeout in order to frequently check that all known devices
+        # Wait for remote modules calls
+        # we limit timeout in order to frequently check that all known devices
         # are pinging as expected...
-        payload = nrf.recv()
-        now = time.clock()
+        payload = nrf.recv(10.0)
+        now = time.time()
         # Have we received something?
         if payload:
             # Yes, find the originating device and port (message type)
@@ -66,7 +72,6 @@ if __name__ == '__main__':
             if not device:
                 device = Device()
                 keys[device_id] = device
-            print "Source %02x, port %02x" % (device_id, port)
 
             # Manage received message based on its type (port)
             if port == MessageType.PING_SERVER:
@@ -76,12 +81,14 @@ if __name__ == '__main__':
                 if now >= device.next_key_time:
                     key = XTEA.generate_key()
                     payload += ppack('<4L', key[0], key[1], key[2], key[3])
-                    print 'Generated new key, payload = %s' % payload
-                    if nrf.send(device_id, port, payload) > 0:
+                    if send(nrf, device_id, port, payload) > 0:
                         device.cipher.set_key(key)
                         device.next_key_time = now + PERIOD_REFRESH_KEY_SECS
+                    print "Source %02x, port %02x" % (device_id, port)
+                    print 'Generated new key, payload = %s' % payload
                 else:
-                    nrf.send(device_id, port, payload)
+                    send(nrf, device_id, port, payload)
+                    print "Source %02x, port %02x" % (device_id, port)
             elif port == MessageType.VOLTAGE_LEVEL:
                 device.latest_voltage_level = punpack('<H', content)[0]
                 print "Source %02x, voltage = %d mV" % (device_id, device.latest_voltage_level)
@@ -90,7 +97,6 @@ if __name__ == '__main__':
                 code = device.cipher.decipher(code)
                 code = struct.pack('2L', code[0], code[1])
                 code = struct.pack('6s', code[0:6])
-                print "Source %02x, code = %s" % (device_id, code)
                 # compare to CODE and update locked if needed
                 if CODE == code:
                     if port == MessageType.LOCK_CODE:
@@ -98,7 +104,9 @@ if __name__ == '__main__':
                     else:
                         locked = 0
                 # Send current lock status
-                nrf.send(device_id, port, [locked])
+                send(nrf, device_id, port, [locked])
+                print "Source %02x, code = %s" % (device_id, code)
             else:
                 print "Source %02x, unknown port %02x!" % (device_id, port)
-        print "Processing time = %f seconds" % (time.clock() - now)
+        print "Total time = %.02f ms" % ((time.time() - now)*1000.0)
+
