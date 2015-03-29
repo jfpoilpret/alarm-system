@@ -22,7 +22,7 @@ public:
 	static const size_t KEY_SIZE = 4 * 4;
 
 private:
-	static const uint8_t DEFAULT_ROUNDS = 64;
+	static const uint8_t DEFAULT_ROUNDS = 32;
 	static const uint32_t KEY_SCHEDULE = 0x9E3779B9;
 	const uint8_t _rounds;
 	uint32_t const _key[4];
