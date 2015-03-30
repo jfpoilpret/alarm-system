@@ -18,17 +18,17 @@ class XTEA:
         self.rounds = rounds
         self.xor1 = []
         self.xor2 = []
-        self.key = [0L, 0L, 0L, 0L]
 
     def set_key(self, key):
-        self.key = key
-        sumval = 0
         delta = XTEA.KEY_SCHEDULE
         MASK = 0xFFFFFFFFL
+        self.xor1 = []
+        self.xor2 = []
+        sumval = 0
         for i in range(self.rounds):
-            self.xor1.append(sumval + self.key[sumval&3])
+            self.xor1.append(sumval + key[sumval&3])
             sumval = (sumval + delta) & MASK
-            self.xor2.append(sumval + self.key[(sumval>>11)&3])
+            self.xor2.append(sumval + key[(sumval>>11)&3])
 
     def encipher(self, v):
         v0 = v[0]
@@ -46,9 +46,9 @@ class XTEA:
         v1 = v[1]
         MASK = 0xFFFFFFFFL
         for i in range(self.rounds):
-            t = (((v0<<4) ^ (v0>>5)) + v0) ^ self.xor2[i]
+            t = (((v0<<4) ^ (v0>>5)) + v0) ^ self.xor2[self.rounds - 1 - i]
             v1 = (v1 - t) & MASK
-            t = (((v1<<4) ^ (v1>>5)) + v1) ^ self.xor1[i]
+            t = (((v1<<4) ^ (v1>>5)) + v1) ^ self.xor1[self.rounds - 1 - i]
             v0 = (v0 - t) & MASK
         return [v0, v1]
 
