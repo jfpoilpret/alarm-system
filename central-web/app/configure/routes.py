@@ -1,13 +1,12 @@
 from flask import flash, redirect, render_template, url_for
 from flask_login import login_required
+from sqlalchemy import update
+
 from . import configure
 
-from .. import db
-from ..models import Configuration
-from .forms import ConfigForm, EditConfigForm
-from sqlalchemy import update
-from app.models import Device
-from app.configure.forms import DeviceForm
+from app import db
+from app.models import Configuration, Device
+from app.configure.forms import ConfigForm, EditConfigForm, DeviceForm
 
 @configure.route('/home')
 @login_required
