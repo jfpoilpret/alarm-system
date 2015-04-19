@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='auth/signin.css')}}">
+{% endblock %}
+
+{% block page_content %}
+  <div class="form-signin">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="form-heading">Sign In</h3>
+      </div>
+      <div class="panel-body">
+        {{ wtf.quick_form(signin, action = signinUrl, button_map = {'submit': 'primary'}) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='monitor/home.css')}}">
+{% endblock %}
+
+{% block page_content %}
+  <div class="monitor">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="form-heading">Current Configuration Status</h3>
+      </div>
+      <div class="panel-body">
+	      {% if configuration %}
+	        <h3>Current configuration '{{configuration.name}}'</h3>
+		    {% if configuration.active %}
+	        <h3>Active</h3>
+	        {% else %}
+	        <h3>Not Active</h3>
+            {% endif %}
+	      {% else %}
+	        <h3>No current configuration created yet!</h3>
+	      {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

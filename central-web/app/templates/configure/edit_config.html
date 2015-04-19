@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='configure/config.css')}}">
+{% endblock %}
+
+{% block page_content %}
+	<div class="form-config">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="form-heading">Edit Configuration '{{ config.name }}'</h3>
+			</div>
+			<div class="panel-body">
+				{{ wtf.quick_form(form, button_map = {'submit': 'primary'}) }}
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Name</th>
+							<th>Kind</th>
+							<th>Device ID</th>
+							<th>Voltage Threshold</th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for id, device in config.devices %}
+						<tr>
+							<td>
+								{# TODO add action links #}
+							</td>
+							<td class="device_name">
+								{{ device.name }}
+							</td>
+							<td class="device_kind">
+								{# TODO display label for kind, not kind code! #}
+								{{ device.kind }}
+							</td>
+							<td class="device_id">
+								{{ device_id }}
+							</td>
+							<td class="device_voltage">
+								{{ device.voltage_threshold }}
+							</td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+				{# TODO Add row for creating new device #}
+				<div class="btn-group">
+					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+						Add Device<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu">
+						<li><a href="#">Add Keypad Module</a></li>
+						<li><a href="#">Add Motion Detection Module</a></li>
+						<li><a href="#">Add Camera Module</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
