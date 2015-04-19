@@ -59,6 +59,10 @@ class Configuration(db.Model):
 # DEVICE
 #-------
 class Device(db.Model):
+    KIND_KEYPAD = 1
+    KIND_MOTION = 2
+    KIND_CAMERA = 3
+    
     __tablename__ = 'device'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False, unique=True, index=True)

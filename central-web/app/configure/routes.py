@@ -4,8 +4,9 @@ from sqlalchemy import update
 
 from app import db
 from app.models import Configuration, Device
-from app.configure.forms import ConfigForm, EditConfigForm, DeviceForm
+from app.configure.forms import ConfigForm, EditConfigForm, DeviceForm, EditDeviceForm
 from app.configure import configure
+from app.common import device_kinds
 
 @configure.route('/home')
 @login_required
@@ -65,18 +66,58 @@ def set_current_config(id):
         db.session.commit()
     return redirect(url_for('.home'))
 
-#TODO create device, edit device
-@configure.route('/create_device/<int:id>', methods = ['POST'])
+#TODO optimize models to directly get config from device
+@configure.route('/edit_device/<int:id>', methods = ['GET', 'POST'])
 @login_required
-def create_device(id):
+def edit_device(id):
+    device = Device.query.get(id)
+    config = Configuration.query.get(device.config_id)
+    #TODO refactor to one function
+    choices = []
+    device_config = device_kinds[device.kind]
+    for allowed_id in device_config.allowed_ids:
+        choices.append((allowed_id, str(allowed_id)))
+    form = EditDeviceForm(obj = device)
+    form.device_id.choices = choices
+    if form.validate_on_submit():
+        form.populate_obj(device)
+        db.session.add(device)
+        db.session.commit()
+        flash('Device ''%s''  has been saved' % device.name)
+        return redirect(url_for('.edit_config', id = config.id))
+    return render_template('configure/edit_device.html', id = config.id, kind = device.kind, config = config, form = form)
+
+@configure.route('/create_device/<int:id>/<int:kind>', methods = ['GET', 'POST'])
+@login_required
+def create_device(id, kind):
     config = Configuration.query.get(id)
-    form = DeviceForm()
+    choices = []
+    device_config = device_kinds[kind]
+    for allowed_id in device_config.allowed_ids:
+        choices.append((allowed_id, str(allowed_id)))
+    form = DeviceForm(kind = kind, voltage_threshold = device_config.threshold)
+    form.device_id.choices = choices
     if form.validate_on_submit():
         device = Device()
         device.config_id = id
-        form.to_model(device)
-        db.session.add(config)
+        form.populate_obj(device)
+        db.session.add(device)
         db.session.commit()
         flash('New device ''%s''  has been added' % device.name)
         return redirect(url_for('.edit_config', id = id))
-    return render_template('configure/create_config.html', form = form)
+    print('create_device() device_id = %s' % form.device_id.data)
+    return render_template('configure/edit_device.html', id = id, kind = kind, config = config, form = form)
+
+@configure.route('/delete_device/<int:id>')
+@login_required
+def delete_device(id):
+    device = Device.query.get(id)
+    if not device:
+        flash('This module does not exist! It cannot be deleted!')
+    else:
+        db.session.delete(device)
+        db.session.commit()
+        flash('Module has been deleted')
+        return redirect(url_for('.edit_config', id = device.config_id))
+    return redirect(url_for('.home'))
+

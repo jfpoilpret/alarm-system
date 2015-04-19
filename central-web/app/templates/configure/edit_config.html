@@ -7,6 +7,8 @@
 {% endblock %}
 
 {% block page_content %}
+	{% set kinds = {1:'Keypad',2:'Motion Detection',3:'Camera'} %}
+	
 	<div class="form-config">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
@@ -32,23 +34,31 @@
 						</tr>
 					</thead>
 					<tbody>
-					{% for id, device in config.devices %}
+					{% for device_id, device in config.devices | dictsort %}
 						<tr>
 							<td>
 								{# TODO add action links #}
+								<a  class="btn btn-xs btn-default device-edit" 
+									href="{{ url_for('configure.edit_device', id = device.id) }}">
+									<span class="glyphicon glyphicon-pencil"></span>
+								</a>
+								<a  class="btn btn-xs btn-default device-delete" 
+									href="{{ url_for('configure.delete_device', id = device.id) }}" 
+									onclick="return window.confirm('Are you sure you want to remove this module?');">
+									<span class="glyphicon glyphicon-remove"></span>
+								</a>
 							</td>
 							<td class="device_name">
 								{{ device.name }}
 							</td>
 							<td class="device_kind">
-								{# TODO display label for kind, not kind code! #}
-								{{ device.kind }}
+								{{ kinds[device.kind] }}
 							</td>
 							<td class="device_id">
 								{{ device_id }}
 							</td>
 							<td class="device_voltage">
-								{{ device.voltage_threshold }}
+								{{ device.voltage_threshold }} V
 							</td>
 						</tr>
 					{% endfor %}
@@ -57,12 +67,12 @@
 				{# TODO Add row for creating new device #}
 				<div class="btn-group">
 					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-						Add Device<span class="caret"></span>
+						Add Module <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="#">Add Keypad Module</a></li>
-						<li><a href="#">Add Motion Detection Module</a></li>
-						<li><a href="#">Add Camera Module</a></li>
+						<li><a href="{{url_for('configure.create_device', id = config.id, kind = 1)}}">Add Keypad Module</a></li>
+						<li><a href="{{url_for('configure.create_device', id = config.id, kind = 2)}}">Add Motion Detection Module</a></li>
+						<li><a href="{{url_for('configure.create_device', id = config.id, kind = 3)}}">Add Camera Module</a></li>
 					</ul>
 				</div>
 			</div>

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='configure/home.css')}}">
+{% endblock %}
+
+{% block page_content %}
+	<div class="form-device">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="form-heading">Edit Module for '{{ config.name }}' Configuration</h3>
+			</div>
+			<div class="panel-body">
+				{{ wtf.quick_form(form, button_map = {'submit': 'primary'}) }}
+			</div>
+		</div>
+	</div>
+{% endblock %}
