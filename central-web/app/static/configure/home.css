@@ -1,9 +1,14 @@
-.form-event {
+.configurations {
   padding: 5px;
   margin: 0 auto;
 }
 
-.form-event .form-control {
+.form-config {
+  padding: 5px;
+  margin: 0 auto;
+}
+
+.form-config .form-control {
   position: relative;
   font-size: 16px;
   height: auto;

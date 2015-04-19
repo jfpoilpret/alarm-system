@@ -33,17 +33,17 @@ def adduser(username, fullname = None, role = Account.ROLE_ALARM_VIEWER):
 
 @manager.command
 def resetdb():
-    """Reset current Database and prepare for training (i.e. just one admin user 'jfpoilpret' (pw. jpo))"""
+    """Reset current Database and prepare for training (i.e. just one admin user 'admin' (pw. admin))"""
     db.drop_all()
     db.create_all()
     db.session.add(
         Account(
-            username='jfpoilpret', 
-            fullname = u'Jean-François Poilprêt', 
-            password='jpo', 
+            username='admin', 
+            fullname = u'Administrator', 
+            password='admin', 
             role=Account.ROLE_ADMINISTRATOR))
     db.session.commit()
-    print('Admin jpo was registered successfully.')
+    print('User `admin` was registered successfully.')
 
 # Wrapper to flask-script Server so that port can be read from app.config by default (after manager.run() is called)
 def replacePortOption(o):

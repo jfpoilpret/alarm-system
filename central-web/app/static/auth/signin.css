@@ -1,11 +1,9 @@
-.form-signin,
-.form-signup {
+.form-signin {
   max-width: 400px;
   padding: 5px;
   margin: 0 auto;
 }
-.form-signin .form-control,
-.form-signup .form-control {
+.form-signin .form-control {
   position: relative;
   font-size: 16px;
   height: auto;

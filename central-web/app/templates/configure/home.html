@@ -7,76 +7,76 @@
 {% endblock %}
 
 {% block page_content %}
-  <div class="configurations">
-    <div class="panel panel-primary">
-      <div class="panel-heading">
-        <h3 class="form-heading">Configurations</h3>
-      </div>
-      <div class="panel-body">
-	      {% if configurations|count > 0 %}
-	      <table class="table table-hover">
-	        <thead>
-	          <tr>
-	            <th></th>
-	            <th>Name</th>
-	            <th>Current</th>
-	            <th>Active</th>
-	          </tr>
-	        </thead>
-	        <tbody>
-	          {% for config in configurations %}
-	          <tr>
-	            <td>
-	              {# Enable link only if not already current #}
-	              {% if not config.current %}
-	              <a  class="btn btn-xs btn-default config-set-current" 
-	                  href="{{ url_for('configure.set_current_config', id = config.id) }}">
-	                <span class="glyphicon glyphicon-star"></span>
-	              </a>
-	              {% else %}
-	              <a  class="btn btn-xs btn-default config-set-current disabled" href="#">
-	                <span class="glyphicon glyphicon-star"></span>
-	              </a>
-	              {% endif %}
-	              <a  class="btn btn-xs btn-default config-edit" 
-	                  href="{{ url_for('configure.edit_config', id = config.id) }}">
-	                <span class="glyphicon glyphicon-pencil"></span>
-	              </a>
-	              <a  class="btn btn-xs btn-default config-delete" 
-	                  href="{{ url_for('configure.delete_config', id = config.id) }}" 
-	                  onclick="return window.confirm('Are you sure you want to remove this configuration?');">
-	                <span class="glyphicon glyphicon-remove"></span>
-	              </a>
-	            </td>
-	            <td class="config_name">
-	              {{ config.name }}
-	            </td>
-	            <td class="config_current">
-			    {% if config.current %}
-	            	<span class="glyphicon glyphicon-ok"></span>
-	            {% else %}
-	            	<span class="glyphicon glyphicon-remove"></span>
-	      		{% endif %}
-	            </td>
-	            <td class="config_active">
-			    {% if config.active %}
-	            	<span class="glyphicon glyphicon-ok"></span>
-	            {% else %}
-	            	<span class="glyphicon glyphicon-remove"></span>
-	      		{% endif %}
-	            </td>
-	          </tr>
-	          {% endfor %}
-	        </tbody>
-	      </table>
-	      {% else %}
-	        <h3>No configuration created yet!</h3>
-	      {% endif %}
-          <a  class="btn btn-primary config-new" 
-              href="{{ url_for('configure.create_config') }}">
-            Create Configuration
-          </a>
-      </div>
-    </div>
-  </div>
+	<div class="configurations">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="form-heading">Configurations</h3>
+			</div>
+			<div class="panel-body">
+			{% if configurations|count > 0 %}
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Name</th>
+							<th>Current</th>
+							<th>Active</th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for config in configurations %}
+						<tr>
+							<td>
+							{# Enable link only if not already current #}
+							{% if not config.current %}
+								<a  class="btn btn-xs btn-default config-set-current" 
+	                  				href="{{ url_for('configure.set_current_config', id = config.id) }}">
+									<span class="glyphicon glyphicon-star"></span>
+								</a>
+							{% else %}
+								<a  class="btn btn-xs btn-default config-set-current disabled" href="#">
+									<span class="glyphicon glyphicon-star"></span>
+								</a>
+							{% endif %}
+								<a  class="btn btn-xs btn-default config-edit" 
+									href="{{ url_for('configure.edit_config', id = config.id) }}">
+									<span class="glyphicon glyphicon-pencil"></span>
+								</a>
+								<a  class="btn btn-xs btn-default config-delete" 
+									href="{{ url_for('configure.delete_config', id = config.id) }}" 
+									onclick="return window.confirm('Are you sure you want to remove this configuration?');">
+									<span class="glyphicon glyphicon-remove"></span>
+								</a>
+							</td>
+							<td class="config_name">
+								{{ config.name }}
+							</td>
+							<td class="config_current">
+							{% if config.current %}
+								<span class="glyphicon glyphicon-ok"></span>
+							{% else %}
+								<span class="glyphicon glyphicon-remove"></span>
+							{% endif %}
+							</td>
+							<td class="config_active">
+							{% if config.active %}
+								<span class="glyphicon glyphicon-ok"></span>
+							{% else %}
+								<span class="glyphicon glyphicon-remove"></span>
+							{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+			{% else %}
+				<h3>No configuration created yet!</h3>
+			{% endif %}
+				<a  class="btn btn-primary config-new" 
+					href="{{ url_for('configure.create_config') }}">
+					Create Configuration
+				</a>
+			</div>
+		</div>
+	</div>
 {% endblock %}
