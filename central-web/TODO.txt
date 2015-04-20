@@ -1,9 +1,28 @@
+10'	- commit pending changes first
+
+90'	- modal dialog for devices
+		- first duplicate edit_config into edit_device with old edit_device content
+		- ensure all forms are correctly passed (edit config and edit device forms)
+		- add javascript to show modal
+		- if OK, refactor to use onlw edit_config (no need for additional edit_device)
+
+		- need javascript to show modal at load time
+			in <head>?
+				<script type="text/javascript">
+					$(document).ready(function(){
+						$("#myModal").modal('show');
+					});
+				</script>
+		- of course don't forget to use id to name modal dialog:
+			<div id="myModal" class="modal fade">
+				...
+
 30'	- cancel button in various places
-30'	- modal dialog for devices
-30'	- better flash messages integration to Bootstrap
 30'	- improve CSS files
+
 30'	- refactor forms to remove from_model/to_model
 30'	- refactor routes to avoid copied lines of code
+
 1h	- review models to ensure completeness of relationships and efficiency
 	
 3h	- create home sketch (bitmap or vectorial?)

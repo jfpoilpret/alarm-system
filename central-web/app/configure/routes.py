@@ -23,7 +23,7 @@ def edit_config(id):
         form.to_model(config)
         db.session.add(config)
         db.session.commit()
-        flash('Configuration ''%s''  has been saved' % config.name)
+        flash('Configuration ''%s''  has been saved' % config.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
     form.from_model(config)
     return render_template('configure/edit_config.html', 
@@ -39,7 +39,7 @@ def create_config():
         form.to_model(config)
         db.session.add(config)
         db.session.commit()
-        flash('New configuration ''%s''  has been created' % config.name)
+        flash('New configuration ''%s''  has been created' % config.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
     return render_template('configure/create_config.html', form = form)
 
@@ -48,11 +48,11 @@ def create_config():
 def delete_config(id):
     config = Configuration.query.get(id)
     if not config:
-        flash('This configuration does not exist! It cannot be deleted!')
+        flash('This configuration does not exist! It cannot be deleted!', 'danger')
     else:
         db.session.delete(config)
         db.session.commit()
-        flash('Configuration has been deleted')
+        flash('Configuration has been deleted', 'success')
     return redirect(url_for('.home'))
 
 @configure.route('/set_current_config/<int:id>')
@@ -83,7 +83,7 @@ def edit_device(id):
         form.populate_obj(device)
         db.session.add(device)
         db.session.commit()
-        flash('Device ''%s''  has been saved' % device.name)
+        flash('Device ''%s''  has been saved' % device.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
     return render_template('configure/edit_device.html', id = config.id, kind = device.kind, config = config, form = form)
 
@@ -103,7 +103,7 @@ def create_device(id, kind):
         form.populate_obj(device)
         db.session.add(device)
         db.session.commit()
-        flash('New device ''%s''  has been added' % device.name)
+        flash('New device ''%s''  has been added' % device.name, 'success')
         return redirect(url_for('.edit_config', id = id))
     print('create_device() device_id = %s' % form.device_id.data)
     return render_template('configure/edit_device.html', id = id, kind = kind, config = config, form = form)
@@ -113,11 +113,11 @@ def create_device(id, kind):
 def delete_device(id):
     device = Device.query.get(id)
     if not device:
-        flash('This module does not exist! It cannot be deleted!')
+        flash('This module does not exist! It cannot be deleted!', 'danger')
     else:
         db.session.delete(device)
         db.session.commit()
-        flash('Module has been deleted')
+        flash('Module has been deleted', 'success')
         return redirect(url_for('.edit_config', id = device.config_id))
     return redirect(url_for('.home'))
 

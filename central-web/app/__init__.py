@@ -10,6 +10,8 @@ db = SQLAlchemy()
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
+login_manager.login_message_category = 'info'
+login_manager.needs_refresh_message_category = 'info'
 
 def create_app(config_name = None):
     app = Flask(__name__)

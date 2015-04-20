@@ -20,7 +20,7 @@ def signin():
         if user and user.verify_password(form.password.data):
             login_user(user)
             return redirect(url_for('configure.home'))
-        flash('Invalid username or password.')
+        flash('Invalid username or password.', 'warning')
     return renderSignInPage(signinform=form)
 
 @auth.route('/login')
