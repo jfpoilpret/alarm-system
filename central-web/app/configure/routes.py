@@ -18,17 +18,18 @@ def home():
 @login_required
 def edit_config(id):
     config = Configuration.query.get(id)
-    form = EditConfigForm()
-    if form.validate_on_submit():
-        form.to_model(config)
+    configForm = EditConfigForm()
+    if configForm.validate_on_submit():
+        configForm.to_model(config)
         db.session.add(config)
         db.session.commit()
         flash('Configuration ''%s''  has been saved' % config.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
-    form.from_model(config)
+    configForm.from_model(config)
     return render_template('configure/edit_config.html', 
         config = config,
-        form = form)
+        configForm = configForm,
+        deviceForm = None)
 
 @configure.route('/create_config', methods = ['GET', 'POST'])
 @login_required
@@ -77,15 +78,23 @@ def edit_device(id):
     device_config = device_kinds[device.kind]
     for allowed_id in device_config.allowed_ids:
         choices.append((allowed_id, str(allowed_id)))
-    form = EditDeviceForm(obj = device)
-    form.device_id.choices = choices
-    if form.validate_on_submit():
-        form.populate_obj(device)
+    deviceForm = EditDeviceForm(obj = device)
+    deviceForm.device_id.choices = choices
+    if deviceForm.validate_on_submit():
+        deviceForm.populate_obj(device)
         db.session.add(device)
         db.session.commit()
         flash('Device ''%s''  has been saved' % device.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
-    return render_template('configure/edit_device.html', id = config.id, kind = device.kind, config = config, form = form)
+    configForm = EditConfigForm()
+    configForm.from_model(config)
+    return render_template('configure/edit_config.html', 
+        id = config.id, 
+        kind = device.kind, 
+        config = config, 
+        configForm = configForm, 
+        deviceForm = deviceForm)
+#    return render_template('configure/edit_device.html', id = config.id, kind = device.kind, config = config, form = form)
 
 @configure.route('/create_device/<int:id>/<int:kind>', methods = ['GET', 'POST'])
 @login_required

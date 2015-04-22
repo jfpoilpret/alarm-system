@@ -6,16 +6,53 @@
 <link rel="stylesheet" href="{{url_for('static', filename='configure/home.css')}}">
 {% endblock %}
 
+{% block scripts %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='configure/home.css')}}">
+{% if deviceForm %}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#modalDeviceFormId").modal('show');
+	});
+</script>
+{% endif %}
+{% endblock %}
+
 {% block page_content %}
+	{% if deviceForm %}
+	<div id="modalDeviceFormId" class="modal fade" data-backdrop="static">
+		<div class="modal-dialog">
+			<form class="form form-horizontal" method="post" role="form">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Edit Module for '{{ config.name }}' Configuration</h4>
+					</div>
+					<div class="modal-body">
+						{{ deviceForm.hidden_tag() }}
+						{{ wtf.form_errors(deviceForm, hiddens = "only") }}
+						
+						{{ wtf.form_field(deviceForm.name) }}
+						{{ wtf.form_field(deviceForm.voltage_threshold) }}
+						{{ wtf.form_field(deviceForm.device_id) }}
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						{{ wtf.form_field(deviceForm.submit, button_map = {'submit': 'primary'}) }}
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	{% endif %}
 	{% set kinds = {1:'Keypad',2:'Motion Detection',3:'Camera'} %}
-	
 	<div class="form-config">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				<h3 class="form-heading">Edit Configuration '{{ config.name }}'</h3>
 			</div>
 			<div class="panel-body">
-				{{ wtf.quick_form(form, button_map = {'submit': 'primary'}) }}
+				{{ wtf.quick_form(configForm, button_map = {'submit': 'primary'}) }}
 			</div>
 		</div>
 		<div class="panel panel-primary">
