@@ -1,4 +1,7 @@
 	- start adding role check in routes
+	- refactor forms to remove all names/ids (use defaults)
+		=> need to pass prefix='xxx_' to form ctor
+		
 	- admin routes/forms
 
 30'	- cancel button in various places

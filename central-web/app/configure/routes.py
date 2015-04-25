@@ -6,17 +6,18 @@ from app import db
 from app.models import Configuration, Device
 from app.configure.forms import ConfigForm, EditConfigForm, DeviceForm, EditDeviceForm
 from app.configure import configure
-from app.common import device_kinds
+from app.common import device_kinds, check_configurator
 
 @configure.route('/home')
 @login_required
 def home():
     all_configs = Configuration.query.all()
-    return render_template('configure/home.html', configurations=all_configs)
+    return render_template('configure/home.html', configurations = all_configs)
 
 @configure.route('/edit_config/<int:id>', methods = ['GET', 'POST'])
 @login_required
 def edit_config(id):
+    check_configurator()
     config = Configuration.query.get(id)
     configForm = EditConfigForm(obj = config)
     if configForm.validate_on_submit():
@@ -33,6 +34,7 @@ def edit_config(id):
 @configure.route('/create_config', methods = ['GET', 'POST'])
 @login_required
 def create_config():
+    check_configurator()
     configForm = ConfigForm()
     if configForm.validate_on_submit():
         config = Configuration()
@@ -46,6 +48,7 @@ def create_config():
 @configure.route('/delete_config/<int:id>')
 @login_required
 def delete_config(id):
+    check_configurator()
     config = Configuration.query.get(id)
     if not config:
         flash('This configuration does not exist! It cannot be deleted!', 'danger')
@@ -58,6 +61,7 @@ def delete_config(id):
 @configure.route('/set_current_config/<int:id>')
 @login_required
 def set_current_config(id):
+    check_configurator()
     config = Configuration.query.get(id)
     if not config.current:
         db.session.execute(update(Configuration.__table__).values(current = False))
@@ -70,6 +74,7 @@ def set_current_config(id):
 @configure.route('/edit_device/<int:id>', methods = ['GET', 'POST'])
 @login_required
 def edit_device(id):
+    check_configurator()
     device = Device.query.get(id)
     config = Configuration.query.get(device.config_id)
     device_config = device_kinds[device.kind]
@@ -80,6 +85,7 @@ def edit_device(id):
 @configure.route('/create_device/<int:id>/<int:kind>', methods = ['GET', 'POST'])
 @login_required
 def create_device(id, kind):
+    check_configurator()
     device = Device()
     device.config_id = id
     config = Configuration.query.get(id)
@@ -91,6 +97,7 @@ def create_device(id, kind):
 @configure.route('/delete_device/<int:id>')
 @login_required
 def delete_device(id):
+    check_configurator()
     device = Device.query.get(id)
     if not device:
         flash('This module does not exist! It cannot be deleted!', 'danger')
