@@ -17,6 +17,8 @@
 {% endif %}
 {% endblock %}
 
+{% set kinds = {1:'Keypad',2:'Motion Detection',3:'Camera'} %}
+
 {% block modal_content %}
 	{% if deviceForm %}
 	{% set url_close = url_for('configure.edit_config', id = config.id) %}
@@ -26,7 +28,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<a href="{{ url_close }}" role="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
-						<h4 class="modal-title">Edit Module for '{{ config.name }}' Configuration</h4>
+						<h4 class="modal-title">Edit {{ kinds[kind] }} Module for '{{ config.name }}' Configuration</h4>
 					</div>
 					<div class="modal-body">
 						<div class="form-device">
@@ -50,7 +52,6 @@
 {% endblock %}
 
 {% block page_content %}
-	{% set kinds = {1:'Keypad',2:'Motion Detection',3:'Camera'} %}
 	<div class="form-config">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
