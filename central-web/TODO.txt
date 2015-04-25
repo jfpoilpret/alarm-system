@@ -1,29 +1,12 @@
-10'	- commit pending changes first
-
-90'	- modal dialog for devices
-		- first duplicate edit_config into edit_device with old edit_device content
-		- ensure all forms are correctly passed (edit config and edit device forms)
-		- add javascript to show modal
-		- if OK, refactor to use onlw edit_config (no need for additional edit_device)
-
-		- need javascript to show modal at load time
-			in <head>?
-				<script type="text/javascript">
-					$(document).ready(function(){
-						$("#myModal").modal('show');
-					});
-				</script>
-		- of course don't forget to use id to name modal dialog:
-			<div id="myModal" class="modal fade">
-				...
+	- start adding role check in routes
+	- admin routes/forms
 
 30'	- cancel button in various places
 30'	- improve CSS files
-
-30'	- refactor forms to remove from_model/to_model
-30'	- refactor routes to avoid copied lines of code
+30'	- review labels everywhere
 
 1h	- review models to ensure completeness of relationships and efficiency
+1h	- infer on i18n
 	
 3h	- create home sketch (bitmap or vectorial?)
 1h	- add picture (or SVG) for configuration
@@ -37,3 +20,27 @@
 	
 2h	- add NRF24 and scanning thread
 	
+	<div id="modalDeviceFormId" class="modal fade" data-backdrop="static">
+		<div class="modal-dialog">
+			<form class="form form-horizontal" method="post" role="form">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Edit Module for '{{ config.name }}' Configuration</h4>
+					</div>
+					<div class="modal-body">
+						{{ deviceForm.hidden_tag() }}
+						{{ wtf.form_errors(deviceForm, hiddens = "only") }}
+						
+						{{ wtf.form_field(deviceForm.name) }}
+						{{ wtf.form_field(deviceForm.voltage_threshold) }}
+						{{ wtf.form_field(deviceForm.device_id) }}
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						{{ wtf.form_field(deviceForm.submit, button_map = {'submit': 'primary'}) }}
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
