@@ -18,14 +18,13 @@ def home():
 @login_required
 def edit_config(id):
     config = Configuration.query.get(id)
-    configForm = EditConfigForm()
+    configForm = EditConfigForm(obj = config)
     if configForm.validate_on_submit():
-        configForm.to_model(config)
+        configForm.populate_obj(config)
         db.session.add(config)
         db.session.commit()
         flash('Configuration ''%s''  has been saved' % config.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
-    configForm.from_model(config)
     return render_template('configure/edit_config.html', 
         config = config,
         configForm = configForm,
@@ -34,15 +33,15 @@ def edit_config(id):
 @configure.route('/create_config', methods = ['GET', 'POST'])
 @login_required
 def create_config():
-    form = ConfigForm()
-    if form.validate_on_submit():
+    configForm = ConfigForm()
+    if configForm.validate_on_submit():
         config = Configuration()
-        form.to_model(config)
+        configForm.populate_obj(config)
         db.session.add(config)
         db.session.commit()
         flash('New configuration ''%s''  has been created' % config.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
-    return render_template('configure/create_config.html', form = form)
+    return render_template('configure/create_config.html', configForm = configForm)
 
 @configure.route('/delete_config/<int:id>')
 @login_required
@@ -114,12 +113,11 @@ def validate_device_form(deviceForm, kind, device, config, is_new):
         db.session.add(device)
         db.session.commit()
         if is_new:
-            flash('New device ''%s''  has been added' % device.name, 'success')
+            flash('New module ''%s''  has been added' % device.name, 'success')
         else:
-            flash('Device ''%s''  has been saved' % device.name, 'success')
+            flash('Module ''%s''  has been saved' % device.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
-    configForm = EditConfigForm()
-    configForm.from_model(config)
+    configForm = EditConfigForm(obj = config)
     return render_template('configure/edit_config.html', 
         id = config.id, 
         kind = kind, 
