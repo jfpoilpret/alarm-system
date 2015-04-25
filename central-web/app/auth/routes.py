@@ -5,23 +5,23 @@ from .forms import SigninForm
 
 from ..models import Account
 
-def renderSignInPage(signinform = None):
-    if not signinform:
-        signinform = SigninForm(formdata = None)
+def renderSignInPage(signinForm = None):
+    if not signinForm:
+        signinForm = SigninForm(prefix = 'signin_', formdata = None)
     return render_template('auth/signin.html', 
-        signin=signinform, 
+        signin = signinForm, 
         signinUrl = url_for('.signin'))
 
 @auth.route('/signin', methods=['POST'])
 def signin():
-    form = SigninForm()
-    if form.validate_on_submit():
-        user = Account.query.filter_by(username = form.username.data).first()
-        if user and user.verify_password(form.password.data):
+    signinForm = SigninForm(prefix = 'signin_')
+    if signinForm.validate_on_submit():
+        user = Account.query.filter_by(username = signinForm.username.data).first()
+        if user and user.verify_password(signinForm.password.data):
             login_user(user)
             return redirect(url_for('configure.home'))
         flash('Invalid username or password.', 'warning')
-    return renderSignInPage(signinform=form)
+    return renderSignInPage(signinForm = signinForm)
 
 @auth.route('/login')
 def login():

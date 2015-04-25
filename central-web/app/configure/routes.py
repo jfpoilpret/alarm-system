@@ -19,7 +19,7 @@ def home():
 def edit_config(id):
     check_configurator()
     config = Configuration.query.get(id)
-    configForm = EditConfigForm(obj = config)
+    configForm = EditConfigForm(prefix = 'config_', obj = config)
     if configForm.validate_on_submit():
         configForm.populate_obj(config)
         db.session.add(config)
@@ -35,7 +35,7 @@ def edit_config(id):
 @login_required
 def create_config():
     check_configurator()
-    configForm = ConfigForm()
+    configForm = ConfigForm(prefix = 'config_')
     if configForm.validate_on_submit():
         config = Configuration()
         configForm.populate_obj(config)
@@ -78,7 +78,7 @@ def edit_device(id):
     device = Device.query.get(id)
     config = Configuration.query.get(device.config_id)
     device_config = device_kinds[device.kind]
-    deviceForm = EditDeviceForm(obj = device)
+    deviceForm = EditDeviceForm(prefix = 'device_', obj = device)
     init_device_id_choices(deviceForm, device_config)
     return validate_device_form(deviceForm, device.kind, device, config, False)
 
@@ -90,7 +90,7 @@ def create_device(id, kind):
     device.config_id = id
     config = Configuration.query.get(id)
     device_config = device_kinds[kind]
-    deviceForm = DeviceForm(kind = kind, voltage_threshold = device_config.threshold)
+    deviceForm = DeviceForm(prefix = 'device_', kind = kind, voltage_threshold = device_config.threshold)
     init_device_id_choices(deviceForm, device_config)
     return validate_device_form(deviceForm, kind, device, config, True)
 
@@ -124,7 +124,7 @@ def validate_device_form(deviceForm, kind, device, config, is_new):
         else:
             flash('Module ''%s''  has been saved' % device.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
-    configForm = EditConfigForm(obj = config)
+    configForm = EditConfigForm(prefix = 'config_', obj = config)
     return render_template('configure/edit_config.html', 
         id = config.id, 
         kind = kind, 

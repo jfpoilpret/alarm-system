@@ -7,22 +7,20 @@ from wtforms.fields.simple import HiddenField
 #TODO use same names for fields and id? => can we just remove id attribute?
 # Form to create a new configuration (general information only)
 class ConfigForm(Form):
-    name = StringField('Name', id = 'config_name', validators=[DataRequired(), Length(1, 64)])
-    #FIXME limite input to digits only!
-    lockcode = StringField('Lock code', id = 'config_lockcode', validators=[DataRequired(), Regexp('[0-9]{6}')])
-    submit = SubmitField('Create Configuration', id = 'config_submit')
+    name = StringField('Name', validators=[DataRequired(), Length(1, 64)])
+    lockcode = StringField('Lock code', validators=[DataRequired(), Regexp('[0-9]{6}')])
+    submit = SubmitField('Create Configuration')
 
 # Form to edit an existing configuration (general information only)
 class EditConfigForm(ConfigForm):
-    submit = SubmitField('Save Configuration', id = 'config_submit')
+    submit = SubmitField('Save Configuration')
 
 class DeviceForm(Form):
-    name = StringField('Name', id = 'name', validators=[DataRequired(), Length(1, 64)])
-    kind = HiddenField('Kind', id = 'kind')
-    voltage_threshold = FloatField('Voltage Threshold', id = 'voltage_threshold')
-    device_id = SelectField('Module ID', id = 'device_id', coerce=int)
-    submit = SubmitField('Add Module', id = 'device_save')
+    name = StringField('Name', validators=[DataRequired(), Length(1, 64)])
+    kind = HiddenField('Kind')
+    voltage_threshold = FloatField('Voltage Threshold')
+    device_id = SelectField('Module ID', coerce=int)
+    submit = SubmitField('Add Module')
 
 class EditDeviceForm(DeviceForm):
-    submit = SubmitField('Save Module', id = 'device_save')
-
+    submit = SubmitField('Save Module')

@@ -42,7 +42,7 @@
 					</div>
 					<div class="modal-footer">
 						<a href="{{ url_close }}" role="button" class="btn btn-default">Close</a>
-						{{ wtf.form_field(deviceForm.submit, button_map = {'submit': 'primary'}) }}
+						{{ wtf.form_field(deviceForm.submit, button_map = {'device_submit': 'primary'}) }}
 					</div>
 				</div>
 			</form>
@@ -58,7 +58,7 @@
 				<h3 class="form-heading">Edit Configuration '{{ config.name }}'</h3>
 			</div>
 			<div class="panel-body">
-				{{ wtf.quick_form(configForm, button_map = {'submit': 'primary'}) }}
+				{{ wtf.quick_form(configForm, button_map = {'config_submit': 'primary'}) }}
 			</div>
 		</div>
 		<div class="panel panel-primary">
@@ -107,7 +107,6 @@
 					{% endfor %}
 					</tbody>
 				</table>
-				{# TODO Add row for creating new device #}
 				<div class="btn-group">
 					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 						Add Module <span class="caret"></span>
