@@ -8,7 +8,6 @@
 
 {% block scripts %}
 {{super()}}
-<link rel="stylesheet" href="{{url_for('static', filename='configure/home.css')}}">
 {% if deviceForm %}
 <script type="text/javascript">
 	$(document).ready(function(){
@@ -23,7 +22,7 @@
 	{% set url_close = url_for('configure.edit_config', id = config.id) %}
 	<div id="modalDeviceFormId" class="modal fade" data-backdrop="static">
 		<div class="modal-dialog">
-			<form class="form form-horizontal" method="post" role="form">
+			<form class="form" method="post" role="form">
 				<div class="modal-content">
 					<div class="modal-header">
 						<a href="{{ url_close }}" role="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
