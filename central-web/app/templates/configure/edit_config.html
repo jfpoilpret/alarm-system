@@ -17,7 +17,7 @@
 {% endif %}
 {% endblock %}
 
-{% block page_content %}
+{% block modal_content %}
 	{% if deviceForm %}
 	{% set url_close = url_for('configure.edit_config', id = config.id) %}
 	<div id="modalDeviceFormId" class="modal fade" data-backdrop="static">
@@ -47,6 +47,9 @@
 		</div>
 	</div>
 	{% endif %}
+{% endblock %}
+
+{% block page_content %}
 	{% set kinds = {1:'Keypad',2:'Motion Detection',3:'Camera'} %}
 	<div class="form-config">
 		<div class="panel panel-primary">
