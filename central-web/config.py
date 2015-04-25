@@ -6,6 +6,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     PORT = 8080
     HOST = '127.0.0.1'
+    BOOTSTRAP_SERVE_LOCAL = True
 
 class DevelopmentConfig(Config):
     DEBUG = True
@@ -32,6 +33,7 @@ class ProductionConfig(Config):
     PORT = 80
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+    BOOTSTRAP_SERVE_LOCAL = False
 
 config = {
     'dev': DevelopmentConfig(),
