@@ -1,39 +1,67 @@
+.modal-header {
+	background-color: #337ab7;
+  	border-color: #2e6da4;
+  	color: #fff;
+	padding: 9px 15px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+.modal-header .close:hover,
+.modal-header .close:focus {
+	color: #fff;
+	filter: alpha(opacity=40);
+	opacity: .4;
+}
+
+.modal-header .close {
+	margin-top: 2px;
+	text-shadow: 2px 2px 0 #000;
+	color: #fff;
+	filter: alpha(opacity=70);
+	opacity: 0.7;
+}
+
 .configurations {
-  padding: 5px;
-  margin: 0 auto;
+	padding: 5px;
+	margin: 0 auto;
 }
 
 .form-config {
-  padding: 5px;
-  margin: 0 auto;
+	padding: 5px;
+	margin: 0 auto;
 }
 
 .form-config .form-control {
-  position: relative;
-  font-size: 16px;
-  height: auto;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
+	position: relative;
+	font-size: 16px;
+	height: auto;
+	padding: 5px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .form-device {
-  padding: 5px;
-  margin: 0 auto;
+	padding: 5px;
+	margin: 0 auto;
 }
 
 .form-device .form-control {
-  position: relative;
-  font-size: 16px;
-  height: auto;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
+	position: relative;
+	font-size: 16px;
+	height: auto;
+	padding: 5px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .form-heading  {
-  margin-top: 0;
-  margin-bottom: 0;
+	margin-top: 0;
+	margin-bottom: 0;
 }
