@@ -1,25 +1,25 @@
-	- start adding role check in routes
-	- refactor forms to remove all names/ids (use defaults)
-		=> need to pass prefix='xxx_' to form ctor
-		
-	- admin routes/forms
+1h	- admin routes/forms: create/edit profile/delete user/reset user password
+15'	- improve CSS
+
+30'	- update templates to not show unavailable routes (based on current user role)
+15'	- check if we can refactor edit/create into just one?
 
 30'	- cancel button in various places
 30'	- improve CSS files
-30'	- review labels everywhere
+45'	- review labels/titles everywhere
 
 1h	- review models to ensure completeness of relationships and efficiency
-1h	- infer on i18n
-	
-3h	- create home sketch (bitmap or vectorial?)
-1h	- add picture (or SVG) for configuration
-1h	- add devices location on picture
-	
+
 30'	- monitoring activate/deactivate alarm
 1h	- monitoring DB models (alarms)
 1h	- monitoring queues writers to DB and memory (alarms)
 1h	- alarm history view
 1h	- real-time monitoring on picture with devices states
+	
+1h	- infer on i18n
+3h	- create home sketch (bitmap or vectorial?)
+1h	- add picture (or SVG) for configuration
+1h	- add devices location on picture
 	
 2h	- add NRF24 and scanning thread
 	

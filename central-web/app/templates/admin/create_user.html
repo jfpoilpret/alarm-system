@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='admin/users.css')}}">
+{% endblock %}
+
+{% block page_content %}
+<div class="form-user">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="form-heading">New User</h3>
+		</div>
+		<div class="panel-body">
+			{{ wtf.quick_form(userForm, button_map = {'user_submit': 'primary'}) }}
+		</div>
+	</div>
+</div>
+{% endblock %}

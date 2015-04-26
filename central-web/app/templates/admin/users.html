@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block page_content %}
+{% set roles = {1:'Administrator',2:'Configurator',3:'Alarm Setter',4:'Alarm Viewer'} %}
 <div class="users-list">
 	<div class="panel panel-primary">
 		<div class="panel-heading">
@@ -25,8 +26,11 @@
 				{% for user in users %}
 					<tr>
 						<td>
-						{# TODO options to edit profile #}
-						{# TODO options to reset password #}
+						<a  class="btn btn-xs btn-default user-edit" 
+							href="{{ url_for('admin.edit_user', userid = user.id) }}">
+							<span class="glyphicon glyphicon-pencil"></span>
+						</a>
+						{# TODO options to reset password or put as button in edit profile? #}
 						{% if current_user.id != user.id %}
 							<a  class="btn btn-xs btn-default user-delete" 
 							    href="{{ url_for('admin.delete_user', userid = user.id) }}" 
@@ -37,12 +41,15 @@
 						</td>
 						<td class="user_username">{{ user.username }}</td>
 						<td class="user_fullname">{{ user.fullname }}</td>
-						{# TODO convert role to something readable #}
-						<td class="user_role">{{ user.role }}</td>
+						<td class="user_role">{{ roles[user.role] }}</td>
 					</tr>
 				{% endfor %}
 				</tbody>
 			</table>
+			<a  class="btn btn-primary user-new" 
+				href="{{ url_for('admin.create_user') }}">
+				Create User
+			</a>
 		</div>
 	</div>
 </div>
