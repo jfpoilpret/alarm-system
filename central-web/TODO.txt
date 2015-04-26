@@ -1,4 +1,3 @@
-	- edit own profile/change password
 	- force password change (when password empty)
 15'	- improve CSS
 
@@ -6,7 +5,8 @@
 15'	- check if we can refactor edit/create into just one?
 
 30'	- cancel button in various places
-30'	- improve CSS files
+30'	- improve CSS files and refactor (one css per module, with same name as module or 
+	  one unique name, the same across all modules...)
 45'	- review labels/titles everywhere
 
 1h	- review models to ensure completeness of relationships and efficiency

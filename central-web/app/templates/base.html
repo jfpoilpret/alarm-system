@@ -32,7 +32,8 @@
                 <a id="nav_username" href="#" class="dropdown-toggle" data-toggle="dropdown">{{ current_user.username }} <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                     <li><a id="nav_allusers" href="{{ url_for('admin.users') }}">All users</a></li>
-                    {# TODO modify own profile (including password) #}
+                    <li><a id="nav_myprofile" href="{{ url_for('auth.edit_profile') }}">My Profile</a></li>
+                    <li><a id="nav_mypassword" href="{{ url_for('auth.change_password') }}">Modify My Password</a></li>
                     <li><a id="nav_logout" href="{{ url_for('auth.logout') }}">Logout</a></li>
                 </ul>
             </li>
