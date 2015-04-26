@@ -4,6 +4,6 @@ from wtforms.validators import Required, Length
 
 class SigninForm(Form):
     username = StringField('User Name', validators=[Required(), Length(1, 64)])
-    password = PasswordField('Password', validators=[Required()])
+    password = PasswordField('Password')
     submit = SubmitField('Sign In')
 

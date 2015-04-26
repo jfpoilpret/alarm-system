@@ -26,11 +26,16 @@
 				{% for user in users %}
 					<tr>
 						<td>
-						<a  class="btn btn-xs btn-default user-edit" 
-							href="{{ url_for('admin.edit_user', userid = user.id) }}">
-							<span class="glyphicon glyphicon-pencil"></span>
-						</a>
-						{# TODO options to reset password or put as button in edit profile? #}
+							<a  class="btn btn-xs btn-default user-edit" 
+								href="{{ url_for('admin.edit_user', userid = user.id) }}">
+								<span class="glyphicon glyphicon-pencil"></span>
+							</a>
+							<a  class="btn btn-xs btn-default user-reset-password" 
+								title="Reset password of this user"
+							    onclick="return window.confirm('Are you sure you want to reset the password of this user?');"
+								href="{{ url_for('admin.reset_user_password', userid = user.id) }}">
+								<span class="glyphicon glyphicon-flash"></span>
+							</a>
 						{% if current_user.id != user.id %}
 							<a  class="btn btn-xs btn-default user-delete" 
 							    href="{{ url_for('admin.delete_user', userid = user.id) }}" 

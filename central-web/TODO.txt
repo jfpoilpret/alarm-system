@@ -1,4 +1,5 @@
-1h	- admin routes/forms: create/edit profile/delete user/reset user password
+	- edit own profile/change password
+	- force password change (when password empty)
 15'	- improve CSS
 
 30'	- update templates to not show unavailable routes (based on current user role)

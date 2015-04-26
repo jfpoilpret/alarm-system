@@ -51,4 +51,17 @@ def delete_user(userid):
     user = Account.query.get(userid)
     db.session.delete(user)
     db.session.commit()
+    flash('User ''%s''  has been removed' % user.username, 'success')
+    return redirect(url_for('.users'))
+
+
+@admin.route('/reset_user_password/<int:userid>')
+@login_required
+def reset_user_password(userid):
+    check_admin()
+    user = Account.query.get(userid)
+    user.password = ''
+    db.session.add(user)
+    db.session.commit()
+    flash('User ''%s''  password has been reset' % user.username, 'success')
     return redirect(url_for('.users'))
