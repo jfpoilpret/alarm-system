@@ -48,14 +48,14 @@
 {% block content %}
 {% block modal_content %}{% endblock %}
 <div class="container">
+	{% block messages %}
     {% for category, message in get_flashed_messages(with_categories=True) %}
     <div class="alert alert-{{category}}">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         {{ message }}
     </div>
     {% endfor %}
+	{% endblock %}
     {% block page_content %}{% endblock %}
 </div>
 {% endblock %}
-
-
