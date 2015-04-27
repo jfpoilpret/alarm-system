@@ -1,0 +1,25 @@
+.form-user {
+	padding: 5px;
+	margin: 0 auto;
+}
+
+.form-user .form-control {
+	position: relative;
+	font-size: 16px;
+	height: auto;
+	padding: 5px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.form-heading  {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.users-list {
+	padding: 5px;
+	margin: 0 auto;
+}
+
