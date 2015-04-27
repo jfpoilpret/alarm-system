@@ -35,6 +35,15 @@ class Account(UserMixin, db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def is_admin(self):
+        return self.role == Account.ROLE_ADMINISTRATOR
+    
+    def is_configurator(self):
+        return self.role in [Account.ROLE_ADMINISTRATOR, Account.ROLE_CONFIGURATOR]
+    
+    def is_alarm_setter(self):
+        return self.role in [Account.ROLE_ADMINISTRATOR, Account.ROLE_CONFIGURATOR, Account.ROLE_ALARM_SETTER]
+    
     def __repr__(self):
         return 'Account(id = %d, username = %s, role = %d)' % (self.id, self.username, self.role)
 

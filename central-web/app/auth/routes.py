@@ -21,7 +21,10 @@ def signin():
         user = Account.query.filter_by(username = signinForm.username.data).first()
         if user and user.verify_password(signinForm.password.data):
             login_user(user)
-            return redirect(url_for('configure.home'))
+            if user.is_configurator():
+                return redirect(url_for('configure.home'))
+            else:
+                return redirect(url_for('monitor.home'))
         flash('Invalid username or password.', 'warning')
     return renderSignInPage(signinForm = signinForm)
 

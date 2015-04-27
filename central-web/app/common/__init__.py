@@ -1,6 +1,6 @@
 from flask import abort
 from flask_login import current_user
-from app.models import Device, Account
+from app.models import Device
 
 class DeviceKind:
     def __init__(self, allowed_ids, threshold = 2.7):
@@ -15,16 +15,16 @@ device_kinds = {
 }
 
 def check_admin():
-    if current_user.role != Account.ROLE_ADMINISTRATOR:
+    if not current_user.is_admin():
         abort(401, message = 'You are not allowed to perform this action, only an administrator can!')
 
 def check_configurator():
-    if current_user.role not in [Account.ROLE_ADMINISTRATOR, Account.ROLE_CONFIGURATOR]:
+    if not current_user.is_configurator():
         abort(401, 
             message = 'You are not allowed to perform this action; you must be an administrator or configurator!')
 
 def check_alarm_setter():
-    if current_user.role not in [Account.ROLE_ADMINISTRATOR, Account.ROLE_CONFIGURATOR, Account.ROLE_ALARM_SETTER]:
+    if not current_user.is_alarm_setter():
         abort(401, 
             message = 'You are not allowed to perform this action; you must be at least an alarm setter!')
 

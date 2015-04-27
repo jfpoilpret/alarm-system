@@ -20,27 +20,31 @@
             <a id="nav_agenda" class="navbar-brand" href="#">Boulemix</a>
         </div>
         <div class="navbar-collapse collapse">
-          {% if current_user.is_authenticated() %}
-          <ul class="nav navbar-nav navbar-left">
-            <li><a id="nav_configure" href="{{ url_for('configure.home')}}">Configure</a></li>
-            <li><a id="nav_monitor" href="{{ url_for('monitor.home')}}">Monitor</a></li>
-          </ul>
-          {% endif %}
-          <ul class="nav navbar-nav navbar-right">
-            {% if current_user.is_authenticated() %}
-            <li class="dropdown">
-                <a id="nav_username" href="#" class="dropdown-toggle" data-toggle="dropdown">{{ current_user.username }} <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                    <li><a id="nav_allusers" href="{{ url_for('admin.users') }}">All users</a></li>
-                    <li><a id="nav_myprofile" href="{{ url_for('auth.edit_profile') }}">My Profile</a></li>
-                    <li><a id="nav_mypassword" href="{{ url_for('auth.change_password') }}">Modify My Password</a></li>
-                    <li><a id="nav_logout" href="{{ url_for('auth.logout') }}">Logout</a></li>
-                </ul>
-            </li>
-            {% else %}
-            <li><a id="nav_username" class="not-connected" href="#">Not connected</a></li>
-            {% endif %}
-          </ul>
+			{% if current_user.is_authenticated() %}
+			<ul class="nav navbar-nav navbar-left">
+				{% if current_user.is_configurator() %}
+				<li><a id="nav_configure" href="{{ url_for('configure.home')}}">Configure</a></li>
+				{% endif %}
+				<li><a id="nav_monitor" href="{{ url_for('monitor.home')}}">Monitor</a></li>
+			</ul>
+			{% endif %}
+			<ul class="nav navbar-nav navbar-right">
+				{% if current_user.is_authenticated() %}
+				<li class="dropdown">
+				    <a id="nav_username" href="#" class="dropdown-toggle" data-toggle="dropdown">{{ current_user.username }} <b class="caret"></b></a>
+				    <ul class="dropdown-menu">
+				    	{% if current_user.is_admin() %}
+				        <li><a id="nav_allusers" href="{{ url_for('admin.users') }}">All users</a></li>
+				        {% endif %}
+				        <li><a id="nav_myprofile" href="{{ url_for('auth.edit_profile') }}">My Profile</a></li>
+				        <li><a id="nav_mypassword" href="{{ url_for('auth.change_password') }}">Modify My Password</a></li>
+				        <li><a id="nav_logout" href="{{ url_for('auth.logout') }}">Logout</a></li>
+				    </ul>
+				</li>
+				{% else %}
+	            <li><a id="nav_username" class="not-connected" href="#">Not connected</a></li>
+	            {% endif %}
+			</ul>
         </div>
     </div>
 </div>
