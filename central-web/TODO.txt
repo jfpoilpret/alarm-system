@@ -1,13 +1,16 @@
-	- force password change (when password empty)
+30'	- update templates to not show unavailable routes (based on current user role)
+	- check no possible direct access to some routes
+
+30'	- force password change (when password empty)
 15'	- improve CSS
 
-30'	- update templates to not show unavailable routes (based on current user role)
 15'	- check if we can refactor edit/create into just one?
 
 30'	- cancel button in various places
 30'	- improve CSS files and refactor (one css per module, with same name as module or 
 	  one unique name, the same across all modules...)
 45'	- review labels/titles everywhere
+	- improve flash messages by adding an icon in front
 
 1h	- review models to ensure completeness of relationships and efficiency
 
@@ -21,6 +24,8 @@
 3h	- create home sketch (bitmap or vectorial?)
 1h	- add picture (or SVG) for configuration
 1h	- add devices location on picture
+
+	- add email?
 	
 2h	- add NRF24 and scanning thread
 	
