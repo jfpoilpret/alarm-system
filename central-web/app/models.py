@@ -80,3 +80,23 @@ class Device(db.Model):
     voltage_threshold = db.Column(db.Float, nullable=True)
     config_id = db.Column(db.Integer, db.ForeignKey('configuration.id'))
     #TODO other attributes (eg (x,y) location on map)
+
+# ALERT
+#------
+class Alert(db.Model):
+    LEVEL_INFO = 1
+    LEVEL_WARNING = 2
+    LEVEL_ALARM = 3
+    
+    __tablename__ = 'alert'
+    id = db.Column(db.Integer, primary_key=True)
+    config_id = db.Column(db.Integer, db.ForeignKey('configuration.id'))
+    
+    when = db.Column(db.DateTime, nullable=False, index=True)
+    level = db.Column(db.Integer, nullable=False, index=True)
+    #TODO Define alert types somewhere
+    alert_type = db.Column(db.Integer, nullable=False, index=True)
+    message = db.Column(db.String(500))
+    # TODO need true device reference
+    device_id = db.Column(db.Integer, db.ForeignKey('device.id'))
+    # TODO blob for pickled information?
