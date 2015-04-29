@@ -20,7 +20,11 @@
 					Alarm Active
 					{% if current_user.is_alarm_setter() %}
 					{# TODO add confirm box #}
-					<a class="btn btn-primary" href="{{ url_for('monitor.deactivate_config') }}" role="button">Deactivate</a>
+					<a	class="btn btn-primary" role="button" 
+						href="{{ url_for('monitor.deactivate_config') }}"
+						onclick="return window.confirm('Are you sure you want to deactivate the alarm system?');">
+						Deactivate
+					</a>
 					{% endif %}
 				</h3>
 				{% else %}
@@ -28,7 +32,11 @@
 					Alarm Not Active
 					{% if current_user.is_alarm_setter() %}
 					{# TODO add confirm box #}
-					<a class="btn btn-primary" href="{{ url_for('monitor.activate_config') }}" role="button">Activate</a>
+					<a	class="btn btn-primary" role="button" 
+						href="{{ url_for('monitor.activate_config') }}"
+						onclick="return window.confirm('Are you sure you want to activate the alarm system?');">
+						Activate
+					</a>
 					{% endif %}
 				</h3>
 				{% endif %}
