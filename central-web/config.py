@@ -8,12 +8,14 @@ class Config:
     HOST = '127.0.0.1'
     BOOTSTRAP_SERVE_LOCAL = True
 
+# This configuration is used during development on Windows only
 class DevelopmentConfig(Config):
     DEBUG = True
     SECRET_KEY = 't0p s3cr3t'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 
+# The following configurations are used on Raspberry Pi (linux) only
 class DemoConfig(Config):
     DEBUG = True
     HOST = '0.0.0.0'
