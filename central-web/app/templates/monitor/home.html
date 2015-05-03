@@ -19,7 +19,6 @@
 				<h3>
 					Alarm Active
 					{% if current_user.is_alarm_setter() %}
-					{# TODO add confirm box #}
 					<a	class="btn btn-primary" role="button" 
 						href="{{ url_for('monitor.deactivate_config') }}"
 						onclick="return window.confirm('Are you sure you want to deactivate the alarm system?');">
@@ -31,7 +30,6 @@
 				<h3>
 					Alarm Not Active
 					{% if current_user.is_alarm_setter() %}
-					{# TODO add confirm box #}
 					<a	class="btn btn-primary" role="button" 
 						href="{{ url_for('monitor.activate_config') }}"
 						onclick="return window.confirm('Are you sure you want to activate the alarm system?');">
