@@ -4,7 +4,7 @@ from sqlalchemy import update
 
 from app import db
 from app.models import Configuration, Device
-from app.configure.forms import ConfigForm, EditConfigForm, DeviceForm, EditDeviceForm
+from app.configure.forms import ConfigForm, EditConfigForm, DeviceForm, EditDeviceForm, ConfigMapForm
 from app.configure import configure
 from app.common import device_kinds, check_configurator
 
@@ -44,6 +44,27 @@ def create_config():
         flash('New configuration ''%s''  has been created' % config.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
     return render_template('configure/create_config.html', configForm = configForm)
+
+@configure.route('/edit_config_map/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def edit_config_map(id):
+    check_configurator()
+    config = Configuration.query.get(id)
+    #TODO get current map and add it for rendering
+    configMapForm = ConfigMapForm(prefix = 'config_')
+    if configMapForm.validate_on_submit():
+        # Read uploaded file and store it to DB
+        data = configMapForm.map_area.data.read().decode('utf-8')
+        print(data)
+        config.map_area = data
+        db.session.add(config)
+        db.session.commit()
+        flash('Map image for configuration ''%s''  has been saved' % config.name, 'success')
+        #TODO maybe re-render the same template so that we can also specify device location (LATER)
+        return redirect(url_for('.home'))
+    return render_template('configure/edit_config_map.html', 
+        config = config,
+        configMapForm = configMapForm)
 
 @configure.route('/delete_config/<int:id>')
 @login_required

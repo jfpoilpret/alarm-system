@@ -27,6 +27,7 @@
 					{% for config in configurations %}
 						<tr>
 							<td>
+							{# TODO prevent modification of config when active #}
 							{# Enable link only if not already current #}
 							{% if not config.current %}
 								<a  class="btn btn-xs btn-default config-set-current" 
@@ -41,6 +42,10 @@
 								<a  class="btn btn-xs btn-default config-edit" 
 									href="{{ url_for('configure.edit_config', id = config.id) }}">
 									<span class="glyphicon glyphicon-pencil"></span>
+								</a>
+								<a  class="btn btn-xs btn-default config-map" 
+									href="{{ url_for('configure.edit_config_map', id = config.id) }}">
+									<span class="glyphicon glyphicon-home"></span>
 								</a>
 								<a  class="btn btn-xs btn-default config-delete" 
 									href="{{ url_for('configure.delete_config', id = config.id) }}" 

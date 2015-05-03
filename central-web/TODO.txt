@@ -1,3 +1,14 @@
+1h	- update UI to allow SVG upload for one config
+		- add Flask-Uploads dependency
+		- check how to use (with or without Flask-WTF)
+		- important: what we want:
+			- enable SVG extensions only
+			- be able to save as clob
+			- possibly remove the XML header?
+			
+	- update UI to allow positioning of devices
+30'		- first need to check how to display SVG
+		
 1h	- alarm history view
 
 1h	- monitoring queues writers to DB and memory (alarms)
@@ -21,6 +32,8 @@
 
 1h	- review models to ensure completeness of relationships and efficiency
 
+2h	- add correct SQL exception handling in all routes
+
 15'	- check no possible direct access to some routes
 30'	- force password change (when password empty)
 
@@ -33,27 +46,3 @@
 	
 2h	- add NRF24 and scanning thread
 	
-	<div id="modalDeviceFormId" class="modal fade" data-backdrop="static">
-		<div class="modal-dialog">
-			<form class="form form-horizontal" method="post" role="form">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title">Edit Module for '{{ config.name }}' Configuration</h4>
-					</div>
-					<div class="modal-body">
-						{{ deviceForm.hidden_tag() }}
-						{{ wtf.form_errors(deviceForm, hiddens = "only") }}
-						
-						{{ wtf.form_field(deviceForm.name) }}
-						{{ wtf.form_field(deviceForm.voltage_threshold) }}
-						{{ wtf.form_field(deviceForm.device_id) }}
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						{{ wtf.form_field(deviceForm.submit, button_map = {'submit': 'primary'}) }}
-					</div>
-				</div>
-			</form>
-		</div>
-	</div>
