@@ -54,11 +54,6 @@ def edit_config_map(id):
     if configMapForm.validate_on_submit():
         # Read uploaded SVG file (XML)
         data = configMapForm.map_area.data.read().decode('utf-8')
-        # Remove xml headers
-        index = data.find('<svg')
-        if index >= 0:
-            data = data[index:]
-        #TODO Replace <svg width="" height="" > with just width=100%
         # Store XML SVG to DB
         config.map_area = data
         db.session.add(config)
