@@ -1,14 +1,10 @@
-1h	- update UI to allow SVG upload for one config
-		- add Flask-Uploads dependency
-		- check how to use (with or without Flask-WTF)
-		- important: what we want:
-			- enable SVG extensions only
-			- be able to save as clob
-			- possibly remove the XML header?
-			
+OK	- check current web app on RPi (Python 2.7)
+	
 	- update UI to allow positioning of devices
-30'		- first need to check how to display SVG
-		
+		- check out how to trap events on SVG
+		- check out how to display several SVG layers
+		- need to first modify initial SVG (modify height/width, layers...)
+	
 1h	- alarm history view
 
 1h	- monitoring queues writers to DB and memory (alarms)
