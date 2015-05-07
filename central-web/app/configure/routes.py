@@ -62,7 +62,7 @@ def edit_config_map(id):
         return redirect(url_for('.edit_config_map', id = id))
     return render_template('configure/edit_config_map.html', 
         config = config,
-        svgMap = prepareMap(config.map_area),
+        svgMap = prepareMap(config),
         configMapForm = configMapForm)
 
 @configure.route('/delete_config/<int:id>')

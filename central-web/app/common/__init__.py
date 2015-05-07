@@ -1,3 +1,4 @@
+from re import compile
 from flask import abort
 from flask_login import current_user
 from app.models import Device
@@ -33,12 +34,14 @@ def check_alarm_setter():
 # This function reads an SVG string (XML) containing the monitoring zone map,
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
 # devices is an array of objects that contain location (and later device image somehow)
-def prepareMap(svgMap, devices = []):
-#    svgXml = parse(svgMap, process_namespaces = True)
-    svgXml = parse(svgMap, process_namespaces = False)
+VIEWBOX_REGEX = compile(r"\-?[0-9]+")
+
+def prepareMap(config):
+    svgXml = parse(config.map_area, process_namespaces = False)
     root = svgXml['svg']
-    #TODO parse viewBox to find out coordinates to use for additional layer
+    # parse viewBox to find out coordinates to use for additional layer
     viewBox = root['@viewBox']
+    dimensions = [int(x) for x in VIEWBOX_REGEX.findall(viewBox)]
     root['@width'] = '100%'
     root['@height'] = '100%'
     layers = root['g']
@@ -46,6 +49,31 @@ def prepareMap(svgMap, devices = []):
         layers = [layers]
         root['g'] = layers
     deviceLayer = {}
-#    deviceLayer['rect'] = 
-#    layers.append(deviceLayer)
+    #TODO add javascript event handler here
+    deviceLayer['rect'] = {
+        '@x': str(dimensions[0] + 1),
+        '@y': str(dimensions[1] + 1),
+        '@width': str(dimensions[2] - 2),
+        '@height': str(dimensions[3] - 2),
+        '@style': 'fill-opacity:0;stroke-opacity:0'
+    }
+    #TODO add tooltip (javascript?) to each device
+    devices = config.devices
+    if len(devices) > 0:
+        subLayers = []
+        for id, device in devices.items():
+            x = (device.location_x or 0.5) * dimensions[2] + dimensions[0]
+            y = (device.location_y or 0.5) * dimensions[3] + dimensions[1]
+            r = 0.02 * dimensions[2]
+            device_image = {
+                '@cx': str(x),
+                '@cy': str(y),
+                '@r': str(r),
+                '@stroke': 'red',
+                '@fill': 'red',
+                '@title': device.name
+            }
+            subLayers.append(device_image)
+        deviceLayer['circle'] = subLayers
+    layers.append(deviceLayer)
     return unparse(svgXml, full_document = False)
