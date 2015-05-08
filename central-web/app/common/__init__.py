@@ -39,6 +39,7 @@ VIEWBOX_REGEX = compile(r"\-?[0-9]+")
 def prepareMap(config):
     svgXml = parse(config.map_area, process_namespaces = False)
     root = svgXml['svg']
+    root['@id'] = 'svgMap'
     # parse viewBox to find out coordinates to use for additional layer
     viewBox = root['@viewBox']
     dimensions = [int(x) for x in VIEWBOX_REGEX.findall(viewBox)]
@@ -49,7 +50,6 @@ def prepareMap(config):
         layers = [layers]
         root['g'] = layers
     deviceLayer = {}
-    #TODO add javascript event handler here
     deviceLayer['rect'] = {
         '@x': str(dimensions[0] + 1),
         '@y': str(dimensions[1] + 1),
@@ -57,7 +57,10 @@ def prepareMap(config):
         '@height': str(dimensions[3] - 2),
         '@style': 'fill-opacity:0;stroke-opacity:0'
     }
+    #FIXME drag/drop not fully smooth?
+    #TODO add save devices location button (javascript?)
     #TODO add tooltip (javascript?) to each device
+    #TODO change cursor on devices
     devices = config.devices
     if len(devices) > 0:
         subLayers = []
@@ -66,12 +69,16 @@ def prepareMap(config):
             y = (device.location_y or 0.5) * dimensions[3] + dimensions[1]
             r = 0.02 * dimensions[2]
             device_image = {
+#                '@id': 'device-%d' % id,
                 '@cx': str(x),
                 '@cy': str(y),
                 '@r': str(r),
                 '@stroke': 'red',
                 '@fill': 'red',
-                '@title': device.name
+                '@title': device.name,
+                '@onmousedown': 'startDrag(evt)',
+                '@onmousemove': 'drag(evt)',
+                '@onmouseup': 'endDrag(evt)'
             }
             subLayers.append(device_image)
         deviceLayer['circle'] = subLayers

@@ -6,6 +6,11 @@
 <link rel="stylesheet" href="{{url_for('static', filename='configure/home.css')}}">
 {% endblock %}
 
+{% block scripts %}
+{{super()}}
+<script language="javascript" type="text/javascript" src="{{url_for('static', filename='configure/SVGHandlers.js')}}"></script>
+{% endblock %}
+
 {% block page_content %}
 <div class="form-config-map">
 	<div class="panel panel-primary">
