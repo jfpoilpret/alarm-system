@@ -1,9 +1,6 @@
-OK	- check current web app on RPi (Python 2.7)
-	
 	- update UI to allow positioning of devices
-		- check out how to trap events on SVG
-		- check out how to display several SVG layers
-		- need to first modify initial SVG (modify height/width, layers...)
+		- CSS improvement
+		- implement saveing of new locations (auto or on submit?)
 	
 1h	- alarm history view
 

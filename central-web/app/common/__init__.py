@@ -55,31 +55,30 @@ def prepareMap(config):
         layers = []
         root['g'] = layers
         
-    deviceLayer = {}
     #FIXME drag/drop not fully smooth?
     #TODO add save devices location button (javascript?)
     #TODO add tooltip (javascript?) to each device
-    #TODO change cursor on devices
     devices = config.devices
     if len(devices) > 0:
-        subLayers = []
         for id, device in devices.items():
             x = (device.location_x or 0.5) * dimensions[2] + dimensions[0]
             y = (device.location_y or 0.5) * dimensions[3] + dimensions[1]
             r = 0.02 * dimensions[2]
             device_image = {
-#                '@id': 'device-%d' % id,
                 '@cx': str(x),
                 '@cy': str(y),
                 '@r': str(r),
                 '@stroke': 'red',
                 '@fill': 'red',
                 '@title': device.name,
+            }
+            device_group = {
+                '@id': 'device-%d' % id,
+                '@class': 'device-image',
                 '@onmousedown': 'startDrag(evt)',
                 '@onmousemove': 'drag(evt)',
-                '@onmouseup': 'endDrag(evt)'
+                '@onmouseup': 'endDrag(evt)',
+                'circle': device_image
             }
-            subLayers.append(device_image)
-        deviceLayer['circle'] = subLayers
-    layers.append(deviceLayer)
+            layers.append(device_group)
     return unparse(svgXml, full_document = False)
