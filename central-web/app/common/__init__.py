@@ -45,18 +45,17 @@ def prepareMap(config):
     dimensions = [int(x) for x in VIEWBOX_REGEX.findall(viewBox)]
     root['@width'] = '100%'
     root['@height'] = '100%'
-    layers = root['g']
-    if not is_instance(layers, list):
-        layers = [layers]
+    # Ensure we have SVG groups present so that we can add to them
+    if 'g' in root:
+        layers = root['g']
+        if not is_instance(layers, list):
+            layers = [layers]
+            root['g'] = layers
+    else:
+        layers = []
         root['g'] = layers
+        
     deviceLayer = {}
-    deviceLayer['rect'] = {
-        '@x': str(dimensions[0] + 1),
-        '@y': str(dimensions[1] + 1),
-        '@width': str(dimensions[2] - 2),
-        '@height': str(dimensions[3] - 2),
-        '@style': 'fill-opacity:0;stroke-opacity:0'
-    }
     #FIXME drag/drop not fully smooth?
     #TODO add save devices location button (javascript?)
     #TODO add tooltip (javascript?) to each device
