@@ -17,11 +17,12 @@ function startDrag(evt)
 		var pnt = DragTarget.ownerSVGElement.createSVGPoint();
 		pnt.x = evt.clientX;
 		pnt.y = evt.clientY;
-		//---elements transformed and/or in different(svg) viewports---
+
 		var sCTM = DragTarget.getScreenCTM();
 		var Pnt = pnt.matrixTransform(sCTM.inverse());
 
 		TransformRequestObj = DragTarget.ownerSVGElement.createSVGTransform();
+
 		//---attach new or existing transform to element, init its transform list---
 		var myTransListAnim = DragTarget.transform;
 		TransList = myTransListAnim.baseVal;
@@ -58,12 +59,10 @@ function endDrag(evt)
 {
 	Dragging = false;
 
-	svgMap.appendChild(DragTarget);
-
 	var pnt = DragTarget.ownerSVGElement.createSVGPoint();
 	pnt.x = evt.clientX;
 	pnt.y = evt.clientY;
-	//---elements in different(svg) viewports, and/or transformed ---
+
 	var sCTM = DragTarget.getScreenCTM();
 	var Pnt = pnt.matrixTransform(sCTM.inverse());
 	Pnt.x -= OffsetX;
@@ -72,6 +71,4 @@ function endDrag(evt)
 	TransformRequestObj.setTranslate(Pnt.x, Pnt.y);
 	TransList.appendItem(TransformRequestObj);
 	TransList.consolidate();
-
-	//******* end needed for drop into other viewPorts *******
 }
