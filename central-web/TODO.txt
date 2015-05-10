@@ -1,6 +1,12 @@
 	- update UI to allow positioning of devices
-		- CSS improvement
-		- implement saveing of new locations (auto or on submit?)
+		- implement saveing of changed locations
+			- need JS function using AJAX
+		- CSS improvement: color change during hover
+		- tooltip or text to show device name
+
+	- improve configuration UI:
+		- use same form for config edit and map upload
+		- use specific form for device location setup on map
 	
 1h	- alarm history view
 

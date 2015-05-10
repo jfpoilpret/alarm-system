@@ -66,6 +66,7 @@ class Configuration(db.Model):
     devices = db.relationship('Device', 
         collection_class = attribute_mapped_collection('device_id'), lazy = 'select')
     map_area = deferred(db.Column(db.Text, nullable = True))
+    map_area_filename = db.Column(db.String(256), nullable = True)
 
 # DEVICE
 #-------

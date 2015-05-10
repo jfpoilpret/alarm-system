@@ -77,3 +77,7 @@
 .device-image:hover {
 	cursor: pointer;
 }
+
+.device-image circle:hover {
+	fill: blue;
+}

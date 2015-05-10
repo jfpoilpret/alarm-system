@@ -6,6 +6,8 @@ var Dragging = false;
 var OffsetX = 0;
 var OffsetY = 0;
 
+var DeviceCoordinates = new Object();
+
 //---mouse down over element---
 function startDrag(evt)
 {
@@ -70,5 +72,16 @@ function endDrag(evt)
 
 	TransformRequestObj.setTranslate(Pnt.x, Pnt.y);
 	TransList.appendItem(TransformRequestObj);
-	TransList.consolidate();
+	matrix = TransList.consolidate().matrix;
+	
+	// Apply transform matrix "manually" to circle center
+	x = DragTarget.cx.baseVal.value;
+	y = DragTarget.cy.baseVal.value;
+	xx = matrix.a * x + matrix.c * y + matrix.e;
+	yy = matrix.b * x + matrix.d * y + matrix.f;
+	
+	// Add this device to the list of devices changed
+	DeviceCoordinates[DragTarget.parentNode.id] = { 'x': xx, 'y': yy };
+	// Immediately update hidden field with JSON of all device changes so that form is always ready for submit
+	config_devices_locations.value = JSON.stringify(DeviceCoordinates);
 }

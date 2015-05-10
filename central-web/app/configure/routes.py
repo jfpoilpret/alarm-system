@@ -1,12 +1,15 @@
+from json import loads
+from re import compile
 from flask import flash, redirect, render_template, url_for
 from flask_login import login_required
 from sqlalchemy import update
 
 from app import db
 from app.models import Configuration, Device
-from app.configure.forms import ConfigForm, EditConfigForm, DeviceForm, EditDeviceForm, ConfigMapForm
+from app.configure.forms import ConfigForm, EditConfigForm, DeviceForm, EditDeviceForm, DevicesLocationForm
 from app.configure import configure
-from app.common import device_kinds, check_configurator, prepareMap
+from app.common import device_kinds, check_configurator, prepareMap,\
+    extractSvgViewBox
 
 @configure.route('/home')
 @login_required
@@ -14,14 +17,23 @@ def home():
     all_configs = Configuration.query.all()
     return render_template('configure/home.html', configurations = all_configs)
 
+#TODO refactor commin stuff between create and edit, also share same template
 @configure.route('/edit_config/<int:id>', methods = ['GET', 'POST'])
 @login_required
 def edit_config(id):
     check_configurator()
     config = Configuration.query.get(id)
+    #TODO show extra (readonly) field with latest upload filename
     configForm = EditConfigForm(prefix = 'config_', obj = config)
     if configForm.validate_on_submit():
         configForm.populate_obj(config)
+        # If uploaded, read uploaded SVG file (XML)
+        if configForm.map_area.has_file():
+            map_area_field_data = configForm.map_area.data
+            data = map_area_field_data.read().decode('utf-8')
+            # Store XML SVG to DB
+            config.map_area = data
+            config.map_area_filename = map_area_field_data.filename
         db.session.add(config)
         db.session.commit()
         flash('Configuration ''%s''  has been saved' % config.name, 'success')
@@ -39,31 +51,59 @@ def create_config():
     if configForm.validate_on_submit():
         config = Configuration()
         configForm.populate_obj(config)
+        # If uploaded, read uploaded SVG file (XML)
+        if configForm.map_area.has_file():
+            map_area_field_data = configForm.map_area.data
+            data = map_area_field_data.read().decode('utf-8')
+            # Store XML SVG to DB
+            config.map_area = data
+            config.map_area_filename = map_area_field_data.filename
         db.session.add(config)
         db.session.commit()
         flash('New configuration ''%s''  has been created' % config.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
     return render_template('configure/create_config.html', configForm = configForm)
 
+DEVICEID_REGEX = compile('[0-9]+')
+def find_device(config, device_id):
+    id = int(DEVICEID_REGEX.findall(device_id)[0])
+    return config.devices[id]
+
 @configure.route('/edit_config_map/<int:id>', methods = ['GET', 'POST'])
 @login_required
 def edit_config_map(id):
     check_configurator()
     config = Configuration.query.get(id)
-    configMapForm = ConfigMapForm(prefix = 'config_')
+    configMapForm = DevicesLocationForm(prefix = 'config_')
     if configMapForm.validate_on_submit():
-        # Read uploaded SVG file (XML)
-        data = configMapForm.map_area.data.read().decode('utf-8')
-        # Store XML SVG to DB
-        config.map_area = data
-        db.session.add(config)
+        # Get all modified devices locations as a JSON object
+        new_locations = loads(configMapForm.devices_locations.data)
+        dimensions = extractSvgViewBox(config)
+        for device_id, location in new_locations.items():
+            # extract device
+            device = find_device(config, device_id)
+            # interpret all devices locations (as ratios)
+            device.location_x = (location['x'] - dimensions[0]) / dimensions[2]
+            device.location_y = (location['y'] - dimensions[1]) / dimensions[3]
+            db.session.add(device)
         db.session.commit()
-        flash('Map image for configuration ''%s''  has been saved' % config.name, 'success')
+        flash('New devices locations for ''%s''  have been saved' % config.name, 'success')
         return redirect(url_for('.edit_config_map', id = id))
     return render_template('configure/edit_config_map.html', 
         config = config,
         svgMap = prepareMap(config),
         configMapForm = configMapForm)
+
+#TODO normally post only no?
+# This method is called by javascript and is passed a JSON with all devices locations on the map
+@configure.route('/save_devices_location/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def save_devices_location(id):
+    check_configurator()
+    config = Configuration.query.get(id)
+    #TODO
+    flash('Modules locations for configuration ''%s''  have been saved' % config.name, 'success')
+    return redirect(url_for('.edit_config_map', id = id))
 
 @configure.route('/delete_config/<int:id>')
 @login_required

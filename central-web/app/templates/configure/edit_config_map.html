@@ -19,10 +19,8 @@
 		</div>
 		<div class="panel-body">
 		{# TODO Add cancel button to return to configurations list #}
-		{# TODO Use inline form but WITH the labels! #}
-			{{ wtf.quick_form(configMapForm, enctype = 'multipart/form-data', button_map = {'config_submit': 'primary'}) }}
+			{{ wtf.quick_form(configMapForm, button_map = {'config_submit': 'primary'}) }}
 		</div>
-		{# TODO add devices position somehow (eg select device from dropdown then click on SVG) #}
 		<div class="config-map-area">
 			{{ svgMap|safe }}
 		</div>

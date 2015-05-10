@@ -31,18 +31,25 @@ def check_alarm_setter():
         abort(401, 
             message = 'You are not allowed to perform this action; you must be at least an alarm setter!')
 
+VIEWBOX_REGEX = compile(r"\-?[0-9]+")
+def extractViewBox(root):
+    viewBox = root['@viewBox']
+    return [int(x) for x in VIEWBOX_REGEX.findall(viewBox)]
+
+def extractSvgViewBox(config):
+    svgXml = parse(config.map_area, process_namespaces = False)
+    root = svgXml['svg']
+    return extractViewBox(root)
+
 # This function reads an SVG string (XML) containing the monitoring zone map,
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
 # devices is an array of objects that contain location (and later device image somehow)
-VIEWBOX_REGEX = compile(r"\-?[0-9]+")
-
 def prepareMap(config):
     svgXml = parse(config.map_area, process_namespaces = False)
     root = svgXml['svg']
     root['@id'] = 'svgMap'
     # parse viewBox to find out coordinates to use for additional layer
-    viewBox = root['@viewBox']
-    dimensions = [int(x) for x in VIEWBOX_REGEX.findall(viewBox)]
+    dimensions = extractViewBox(root)
     root['@width'] = '100%'
     root['@height'] = '100%'
     # Ensure we have SVG groups present so that we can add to them
@@ -71,13 +78,13 @@ def prepareMap(config):
                 '@stroke': 'red',
                 '@fill': 'red',
                 '@title': device.name,
+                '@onmousedown': 'startDrag(evt)',
+                '@onmousemove': 'drag(evt)',
+                '@onmouseup': 'endDrag(evt)',
             }
             device_group = {
                 '@id': 'device-%d' % id,
                 '@class': 'device-image',
-                '@onmousedown': 'startDrag(evt)',
-                '@onmousemove': 'drag(evt)',
-                '@onmouseup': 'endDrag(evt)',
                 'circle': device_image
             }
             layers.append(device_group)
