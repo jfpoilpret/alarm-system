@@ -17,7 +17,7 @@ def home():
     all_configs = Configuration.query.all()
     return render_template('configure/home.html', configurations = all_configs)
 
-#TODO refactor commin stuff between create and edit, also share same template
+#TODO refactor common stuff between create and edit, also share same template
 @configure.route('/edit_config/<int:id>', methods = ['GET', 'POST'])
 @login_required
 def edit_config(id):
@@ -26,10 +26,12 @@ def edit_config(id):
     #TODO show extra (readonly) field with latest upload filename
     configForm = EditConfigForm(prefix = 'config_', obj = config)
     if configForm.validate_on_submit():
+        print('Before populate, map_area = %s' % config.map_area)
         configForm.populate_obj(config)
+        print('After populate, map_area = %s' % config.map_area)
         # If uploaded, read uploaded SVG file (XML)
-        if configForm.map_area.has_file():
-            map_area_field_data = configForm.map_area.data
+        if configForm.map_area_file.has_file():
+            map_area_field_data = configForm.map_area_file.data
             data = map_area_field_data.read().decode('utf-8')
             # Store XML SVG to DB
             config.map_area = data
@@ -52,8 +54,8 @@ def create_config():
         config = Configuration()
         configForm.populate_obj(config)
         # If uploaded, read uploaded SVG file (XML)
-        if configForm.map_area.has_file():
-            map_area_field_data = configForm.map_area.data
+        if configForm.map_area_file.has_file():
+            map_area_field_data = configForm.map_area_file.data
             data = map_area_field_data.read().decode('utf-8')
             # Store XML SVG to DB
             config.map_area = data
@@ -93,17 +95,6 @@ def edit_config_map(id):
         config = config,
         svgMap = prepareMap(config),
         configMapForm = configMapForm)
-
-#TODO normally post only no?
-# This method is called by javascript and is passed a JSON with all devices locations on the map
-@configure.route('/save_devices_location/<int:id>', methods = ['GET', 'POST'])
-@login_required
-def save_devices_location(id):
-    check_configurator()
-    config = Configuration.query.get(id)
-    #TODO
-    flash('Modules locations for configuration ''%s''  have been saved' % config.name, 'success')
-    return redirect(url_for('.edit_config_map', id = id))
 
 @configure.route('/delete_config/<int:id>')
 @login_required
