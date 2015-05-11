@@ -1,11 +1,3 @@
-	- update UI to allow positioning of devices
-		- tooltip or text to show device name
-	
-1h	- alarm history view
-
-1h	- monitoring queues writers to DB and memory (alarms)
-1h	- real-time monitoring on picture with devices states
-	
 30'	- check if we can refactor edit/create into just one?
 		- create user / edit user
 		- create config / edit config? (harder than above)
@@ -23,16 +15,18 @@
 15'	- improve flash messages by adding an icon in front
 
 1h	- review models to ensure completeness of relationships and efficiency
-
 2h	- add correct SQL exception handling in all routes
 
+
+1h	- alarm history view
+
+1h	- monitoring queues writers to DB and memory (alarms)
+1h	- real-time monitoring on picture with devices states
+	
 15'	- check no possible direct access to some routes
 30'	- force password change (when password empty)
 
 1h	- infer on i18n
-3h	- create home sketch (bitmap or vectorial?)
-1h	- add picture (or SVG) for configuration
-1h	- add devices location on picture
 
 	- add email?
 	

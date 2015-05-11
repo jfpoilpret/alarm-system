@@ -8,8 +8,7 @@ from app import db
 from app.models import Configuration, Device
 from app.configure.forms import ConfigForm, EditConfigForm, DeviceForm, EditDeviceForm, DevicesLocationForm
 from app.configure import configure
-from app.common import device_kinds, check_configurator, prepareMap,\
-    extractSvgViewBox
+from app.common import device_kinds, check_configurator, prepareMapForConfig, extractSvgViewBox
 
 @configure.route('/home')
 @login_required
@@ -93,7 +92,7 @@ def edit_config_map(id):
         return redirect(url_for('.edit_config_map', id = id))
     return render_template('configure/edit_config_map.html', 
         config = config,
-        svgMap = prepareMap(config),
+        svgMap = prepareMapForConfig(config),
         configMapForm = configMapForm)
 
 @configure.route('/delete_config/<int:id>')
