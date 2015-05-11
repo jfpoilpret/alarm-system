@@ -62,9 +62,6 @@ def prepareMap(config):
         layers = []
         root['g'] = layers
         
-    #FIXME drag/drop not fully smooth?
-    #TODO add save devices location button (javascript?)
-    #TODO add tooltip (javascript?) to each device
     devices = config.devices
     if len(devices) > 0:
         for id, device in devices.items():
@@ -77,8 +74,9 @@ def prepareMap(config):
                 '@r': str(r),
                 '@stroke': 'red',
                 '@fill': 'red',
-                '@data-toggle': 'tooltip',
-                '@title': device.name,
+                '@data-toggle': 'popover',
+                '@title': 'Module ID %d' % id,
+                '@data-content': device.name,
                 '@onmousedown': 'startDrag(evt)',
                 '@onmousemove': 'drag(evt)',
                 '@onmouseup': 'endDrag(evt)',
