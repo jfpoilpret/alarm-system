@@ -77,6 +77,7 @@ def prepareMap(config):
                 '@r': str(r),
                 '@stroke': 'red',
                 '@fill': 'red',
+                '@data-toggle': 'tooltip',
                 '@title': device.name,
                 '@onmousedown': 'startDrag(evt)',
                 '@onmousemove': 'drag(evt)',

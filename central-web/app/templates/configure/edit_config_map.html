@@ -9,6 +9,11 @@
 {% block scripts %}
 {{super()}}
 <script language="javascript" type="text/javascript" src="{{url_for('static', filename='configure/SVGHandlers.js')}}"></script>
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip({'container': 'body'});
+});
+</script>
 {% endblock %}
 
 {% block page_content %}
