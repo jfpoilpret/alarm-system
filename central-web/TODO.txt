@@ -1,5 +1,4 @@
 30'	- check if we can refactor edit/create into just one?
-		- create user / edit user
 		- create config / edit config? (harder than above)
 
 30'	- cancel button in various places:

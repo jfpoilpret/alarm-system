@@ -16,41 +16,28 @@ def home():
     all_configs = Configuration.query.all()
     return render_template('configure/home.html', configurations = all_configs)
 
-#TODO refactor common stuff between create and edit, also share same template
 @configure.route('/edit_config/<int:id>', methods = ['GET', 'POST'])
 @login_required
 def edit_config(id):
     check_configurator()
     config = Configuration.query.get(id)
-    #TODO show extra (readonly) field with latest upload filename
-    configForm = EditConfigForm(prefix = 'config_', obj = config)
-    if configForm.validate_on_submit():
-        print('Before populate, map_area = %s' % config.map_area)
-        configForm.populate_obj(config)
-        print('After populate, map_area = %s' % config.map_area)
-        # If uploaded, read uploaded SVG file (XML)
-        if configForm.map_area_file.has_file():
-            map_area_field_data = configForm.map_area_file.data
-            data = map_area_field_data.read().decode('utf-8')
-            # Store XML SVG to DB
-            config.map_area = data
-            config.map_area_filename = map_area_field_data.filename
-        db.session.add(config)
-        db.session.commit()
-        flash('Configuration ''%s''  has been saved' % config.name, 'success')
-        return redirect(url_for('.edit_config', id = config.id))
-    return render_template('configure/edit_config.html', 
-        config = config,
-        configForm = configForm,
-        deviceForm = None)
+    return check_config_submit(
+        configForm = EditConfigForm(prefix = 'config_', obj = config),
+        config = config, 
+        is_new = False)
 
 @configure.route('/create_config', methods = ['GET', 'POST'])
 @login_required
 def create_config():
     check_configurator()
-    configForm = ConfigForm(prefix = 'config_')
+    return check_config_submit(
+        configForm = ConfigForm(prefix = 'config_'), 
+        config = Configuration(), 
+        is_new = True)
+
+# Common handling of config creation/edition requests
+def check_config_submit(configForm, config, is_new):
     if configForm.validate_on_submit():
-        config = Configuration()
         configForm.populate_obj(config)
         # If uploaded, read uploaded SVG file (XML)
         if configForm.map_area_file.has_file():
@@ -61,9 +48,19 @@ def create_config():
             config.map_area_filename = map_area_field_data.filename
         db.session.add(config)
         db.session.commit()
-        flash('New configuration ''%s''  has been created' % config.name, 'success')
+        if is_new:
+            flash('New configuration ''%s''  has been created' % config.name, 'success')
+        else:
+            flash('Configuration ''%s''  has been saved' % config.name, 'success')
         return redirect(url_for('.edit_config', id = config.id))
-    return render_template('configure/create_config.html', configForm = configForm)
+    if is_new:
+        return render_template('configure/create_config.html', 
+            configForm = configForm)
+    else:
+        return render_template('configure/edit_config.html', 
+            config = config,
+            configForm = configForm,
+            deviceForm = None)
 
 DEVICEID_REGEX = compile('[0-9]+')
 def find_device(config, device_id):
@@ -137,6 +134,7 @@ def edit_device(id):
 def create_device(id, kind):
     check_configurator()
     device = Device()
+    # the following LOC could be merged into above line!
     device.config_id = id
     config = Configuration.query.get(id)
     device_config = device_kinds[kind]

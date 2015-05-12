@@ -6,6 +6,7 @@ from wtforms.fields.simple import HiddenField
 from flask.ext.wtf.file import FileField, FileAllowed
 
 # Form to create a new configuration (general information only)
+#TODO show extra (readonly) field with latest upload filename
 class ConfigForm(Form):
     name = StringField('Name', validators = [DataRequired(), Length(1, 64)])
     lockcode = StringField('Lock code', validators = [DataRequired(), Regexp('[0-9]{6}')])
@@ -17,7 +18,7 @@ class ConfigForm(Form):
 class EditConfigForm(ConfigForm):
     submit = SubmitField('Save Configuration')
 
-#TODO special form to setup devices location (and only that): JavaScript based
+# Special form to setup devices location (and only that): JavaScript based
 class DevicesLocationForm(Form):
     devices_locations = HiddenField('JSONLocations')
     submit = SubmitField('Save Modules Location')
