@@ -10,7 +10,13 @@
 <div class="form-user">
 	<div class="panel panel-primary">
 		<div class="panel-heading">
-			<h3 class="form-heading">Edit User</h3>
+			<h3 class="form-heading">
+			{% if is_new %}
+			New User
+			{% else %}
+			Edit User
+			{% endif %}
+			</h3>
 		</div>
 		<div class="panel-body">
 			{{ wtf.quick_form(userForm, button_map = {'user_submit': 'primary'}) }}

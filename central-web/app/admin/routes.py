@@ -19,28 +19,32 @@ def users():
 def edit_user(userid):
     check_admin()
     user = Account.query.get(userid)
-    userForm = EditUserForm(prefix = 'user_', obj = user)
-    if userForm.validate_on_submit():
-        userForm.populate_obj(user)
-        db.session.add(user)
-        db.session.commit()
-        flash('User ''%s''  has been saved' % user.username, 'success')
-        return redirect(url_for('.users'))
-    return render_template('admin/edit_user.html', userForm = userForm)
+    return check_user_submit(
+        userForm = EditUserForm(prefix = 'user_', obj = user), 
+        user = user, 
+        is_new = False)
 
 @admin.route('/create_user', methods = ['GET', 'POST'])
 @login_required
 def create_user():
     check_admin()
-    userForm = NewUserForm(prefix = 'user_')
+    return check_user_submit(
+        userForm = NewUserForm(prefix = 'user_'), 
+        user = Account(), 
+        is_new = True)
+
+# Common handling of user creation/edition requests
+def check_user_submit(userForm, user, is_new):
     if userForm.validate_on_submit():
-        user = Account()
         userForm.populate_obj(user)
         db.session.add(user)
         db.session.commit()
-        flash('User ''%s''  has been created' % user.username, 'success')
+        if is_new:
+            flash('User ''%s''  has been created' % user.username, 'success')
+        else:
+            flash('User ''%s''  has been saved' % user.username, 'success')
         return redirect(url_for('.users'))
-    return render_template('admin/create_user.html', userForm = userForm)
+    return render_template('admin/edit_user.html', userForm = userForm, is_new = is_new)
 
 @admin.route('/delete_user/<int:userid>')
 @login_required
