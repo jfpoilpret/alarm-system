@@ -123,24 +123,20 @@ def set_current_config(id):
 def edit_device(id):
     check_configurator()
     device = Device.query.get(id)
-    config = Configuration.query.get(device.config_id)
     device_config = device_kinds[device.kind]
     deviceForm = EditDeviceForm(prefix = 'device_', obj = device)
     init_device_id_choices(deviceForm, device_config)
-    return validate_device_form(deviceForm, device.kind, device, config, False)
+    return validate_device_form(deviceForm, device, False)
 
 @configure.route('/create_device/<int:id>/<int:kind>', methods = ['GET', 'POST'])
 @login_required
 def create_device(id, kind):
     check_configurator()
-    device = Device()
-    # the following LOC could be merged into above line!
-    device.config_id = id
-    config = Configuration.query.get(id)
     device_config = device_kinds[kind]
-    deviceForm = DeviceForm(prefix = 'device_', kind = kind, voltage_threshold = device_config.threshold)
+    device = Device(config_id = id, kind = kind, voltage_threshold = device_config.threshold)
+    deviceForm = DeviceForm(prefix = 'device_', obj = device)
     init_device_id_choices(deviceForm, device_config)
-    return validate_device_form(deviceForm, kind, device, config, True)
+    return validate_device_form(deviceForm, device, True)
 
 @configure.route('/delete_device/<int:id>')
 @login_required
@@ -162,7 +158,8 @@ def init_device_id_choices(deviceForm, device_config):
         choices.append((allowed_id, str(allowed_id)))
     deviceForm.device_id.choices = choices
 
-def validate_device_form(deviceForm, kind, device, config, is_new):
+def validate_device_form(deviceForm, device, is_new):
+    config = Configuration.query.get(device.config_id)
     if deviceForm.validate_on_submit():
         deviceForm.populate_obj(device)
         db.session.add(device)
@@ -175,7 +172,7 @@ def validate_device_form(deviceForm, kind, device, config, is_new):
     configForm = EditConfigForm(prefix = 'config_', obj = config)
     return render_template('configure/edit_config.html', 
         id = config.id, 
-        kind = kind, 
+        kind = device.kind, 
         config = config, 
         configForm = configForm, 
         deviceForm = deviceForm)
