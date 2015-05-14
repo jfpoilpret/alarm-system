@@ -5,6 +5,9 @@
 		- edit user
 		- my profile/my password: what screen to return to?
 		
+30'	- reformat code to use consistent function and variables naming (no more camelCase)
+30'	- review all FIXME/TODO
+	
 30'	- improve CSS files and refactor (one css per module, with same name as module or 
 	  one unique name, the same across all modules...)
 45'	- review labels/titles everywhere
