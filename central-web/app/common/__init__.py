@@ -1,11 +1,9 @@
 from re import compile
-from flask import abort
+from flask import abort, session, url_for
 from flask_login import current_user
 from app.models import Device
 from xmltodict import parse, unparse
 from unittest.test.testmock.support import is_instance
-from flask.helpers import url_for
-from flask.globals import session
 
 # Common constants
 #------------------

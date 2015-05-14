@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, session
+from flask import Flask, redirect, request, session, url_for
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -18,6 +18,9 @@ def after_request(response):
     if request.method == 'GET':
         session['return_url'] = request.url
     return response
+
+def root():
+    return redirect(url_for('auth.login'))
 
 def create_app(config_name = None):
     app = Flask(__name__)
@@ -52,6 +55,9 @@ def create_app(config_name = None):
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    
+    # Register the main route (redirect to login)
+    app.add_url_rule('/', view_func = root)
 
     return app
 

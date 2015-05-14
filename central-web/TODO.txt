@@ -1,5 +1,4 @@
 
-	- add auto redirect from / to /auth/login
 15'	- improve flash messages by adding an icon in front
 
 30'	- reformat code to use consistent function and variables naming (no more camelCase)
