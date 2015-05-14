@@ -55,7 +55,8 @@ def check_config_submit(configForm, config, is_new):
         return redirect(url_for('.edit_config', id = config.id))
     if is_new:
         return render_template('configure/create_config.html', 
-            configForm = configForm)
+            configForm = configForm,
+            url_return = url_for('.home'))
     else:
         return render_template('configure/edit_config.html', 
             config = config,
