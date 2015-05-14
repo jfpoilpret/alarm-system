@@ -1,6 +1,4 @@
 30'	- cancel button in various places:
-		- create config
-		- edit config
 		- create user
 		- edit user
 		- my profile/my password: what screen to return to?

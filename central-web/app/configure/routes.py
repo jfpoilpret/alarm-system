@@ -61,7 +61,8 @@ def check_config_submit(configForm, config, is_new):
         return render_template('configure/edit_config.html', 
             config = config,
             configForm = configForm,
-            deviceForm = None)
+            deviceForm = None,
+            url_return = url_for('.home'))
 
 DEVICEID_REGEX = compile('[0-9]+')
 def find_device(config, device_id):
