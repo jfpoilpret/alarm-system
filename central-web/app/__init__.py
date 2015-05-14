@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, request, session
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -12,6 +12,12 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'info'
 login_manager.needs_refresh_message_category = 'info'
+
+def after_request(response):
+    # Store the current called URL for later use as return URL on cancel button
+    if request.method == 'GET':
+        session['return_url'] = request.url
+    return response
 
 def create_app(config_name = None):
     app = Flask(__name__)
@@ -28,6 +34,9 @@ def create_app(config_name = None):
         syslog_handler.setLevel(logging.WARNING)
         app.logger.addHandler(syslog_handler)
 
+    # Add hook to remind the latest route (or URL) called so that we cancel button can return to it
+    app.after_request(after_request)
+    
     bootstrap.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)

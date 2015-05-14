@@ -4,7 +4,11 @@ from flask_login import current_user
 from app.models import Device
 from xmltodict import parse, unparse
 from unittest.test.testmock.support import is_instance
+from flask.helpers import url_for
+from flask.globals import session
 
+# Common constants
+#------------------
 class DeviceKind:
     def __init__(self, allowed_ids, threshold = 2.7):
         self.allowed_ids = allowed_ids
@@ -17,6 +21,8 @@ device_kinds = {
     #TODO later add new modules such as: laser beam, door open detection, smoke detector...
 }
 
+# Authorization checks
+#----------------------
 def check_admin():
     if not current_user.is_admin():
         abort(401, message = 'You are not allowed to perform this action, only an administrator can!')
@@ -31,6 +37,19 @@ def check_alarm_setter():
         abort(401, 
             message = 'You are not allowed to perform this action; you must be at least an alarm setter!')
 
+# URL utilities
+#---------------
+def get_return_url():
+    url = session.get('return_url', None)
+    if url:
+        return url
+    elif current_user.is_configurator():
+        return url_for('configure.home')
+    else:
+        return url_for('monitor.home')
+
+# SGV utilities
+#---------------
 VIEWBOX_REGEX = compile(r"\-?[0-9]+")
 def extractViewBox(root):
     viewBox = root['@viewBox']

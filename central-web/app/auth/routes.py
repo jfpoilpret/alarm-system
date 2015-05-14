@@ -6,6 +6,7 @@ from app.auth.forms import SigninForm
 from app.models import Account
 from app.auth.forms import ProfileForm, PasswordForm
 from app import db
+from app.common import get_return_url
 
 def renderSignInPage(signinForm = None):
     if not signinForm:
@@ -48,7 +49,9 @@ def edit_profile():
         db.session.commit()
         flash('Your profile has been saved', 'success')
         return redirect(url_for('configure.home'))
-    return render_template('auth/profile.html', profileForm = profileForm)
+    return render_template('auth/profile.html', 
+        profileForm = profileForm,
+        url_return = get_return_url())
 
 @auth.route('/password', methods=['GET', 'POST'])
 @login_required
@@ -66,4 +69,6 @@ def change_password():
             return redirect(url_for('configure.home'))
         else:
             flash('Please ensure you typed the same password twice!', 'warning')
-    return render_template('auth/password.html', passwordForm = passwordForm)
+    return render_template('auth/password.html', 
+        passwordForm = passwordForm,
+        url_return = get_return_url())
