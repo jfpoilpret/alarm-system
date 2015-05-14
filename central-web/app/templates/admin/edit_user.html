@@ -19,7 +19,17 @@
 			</h3>
 		</div>
 		<div class="panel-body">
-			{{ wtf.quick_form(userForm, button_map = {'user_submit': 'primary'}) }}
+			<form class="form" enctype = "multipart/form-data" method="post" role="form">
+				{{ userForm.hidden_tag() }}
+				{{ wtf.form_errors(userForm, hiddens = "only") }}
+				
+				{{ wtf.form_field(userForm.username) }}
+				{{ wtf.form_field(userForm.fullname) }}
+				{{ wtf.form_field(userForm.role) }}
+
+				<a href="{{ url_return }}" role="button" class="btn btn-default">Cancel</a>
+				{{ wtf.form_field(userForm.submit, button_map = {'user_submit': 'primary'}) }}
+			</form>
 		</div>
 	</div>
 </div>

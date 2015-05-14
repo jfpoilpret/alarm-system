@@ -44,7 +44,10 @@ def check_user_submit(userForm, user, is_new):
         else:
             flash('User ''%s''  has been saved' % user.username, 'success')
         return redirect(url_for('.users'))
-    return render_template('admin/edit_user.html', userForm = userForm, is_new = is_new)
+    return render_template('admin/edit_user.html', 
+        userForm = userForm, 
+        is_new = is_new,
+        url_return = url_for('.users'))
 
 @admin.route('/delete_user/<int:userid>')
 @login_required

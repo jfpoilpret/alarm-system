@@ -1,6 +1,4 @@
 30'	- cancel button in various places:
-		- create user
-		- edit user
 		- my profile/my password: what screen to return to?
 		
 15'	- improve flash messages by adding an icon in front
