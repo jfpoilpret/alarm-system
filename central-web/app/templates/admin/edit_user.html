@@ -19,7 +19,7 @@
 			</h3>
 		</div>
 		<div class="panel-body">
-			<form class="form" enctype = "multipart/form-data" method="post" role="form">
+			<form class="form" method="post" role="form">
 				{{ userForm.hidden_tag() }}
 				{{ wtf.form_errors(userForm, hiddens = "only") }}
 				
