@@ -1,6 +1,4 @@
 
-30'	- refactor forms to use InputRequired instead of Required or DataRequired
-		=> double check all forms!
 30'	- review all FIXME/TODO
 	
 30'	- refactor CSS files (one css per module, with same name as module or 
