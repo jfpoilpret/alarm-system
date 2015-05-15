@@ -122,7 +122,6 @@ def set_current_config(id):
         db.session.commit()
     return redirect(url_for('.home'))
 
-#TODO optimize models to directly get config from device
 @configure.route('/edit_device/<int:id>', methods = ['GET', 'POST'])
 @login_required
 def edit_device(id):
@@ -164,6 +163,7 @@ def init_device_id_choices(device_form, device_config):
     device_form.device_id.choices = choices
 
 def validate_device_form(device_form, device, is_new):
+    #TODO optimize models to directly get config from device
     config = Configuration.query.get(device.config_id)
     if device_form.validate_on_submit():
         device_form.populate_obj(device)
