@@ -1,5 +1,10 @@
 
-30'	- reformat code to use consistent function and variables naming (no more camelCase)
+15'	- bug fix: don't allow map devices setup if no SVG map input in config
+	
+30'	- reformat code to use consistent function naming (no more camelCase)
+30'	- reformat code to use consistent variables naming (no more camelCase)
+30'	- refactor forms to use InputRequired instead of Required or DataRequired
+		=> double check all forms!
 30'	- review all FIXME/TODO
 	
 30'	- refactor CSS files (one css per module, with same name as module or 

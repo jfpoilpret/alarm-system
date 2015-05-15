@@ -20,7 +20,7 @@ def edit_user(userid):
     check_admin()
     user = Account.query.get(userid)
     return check_user_submit(
-        userForm = EditUserForm(prefix = 'user_', obj = user), 
+        user_form = EditUserForm(prefix = 'user_', obj = user), 
         user = user, 
         is_new = False)
 
@@ -29,14 +29,14 @@ def edit_user(userid):
 def create_user():
     check_admin()
     return check_user_submit(
-        userForm = NewUserForm(prefix = 'user_'), 
+        user_form = NewUserForm(prefix = 'user_'), 
         user = Account(), 
         is_new = True)
 
 # Common handling of user creation/edition requests
-def check_user_submit(userForm, user, is_new):
-    if userForm.validate_on_submit():
-        userForm.populate_obj(user)
+def check_user_submit(user_form, user, is_new):
+    if user_form.validate_on_submit():
+        user_form.populate_obj(user)
         db.session.add(user)
         db.session.commit()
         if is_new:
@@ -45,7 +45,7 @@ def check_user_submit(userForm, user, is_new):
             flash('User ''%s''  has been saved' % user.username, 'success')
         return redirect(url_for('.users'))
     return render_template('admin/edit_user.html', 
-        userForm = userForm, 
+        user_form = user_form, 
         is_new = is_new,
         url_return = url_for('.users'))
 
@@ -60,7 +60,6 @@ def delete_user(userid):
     db.session.commit()
     flash('User ''%s''  has been removed' % user.username, 'success')
     return redirect(url_for('.users'))
-
 
 @admin.route('/reset_user_password/<int:userid>')
 @login_required

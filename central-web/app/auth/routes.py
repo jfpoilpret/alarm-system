@@ -8,26 +8,27 @@ from app.auth.forms import ProfileForm, PasswordForm
 from app import db
 from app.common import get_return_url
 
-def render_signin_page(signinForm = None):
-    if not signinForm:
-        signinForm = SigninForm(prefix = 'signin_', formdata = None)
+def render_signin_page(signin_form = None):
+    if not signin_form:
+        signin_form = SigninForm(prefix = 'signin_', formdata = None)
     return render_template('auth/signin.html', 
-        signin = signinForm, 
-        signinUrl = url_for('.signin'))
+        signin_form = signin_form, 
+        #TODO do we really need to pass the URL here, the template could d that directly!!!
+        signin_url = url_for('.signin'))
 
 @auth.route('/signin', methods=['POST'])
 def signin():
-    signinForm = SigninForm(prefix = 'signin_')
-    if signinForm.validate_on_submit():
-        user = Account.query.filter_by(username = signinForm.username.data).first()
-        if user and user.verify_password(signinForm.password.data):
+    signin_form = SigninForm(prefix = 'signin_')
+    if signin_form.validate_on_submit():
+        user = Account.query.filter_by(username = signin_form.username.data).first()
+        if user and user.verify_password(signin_form.password.data):
             login_user(user)
             if user.is_configurator():
                 return redirect(url_for('configure.home'))
             else:
                 return redirect(url_for('monitor.home'))
         flash('Invalid username or password.', 'warning')
-    return render_signin_page(signinForm = signinForm)
+    return render_signin_page(signin_form = signin_form)
 
 @auth.route('/login')
 def login():
@@ -42,25 +43,25 @@ def logout():
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    profileForm = ProfileForm(prefix = 'profile_', obj = current_user)
-    if profileForm.validate_on_submit():
-        profileForm.populate_obj(current_user)
+    profile_form = ProfileForm(prefix = 'profile_', obj = current_user)
+    if profile_form.validate_on_submit():
+        profile_form.populate_obj(current_user)
         db.session.add(current_user)
         db.session.commit()
         flash('Your profile has been saved', 'success')
         return redirect(url_for('configure.home'))
     return render_template('auth/profile.html', 
-        profileForm = profileForm,
+        profile_form = profile_form,
         url_return = get_return_url())
 
 @auth.route('/password', methods=['GET', 'POST'])
 @login_required
 def change_password():
-    passwordForm = PasswordForm(prefix = 'password_')
-    if passwordForm.validate_on_submit():
+    password_form = PasswordForm(prefix = 'password_')
+    if password_form.validate_on_submit():
         # check both passwords are the same
-        pw1 = passwordForm.password.data
-        pw2 = passwordForm.repeat_password.data
+        pw1 = password_form.password.data
+        pw2 = password_form.repeat_password.data
         if pw1 == pw2:
             current_user.password = pw1
             db.session.add(current_user)
@@ -70,5 +71,5 @@ def change_password():
         else:
             flash('Please ensure you typed the same password twice!', 'warning')
     return render_template('auth/password.html', 
-        passwordForm = passwordForm,
+        password_form = password_form,
         url_return = get_return_url())

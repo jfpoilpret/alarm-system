@@ -20,15 +20,15 @@
 		</div>
 		<div class="panel-body">
 			<form class="form" method="post" role="form">
-				{{ userForm.hidden_tag() }}
-				{{ wtf.form_errors(userForm, hiddens = "only") }}
+				{{ user_form.hidden_tag() }}
+				{{ wtf.form_errors(user_form, hiddens = "only") }}
 				
-				{{ wtf.form_field(userForm.username) }}
-				{{ wtf.form_field(userForm.fullname) }}
-				{{ wtf.form_field(userForm.role) }}
+				{{ wtf.form_field(user_form.username) }}
+				{{ wtf.form_field(user_form.fullname) }}
+				{{ wtf.form_field(user_form.role) }}
 
 				<a href="{{ url_return }}" role="button" class="btn btn-default">Cancel</a>
-				{{ wtf.form_field(userForm.submit, button_map = {'user_submit': 'primary'}) }}
+				{{ wtf.form_field(user_form.submit, button_map = {'user_submit': 'primary'}) }}
 			</form>
 		</div>
 	</div>

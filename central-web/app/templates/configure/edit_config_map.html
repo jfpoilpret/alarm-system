@@ -24,10 +24,10 @@ $(document).ready(function(){
 		</div>
 		<div class="panel-body">
 		{# TODO Add cancel button to return to configurations list #}
-			{{ wtf.quick_form(configMapForm, button_map = {'config_submit': 'primary'}) }}
+			{{ wtf.quick_form(config_map_form, button_map = {'config_submit': 'primary'}) }}
 		</div>
 		<div class="config-map-area">
-			{{ svgMap|safe }}
+			{{ svg_map|safe }}
 		</div>
 	</div>
 </div>

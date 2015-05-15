@@ -12,7 +12,7 @@ def home():
     current_config = Configuration.query.filter_by(current=True).first()
     return render_template('monitor/home.html', 
         configuration = current_config,
-        svgMap = prepare_map_for_monitoring(current_config))
+        svg_map = prepare_map_for_monitoring(current_config))
 
 @monitor.route('/activate')
 @login_required

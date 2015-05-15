@@ -8,7 +8,7 @@
 
 {% block scripts %}
 {{super()}}
-{% if deviceForm %}
+{% if device_form %}
 <script type="text/javascript">
 	$(document).ready(function(){
 		$("#modalDeviceFormId").modal('show');
@@ -20,7 +20,7 @@
 {% set kinds = {1:'Keypad',2:'Motion Detection',3:'Camera'} %}
 
 {% block modal_content %}
-	{% if deviceForm %}
+	{% if device_form %}
 	{% set url_close = url_for('configure.edit_config', id = config.id) %}
 	<div id="modalDeviceFormId" class="modal fade" data-backdrop="static">
 		<div class="modal-dialog">
@@ -32,17 +32,17 @@
 					</div>
 					<div class="modal-body">
 						<div class="form-device">
-						{{ deviceForm.hidden_tag() }}
-						{{ wtf.form_errors(deviceForm, hiddens = "only") }}
+						{{ device_form.hidden_tag() }}
+						{{ wtf.form_errors(device_form, hiddens = "only") }}
 						
-						{{ wtf.form_field(deviceForm.name) }}
-						{{ wtf.form_field(deviceForm.voltage_threshold) }}
-						{{ wtf.form_field(deviceForm.device_id) }}
+						{{ wtf.form_field(device_form.name) }}
+						{{ wtf.form_field(device_form.voltage_threshold) }}
+						{{ wtf.form_field(device_form.device_id) }}
 						</div>
 					</div>
 					<div class="modal-footer">
 						<a href="{{ url_close }}" role="button" class="btn btn-default">Close</a>
-						{{ wtf.form_field(deviceForm.submit, button_map = {'device_submit': 'primary'}) }}
+						{{ wtf.form_field(device_form.submit, button_map = {'device_submit': 'primary'}) }}
 					</div>
 				</div>
 			</form>
@@ -59,15 +59,15 @@
 			</div>
 			<div class="panel-body">
 				<form class="form" enctype = "multipart/form-data" method="post" role="form">
-					{{ configForm.hidden_tag() }}
-					{{ wtf.form_errors(configForm, hiddens = "only") }}
+					{{ config_form.hidden_tag() }}
+					{{ wtf.form_errors(config_form, hiddens = "only") }}
 					
-					{{ wtf.form_field(configForm.name) }}
-					{{ wtf.form_field(configForm.lockcode) }}
-					{{ wtf.form_field(configForm.map_area_file) }}
+					{{ wtf.form_field(config_form.name) }}
+					{{ wtf.form_field(config_form.lockcode) }}
+					{{ wtf.form_field(config_form.map_area_file) }}
 	
 					<a href="{{ url_return }}" role="button" class="btn btn-default">Cancel</a>
-					{{ wtf.form_field(configForm.submit, button_map = {'config_submit': 'primary'}) }}
+					{{ wtf.form_field(config_form.submit, button_map = {'config_submit': 'primary'}) }}
 				</form>
 			</div>
 		</div>
