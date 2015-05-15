@@ -74,6 +74,9 @@ def find_device(config, device_id):
 def edit_config_map(id):
     check_configurator()
     config = Configuration.query.get(id)
+    if not config.map_area:
+        flash('Configuration ''%s'' has no Monitored Zone Map set yet!' % config.name, 'warning')
+        return redirect(url_for('.home'))
     config_map_form = DevicesLocationForm(prefix = 'config_')
     if config_map_form.validate_on_submit():
         # Get all modified devices locations as a JSON object
