@@ -6,9 +6,9 @@ from sqlalchemy import update
 
 from app import db
 from app.models import Configuration, Device
-from app.configure.forms import ConfigForm, EditConfigForm, DeviceForm, EditDeviceForm, DevicesLocationForm
+from app.configure.forms import NewConfigForm, EditConfigForm, NewDeviceForm, EditDeviceForm, DevicesLocationForm
 from app.configure import configure
-from app.common import device_kinds, check_configurator, prepareMapForConfig, extractSvgViewBox
+from app.common import device_kinds, check_configurator, prepare_map_for_config, extract_viewbox_from_config
 
 @configure.route('/home')
 @login_required
@@ -31,7 +31,7 @@ def edit_config(id):
 def create_config():
     check_configurator()
     return check_config_submit(
-        configForm = ConfigForm(prefix = 'config_'), 
+        configForm = NewConfigForm(prefix = 'config_'), 
         config = Configuration(), 
         is_new = True)
 
@@ -78,7 +78,7 @@ def edit_config_map(id):
     if configMapForm.validate_on_submit():
         # Get all modified devices locations as a JSON object
         new_locations = loads(configMapForm.devices_locations.data)
-        dimensions = extractSvgViewBox(config)
+        dimensions = extract_viewbox_from_config(config)
         for device_id, location in new_locations.items():
             # extract device
             device = find_device(config, device_id)
@@ -91,7 +91,7 @@ def edit_config_map(id):
         return redirect(url_for('.edit_config_map', id = id))
     return render_template('configure/edit_config_map.html', 
         config = config,
-        svgMap = prepareMapForConfig(config),
+        svgMap = prepare_map_for_config(config),
         configMapForm = configMapForm)
 
 @configure.route('/delete_config/<int:id>')
@@ -136,7 +136,7 @@ def create_device(id, kind):
     check_configurator()
     device_config = device_kinds[kind]
     device = Device(config_id = id, kind = kind, voltage_threshold = device_config.threshold)
-    deviceForm = DeviceForm(prefix = 'device_', obj = device)
+    deviceForm = NewDeviceForm(prefix = 'device_', obj = device)
     init_device_id_choices(deviceForm, device_config)
     return validate_device_form(deviceForm, device, True)
 

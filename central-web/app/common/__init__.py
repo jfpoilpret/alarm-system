@@ -49,24 +49,24 @@ def get_return_url():
 # SGV utilities
 #---------------
 VIEWBOX_REGEX = compile(r"\-?[0-9]+")
-def extractViewBox(root):
+def extract_viewbox(root):
     viewBox = root['@viewBox']
     return [int(x) for x in VIEWBOX_REGEX.findall(viewBox)]
 
-def extractSvgViewBox(config):
+def extract_viewbox_from_config(config):
     svgXml = parse(config.map_area, process_namespaces = False)
     root = svgXml['svg']
-    return extractViewBox(root)
+    return extract_viewbox(root)
 
 # This function reads an SVG string (XML) containing the monitoring zone map,
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
 # devices is an array of objects that contain location (and later device image somehow)
-def prepareMapForConfig(config):
+def prepare_map_for_config(config):
     svgXml = parse(config.map_area, process_namespaces = False)
     root = svgXml['svg']
     root['@id'] = 'svgMap'
     # parse viewBox to find out coordinates to use for additional layer
-    dimensions = extractViewBox(root)
+    dimensions = extract_viewbox(root)
     root['@width'] = '100%'
     root['@height'] = '100%'
     # Ensure we have SVG groups present so that we can add to them
@@ -106,16 +106,16 @@ def prepareMapForConfig(config):
             layers.append(device_group)
     return unparse(svgXml, full_document = False)
 
-#TODO refactor common parts with prepareMapForConfig() above
+#TODO refactor common parts with prepare_map_for_config() above
 # This function reads an SVG string (XML) containing the monitoring zone map,
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
 # devices is an array of objects that contain location (and later device image somehow)
-def prepareMapForMonitoring(config):
+def prepare_map_for_monitoring(config):
     svgXml = parse(config.map_area, process_namespaces = False)
     root = svgXml['svg']
     root['@id'] = 'svgMap'
     # parse viewBox to find out coordinates to use for additional layer
-    dimensions = extractViewBox(root)
+    dimensions = extract_viewbox(root)
     root['@width'] = '100%'
     root['@height'] = '100%'
     # Ensure we have SVG groups present so that we can add to them

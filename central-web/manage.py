@@ -46,7 +46,7 @@ def resetdb():
     print('User `admin` was registered successfully.')
 
 # Wrapper to flask-script Server so that port can be read from app.config by default (after manager.run() is called)
-def replacePortOption(o):
+def replace_port_option(o):
     if o.kwargs['dest'] == 'port':
         o.kwargs['default'] = -1
     elif o.kwargs['dest'] == 'host':
@@ -56,7 +56,7 @@ def replacePortOption(o):
 class ConfigServer(Server):
     def get_options(self):
         options = super(ConfigServer, self).get_options()
-        return map(replacePortOption, options)
+        return map(replace_port_option, options)
   
     def __call__(self, app, host, port, use_debugger, use_reloader, threaded, processes, passthrough_errors):
         if port == -1:

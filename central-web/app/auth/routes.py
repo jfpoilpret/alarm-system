@@ -8,7 +8,7 @@ from app.auth.forms import ProfileForm, PasswordForm
 from app import db
 from app.common import get_return_url
 
-def renderSignInPage(signinForm = None):
+def render_signin_page(signinForm = None):
     if not signinForm:
         signinForm = SigninForm(prefix = 'signin_', formdata = None)
     return render_template('auth/signin.html', 
@@ -27,11 +27,11 @@ def signin():
             else:
                 return redirect(url_for('monitor.home'))
         flash('Invalid username or password.', 'warning')
-    return renderSignInPage(signinForm = signinForm)
+    return render_signin_page(signinForm = signinForm)
 
 @auth.route('/login')
 def login():
-    return renderSignInPage()
+    return render_signin_page()
 
 @auth.route('/logout')
 @login_required

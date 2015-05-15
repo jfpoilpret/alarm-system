@@ -3,7 +3,7 @@ from flask_login import login_required
 from . import monitor
 
 from app.models import Configuration
-from app.common import check_alarm_setter, prepareMapForMonitoring
+from app.common import check_alarm_setter, prepare_map_for_monitoring
 from app import db
 
 @monitor.route('/home')
@@ -12,7 +12,7 @@ def home():
     current_config = Configuration.query.filter_by(current=True).first()
     return render_template('monitor/home.html', 
         configuration = current_config,
-        svgMap = prepareMapForMonitoring(current_config))
+        svgMap = prepare_map_for_monitoring(current_config))
 
 @monitor.route('/activate')
 @login_required
