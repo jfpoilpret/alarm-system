@@ -13,7 +13,7 @@
         <h3 class="form-heading">Sign In</h3>
       </div>
       <div class="panel-body">
-        {{ wtf.quick_form(signin_form, action = signin_url, button_map = {'signin_submit': 'primary'}) }}
+        {{ wtf.quick_form(signin_form, action = url_for('auth.signin'), button_map = {'signin_submit': 'primary'}) }}
       </div>
     </div>
   </div>

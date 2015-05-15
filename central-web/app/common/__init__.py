@@ -50,69 +50,19 @@ def get_return_url():
 #---------------
 VIEWBOX_REGEX = compile(r"\-?[0-9]+")
 def extract_viewbox(root):
-    viewBox = root['@viewBox']
-    return [int(x) for x in VIEWBOX_REGEX.findall(viewBox)]
+    view_box = root['@viewBox']
+    return [int(x) for x in VIEWBOX_REGEX.findall(view_box)]
 
 def extract_viewbox_from_config(config):
-    svgXml = parse(config.map_area, process_namespaces = False)
-    root = svgXml['svg']
+    svg_xml = parse(config.map_area, process_namespaces = False)
+    root = svg_xml['svg']
     return extract_viewbox(root)
 
 # This function reads an SVG string (XML) containing the monitoring zone map,
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
-# devices is an array of objects that contain location (and later device image somehow)
-def prepare_map_for_config(config):
-    svgXml = parse(config.map_area, process_namespaces = False)
-    root = svgXml['svg']
-    root['@id'] = 'svgMap'
-    # parse viewBox to find out coordinates to use for additional layer
-    dimensions = extract_viewbox(root)
-    root['@width'] = '100%'
-    root['@height'] = '100%'
-    # Ensure we have SVG groups present so that we can add to them
-    if 'g' in root:
-        layers = root['g']
-        if not is_instance(layers, list):
-            layers = [layers]
-            root['g'] = layers
-    else:
-        layers = []
-        root['g'] = layers
-        
-    devices = config.devices
-    if len(devices) > 0:
-        for id, device in devices.items():
-            x = (device.location_x or 0.5) * dimensions[2] + dimensions[0]
-            y = (device.location_y or 0.5) * dimensions[3] + dimensions[1]
-            r = 0.02 * dimensions[2]
-            device_image = {
-                '@cx': str(x),
-                '@cy': str(y),
-                '@r': str(r),
-                '@stroke': 'red',
-                '@fill': 'red',
-                '@data-toggle': 'popover',
-                '@title': 'Module ID %d' % id,
-                '@data-content': device.name,
-                '@onmousedown': 'startDrag(evt)',
-                '@onmousemove': 'drag(evt)',
-                '@onmouseup': 'endDrag(evt)',
-            }
-            device_group = {
-                '@id': 'device-%d' % id,
-                '@class': 'device-image',
-                'circle': device_image
-            }
-            layers.append(device_group)
-    return unparse(svgXml, full_document = False)
-
-#TODO refactor common parts with prepare_map_for_config() above
-# This function reads an SVG string (XML) containing the monitoring zone map,
-# adds a layer for devices, and prepares the result for direct SVG embedding to HTML
-# devices is an array of objects that contain location (and later device image somehow)
-def prepare_map_for_monitoring(config):
-    svgXml = parse(config.map_area, process_namespaces = False)
-    root = svgXml['svg']
+def prepare_map(config, update_device_image, update_device_group):
+    svg_xml = parse(config.map_area, process_namespaces = False)
+    root = svg_xml['svg']
     root['@id'] = 'svgMap'
     # parse viewBox to find out coordinates to use for additional layer
     dimensions = extract_viewbox(root)
@@ -144,10 +94,31 @@ def prepare_map_for_monitoring(config):
                 '@title': 'Module ID %d' % id,
                 '@data-content': device.name
             }
+            update_device_image(device_image)
             device_group = {
                 '@id': 'device-%d' % id,
-                '@class': 'monitor-device-image',
                 'circle': device_image
             }
+            update_device_group(device_group)
             layers.append(device_group)
-    return unparse(svgXml, full_document = False)
+    return unparse(svg_xml, full_document = False)
+
+# This function reads an SVG string (XML) containing the monitoring zone map,
+# adds a layer for devices, and prepares the result for direct SVG embedding to HTML
+def prepare_map_for_config(config):
+    def update_image(device_image):
+        device_image['@onmousedown'] = 'startDrag(evt)'
+        device_image['@onmousemove'] = 'drag(evt)'
+        device_image['@onmouseup'] = 'endDrag(evt)'
+    def update_group(device_group):
+        device_group['@class'] = 'device-image'
+    return prepare_map(config, update_image, update_group)
+
+# This function reads an SVG string (XML) containing the monitoring zone map,
+# adds a layer for devices, and prepares the result for direct SVG embedding to HTML
+def prepare_map_for_monitoring(config):
+    def update_image(device_image):
+        pass
+    def update_group(device_group):
+        device_group['@class'] = 'monitor-device-image'
+    return prepare_map(config, update_image, update_group)

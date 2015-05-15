@@ -11,10 +11,7 @@ from app.common import get_return_url
 def render_signin_page(signin_form = None):
     if not signin_form:
         signin_form = SigninForm(prefix = 'signin_', formdata = None)
-    return render_template('auth/signin.html', 
-        signin_form = signin_form, 
-        #TODO do we really need to pass the URL here, the template could d that directly!!!
-        signin_url = url_for('.signin'))
+    return render_template('auth/signin.html', signin_form = signin_form)
 
 @auth.route('/signin', methods=['POST'])
 def signin():

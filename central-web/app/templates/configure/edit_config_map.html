@@ -23,8 +23,13 @@ $(document).ready(function(){
 			<h3 class="form-heading">Map for Configuration '{{ config.name }}'</h3>
 		</div>
 		<div class="panel-body">
-		{# TODO Add cancel button to return to configurations list #}
-			{{ wtf.quick_form(config_map_form, button_map = {'config_submit': 'primary'}) }}
+			<form class="form" method="post" role="form">
+				{{ config_map_form.hidden_tag() }}
+				{{ wtf.form_errors(config_map_form, hiddens = "only") }}
+
+				<a href="{{ url_for('configure.home') }}" role="button" class="btn btn-default">Cancel</a>
+				{{ wtf.form_field(config_map_form.submit, button_map = {'config_submit': 'primary'}) }}
+			</form>
 		</div>
 		<div class="config-map-area">
 			{{ svg_map|safe }}

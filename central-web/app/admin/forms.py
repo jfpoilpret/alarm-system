@@ -18,7 +18,6 @@ class EditUserForm(AbstractUserForm):
     submit = SubmitField('Save User')
 
 # Form to create a new user
-#TODO missing validators on password
 class NewUserForm(AbstractUserForm):
-    password = PasswordField('Password')
+    password = PasswordField('Password', validators=[InputRequired(), Length(3, 64)])
     submit = SubmitField('Create User')

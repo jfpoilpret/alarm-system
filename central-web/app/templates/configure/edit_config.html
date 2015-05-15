@@ -65,6 +65,7 @@
 					{{ wtf.form_field(config_form.name) }}
 					{{ wtf.form_field(config_form.lockcode) }}
 					{{ wtf.form_field(config_form.map_area_file) }}
+					{{ wtf.form_field(config_form.map_area_filename, readonly = "readonly") }}
 	
 					<a href="{{ url_return }}" role="button" class="btn btn-default">Cancel</a>
 					{{ wtf.form_field(config_form.submit, button_map = {'config_submit': 'primary'}) }}
@@ -90,7 +91,6 @@
 					{% for device_id, device in config.devices | dictsort %}
 						<tr>
 							<td>
-								{# TODO add action links #}
 								<a  class="btn btn-xs btn-default device-edit" 
 									href="{{ url_for('configure.edit_device', id = device.id) }}">
 									<span class="glyphicon glyphicon-pencil"></span>

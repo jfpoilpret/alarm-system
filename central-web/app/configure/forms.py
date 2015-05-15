@@ -6,12 +6,12 @@ from wtforms.fields.simple import HiddenField
 from flask.ext.wtf.file import FileField, FileAllowed
 
 # Form to create a new configuration (general information only)
-#TODO show extra (readonly) field with latest upload filename
 class AbstractConfigForm(Form):
     name = StringField('Name', validators = [InputRequired(), Length(1, 64)])
     lockcode = StringField('Lock code', validators = [InputRequired(), Regexp('[0-9]{6}')])
     map_area_file = FileField("Monitored Zone Map", 
         validators = [FileAllowed(['svg'], 'Map must be a vectorial image (SVG) only!')])
+    map_area_filename = StringField('Map Source File', validators = [Length(0, 256)])
 
 class NewConfigForm(AbstractConfigForm):
     submit = SubmitField('Create Configuration')
