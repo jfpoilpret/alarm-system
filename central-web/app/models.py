@@ -85,6 +85,15 @@ class Device(db.Model):
     location_x = db.Column(db.Float, nullable = True)
     location_y = db.Column(db.Float, nullable = True)
 
+#TODO Define alert types somewhere
+#TODO Improve to include LEVEL with each KIND
+class AlertType:
+    DEVICE_VOLTAGE_UNDER_THRESHOLD = 1
+    DEVICE_NO_PING_FOR_TOO_LONG = 2
+    LOCK = 3
+    UNLOCK = 4
+    WRONG_LOCK_CODE = 5
+
 # ALERT
 #------
 class Alert(db.Model):
@@ -98,7 +107,6 @@ class Alert(db.Model):
     
     when = db.Column(db.DateTime, nullable = False, index = True)
     level = db.Column(db.Integer, nullable = False, index = True)
-    #TODO Define alert types somewhere
     alert_type = db.Column(db.Integer, nullable = False, index = True)
     message = db.Column(db.String(500))
     device_id = db.Column(db.Integer, db.ForeignKey('device.id'))

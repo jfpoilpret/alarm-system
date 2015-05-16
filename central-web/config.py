@@ -7,11 +7,13 @@ class Config:
     PORT = 8080
     HOST = '127.0.0.1'
     BOOTSTRAP_SERVE_LOCAL = True
+    SIMULATE_DEVICES = False
 
 # This configuration is used during development on Windows only
 class DevelopmentConfig(Config):
     DEBUG = True
     SECRET_KEY = 't0p s3cr3t'
+    SIMULATE_DEVICES = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 

@@ -1,10 +1,17 @@
 
+1h	- simulator for RF devices communicator (DEV config only)
+1h	- monitoring queues writers to DB and memory (alarms)
+	
+1h	- alarm history view
+
+1h	- real-time monitoring on picture with devices states
+	
+	- review all .py headers (encoding!)
+	
 30'	- review all FIXME/TODO
 1h	- review models to ensure completeness of relationships and efficiency; in particular
 	  try to limit manual queries performed in code if not needed!
 2h	- add correct SQL exception handling in all routes
-	
-	- simulator for RF devices communicator (DEV config only)
 	
 30'	- refactor CSS files (one css per module, with same name as module or 
 	  one unique name, the same across all modules...)
@@ -13,11 +20,7 @@
 
 
 
-1h	- alarm history view
 
-1h	- monitoring queues writers to DB and memory (alarms)
-1h	- real-time monitoring on picture with devices states
-	
 15'	- check no possible direct access to some routes
 30'	- force password change (when password empty)
 
