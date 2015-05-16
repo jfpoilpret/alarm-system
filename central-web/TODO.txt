@@ -1,14 +1,16 @@
 
 30'	- review all FIXME/TODO
+1h	- review models to ensure completeness of relationships and efficiency; in particular
+	  try to limit manual queries performed in code if not needed!
+2h	- add correct SQL exception handling in all routes
+	
+	- simulator for RF devices communicator (DEV config only)
 	
 30'	- refactor CSS files (one css per module, with same name as module or 
 	  one unique name, the same across all modules...)
 30'	- improve CSS files for every screen; check padding/margins in particular
 45'	- review labels/titles everywhere
 
-1h	- review models to ensure completeness of relationships and efficiency; in particular
-	  try to limit manual queries performed in code if not needed!
-2h	- add correct SQL exception handling in all routes
 
 
 1h	- alarm history view
