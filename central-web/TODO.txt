@@ -1,5 +1,11 @@
 
 1h	- alarm history view
+		- first off, display all alerts for current configuration
+			- as a start, make refresh mandatory (full page reload)
+		- add filtering on: time period, module, alert level, alert type
+		- then make manual refresh button AJAX-based
+		- finally make refresh automatic (every X seconds TBD somewhere)
+		
 30'	- if default config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
 		

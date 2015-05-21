@@ -19,39 +19,60 @@ $(document).ready(function(){
 	<div class="monitor">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				<h3 class="form-heading">Current Configuration Status</h3>
+				<h3 class="form-heading">
+				{% if configuration %}
+					Current configuration '{{configuration.name}}'&nbsp;-&nbsp;
+					{% if configuration.active %}
+						Active
+					{% else %}
+						Not Active
+					{% endif %}
+				{% else %}
+					No current configuration
+				{% endif %}
+				</h3>
 			</div>
 			<div class="panel-body">
 			{% if configuration %}
-				<h3>Current configuration '{{configuration.name}}'&nbsp;-&nbsp;
-				{% if configuration.active %}
-					Alarm Active
-					{% if current_user.is_alarm_setter() %}
-					<a	class="btn btn-primary" role="button" 
-						href="{{ url_for('monitor.deactivate_config') }}"
-						onclick="return window.confirm('Are you sure you want to deactivate the alarm system?');">
-						Deactivate
-					</a>
+				{% if current_user.is_alarm_setter() %}
+					{% if configuration.active %}
+				<a	class="btn btn-primary" role="button" 
+					href="{{ url_for('monitor.deactivate_config') }}"
+					onclick="return window.confirm('Are you sure you want to deactivate the alarm system?');">
+					Deactivate
+				</a>
+					{% else %}
+				<a	class="btn btn-primary" role="button" 
+					href="{{ url_for('monitor.activate_config') }}"
+					onclick="return window.confirm('Are you sure you want to activate the alarm system?');">
+					Activate
+				</a>
 					{% endif %}
-				</h3>
-				{# TODO How to implement "realtime" update of devices tooltips? #}
-				<div class="monitor-map-area">
-					{{ svg_map|safe }}
-				</div>
-				{% else %}
-					Alarm Not Active
-					{% if current_user.is_alarm_setter() %}
-					<a	class="btn btn-primary" role="button" 
-						href="{{ url_for('monitor.activate_config') }}"
-						onclick="return window.confirm('Are you sure you want to activate the alarm system?');">
-						Activate
-					</a>
-					{% endif %}
-				</h3>
 				{% endif %}
-				{# TODO show events history #}
-			{% else %}
-				<h3>No current configuration created yet!</h3>
+				{% if configuration.active %}
+				{% endif %}
+				<div class="monitor-tabs" role="tablist">
+					<ul class="nav nav-tabs" role="tablist">
+						<li role="presentation" class="active">
+							<a href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a>
+						</li>
+						<li role="presentation">
+							<a href="#alerts" aria-controls="alerts" role="tab" data-toggle="tab">Alerts</a>
+						</li>
+					</ul>
+					<div class="tab-content">
+						<div role="tabpanel" class="tab-pane active" id="map">
+							{# TODO How to implement "realtime" update of devices tooltips? #}
+							<div class="monitor-map-area">
+								{{ svg_map|safe }}
+							</div>
+						</div>
+						<div role="tabpanel" class="tab-pane" id="alerts">
+							{# TODO How to implement "realtime" refresh of alerts? #}
+							{# TODO show events history #}
+						</div>
+					</div>
+				</div>
 			{% endif %}
 			</div>
 		</div>
