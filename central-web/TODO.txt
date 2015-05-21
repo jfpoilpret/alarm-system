@@ -1,22 +1,28 @@
 
-	- ensure MonitoringManager is activated/deactivated when config is changed
-	- store INFO alerts when config activated/deactivated
+15'	- ensure MonitoringManager is activated/deactivated when config is changed
+30'	- if default config is changed, previous config must be forced inactive if needed
+		- maybe need confirm message?
 1h	- alarm history view
+		
+5'	- store INFO alerts when config activated/deactivated
 
-	- propose function to cleanup alert history:
+1h+	- propose function to cleanup alert history:
 		- for a given config
 		- for a given period of time
 		- for a given level of alert
 		
 1h	- real-time monitoring on picture with devices states
 	
-	- review all .py headers (encoding!)
+15'	- review all .py headers (encoding!)
 	
 15'	- ensure all classes use new-style classes (subclass object)
 30'	- review all FIXME/TODO
 1h	- review models to ensure completeness of relationships and efficiency; in particular
 	  try to limit manual queries performed in code if not needed!
+		(search for .query.)
 2h	- add correct SQL exception handling in all routes
+		- unique key => special warning message
+		- reference key => other special warning
 	
 30'	- refactor CSS files (one css per module, with same name as module or 
 	  one unique name, the same across all modules...)
