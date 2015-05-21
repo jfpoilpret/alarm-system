@@ -63,6 +63,16 @@ class ConfigServer(Server):
             port = app.config['PORT']
         if host == '999.999.999.999':
             host = app.config['HOST']
+        # Initialize MonitoringManager and activate it if needed
+        from app.monitor.monitoring import MonitoringManager
+        from app.models import Configuration
+        global monitoring_manager
+        monitoring_manager = MonitoringManager(app)
+        with app.app_context():
+            active = Configuration.query.filter_by(active = True).first()
+            if active:
+                monitoring_manager.activate(active)
+            
         super(ConfigServer, self).__call__(app, host, port, use_debugger, use_reloader, threaded, processes, passthrough_errors)
 
 # MAIN START

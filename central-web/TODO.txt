@@ -1,13 +1,18 @@
 
-1h	- simulator for RF devices communicator (DEV config only)
-1h	- monitoring queues writers to DB and memory (alarms)
-	
+	- ensure MonitoringManager is activated/deactivated when config is changed
+	- store INFO alerts when config activated/deactivated
 1h	- alarm history view
 
+	- propose function to cleanup alert history:
+		- for a given config
+		- for a given period of time
+		- for a given level of alert
+		
 1h	- real-time monitoring on picture with devices states
 	
 	- review all .py headers (encoding!)
 	
+15'	- ensure all classes use new-style classes (subclass object)
 30'	- review all FIXME/TODO
 1h	- review models to ensure completeness of relationships and efficiency; in particular
 	  try to limit manual queries performed in code if not needed!

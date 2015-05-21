@@ -8,6 +8,8 @@ from config import config
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 
+monitoring_manager = None
+
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'info'

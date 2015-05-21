@@ -2,11 +2,11 @@
 
 from queue import Queue
 from threading import Thread
-from time import time
+from datetime import datetime
 
 from app import db
 from app.models import Alert, AlertType
-from app.monitor.network import Event, EventType
+from app.monitor.network.events import Event, EventType
 from app.monitor.network.devices_manager import DevicesManager, DevicesManagerSimulator
 
 class AlarmStatus:
@@ -21,6 +21,8 @@ class LiveDevice:
 
 class MonitoringManager(Thread):
     def __init__(self, app):
+        Thread.__init__(self)
+        self.app = app
         self.status = None
         if app.config['SIMULATE_DEVICES']:
             self.devices_manager_class = DevicesManagerSimulator
@@ -31,7 +33,7 @@ class MonitoringManager(Thread):
         self.status = AlarmStatus.LOCKED
         self.config_id = config.id
         # Store lock code from config
-        self.lock_code = config.lock_code
+        self.lock_code = config.lockcode
         # Create dictionary of LiveDevices from config
         self.devices = {id: LiveDevice(device) for id, device in config.devices.items()}
         # Start thread that reads queues and act upon received messages (DB, SMS...)
@@ -39,7 +41,7 @@ class MonitoringManager(Thread):
         self.event_queue = Queue()
         self.start()
         # Instantiate DevicesManager (based on app.config)
-        self.devices_manager = self.devices_manager_class(self.event_queue)
+        self.devices_manager = self.devices_manager_class(self.event_queue, self.devices)
     
     def deactivate(self):
         # Stop DevicesManager
@@ -59,6 +61,11 @@ class MonitoringManager(Thread):
     def get_devices(self):
         return self.devices
 
+    def store_alert(self, alert):
+        with self.app.app_context():
+            db.session.add(alert)
+            db.session.commit()
+    
     #TODO redesign to avoid if elif elif ... else
     def run(self):
         while True:
@@ -98,9 +105,8 @@ class MonitoringManager(Thread):
                         level = Alert.LEVEL_INFO, 
                         alert_type = alert_type)
             if alert:
-                alert.when = event.timestamp
+                alert.when = datetime.fromtimestamp(event.timestamp)
                 alert.config_id = self.config_id
-                alert.device_id = device.source.device_id
-                db.session.add(alert)
-                db.session.commit()
+                alert.device_id = event.device_id
+                self.store_alert(alert)
                     
