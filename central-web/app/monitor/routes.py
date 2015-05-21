@@ -2,16 +2,18 @@ from flask import flash, redirect, render_template, url_for
 from flask_login import login_required
 from . import monitor
 
-from app.models import Configuration
+from app.models import Configuration, Alert
 from app.common import check_alarm_setter, prepare_map_for_monitoring
 from app import db
 
 @monitor.route('/home')
 @login_required
 def home():
-    current_config = Configuration.query.filter_by(current=True).first()
+    current_config = Configuration.query.filter_by(current = True).first()
+    alerts = Alert.query.filter_by(config_id = current_config.id).order_by(Alert.when.desc()).all()
     return render_template('monitor/home.html', 
         configuration = current_config,
+        alerts = alerts,
         svg_map = prepare_map_for_monitoring(current_config))
 
 @monitor.route('/activate')

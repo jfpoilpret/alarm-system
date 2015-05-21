@@ -70,6 +70,28 @@ $(document).ready(function(){
 						<div role="tabpanel" class="tab-pane" id="alerts">
 							{# TODO How to implement "realtime" refresh of alerts? #}
 							{# TODO show events history #}
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Time</th>
+										<th>Level</th>
+										<th>Type</th>
+										<th>Module</th>
+										<th>Message</th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for alert in alerts %}
+									<tr>
+										<td>{{ alert.when }}</td>
+										<td>{{ alert.level }}</td>
+										<td>{{ alert.alert_type }}</td>
+										<td>{{ alert.device.name }}</td>
+										<td>{{ alert.message }}</td>
+									</tr>
+								{% endfor %}
+								</tbody>
+							</table>
 						</div>
 					</div>
 				</div>

@@ -21,6 +21,7 @@ class LiveDevice:
         self.latest_ping = 0
         self.latest_voltage_level = None
 
+#TODO Add monitoring of device pings and generate alerts if no ping during a given time...
 class MonitoringManager(Thread):
     instance = None
     
@@ -96,7 +97,7 @@ class MonitoringManager(Thread):
             if event.event_type == EventType.VOLTAGE:
                 device.latest_voltage_level = event.detail
                 if device.latest_voltage_level < device.source.voltage_threshold:
-                    message = 'Module %s current voltage (%fV) is under threshold (%fV)' % (
+                    message = 'Module %s current voltage (%.02fV) is under threshold (%.02fV)' % (
                         device.source.name, device.latest_voltage_level, device.source.voltage_threshold)
                     alert = Alert(
                         level = Alert.LEVEL_WARNING,

@@ -1,10 +1,23 @@
 
 1h	- alarm history view
-		- first off, display all alerts for current configuration
+x		- first off, display all alerts for current configuration
 			- as a start, make refresh mandatory (full page reload)
+		- improve display of alert table columns
+		- fix device_id in display
+		- add scrollbar to table
 		- add filtering on: time period, module, alert level, alert type
 		- then make manual refresh button AJAX-based
 		- finally make refresh automatic (every X seconds TBD somewhere)
+		- add pagination?
+	
+	- monitoring improvement:
+		- check devices not pinging for too long
+		- should voltage alerts be repeated forever?
+	
+	- monitoring view:
+		- better popup info on devices
+		- auto refresh of popup info
+		- change device colors when problems? (eg voltage low, bad code...)
 		
 30'	- if default config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
