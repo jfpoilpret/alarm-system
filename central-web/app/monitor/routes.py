@@ -29,7 +29,12 @@ def set_config_active(active):
     current_config = Configuration.query.filter_by(current=True).first()
     if current_config.active != active:
         current_config.active = active
-        #TODO need to REALLY activate/deactivate the alarm system somehow (TBD)
         db.session.add(current_config)
         db.session.commit()
+        # Actually activate/deactivate the alarm system
+        from app.monitor.monitoring import MonitoringManager
+        if active:
+            MonitoringManager.instance.activate(current_config)
+        else:
+            MonitoringManager.instance.deactivate()
     return redirect(url_for('.home'))

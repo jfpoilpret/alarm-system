@@ -52,7 +52,8 @@ def replace_port_option(o):
     elif o.kwargs['dest'] == 'host':
         o.kwargs['default'] = '999.999.999.999'
     return o
-  
+
+#TODO Add command option to automatically start monitoring for active config (or not)
 class ConfigServer(Server):
     def get_options(self):
         options = super(ConfigServer, self).get_options()
@@ -66,8 +67,7 @@ class ConfigServer(Server):
         # Initialize MonitoringManager and activate it if needed
         from app.monitor.monitoring import MonitoringManager
         from app.models import Configuration
-        global monitoring_manager
-        monitoring_manager = MonitoringManager(app)
+        monitoring_manager = MonitoringManager.create(app)
         with app.app_context():
             active = Configuration.query.filter_by(active = True).first()
             if active:

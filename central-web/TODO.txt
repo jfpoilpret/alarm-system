@@ -1,8 +1,7 @@
 
-15'	- ensure MonitoringManager is activated/deactivated when config is changed
+1h	- alarm history view
 30'	- if default config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
-1h	- alarm history view
 		
 5'	- store INFO alerts when config activated/deactivated
 

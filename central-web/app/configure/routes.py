@@ -110,6 +110,7 @@ def delete_config(id):
         flash('Configuration has been deleted', 'success')
     return redirect(url_for('.home'))
 
+#TODO if previously current config is active, deactivate it!
 @configure.route('/set_current_config/<int:id>')
 @login_required
 def set_current_config(id):

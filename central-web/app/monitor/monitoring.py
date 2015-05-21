@@ -9,6 +9,8 @@ from app.models import Alert, AlertType
 from app.monitor.network.events import Event, EventType
 from app.monitor.network.devices_manager import DevicesManager, DevicesManagerSimulator
 
+monitoring_manager = None
+
 class AlarmStatus:
     LOCKED = 1
     UNLOCKED = 2
@@ -20,6 +22,13 @@ class LiveDevice:
         self.latest_voltage_level = None
 
 class MonitoringManager(Thread):
+    instance = None
+    
+    @staticmethod
+    def create(app):
+        MonitoringManager.instance = MonitoringManager(app)
+        return MonitoringManager.instance
+    
     def __init__(self, app):
         Thread.__init__(self)
         self.app = app
@@ -30,6 +39,9 @@ class MonitoringManager(Thread):
             self.devices_manager_class = DevicesManager
     
     def activate(self, config):
+        print('activate(%s)' % config.name)
+        # Deactivate if already active
+        self.deactivate()
         self.status = AlarmStatus.LOCKED
         self.config_id = config.id
         # Store lock code from config
@@ -42,20 +54,24 @@ class MonitoringManager(Thread):
         self.start()
         # Instantiate DevicesManager (based on app.config)
         self.devices_manager = self.devices_manager_class(self.event_queue, self.devices)
+        print('activate() thread started')
     
     def deactivate(self):
-        # Stop DevicesManager
-        self.devices_manager.deactivate()
-        self.devices_manager = None
-        # Then stop thread by sending special event to queue
-        self.event_queue.put(Event(EventType.STOP))
-        # Wait until thread is finished
-        self.join()
-        # Finally clear all configuration
-        self.config_id = None
-        self.lock_code = None
-        self.status = None
-        self.devices = {}
+        print('deactivate()')
+        if self.is_alive():
+            # Stop DevicesManager
+            self.devices_manager.deactivate()
+            self.devices_manager = None
+            # Then stop thread by sending special event to queue
+            self.event_queue.put(Event(EventType.STOP))
+            # Wait until thread is finished
+            self.join()
+            # Finally clear all configuration
+            self.config_id = None
+            self.lock_code = None
+            self.status = None
+            self.devices = {}
+            print('deactivate() thread stopped')
     
     #FIXME should we clone each device under locking (multi-thread!!!)
     def get_devices(self):
