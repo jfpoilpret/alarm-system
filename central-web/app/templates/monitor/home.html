@@ -90,8 +90,7 @@ $(document).ready(function(){
 								{% for alert in alerts %}
 									<tr>
 										<td>{{ render_alert_level(alert.level) }}</td>
-										{# TODO Remove ms precision in format #}
-										<td>{{ alert.when }}</td>
+										<td>{{ alert.when.strftime('%d.%m.%Y %H:%M:%S') }}</td>
 										<td>{{ types[alert.alert_type] }}</td>
 										{# TODO Fix empty device name! #}
 										<td>{{ alert.device.name }}</td>
