@@ -24,3 +24,14 @@
 	cursor: pointer;
 }
 
+.alert-level-info {
+	color: #31708f;
+}
+
+.alert-level-warning {
+	color: #8a6d3b;
+}
+
+.alert-level-alarm {
+	color: #a94442;
+}

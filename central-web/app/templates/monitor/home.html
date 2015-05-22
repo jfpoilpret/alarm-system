@@ -68,13 +68,19 @@ $(document).ready(function(){
 							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane" id="alerts">
-							{# TODO How to implement "realtime" refresh of alerts? #}
-							{# TODO show events history #}
+						{# TODO externalize to other file to avoid bloating this template #}
+						{% macro render_alert_level(level) -%}
+							{% set level_class = {1:'info',2:'warning',3:'alarm'}[level] %}
+							{% set level_icon = {1:'info-sign',2:'exclamation-sign',3:'exclamation-sign'}[level] %}
+							<span class="alert-level-{{level_class}} glyphicon glyphicon-{{level_icon}}"></span>
+						{%- endmacro %}
+						{% set types = {1:'Module Power',2:'Module Presence',3:'Lock',4:'Unlock',5:'Bad code'} %}
+						{# TODO How to implement "realtime" refresh of alerts? #}
 							<table class="table table-hover">
 								<thead>
 									<tr>
-										<th>Time</th>
 										<th>Level</th>
+										<th>Time</th>
 										<th>Type</th>
 										<th>Module</th>
 										<th>Message</th>
@@ -83,9 +89,11 @@ $(document).ready(function(){
 								<tbody>
 								{% for alert in alerts %}
 									<tr>
+										<td>{{ render_alert_level(alert.level) }}</td>
+										{# TODO Remove ms precision in format #}
 										<td>{{ alert.when }}</td>
-										<td>{{ alert.level }}</td>
-										<td>{{ alert.alert_type }}</td>
+										<td>{{ types[alert.alert_type] }}</td>
+										{# TODO Fix empty device name! #}
 										<td>{{ alert.device.name }}</td>
 										<td>{{ alert.message }}</td>
 									</tr>
