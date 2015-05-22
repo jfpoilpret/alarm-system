@@ -1,7 +1,5 @@
 
 	- alarm history view
-10'		- improve display of alert table columns: timestamp
-10'		- fix device_id in display
 10'		- add scrollbar to table
 1h		- add filtering on: time period, module, alert level, alert type
 1h		- add manual refresh button AJAX-based
@@ -34,6 +32,9 @@
 	
 15'	- ensure all classes use new-style classes (subclass object)
 30'	- review all FIXME/TODO
+	- improve DB model to:
+		- have several codes for a config, each with an associated message
+		  (typically: owner)
 1h	- review models to ensure completeness of relationships and efficiency; in particular
 	  try to limit manual queries performed in code if not needed!
 		(search for .query.)

@@ -79,11 +79,14 @@ class Device(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(64), nullable = False, unique = True, index = True)
     kind = db.Column(db.Integer, nullable = False)
-    device_id = db.Column(db.Integer, nullable = False)
+    device_id = db.Column(db.Integer, nullable = False, index = True)
     voltage_threshold = db.Column(db.Float, nullable = True)
     config_id = db.Column(db.Integer, db.ForeignKey('configuration.id'))
     location_x = db.Column(db.Float, nullable = True)
     location_y = db.Column(db.Float, nullable = True)
+    #TODO missing unique index on config_id + device_id
+    #TODO missing unique index on config_id + name
+    #TODO name does not have to be unique all the way!
 
 #TODO Define alert types somewhere
 #TODO Improve to include LEVEL with each KIND
