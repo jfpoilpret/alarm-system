@@ -91,8 +91,11 @@ class MonitoringManager(Thread):
             if event.event_type == EventType.STOP:
                 return
             alert = None
-            device = self.devices[event.device_id]
-            device.latest_ping = event.timestamp
+            if event.device_id:
+                device = self.devices[event.device_id]
+                device.latest_ping = event.timestamp
+            else:
+                device = None
             # Check event type and decide what to do with it
             if event.event_type == EventType.VOLTAGE:
                 device.latest_voltage_level = event.detail
@@ -124,6 +127,7 @@ class MonitoringManager(Thread):
             if alert:
                 alert.when = datetime.fromtimestamp(event.timestamp)
                 alert.config_id = self.config_id
-                alert.device_id = event.device_id
+                if device:
+                    alert.device_id = device.source.id
                 self.store_alert(alert)
                     
