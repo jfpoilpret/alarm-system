@@ -1,0 +1,11 @@
+{% macro render_alert_level(alert) -%}
+	{% set level_class = {1:'info',2:'warning',3:'alarm'}[alert.level] %}
+	{% set level_icon = {1:'info-sign',2:'exclamation-sign',3:'exclamation-sign'}[alert.level] %}
+	<span class="alert-level-{{level_class}} glyphicon glyphicon-{{level_icon}}"></span>
+{%- endmacro %}
+
+{% macro map_alert_type(alert) -%}
+	{% set types = {1:'Module Power',2:'Module Presence',3:'Lock',4:'Unlock',5:'Bad code'} %}
+	{{ types[alert.alert_type] }}
+{%- endmacro %}
+

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{% import "monitor/utils.html" as utils %}
 
 {% block styles %}
 {{super()}}
@@ -68,13 +69,20 @@ $(document).ready(function(){
 							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane" id="alerts">
-						{# TODO externalize to other file to avoid bloating this template #}
-						{% macro render_alert_level(level) -%}
-							{% set level_class = {1:'info',2:'warning',3:'alarm'}[level] %}
-							{% set level_icon = {1:'info-sign',2:'exclamation-sign',3:'exclamation-sign'}[level] %}
-							<span class="alert-level-{{level_class}} glyphicon glyphicon-{{level_icon}}"></span>
-						{%- endmacro %}
-						{% set types = {1:'Module Power',2:'Module Presence',3:'Lock',4:'Unlock',5:'Bad code'} %}
+							<div class="form-alert-filter">
+							{# TODO improve rendering to show labels inside input fields... #}
+							{# TODO improve CSS style #}
+								<form class="form form-inline" method="post" role="form">
+									{{ filter_form.hidden_tag() }}
+									{{ wtf.form_errors(filter_form, hiddens = "only") }}
+									{{ wtf.form_field(filter_form.period_from, 'inline', placeholder = 'From') }}
+									{{ wtf.form_field(filter_form.period_to, 'inline', placeholder = 'To') }}
+									{{ wtf.form_field(filter_form.alert_level, 'inline') }}
+									{{ wtf.form_field(filter_form.alert_type, 'inline') }}
+									{{ wtf.form_field(filter_form.submit, 'inline', button_map = {'alert_filter_submit': 'primary'}) }}
+								</form>
+							</div>
+						
 						{# TODO How to implement "realtime" refresh of alerts? #}
 							<table class="alerts-list table table-striped table-condensed table-hover">
 								<thead>
@@ -89,10 +97,9 @@ $(document).ready(function(){
 								<tbody>
 								{% for alert in alerts %}
 									<tr>
-										<td>{{ render_alert_level(alert.level) }}</td>
+										<td>{{ utils.render_alert_level(alert) }}</td>
 										<td>{{ alert.when.strftime('%d.%m.%Y %H:%M:%S') }}</td>
-										<td>{{ types[alert.alert_type] }}</td>
-										{# TODO Fix empty device name! #}
+										<td>{{ utils.map_alert_type(alert) }}</td>
 										<td>{{ alert.device.name }}</td>
 										<td>{{ alert.message }}</td>
 									</tr>

@@ -1,17 +1,16 @@
 
 	- alarm history view
-10'		- add scrollbar to table
-1h		- add filtering on: time period, module, alert level, alert type
-1h		- add manual refresh button AJAX-based
+		- add filtering on: time period, module, alert level, alert type
+			- improve refresh (go to the right tab)
+1h		- make refresh button AJAX-based (don't POST all form!)
 15'		- finally make refresh automatic (every X seconds TBD somewhere)
-30'		- add pagination?
-10'		- refactor macros to external template file
+1h		- add pagination?
 	
 	- monitoring improvement:
 20'		- check devices not pinging for too long
 ??		- should voltage alerts be repeated forever?
 	
-	- monitoring view:
+	- monitoring map view:
 30'		- better popup info on devices
 30'		- auto refresh of popup info
 15'		- change device colors when problems? (eg voltage low, bad code...)
