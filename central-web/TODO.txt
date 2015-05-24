@@ -1,9 +1,8 @@
 
 	- alarm history view
-		- add filtering on: time period, module, alert level, alert type
-			- improve refresh (go to the right tab)
-1h		- make refresh button AJAX-based (don't POST all form!)
+1h		- make filter button AJAX-based (don't force a full refresh!)
 15'		- finally make refresh automatic (every X seconds TBD somewhere)
+
 1h		- add pagination?
 	
 	- monitoring improvement:

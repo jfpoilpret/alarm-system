@@ -10,10 +10,14 @@ from app.common import check_alarm_setter, prepare_map_for_monitoring
 from app import db
 from app.monitor.forms import AlertsFilterForm
 
+#TODO split in two functions: general home + AJAX for alert list refresh (with filters)
 @monitor.route('/home', methods = ['GET', 'POST'])
 @login_required
 def home():
+    # Find current configuration
+    #FIXME handle situation where there is no current configuration setup yet!
     current_config = Configuration.query.filter_by(current = True).first()
+    # Check alerts filter form
     filter_form = AlertsFilterForm(prefix = 'alert_filter_')
     # Setup all dropdown in form
     filter_form.alert_level.choices = [
@@ -28,6 +32,11 @@ def home():
         (AlertType.WRONG_LOCK_CODE, 'Bad lock code only'),
         (AlertType.DEVICE_VOLTAGE_UNDER_THRESHOLD, 'Voltage under threshold only'),
         (AlertType.DEVICE_NO_PING_FOR_TOO_LONG, 'No ping for too long only') ]
+    # Set default active tab
+    if filter_form.is_submitted():
+        active_tab = 'alerts'
+    else:
+        active_tab = 'maps'
     if filter_form.validate_on_submit():
         alerts = filter_alerts(current_config.id, filter_form)
     else:
@@ -39,6 +48,7 @@ def home():
         configuration = current_config,
         filter_form = filter_form,
         alerts = alerts,
+        active_tab = active_tab,
         svg_map = prepare_map_for_monitoring(current_config))
 
 def filter_alerts(config_id, filter_form):

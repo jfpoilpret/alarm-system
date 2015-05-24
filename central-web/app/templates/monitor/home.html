@@ -12,6 +12,7 @@
 <script>
 $(document).ready(function(){
     $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
+    $('#tab_{{active_tab}}').tab('show');
 });
 </script>
 {% endblock %}
@@ -55,10 +56,10 @@ $(document).ready(function(){
 				<div class="monitor-tabs" role="tablist">
 					<ul class="nav nav-tabs" role="tablist">
 						<li role="presentation" class="active">
-							<a href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a>
+							<a id="tab_map" href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a>
 						</li>
 						<li role="presentation">
-							<a href="#alerts" aria-controls="alerts" role="tab" data-toggle="tab">Alerts</a>
+							<a id = "tab_alerts" href="#alerts" aria-controls="alerts" role="tab" data-toggle="tab">Alerts</a>
 						</li>
 					</ul>
 					<div class="tab-content">
@@ -70,8 +71,7 @@ $(document).ready(function(){
 						</div>
 						<div role="tabpanel" class="tab-pane" id="alerts">
 							<div class="form-alert-filter">
-							{# TODO improve rendering to show labels inside input fields... #}
-							{# TODO improve CSS style #}
+							{# TODO add a show all button to clear filter #}
 								<form class="form form-inline" method="post" role="form">
 									{{ filter_form.hidden_tag() }}
 									{{ wtf.form_errors(filter_form, hiddens = "only") }}
@@ -83,7 +83,7 @@ $(document).ready(function(){
 								</form>
 							</div>
 						
-						{# TODO How to implement "realtime" refresh of alerts? #}
+							{# TODO How to implement "realtime" refresh of alerts? #}
 							<table class="alerts-list table table-striped table-condensed table-hover">
 								<thead>
 									<tr>
