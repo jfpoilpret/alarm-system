@@ -9,10 +9,10 @@
 
 {% block scripts %}
 {{super()}}
+<script language="javascript" type="text/javascript" src="{{url_for('static', filename='monitor/Monitor.js')}}"></script>
 <script>
 $(document).ready(function(){
     $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
-    $('#tab_{{active_tab}}').tab('show');
 });
 </script>
 {% endblock %}
@@ -55,24 +55,24 @@ $(document).ready(function(){
 				{% endif %}
 				<div class="monitor-tabs" role="tablist">
 					<ul class="nav nav-tabs" role="tablist">
-						<li role="presentation" class="active">
+						<li role="presentation" {{ utils.tab_class('maps', active_tab) }}>
 							<a id="tab_map" href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a>
 						</li>
-						<li role="presentation">
+						<li role="presentation" {{ utils.tab_class('alerts', active_tab) }}>
 							<a id = "tab_alerts" href="#alerts" aria-controls="alerts" role="tab" data-toggle="tab">Alerts</a>
 						</li>
 					</ul>
 					<div class="tab-content">
-						<div role="tabpanel" class="tab-pane active" id="map">
+						<div role="tabpanel" {{ utils.tabpane_class('maps', active_tab) }} id="map">
 							{# TODO How to implement "realtime" update of devices tooltips? #}
 							<div class="monitor-map-area">
 								{{ svg_map|safe }}
 							</div>
 						</div>
-						<div role="tabpanel" class="tab-pane" id="alerts">
+						<div role="tabpanel" {{ utils.tabpane_class('alerts', active_tab) }} id="alerts">
 							<div class="form-alert-filter">
 							{# TODO add a show all button to clear filter #}
-								<form class="form form-inline" method="post" role="form">
+								<form id="alert_filter_form" class="form form-inline" method="post" role="form">
 									{{ filter_form.hidden_tag() }}
 									{{ wtf.form_errors(filter_form, hiddens = "only") }}
 									{{ wtf.form_field(filter_form.period_from, 'inline', placeholder = 'From') }}
@@ -81,8 +81,13 @@ $(document).ready(function(){
 									{{ wtf.form_field(filter_form.alert_type, 'inline') }}
 									{{ wtf.form_field(filter_form.submit, 'inline', button_map = {'alert_filter_submit': 'primary'}) }}
 								</form>
+								<a	id="refresh_alerts"
+									href="#"
+									class="btn btn-primary" role="button">
+									Refresh
+								</a>
 							</div>
-						
+
 							{# TODO How to implement "realtime" refresh of alerts? #}
 							<table class="alerts-list table table-striped table-condensed table-hover">
 								<thead>
@@ -96,13 +101,7 @@ $(document).ready(function(){
 								</thead>
 								<tbody>
 								{% for alert in alerts %}
-									<tr>
-										<td>{{ utils.render_alert_level(alert) }}</td>
-										<td>{{ alert.when.strftime('%d.%m.%Y %H:%M:%S') }}</td>
-										<td>{{ utils.map_alert_type(alert) }}</td>
-										<td>{{ alert.device.name }}</td>
-										<td>{{ alert.message }}</td>
-									</tr>
+									{% include "monitor/alerts.html" %}
 								{% endfor %}
 								</tbody>
 							</table>

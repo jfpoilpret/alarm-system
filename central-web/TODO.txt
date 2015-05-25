@@ -1,9 +1,7 @@
 
 	- alarm history view
-1h		- make filter button AJAX-based (don't force a full refresh!)
 15'		- finally make refresh automatic (every X seconds TBD somewhere)
-
-1h		- add pagination?
+		- check if further refactoring is useful or necessary
 	
 	- monitoring improvement:
 20'		- check devices not pinging for too long

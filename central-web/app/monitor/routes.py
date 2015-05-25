@@ -1,6 +1,6 @@
 from datetime import datetime
 from time import time
-from flask import flash, redirect, render_template, url_for
+from flask import flash, redirect, render_template, url_for, jsonify
 from flask_login import login_required
 
 from . import monitor
@@ -18,20 +18,7 @@ def home():
     #FIXME handle situation where there is no current configuration setup yet!
     current_config = Configuration.query.filter_by(current = True).first()
     # Check alerts filter form
-    filter_form = AlertsFilterForm(prefix = 'alert_filter_')
-    # Setup all dropdown in form
-    filter_form.alert_level.choices = [
-        (0, 'All levels'), 
-        (Alert.LEVEL_ALARM, 'Alarm only'), 
-        (Alert.LEVEL_WARNING, 'Warning only'), 
-        (Alert.LEVEL_INFO, 'Info only') ]
-    filter_form.alert_type.choices = [
-        (0, 'All types'),
-        (AlertType.LOCK, 'Lock only'),
-        (AlertType.UNLOCK, 'Unlock only'),
-        (AlertType.WRONG_LOCK_CODE, 'Bad lock code only'),
-        (AlertType.DEVICE_VOLTAGE_UNDER_THRESHOLD, 'Voltage under threshold only'),
-        (AlertType.DEVICE_NO_PING_FOR_TOO_LONG, 'No ping for too long only') ]
+    filter_form = AlertsFilterForm(prefix = 'alert_filter_', latest_id = '-1')
     # Set default active tab
     if filter_form.is_submitted():
         active_tab = 'alerts'
@@ -44,6 +31,8 @@ def home():
         limit = datetime.fromtimestamp(time() - 30 * 24 * 3600)
         filter_form.period_from.data = limit
         alerts = Alert.query.filter_by(config_id = current_config.id).filter(Alert.when >= limit).order_by(Alert.when.desc()).all()
+    if alerts:
+        filter_form.latest_id.data = str(alerts[0].id)
     return render_template('monitor/home.html', 
         configuration = current_config,
         filter_form = filter_form,
@@ -51,18 +40,41 @@ def home():
         active_tab = active_tab,
         svg_map = prepare_map_for_monitoring(current_config))
 
-def filter_alerts(config_id, filter_form):
+def filter_alerts(config_id, filter_form, limit = False):
+    latest_id = int(filter_form.latest_id.data)
     query = Alert.query.filter_by(config_id = config_id)
+    if limit:
+        query = query.filter(Alert.id > latest_id)
     if filter_form.period_from.data:
+        print('filter_alerts(when >= %s)' % str(filter_form.period_from.data))
         query = query.filter(Alert.when >= filter_form.period_from.data)
     if filter_form.period_to.data:
+        print('filter_alerts(when <= %s)' % str(filter_form.period_to.data))
         query = query.filter(Alert.when <= filter_form.period_to.data)
     if filter_form.alert_level.data and filter_form.alert_level.data != 0:
+        print('filter_alerts(level = %d)' % filter_form.alert_level.data)
         query = query.filter_by(level = filter_form.alert_level.data)
     if filter_form.alert_type.data and filter_form.alert_type.data != 0:
+        print('filter_alerts(type = %d)' % filter_form.alert_type.data)
         query = query.filter_by(alert_type = filter_form.alert_type.data)
     return query.order_by(Alert.when.desc()).all()
     
+@monitor.route('/refresh_alerts', methods = ['POST'])
+@login_required
+def refresh_alerts():
+    # Find current configuration
+    current_config = Configuration.query.filter_by(current = True).first()
+    # Check alerts filter form
+    filter_form = AlertsFilterForm(prefix = 'alert_filter_')
+    alerts = filter_alerts(current_config.id, filter_form, limit = True)
+    latest_id = int(filter_form.latest_id.data)
+    alerts_display = []
+    # Prepare rendering of new alerts so they are ready to integrate into the DOM on JS side
+    if alerts:
+        latest_id = alerts[0].id
+        alerts_display = [render_template('monitor/alerts.html', alert = alert) for alert in alerts]
+    return jsonify(alerts = alerts_display, latest_id = latest_id)
+
 @monitor.route('/activate')
 @login_required
 def activate_config():
