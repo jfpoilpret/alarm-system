@@ -41,21 +41,17 @@ def home():
         svg_map = prepare_map_for_monitoring(current_config))
 
 def filter_alerts(config_id, filter_form, limit = False):
-    latest_id = int(filter_form.latest_id.data)
     query = Alert.query.filter_by(config_id = config_id)
     if limit:
+        latest_id = int(filter_form.latest_id.data)
         query = query.filter(Alert.id > latest_id)
     if filter_form.period_from.data:
-        print('filter_alerts(when >= %s)' % str(filter_form.period_from.data))
         query = query.filter(Alert.when >= filter_form.period_from.data)
     if filter_form.period_to.data:
-        print('filter_alerts(when <= %s)' % str(filter_form.period_to.data))
         query = query.filter(Alert.when <= filter_form.period_to.data)
     if filter_form.alert_level.data and filter_form.alert_level.data != 0:
-        print('filter_alerts(level = %d)' % filter_form.alert_level.data)
         query = query.filter_by(level = filter_form.alert_level.data)
     if filter_form.alert_type.data and filter_form.alert_type.data != 0:
-        print('filter_alerts(type = %d)' % filter_form.alert_type.data)
         query = query.filter_by(alert_type = filter_form.alert_type.data)
     return query.order_by(Alert.when.desc()).all()
     
