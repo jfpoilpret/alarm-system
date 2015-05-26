@@ -1,8 +1,4 @@
 
-	- alarm history view
-15'		- finally make refresh automatic (every X seconds TBD somewhere)
-		- check if further refactoring is useful or necessary
-	
 	- monitoring improvement:
 20'		- check devices not pinging for too long
 ??		- should voltage alerts be repeated forever?
