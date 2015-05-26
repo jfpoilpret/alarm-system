@@ -27,6 +27,10 @@ $(document).ready(function() {
 			}
 		});
 	}
-	$('#refresh_alerts').on('click', refreshAlerts);
 	
+	// Automatically refresh alerts on timer every 5 seconds
+	var alerts_timer = window.setInterval(refreshAlerts, 5000);
+
+	//TODO Add automatic refresh of maps status
+	//TODO Then we should keep only one of these based on the active tab
 });

@@ -81,14 +81,8 @@ $(document).ready(function(){
 									{{ wtf.form_field(filter_form.alert_type, 'inline') }}
 									{{ wtf.form_field(filter_form.submit, 'inline', button_map = {'alert_filter_submit': 'primary'}) }}
 								</form>
-								<a	id="refresh_alerts"
-									href="#"
-									class="btn btn-primary" role="button">
-									Refresh
-								</a>
 							</div>
 
-							{# TODO How to implement "realtime" refresh of alerts? #}
 							<table class="alerts-list table table-striped table-condensed table-hover">
 								<thead>
 									<tr>
@@ -100,6 +94,7 @@ $(document).ready(function(){
 									</tr>
 								</thead>
 								<tbody>
+								{# TODO Remove this part and make it updated directly with auto JS refresh #}
 								{% for alert in alerts %}
 									{% include "monitor/alerts.html" %}
 								{% endfor %}
