@@ -7,8 +7,9 @@ class EventType:
     UNLOCK_CODE = 2
     PING = 3
     VOLTAGE = 4
+    NO_PING_FOR_LONG = 5
     
-    TYPES_COUNT = VOLTAGE
+    TYPES_COUNT = NO_PING_FOR_LONG
 
 class Event:
     def __init__(self, event_type, device_id = None, detail = None):

@@ -1,7 +1,10 @@
 
 	- monitoring improvement:
-20'		- check devices not pinging for too long
+		- check devices not pinging for too long
+			- avoid logging an alert every second, use graduated alerts!
 ??		- should voltage alerts be repeated forever?
+	- introduce concept of "priority" (or recurrent, repeated...) events that 
+	shall always show first until they are "cleared"
 	
 	- monitoring map view:
 30'		- better popup info on devices

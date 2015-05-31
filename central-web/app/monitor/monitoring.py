@@ -8,6 +8,7 @@ from app import db
 from app.models import Alert, AlertType
 from app.monitor.network.events import Event, EventType
 from app.monitor.network.devices_manager import DevicesManager, DevicesManagerSimulator
+from time import sleep, time
 
 monitoring_manager = None
 
@@ -32,8 +33,16 @@ class MonitoringManager(Thread):
     
     def __init__(self, app):
         Thread.__init__(self)
+        self.handlers = {
+            EventType.VOLTAGE: self.handle_voltage_event,
+            EventType.LOCK_CODE: self.handle_lock_event,
+            EventType.UNLOCK_CODE: self.handle_unlock_event,
+            EventType.NO_PING_FOR_LONG: self.handle_no_ping_for_long
+        }
         self.app = app
         self.status = None
+        self.active = False
+        self.ping_checker = Thread(target = self.check_pings)
         if app.config['SIMULATE_DEVICES']:
             self.devices_manager_class = DevicesManagerSimulator
         else:
@@ -53,6 +62,10 @@ class MonitoringManager(Thread):
         # Create the event queue that will be used by DevicesManager
         self.event_queue = Queue()
         self.start()
+        self.active = True
+        # Start check_pings thread
+        self.ping_checker.start()
+
         # Instantiate DevicesManager (based on app.config)
         self.devices_manager = self.devices_manager_class(self.event_queue, self.devices)
         print('activate() thread started')
@@ -67,6 +80,9 @@ class MonitoringManager(Thread):
             self.event_queue.put(Event(EventType.STOP))
             # Wait until thread is finished
             self.join()
+            # Wait for check_pings() thread to stop
+            self.active = False
+            self.ping_checker.join()
             # Finally clear all configuration
             self.config_id = None
             self.lock_code = None
@@ -83,51 +99,98 @@ class MonitoringManager(Thread):
             db.session.add(alert)
             db.session.commit()
     
-    #TODO redesign to avoid if elif elif ... else
+    #TODO improve by seeting additional info to device for further generation of alerts
+    # (eg time without ping)
+    def check_pings(self):
+        while True:
+            # Perform check every 1 second
+            sleep(1.0)
+            if not self.active:
+                return
+            # Check list of all devices where last ping > 6 seconds
+            #TODO that should be configurable!
+            time_limit = time() - 6.0
+            #FIXME how to deal with devices that have not been connected yet (time = 0)?
+            no_ping_devices = [dev for dev in self.devices.values() if dev.latest_ping < time_limit]
+            for dev in no_ping_devices:
+                # Push event for all those devices
+                self.event_queue.put(Event(EventType.NO_PING_FOR_LONG, dev.source.device_id))
+    
+    # EVENT HANDLERS
+    #----------------
+    def handle_voltage_event(self, event_type, device, event_detail):
+        device.latest_voltage_level = event_detail
+        if device.latest_voltage_level < device.source.voltage_threshold:
+            message = 'Module %s current voltage (%.02fV) is under threshold (%.02fV)' % (
+                device.source.name, device.latest_voltage_level, device.source.voltage_threshold)
+            return Alert(
+                level = Alert.LEVEL_WARNING,
+                alert_type = AlertType.DEVICE_VOLTAGE_UNDER_THRESHOLD,
+                message = message)
+        else:
+            return None
+
+    def check_code(self, device, event_detail):
+        if self.lock_code != event_detail:
+            message = 'Bad code typed on module %s' % device.source.name
+            return Alert(
+                level = Alert.LEVEL_WARNING,
+                alert_type = AlertType.WRONG_LOCK_CODE,
+                message = message)
+        else:
+            return None
+
+    def create_lock_event(self, status, alert_type):
+        self.status = status
+        self.devices_manager.set_status(self.status)
+        return Alert(
+            level = Alert.LEVEL_INFO, 
+            alert_type = alert_type)
+        
+    def handle_lock_event(self, event_type, device, event_detail):
+        alert = self.check_code(device, event_detail)
+        if alert:
+            return alert
+        else:
+            return self.create_lock_event(AlarmStatus.LOCKED, AlertType.LOCK)
+    
+    def handle_unlock_event(self, event_type, device, event_detail):
+        alert = self.check_code(device, event_detail)
+        if alert:
+            return alert
+        else:
+            return self.create_lock_event(AlarmStatus.UNLOCKED, AlertType.UNLOCK)
+    
+    #TODO improve alerts by generating several levels of alerts based on duration without ping
+    #TODO also we should not insert alerts every second but 'aggregate' consecutive alerts into 
+    # one every XX seconds...
+    def handle_no_ping_for_long(self, event_type, device, event_detail):
+        message = 'Module %s has provided no presence signal for %d seconds' % (
+            device.source.name, device.latest_ping - time())
+        return Alert(
+            level = Alert.LEVEL_WARNING,
+            alert_type = AlertType.DEVICE_NO_PING_FOR_TOO_LONG,
+            message = message)
+    
     def run(self):
         while True:
             event = self.event_queue.get()
             # Detect stop condition
             if event.event_type == EventType.STOP:
                 return
-            alert = None
             if event.device_id:
                 device = self.devices[event.device_id]
                 device.latest_ping = event.timestamp
             else:
                 device = None
             # Check event type and decide what to do with it
-            if event.event_type == EventType.VOLTAGE:
-                device.latest_voltage_level = event.detail
-                if device.latest_voltage_level < device.source.voltage_threshold:
-                    message = 'Module %s current voltage (%.02fV) is under threshold (%.02fV)' % (
-                        device.source.name, device.latest_voltage_level, device.source.voltage_threshold)
-                    alert = Alert(
-                        level = Alert.LEVEL_WARNING,
-                        alert_type = AlertType.DEVICE_VOLTAGE_UNDER_THRESHOLD,
-                        message = message)
-            elif event.event_type in [EventType.LOCK_CODE, EventType.UNLOCK_CODE]:
-                if self.lock_code != event.detail:
-                    message = 'Bad code typed on module %s' % device.source.name
-                    alert = Alert(
-                        level = Alert.LEVEL_WARNING,
-                        alert_type = AlertType.WRONG_LOCK_CODE,
-                        message = message)
-                else:
-                    if event.event_type == EventType.LOCK_CODE:
-                        self.status = AlarmStatus.LOCKED
-                        alert_type = AlertType.LOCK
-                    else:
-                        self.status = AlarmStatus.UNLOCKED
-                        alert_type = AlertType.UNLOCK
-                    self.devices_manager.set_status(self.status)
-                    alert = Alert(
-                        level = Alert.LEVEL_INFO, 
-                        alert_type = alert_type)
-            if alert:
-                alert.when = datetime.fromtimestamp(event.timestamp)
-                alert.config_id = self.config_id
-                if device:
-                    alert.device_id = device.source.id
-                self.store_alert(alert)
-                    
+            handler = self.handlers.get(event.event_type, None)
+            if handler:
+                alert = handler(event.event_type, device, event.detail)
+                if alert:
+                    alert.when = datetime.fromtimestamp(event.timestamp)
+                    alert.config_id = self.config_id
+                    if device:
+                        alert.device_id = device.source.id
+                    self.store_alert(alert)
+
