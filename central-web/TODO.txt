@@ -1,9 +1,13 @@
 
+	- monitoring UI
+15'		- limit number of alerts (100?)
+1h			- but then how to get older alerts?
+
 	- monitoring improvement:
-		- check devices not pinging for too long
+1h		- check devices not pinging for too long
 			- avoid logging an alert every second, use graduated alerts!
 ??		- should voltage alerts be repeated forever?
-	- introduce concept of "priority" (or recurrent, repeated...) events that 
+	- introduce concept of "priority" (or recurrent, repeated...) alerts that 
 	shall always show first until they are "cleared"
 	
 	- monitoring map view:
@@ -14,7 +18,7 @@
 30'	- if default config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
 		
-5'	- store INFO alerts when config activated/deactivated
+5'	- store INFO alerts about when config activated/deactivated
 
 1h+	- propose function to cleanup alert history:
 		- for a given config
