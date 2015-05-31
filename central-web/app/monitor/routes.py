@@ -24,19 +24,13 @@ def home():
         active_tab = 'alerts'
     else:
         active_tab = 'maps'
-    if filter_form.validate_on_submit():
-        alerts = filter_alerts(current_config.id, filter_form)
-    else:
+    if not filter_form.validate_on_submit():
         # Limit to last 30 days by default
         limit = datetime.fromtimestamp(time() - 30 * 24 * 3600)
         filter_form.period_from.data = limit
-        alerts = Alert.query.filter_by(config_id = current_config.id).filter(Alert.when >= limit).order_by(Alert.when.desc()).all()
-    if alerts:
-        filter_form.latest_id.data = str(alerts[0].id)
     return render_template('monitor/home.html', 
         configuration = current_config,
         filter_form = filter_form,
-        alerts = alerts,
         active_tab = active_tab,
         svg_map = prepare_map_for_monitoring(current_config))
 

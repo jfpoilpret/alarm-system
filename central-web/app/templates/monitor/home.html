@@ -51,8 +51,6 @@ $(document).ready(function(){
 				</a>
 					{% endif %}
 				{% endif %}
-				{% if configuration.active %}
-				{% endif %}
 				<div class="monitor-tabs" role="tablist">
 					<ul class="nav nav-tabs" role="tablist">
 						<li role="presentation" {{ utils.tab_class('maps', active_tab) }}>
@@ -94,10 +92,6 @@ $(document).ready(function(){
 									</tr>
 								</thead>
 								<tbody>
-								{# TODO Remove this part and make it updated directly with auto JS refresh #}
-								{% for alert in alerts %}
-									{% include "monitor/alerts.html" %}
-								{% endfor %}
 								</tbody>
 							</table>
 						</div>

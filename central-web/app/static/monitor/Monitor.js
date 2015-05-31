@@ -29,6 +29,7 @@ $(document).ready(function() {
 	}
 	
 	// Automatically refresh alerts on timer every 5 seconds
+	refreshAlerts();
 	var alerts_timer = window.setInterval(refreshAlerts, 5000);
 
 	//TODO Add automatic refresh of maps status
