@@ -89,10 +89,11 @@ def prepare_map(config, update_device_image, update_device_group):
                 '@cy': str(y),
                 '@r': str(r),
                 '@stroke': 'red',
+                '@stroke-width': '3',
                 '@fill': 'red',
                 '@data-toggle': 'popover',
-                '@title': 'Module ID %d' % id,
-                '@data-content': device.name
+                '@title': 'Module %s (ID %d)' % (device.name, id),
+                '@data-content': ''
             }
             update_device_image(device_image)
             device_group = {
@@ -118,7 +119,7 @@ def prepare_map_for_config(config):
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
 def prepare_map_for_monitoring(config):
     def update_image(device_image):
-        pass
+        device_image['@class'] = 'ping-alert-0 voltage-alert-0'
     def update_group(device_group):
         device_group['@class'] = 'monitor-device-image'
     return prepare_map(config, update_image, update_group)

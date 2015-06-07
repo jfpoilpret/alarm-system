@@ -1,4 +1,11 @@
 
+	- monitoring map view javascript:
+30'		- timer setup based on current tab activated
+		- fix update SVG title on refreshMap JS function
+			- update is OK, but popup does not refresh when shown
+http://stackoverflow.com/questions/26411340/dynamically-updating-bootstrap-popover-with-ajax-results
+30'		- better popup info on devices
+		
 	- monitoring UI
 15'		- limit number of alerts (100?)
 1h			- but then how to get older alerts?
@@ -10,11 +17,6 @@
 	- introduce concept of "priority" (or recurrent, repeated...) alerts that 
 	shall always show first until they are "cleared"
 	
-	- monitoring map view:
-30'		- better popup info on devices
-30'		- auto refresh of popup info
-15'		- change device colors when problems? (eg voltage low, bad code...)
-		
 30'	- if default config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
 		

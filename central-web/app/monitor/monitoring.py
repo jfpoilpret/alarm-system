@@ -2,6 +2,7 @@
 
 from queue import Queue
 from threading import Thread
+from threading import Event as ThreadEvent
 from datetime import datetime
 
 from app import db
@@ -12,18 +13,18 @@ from time import sleep, time
 
 monitoring_manager = None
 
-class AlarmStatus:
+class AlarmStatus(object):
     LOCKED = 1
     UNLOCKED = 2
     
-class LiveDevice:
+class LiveDevice(object):
     def __init__(self, device):
         self.source = device
         self.latest_ping = 0
         self.latest_voltage_level = None
 
 #TODO Add monitoring of device pings and generate alerts if no ping during a given time...
-class MonitoringManager(Thread):
+class MonitoringManager(object):
     instance = None
     
     @staticmethod
@@ -32,7 +33,6 @@ class MonitoringManager(Thread):
         return MonitoringManager.instance
     
     def __init__(self, app):
-        Thread.__init__(self)
         self.handlers = {
             EventType.VOLTAGE: self.handle_voltage_event,
             EventType.LOCK_CODE: self.handle_lock_event,
@@ -42,7 +42,12 @@ class MonitoringManager(Thread):
         self.app = app
         self.status = None
         self.active = False
-        self.ping_checker = Thread(target = self.check_pings)
+        self.config_id = None
+        self.lock_code = None
+        self.devices = {}
+        self.event_checker = None
+        self.ping_checker_stop = ThreadEvent()
+        self.ping_checker = None
         if app.config['SIMULATE_DEVICES']:
             self.devices_manager_class = DevicesManagerSimulator
         else:
@@ -61,9 +66,12 @@ class MonitoringManager(Thread):
         # Start thread that reads queues and act upon received messages (DB, SMS...)
         # Create the event queue that will be used by DevicesManager
         self.event_queue = Queue()
-        self.start()
+        self.event_checker = Thread(target = self.check_events)
+        self.event_checker.start()
         self.active = True
         # Start check_pings thread
+        self.ping_checker_stop.clear()
+        self.ping_checker = Thread(target = self.check_pings)
         self.ping_checker.start()
 
         # Instantiate DevicesManager (based on app.config)
@@ -72,17 +80,20 @@ class MonitoringManager(Thread):
     
     def deactivate(self):
         print('deactivate()')
-        if self.is_alive():
+        if self.event_checker:
             # Stop DevicesManager
             self.devices_manager.deactivate()
             self.devices_manager = None
             # Then stop thread by sending special event to queue
             self.event_queue.put(Event(EventType.STOP))
             # Wait until thread is finished
-            self.join()
+            self.event_checker.join()
+            self.event_checker = None
             # Wait for check_pings() thread to stop
             self.active = False
+            self.ping_checker_stop.set()
             self.ping_checker.join()
+            self.ping_checker = None
             # Finally clear all configuration
             self.config_id = None
             self.lock_code = None
@@ -99,12 +110,12 @@ class MonitoringManager(Thread):
             db.session.add(alert)
             db.session.commit()
     
-    #TODO improve by seeting additional info to device for further generation of alerts
+    #TODO improve by setting additional info to device for further generation of alerts
     # (eg time without ping)
     def check_pings(self):
-        while True:
+        while not self.ping_checker_stop.is_set():
             # Perform check every 1 second
-            sleep(1.0)
+            self.ping_checker_stop.wait(1.0)
             if not self.active:
                 return
             # Check list of all devices where last ping > 6 seconds
@@ -172,7 +183,7 @@ class MonitoringManager(Thread):
             alert_type = AlertType.DEVICE_NO_PING_FOR_TOO_LONG,
             message = message)
     
-    def run(self):
+    def check_events(self):
         while True:
             event = self.event_queue.get()
             # Detect stop condition

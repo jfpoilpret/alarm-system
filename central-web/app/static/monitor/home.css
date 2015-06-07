@@ -50,3 +50,43 @@
 .alert-level-alarm {
 	color: #a94442;
 }
+
+.popover-content {
+	white-space:pre-wrap;
+}
+
+circle.ping-alert-0 {
+	fill: green;
+}
+
+circle.ping-alert-1 {
+	fill: yellow;
+}
+
+circle.ping-alert-2 {
+	fill: orange;
+}
+
+circle.ping-alert-3 {
+	fill: red;
+}
+
+circle.voltage-alert-0 {
+	stroke: green;
+	stroke-width: 2;
+}
+
+circle.voltage-alert-1 {
+	stroke: yellow;
+	stroke-width: 4;
+}
+
+circle.voltage-alert-2 {
+	stroke: orange;
+	stroke-width: 6;
+}
+
+circle.voltage-alert-3 {
+	stroke: red;
+	stroke-width: 8;
+}

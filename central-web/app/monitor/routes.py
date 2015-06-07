@@ -1,5 +1,5 @@
 from datetime import datetime
-from time import time
+from time import time, strptime
 from flask import flash, redirect, render_template, url_for, jsonify
 from flask_login import login_required
 
@@ -9,8 +9,8 @@ from app.models import Configuration, Alert, AlertType
 from app.common import check_alarm_setter, prepare_map_for_monitoring
 from app import db
 from app.monitor.forms import AlertsFilterForm
+from app.monitor.monitoring import MonitoringManager
 
-#TODO split in two functions: general home + AJAX for alert list refresh (with filters)
 @monitor.route('/home', methods = ['GET', 'POST'])
 @login_required
 def home():
@@ -64,6 +64,46 @@ def refresh_alerts():
         latest_id = alerts[0].id
         alerts_display = [render_template('monitor/alerts.html', alert = alert) for alert in alerts]
     return jsonify(alerts = alerts_display, latest_id = latest_id)
+
+def create_device_for_refresh(device, now):
+    if device.latest_voltage_level and device.source.voltage_threshold:
+        voltage_rate = device.latest_voltage_level / device.source.voltage_threshold
+        if voltage_rate >= 1.05:
+            voltage_alert = 0
+        elif voltage_rate >= 1.0:
+            voltage_alert = 1
+        elif voltage_rate >= 0.9:
+            voltage_alert = 2
+        else:
+            voltage_alert = 3
+        if device.latest_ping > now - 5.0:
+            ping_alert = 0
+        elif device.latest_ping > now - 10.0:
+            ping_alert = 1
+        elif device.latest_ping > now - 30.0:
+            ping_alert = 2
+        else:
+            ping_alert = 3
+    else:
+        voltage_alert = 0
+        ping_alert = 0
+     
+    return {
+        'id': device.source.device_id,
+        'voltage_threshold': device.source.voltage_threshold,
+        'latest_voltage': device.latest_voltage_level,
+        'latest_ping': datetime.fromtimestamp(device.latest_ping).strftime('%d.%m.%Y %H:%M:%S'),
+        'voltage_alert': voltage_alert,
+        'ping_alert': ping_alert
+    }
+
+@monitor.route('/refresh_devices', methods = ['POST'])
+@login_required
+def refresh_devices():
+    # Get list of all devices in current configuration and prepare for return to UI
+    now = time()
+    devices = [create_device_for_refresh(device, now) for device in MonitoringManager.instance.get_devices().values()]
+    return jsonify(devices = devices)
 
 @monitor.route('/activate')
 @login_required
