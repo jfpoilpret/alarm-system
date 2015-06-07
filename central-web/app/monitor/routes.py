@@ -34,7 +34,7 @@ def home():
         active_tab = active_tab,
         svg_map = prepare_map_for_monitoring(current_config))
 
-def filter_alerts(config_id, filter_form, limit = False):
+def filter_alerts(config_id, filter_form, limit = False, max_rows = 100):
     query = Alert.query.filter_by(config_id = config_id)
     if limit:
         latest_id = int(filter_form.latest_id.data)
@@ -47,7 +47,13 @@ def filter_alerts(config_id, filter_form, limit = False):
         query = query.filter_by(level = filter_form.alert_level.data)
     if filter_form.alert_type.data and filter_form.alert_type.data != 0:
         query = query.filter_by(alert_type = filter_form.alert_type.data)
-    return query.order_by(Alert.when.desc()).all()
+#    return query.order_by(Alert.when.desc()).all()
+    # Limit to 100 last records for the moment
+    # TODO but we need to later implement a way to load all history if needed
+    query = query.order_by(Alert.when.desc())
+    if max_rows:
+        query = query.limit(max_rows)
+    return query.all()
     
 @monitor.route('/refresh_alerts', methods = ['POST'])
 @login_required

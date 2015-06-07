@@ -49,34 +49,44 @@ $(document).ready(function() {
 					classes = sprintf('ping-alert-%d voltage-alert-%d', device.ping_alert, device.voltage_alert);
 					$(selector).attr('class', classes);
 				}
-				//FIXME there seems to be no refresh of SVG after class changes!
 			}
 		});
 	}
 
-	// Automatically refresh alerts on timer every 5 seconds
-//	refreshAlerts();
-//	var alerts_timer = window.setInterval(refreshAlerts, 5000);
+	// Automatically refresh map on timer every 5 seconds
 	refreshMap();
 	var map_timer = window.setInterval(refreshMap, 5000);
+	var alerts_timer = null;
 
+	// We enable only one refresh timer, based on current active tab
+	//TODO we should enable refresh timers ONLY if configuration is active!!!
 	function disableTab(e)
 	{
-		//TODO
-		console.log('disableTab');
-		console.log(e.target);
+		if ($(e.target).attr('id') === 'tab_map') {
+			if (map_timer !== null) {
+				window.clearInterval(map_timer);
+				map_timer = null;
+			}
+		} else if ($(e.target).attr('id') === 'tab_alerts') {
+			if (alerts_timer !== null) {
+				window.clearInterval(alerts_timer);
+				alerts_timer = null;
+			}
+		}
 	}
 	
 	function enableTab(e)
 	{
-		//TODO
-		console.log('enableTab');
-		console.log(e.target);
+		if ($(e.target).attr('id') === 'tab_map') {
+			refreshMap();
+			map_timer = window.setInterval(refreshMap, 5000);
+		} else if ($(e.target).attr('id') === 'tab_alerts') {
+			refreshAlerts();
+			alerts_timer = window.setInterval(refreshAlerts, 5000);
+		}
 	}
 
 	// Register tab event handlers
 	$('a[data-toggle="tab"]').on('hide.bs.tab', disableTab);
 	$('a[data-toggle="tab"]').on('shown.bs.tab', enableTab);
-	
-	//TODO Then we should keep only one of these based on the active tab
 });

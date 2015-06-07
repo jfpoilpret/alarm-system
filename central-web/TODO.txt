@@ -1,14 +1,13 @@
 
 	- monitoring map view javascript:
-30'		- timer setup based on current tab activated
-		- fix update SVG title on refreshMap JS function
+15'		- fix update SVG title on refreshMap JS function
 			- update is OK, but popup does not refresh when shown
 http://stackoverflow.com/questions/26411340/dynamically-updating-bootstrap-popover-with-ajax-results
-30'		- better popup info on devices
+30'		- better popup info on devices (what info should be added?)
 		
 	- monitoring UI
-15'		- limit number of alerts (100?)
-1h			- but then how to get older alerts?
+15'		- there should be no refresh timers on UI if config is inactive!
+1h		- provide a way to load all alerts history, possibly with pagination
 
 	- monitoring improvement:
 1h		- check devices not pinging for too long
