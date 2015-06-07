@@ -40,12 +40,14 @@ $(document).ready(function(){
 				{% if current_user.is_alarm_setter() %}
 					{% if configuration.active %}
 				<a	class="btn btn-primary" role="button" 
+					id="deactivate_config"
 					href="{{ url_for('monitor.deactivate_config') }}"
 					onclick="return window.confirm('Are you sure you want to deactivate the alarm system?');">
 					Deactivate
 				</a>
 					{% else %}
 				<a	class="btn btn-primary" role="button" 
+					id="activate_config"
 					href="{{ url_for('monitor.activate_config') }}"
 					onclick="return window.confirm('Are you sure you want to activate the alarm system?');">
 					Activate
@@ -63,7 +65,6 @@ $(document).ready(function(){
 					</ul>
 					<div class="tab-content">
 						<div role="tabpanel" {{ utils.tabpane_class('maps', active_tab) }} id="map">
-							{# TODO How to implement "realtime" update of devices tooltips? #}
 							<div class="monitor-map-area">
 								{{ svg_map|safe }}
 							</div>
@@ -82,6 +83,7 @@ $(document).ready(function(){
 								</form>
 							</div>
 
+							{# TODO add pagination (currently hard-coded limit of 100 records) #}
 							<table class="alerts-list table table-striped table-condensed table-hover">
 								<thead>
 									<tr>

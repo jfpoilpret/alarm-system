@@ -6,6 +6,15 @@ $(document).ready(function() {
 		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
 		'alert_filter_alert_type': $('#alert_filter_alert_type').val()
 	};
+	
+	// Function that checks is current configuration is active
+	function isCurrentConfigActive()
+	{
+		//FIXME actually this is incorrect as the deactivate button exists only for users 
+		// in role ALARM_SETTER and above!
+		// => update home.html to add hidden field only for active configuration
+		return $('#deactivate_config').length > 0;
+	}
 
 	// AJAX function to update list with latest (new) alerts
 	function refreshAlerts()
@@ -54,35 +63,44 @@ $(document).ready(function() {
 	}
 
 	// Automatically refresh map on timer every 5 seconds
-	refreshMap();
-	var map_timer = window.setInterval(refreshMap, 5000);
+	var map_timer = null;
 	var alerts_timer = null;
+	if (isCurrentConfigActive()) {
+		refreshMap();
+		map_timer = window.setInterval(refreshMap, 5000);
+	}
 
 	// We enable only one refresh timer, based on current active tab
-	//TODO we should enable refresh timers ONLY if configuration is active!!!
 	function disableTab(e)
 	{
-		if ($(e.target).attr('id') === 'tab_map') {
-			if (map_timer !== null) {
-				window.clearInterval(map_timer);
-				map_timer = null;
-			}
-		} else if ($(e.target).attr('id') === 'tab_alerts') {
-			if (alerts_timer !== null) {
-				window.clearInterval(alerts_timer);
-				alerts_timer = null;
+		if (isCurrentConfigActive()) {
+			if ($(e.target).attr('id') === 'tab_map') {
+				if (map_timer !== null) {
+					window.clearInterval(map_timer);
+					map_timer = null;
+				}
+			} else if ($(e.target).attr('id') === 'tab_alerts') {
+				if (alerts_timer !== null) {
+					window.clearInterval(alerts_timer);
+					alerts_timer = null;
+				}
 			}
 		}
 	}
 	
 	function enableTab(e)
 	{
-		if ($(e.target).attr('id') === 'tab_map') {
-			refreshMap();
-			map_timer = window.setInterval(refreshMap, 5000);
-		} else if ($(e.target).attr('id') === 'tab_alerts') {
+		if ($(e.target).attr('id') === 'tab_alerts') {
+			// Always refresh alert once immediately, even if no config is active
 			refreshAlerts();
-			alerts_timer = window.setInterval(refreshAlerts, 5000);
+		}
+		if (isCurrentConfigActive()) {
+			if ($(e.target).attr('id') === 'tab_map') {
+				refreshMap();
+				map_timer = window.setInterval(refreshMap, 5000);
+			} else if ($(e.target).attr('id') === 'tab_alerts') {
+				alerts_timer = window.setInterval(refreshAlerts, 5000);
+			}
 		}
 	}
 
