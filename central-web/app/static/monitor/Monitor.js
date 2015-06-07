@@ -54,6 +54,11 @@ $(document).ready(function() {
 						device.latest_voltage,
 						device.latest_ping);
 					$(selector).attr('data-content', message);
+					// Ensure correct refresh of popover if currently displayed
+					idPopover = $(selector).attr('aria-describedby');
+					if (idPopover !== undefined) {
+						$(selector).popover('show');
+					}
 					// Change colors based on alerts
 					classes = sprintf('ping-alert-%d voltage-alert-%d', device.ping_alert, device.voltage_alert);
 					$(selector).attr('class', classes);

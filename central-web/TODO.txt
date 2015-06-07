@@ -1,8 +1,5 @@
 
 	- monitoring map view javascript:
-15'		- fix update SVG title on refreshMap JS function
-			- update is OK, but popup does not refresh when shown
-http://stackoverflow.com/questions/26411340/dynamically-updating-bootstrap-popover-with-ajax-results
 30'		- better popup info on devices (what info should be added?)
 		
 	- monitoring UI
