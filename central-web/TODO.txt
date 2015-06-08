@@ -3,7 +3,6 @@
 30'		- better popup info on devices (what info should be added?)
 		
 	- monitoring UI
-15'		- there should be no refresh timers on UI if config is inactive!
 1h		- provide a way to load all alerts history, possibly with pagination
 
 	- monitoring improvement:

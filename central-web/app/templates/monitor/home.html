@@ -19,6 +19,9 @@ $(document).ready(function(){
 {% endblock %}
 
 {% block page_content %}
+{% if configuration and configuration.active %}
+	<input type="hidden" id="has_active_configuration" name="has_active_configuration" value="yes">
+{% endif %}
 	<div class="monitor">
 		<div class="panel panel-primary">
 			<div class="panel-heading">

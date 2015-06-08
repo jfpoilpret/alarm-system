@@ -10,10 +10,7 @@ $(document).ready(function() {
 	// Function that checks is current configuration is active
 	function isCurrentConfigActive()
 	{
-		//FIXME actually this is incorrect as the deactivate button exists only for users 
-		// in role ALARM_SETTER and above!
-		// => update home.html to add hidden field only for active configuration
-		return $('#deactivate_config').length > 0;
+		return $('#has_active_configuration').length > 0;
 	}
 
 	// AJAX function to update list with latest (new) alerts
