@@ -1,11 +1,11 @@
 from datetime import datetime
-from time import time, strptime
-from flask import flash, redirect, render_template, url_for, jsonify
+from time import time
+from flask import redirect, render_template, url_for, jsonify
 from flask_login import login_required
 
 from . import monitor
 
-from app.models import Configuration, Alert, AlertType
+from app.models import Configuration, Alert
 from app.common import check_alarm_setter, prepare_map_for_monitoring
 from app import db
 from app.monitor.forms import AlertsFilterForm
@@ -93,12 +93,13 @@ def create_device_for_refresh(device, now):
     else:
         voltage_alert = 0
         ping_alert = 0
-     
+    
     return {
         'id': device.source.device_id,
         'voltage_threshold': device.source.voltage_threshold,
         'latest_voltage': device.latest_voltage_level,
         'latest_ping': datetime.fromtimestamp(device.latest_ping).strftime('%d.%m.%Y %H:%M:%S'),
+        'time_since_latest_ping': now - device.latest_ping,
         'voltage_alert': voltage_alert,
         'ping_alert': ping_alert
     }

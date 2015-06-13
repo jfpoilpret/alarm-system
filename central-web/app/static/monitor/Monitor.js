@@ -46,10 +46,12 @@ $(document).ready(function() {
 				for (var i = 0; i < results.devices.length; i++) {
 					device = results.devices[i];
 					selector = sprintf('#device-%d circle', device.id);
-					//TODO Add other information to data content popup?
-					message = sprintf('Voltage: %0.2f V\nLatest Ping: %s', 
+					// Add other information to data content popup?
+					message = sprintf('Voltage: %0.2f V (min.: %0.2f V)\nLatest Ping: %s\n (%d seconds ago)', 
 						device.latest_voltage,
-						device.latest_ping);
+						device.voltage_threshold,
+						device.latest_ping,
+						device.time_since_latest_ping);
 					$(selector).attr('data-content', message);
 					// Ensure correct refresh of popover if currently displayed
 					idPopover = $(selector).attr('aria-describedby');
@@ -62,6 +64,26 @@ $(document).ready(function() {
 				}
 			}
 		});
+	}
+
+	var $popovers = null;
+	
+	function clearMapPopups()
+	{
+		// Before hiding everything first get the list of popovers that are currently displayed!
+		$popovers = $('[data-toggle="popover"]').filter(function(index) {
+			return $(this).attr('aria-describedby') !== undefined;
+		})
+	    $popovers.popover('hide');
+	}
+
+	function restoreMapPopups()
+	{
+		// Restore popover that were shown before tab changing
+		if ($popovers !== null) {
+			$popovers.popover('show');
+			$popovers = null;
+		}
 	}
 
 	// Automatically refresh map on timer every 5 seconds
@@ -88,6 +110,10 @@ $(document).ready(function() {
 				}
 			}
 		}
+		// Hide all popovers
+		if ($(e.target).attr('id') === 'tab_map') {
+			clearMapPopups();
+		}
 	}
 	
 	function enableTab(e)
@@ -95,6 +121,9 @@ $(document).ready(function() {
 		if ($(e.target).attr('id') === 'tab_alerts') {
 			// Always refresh alert once immediately, even if no config is active
 			refreshAlerts();
+		} else if ($(e.target).attr('id') === 'tab_map') {
+			// Restore all popovers that were previously shown in the map
+			restoreMapPopups();
 		}
 		if (isCurrentConfigActive()) {
 			if ($(e.target).attr('id') === 'tab_map') {
@@ -107,6 +136,7 @@ $(document).ready(function() {
 	}
 
 	// Register tab event handlers
+    $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
 	$('a[data-toggle="tab"]').on('hide.bs.tab', disableTab);
 	$('a[data-toggle="tab"]').on('shown.bs.tab', enableTab);
 });

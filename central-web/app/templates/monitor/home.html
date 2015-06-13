@@ -11,11 +11,6 @@
 {{super()}}
 <script language="javascript" type="text/javascript" src="{{url_for('static', filename='monitor/sprintf.js')}}"></script>
 <script language="javascript" type="text/javascript" src="{{url_for('static', filename='monitor/Monitor.js')}}"></script>
-<script>
-$(document).ready(function(){
-    $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
-});
-</script>
 {% endblock %}
 
 {% block page_content %}
