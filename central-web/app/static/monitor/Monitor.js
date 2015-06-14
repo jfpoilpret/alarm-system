@@ -16,7 +16,7 @@ $(document).ready(function() {
 	// AJAX function to update list with latest (new) alerts
 	function refreshAlerts()
 	{
-		var $tbody = $('.alerts-list > tbody')
+		var $tbody = $('.alerts-list > tbody');
 		var $latest_id = $('#alert_filter_latest_id');
 		// Find the latest alert ID
 		filterJson.alert_filter_latest_id = $latest_id.val();
@@ -64,6 +64,31 @@ $(document).ready(function() {
 				}
 			}
 		});
+	}
+	
+	// AJAX function to get requested page of history
+	function pageHistory(page)
+	{
+		var $tbody = $('.history-list > tbody');
+		var $pagination = $('#history-pagination');
+		url = sprintf('/monitor/load_history_page/%d', page);
+		// Send AJAX request
+		$.ajax({
+			type: 'GET',
+			url: url,
+			success: function(results) {
+				// Clear previous table body rows
+				$tbody.html('');
+				// Add paged rows to table body
+				$tbody.prepend(results.alerts);
+				// Set pagination stuff
+				$pagination.html(results.pagination);
+				$('[data-page]').on('click', function(e) {
+					pageHistory($(this).attr('data-page'));
+				});
+			}
+		});
+		return false;
 	}
 
 	var $popovers = null;
@@ -124,6 +149,9 @@ $(document).ready(function() {
 		} else if ($(e.target).attr('id') === 'tab_map') {
 			// Restore all popovers that were previously shown in the map
 			restoreMapPopups();
+		} else if ($(e.target).attr('id') === 'tab_history') {
+			// Refresh history with pagination
+			pageHistory(1);
 		}
 		if (isCurrentConfigActive()) {
 			if ($(e.target).attr('id') === 'tab_map') {

@@ -1,7 +1,14 @@
 
 	- monitoring UI
-1h		- provide a way to load all alerts history, possibly with pagination
-
+		- review UI globally: change tabs
+30'			tab "Control": activate/deactivate, later on other actions (clear history...)
+			tab "Map": as today
+			tab "Alerts": as today
+			tab "History": paginated list of alerts (no auto-refresh)
+		
+1h		- improve to replace globally all POST/GET with AJAX calls
+			ensure somehow that refresh will always go back to the current tab(how?)
+			
 	- monitoring improvement:
 1h		- check devices not pinging for too long
 			- avoid logging an alert every second, use graduated alerts!
@@ -19,12 +26,10 @@
 		- for a given period of time
 		- for a given level of alert
 		
-1h	- real-time monitoring on picture with devices states
-	
 15'	- review all .py headers (encoding!)
-	
 15'	- ensure all classes use new-style classes (subclass object)
 30'	- review all FIXME/TODO
+
 	- improve DB model to:
 		- have several codes for a config, each with an associated message
 		  (typically: owner)

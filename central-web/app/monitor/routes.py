@@ -112,6 +112,20 @@ def refresh_devices():
     devices = [create_device_for_refresh(device, now) for device in MonitoringManager.instance.get_devices().values()]
     return jsonify(devices = devices)
 
+@monitor.route('/load_history_page/<int:page>', methods = ['GET'])
+@login_required
+def load_history_page(page):
+    # Find current configuration
+    current_config = Configuration.query.filter_by(current = True).first()
+    # Check alerts filter form
+    query = Alert.query.filter_by(config_id = current_config.id).order_by(Alert.when.desc())
+    pagination = query.paginate(page, error_out = False)
+    # Prepare rendering of new alerts so they are ready to integrate into the DOM on JS side
+    alerts_display = [render_template('monitor/alerts.html', alert = alert) for alert in pagination.items]
+    # Prepare rendering of pagination buttons
+    pagination_display = render_template('monitor/history_pagination.html', pagination = pagination)
+    return jsonify(alerts = alerts_display, pagination = pagination_display)
+
 @monitor.route('/activate')
 @login_required
 def activate_config():

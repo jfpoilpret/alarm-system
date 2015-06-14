@@ -13,6 +13,7 @@
 <script language="javascript" type="text/javascript" src="{{url_for('static', filename='monitor/Monitor.js')}}"></script>
 {% endblock %}
 
+{# TODO Make all actions in this page AJAX actions (avoid POST/GET as much as possible) #}
 {% block page_content %}
 {% if configuration and configuration.active %}
 	<input type="hidden" id="has_active_configuration" name="has_active_configuration" value="yes">
@@ -52,6 +53,7 @@
 				</a>
 					{% endif %}
 				{% endif %}
+				{# TODO improve restoring the latest active tab on refresh (how to do that?) #}
 				<div class="monitor-tabs" role="tablist">
 					<ul class="nav nav-tabs" role="tablist">
 						<li role="presentation" {{ utils.tab_class('maps', active_tab) }}>
@@ -59,6 +61,9 @@
 						</li>
 						<li role="presentation" {{ utils.tab_class('alerts', active_tab) }}>
 							<a id = "tab_alerts" href="#alerts" aria-controls="alerts" role="tab" data-toggle="tab">Alerts</a>
+						</li>
+						<li role="presentation" {{ utils.tab_class('history', active_tab) }}>
+							<a id = "tab_history" href="#history" aria-controls="history" role="tab" data-toggle="tab">History</a>
 						</li>
 					</ul>
 					<div class="tab-content">
@@ -81,8 +86,58 @@
 								</form>
 							</div>
 
-							{# TODO add pagination (currently hard-coded limit of 100 records) #}
+							{# TODO add scrollbar to table body and avoid global browser scrollbar #}
 							<table class="alerts-list table table-striped table-condensed table-hover">
+								<thead>
+									<tr>
+										<th>Level</th>
+										<th>Time</th>
+										<th>Type</th>
+										<th>Module</th>
+										<th>Message</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+						<div role="tabpanel" {{ utils.tabpane_class('history', active_tab) }} id="history">
+							{#
+								TODO add proper pagination classes (for easier jquery manipulation)
+								TODO add pre-fill on first tab activation (javascript) and initialize paging area!
+									that shall include "..." to show additional pages
+								TODO add javascript on click for all pagination buttons
+							#}
+							<nav id="history-pagination">
+								<ul class="pagination">
+									<li class="disabled">
+										<a href="#" id="history-first" aria-label="First">
+											<span aria-hidden="true">&laquo;</span>
+										</a>
+									</li>
+									<li class="disabled">
+										<a href="#" id="history-previous" aria-label="Previous">
+											<span aria-hidden="true">&lsaquo;</span>
+										</a>
+									</li>
+									<li class="active">
+										<a href="#" id="history-page-1" >
+											1<span class="sr-only">(current)</span>
+										</a>
+									</li>
+									<li class="disabled">
+										<a href="#" id="history-next" aria-label="Next">
+											<span aria-hidden="true">&rsaquo;</span>
+										</a>
+									</li>
+									<li class="disabled">
+										<a href="#" id="history-last" aria-label="Last">
+											<span aria-hidden="true">&raquo;</span>
+										</a>
+									</li>
+								</ul>
+							</nav>
+							<table class="history-list table table-striped table-condensed table-hover">
 								<thead>
 									<tr>
 										<th>Level</th>
