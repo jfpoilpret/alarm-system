@@ -1,14 +1,18 @@
+#control {
+	padding: 15px;
+}
+
 .monitor {
 	padding: 5px;
 	margin: 0 auto;
 }
 
-.form-alert-filter {
+.form-alert-filter, .form-history-clear {
 	padding: 5px;
 	margin: 0 auto;
 }
 
-.form-alert-filter .form-control {
+.form-alert-filter .form-control, .form-history-clear .form-control {
 	position: relative;
 	font-size: 16px;
 	height: auto;

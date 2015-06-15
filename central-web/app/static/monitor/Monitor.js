@@ -7,10 +7,60 @@ $(document).ready(function() {
 		'alert_filter_alert_type': $('#alert_filter_alert_type').val()
 	};
 	
+	//TODO refactor common code!
+	// AJAX function to activate current config
+	function activateConfig()
+	{
+		if (window.confirm('Are you sure you want to activate the alarm system?')) {
+			$.ajax({
+				type: 'POST',
+				url: '/monitor/activate_config',
+				success: function(results) {
+					// Update UI
+					$('#has_active_configuration').val('true');
+					refreshActivation();
+				}
+			});
+		}
+		return false;
+	}
+	
+	// AJAX function to deactivate current config
+	function deactivateConfig()
+	{
+		if (window.confirm('Are you sure you want to deactivate the alarm system?')) {
+			$.ajax({
+				type: 'POST',
+				url: '/monitor/deactivate_config',
+				success: function(results) {
+					// Update UI
+					$('#has_active_configuration').val('false');
+					refreshActivation();
+				}
+			});
+		}
+		return false;
+	}
+	
+	function refreshActivation()
+	{
+		if (isCurrentConfigActive()) {
+			$('#activate_config').hide();
+			$('#deactivate_config').show();
+			$('#config_active').html('Active');
+		} else {
+			$('#deactivate_config').hide();
+			$('#activate_config').show();
+			$('#config_active').html('Not Active');
+		}
+	}
+	
 	// Function that checks is current configuration is active
 	function isCurrentConfigActive()
 	{
-		return $('#has_active_configuration').length > 0;
+		console.log($('#has_active_configuration').val());
+//		return $('#has_active_configuration').length > 0;
+		return $('#has_active_configuration').val() === 'true';
 	}
 
 	// AJAX function to update list with latest (new) alerts
@@ -90,6 +140,26 @@ $(document).ready(function() {
 		});
 		return false;
 	}
+	
+	function clearHistory()
+	{
+		if (window.confirm('Are you sure you want to clear all alerts?')) {
+			// POST form
+			var clearJson = {
+				'history_clear_clear_until': $('#history_clear_clear_until').val(),
+			};
+			// Send AJAX request
+			$.ajax({
+				type: 'POST',
+				url: '/monitor/clear_history',
+				data: clearJson,
+				success: function(results) {
+					//TODO do we have some cleanup to perform on the current DOM?
+				}
+			});
+		}
+		return false;
+	}
 
 	var $popovers = null;
 	
@@ -162,9 +232,15 @@ $(document).ready(function() {
 			}
 		}
 	}
+	
+	refreshActivation();
 
 	// Register tab event handlers
     $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
 	$('a[data-toggle="tab"]').on('hide.bs.tab', disableTab);
 	$('a[data-toggle="tab"]').on('shown.bs.tab', enableTab);
+	// Register other handlers
+	$('#activate_config').on('click', activateConfig);
+	$('#deactivate_config').on('click', deactivateConfig);
+	$('#history_clear_form').on('submit', clearHistory);
 });

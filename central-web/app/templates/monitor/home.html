@@ -15,20 +15,21 @@
 
 {# TODO Make all actions in this page AJAX actions (avoid POST/GET as much as possible) #}
 {% block page_content %}
-{% if configuration and configuration.active %}
-	<input type="hidden" id="has_active_configuration" name="has_active_configuration" value="yes">
-{% endif %}
+	<input type="hidden" id="has_active_configuration" name="has_active_configuration" value="{{ configuration and configuration.active }}">
 	<div class="monitor">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				<h3 class="form-heading">
 				{% if configuration %}
 					Current configuration '{{configuration.name}}'&nbsp;-&nbsp;
+					{# TODO replace with span id to be dynamically hanged by Javascript!! #}
+					<span id="config_active">
 					{% if configuration.active %}
 						Active
 					{% else %}
 						Not Active
 					{% endif %}
+					</span>
 				{% else %}
 					No current configuration
 				{% endif %}
@@ -36,26 +37,12 @@
 			</div>
 			<div class="panel-body">
 			{% if configuration %}
-				{% if current_user.is_alarm_setter() %}
-					{% if configuration.active %}
-				<a	class="btn btn-primary" role="button" 
-					id="deactivate_config"
-					href="{{ url_for('monitor.deactivate_config') }}"
-					onclick="return window.confirm('Are you sure you want to deactivate the alarm system?');">
-					Deactivate
-				</a>
-					{% else %}
-				<a	class="btn btn-primary" role="button" 
-					id="activate_config"
-					href="{{ url_for('monitor.activate_config') }}"
-					onclick="return window.confirm('Are you sure you want to activate the alarm system?');">
-					Activate
-				</a>
-					{% endif %}
-				{% endif %}
 				{# TODO improve restoring the latest active tab on refresh (how to do that?) #}
 				<div class="monitor-tabs" role="tablist">
 					<ul class="nav nav-tabs" role="tablist">
+						<li role="presentation" {{ utils.tab_class('control', active_tab) }}>
+							<a id="tab_control" href="#control" aria-controls="control" role="tab" data-toggle="tab">Control</a>
+						</li>
 						<li role="presentation" {{ utils.tab_class('maps', active_tab) }}>
 							<a id="tab_map" href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a>
 						</li>
@@ -67,6 +54,31 @@
 						</li>
 					</ul>
 					<div class="tab-content">
+						<div role="tabpanel" {{ utils.tabpane_class('control', active_tab) }} id="control">
+							{# TODO Add monitoring controls here: clear history... #}
+							{% if current_user.is_alarm_setter() %}
+							<a	class="btn btn-primary" role="button" 
+								id="deactivate_config"
+								href="#">
+								Deactivate
+							</a>
+							<a	class="btn btn-primary" role="button" 
+								id="activate_config"
+								href="#">
+								Activate
+							</a>
+							<div class="form-history-clear">
+								<form	id="history_clear_form" 
+										class="form form-inline" 
+										method="post" role="form">
+									{{ history_clear_form.hidden_tag() }}
+									{{ wtf.form_errors(history_clear_form, hiddens = "only") }}
+									{{ wtf.form_field(history_clear_form.clear_until, 'inline', placeholder = 'Until') }}
+									{{ wtf.form_field(history_clear_form.submit, 'inline', button_map = {'history_clear_submit': 'primary'}) }}
+								</form>
+							</div>
+							{% endif %}
+						</div>
 						<div role="tabpanel" {{ utils.tabpane_class('maps', active_tab) }} id="map">
 							<div class="monitor-map-area">
 								{{ svg_map|safe }}

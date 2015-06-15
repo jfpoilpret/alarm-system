@@ -8,7 +8,7 @@ from . import monitor
 from app.models import Configuration, Alert
 from app.common import check_alarm_setter, prepare_map_for_monitoring
 from app import db
-from app.monitor.forms import AlertsFilterForm
+from app.monitor.forms import AlertsFilterForm, HistoryClearForm
 from app.monitor.monitoring import MonitoringManager
 
 @monitor.route('/home', methods = ['GET', 'POST'])
@@ -31,6 +31,7 @@ def home():
     return render_template('monitor/home.html', 
         configuration = current_config,
         filter_form = filter_form,
+        history_clear_form = HistoryClearForm(prefix = 'history_clear_'),
         active_tab = active_tab,
         svg_map = prepare_map_for_monitoring(current_config))
 
@@ -47,9 +48,7 @@ def filter_alerts(config_id, filter_form, limit = False, max_rows = 100):
         query = query.filter_by(level = filter_form.alert_level.data)
     if filter_form.alert_type.data and filter_form.alert_type.data != 0:
         query = query.filter_by(alert_type = filter_form.alert_type.data)
-#    return query.order_by(Alert.when.desc()).all()
-    # Limit to 100 last records for the moment
-    # TODO but we need to later implement a way to load all history if needed
+    # Limit number of retrieved records
     query = query.order_by(Alert.when.desc())
     if max_rows:
         query = query.limit(max_rows)
@@ -126,12 +125,29 @@ def load_history_page(page):
     pagination_display = render_template('monitor/history_pagination.html', pagination = pagination)
     return jsonify(alerts = alerts_display, pagination = pagination_display)
 
-@monitor.route('/activate')
+@monitor.route('/clear_history', methods = ['POST'])
+@login_required
+def clear_history():
+    check_alarm_setter()
+    # Find current configuration
+    current_config = Configuration.query.filter_by(current = True).first()
+    # Delete all alerts for current configuration
+    history_clear_form =  HistoryClearForm(prefix = 'history_clear_')
+    query = Alert.query.filter_by(config_id = current_config.id)
+    if history_clear_form.clear_until.data:
+        query = query.filter(Alert.when <= history_clear_form.clear_until.data)
+    query.delete(synchronize_session = False)
+    db.session.commit()
+    return ''
+
+#TODO allow AJAX call, along with limit date (only delete older alerts)
+@monitor.route('/activate_config', methods = ['POST'])
 @login_required
 def activate_config():
     return set_config_active(True)
 
-@monitor.route('/deactivate')
+#TODO allow AJAX call, along with limit date (only delete older alerts)
+@monitor.route('/deactivate_config', methods=['POST'])
 @login_required
 def deactivate_config():
     return set_config_active(False)
@@ -149,4 +165,5 @@ def set_config_active(active):
             MonitoringManager.instance.activate(current_config)
         else:
             MonitoringManager.instance.deactivate()
-    return redirect(url_for('.home'))
+    return ''
+#    return redirect(url_for('.home'))

@@ -1,14 +1,15 @@
 
 	- monitoring UI
-		- review UI globally: change tabs
-30'			tab "Control": activate/deactivate, later on other actions (clear history...)
-			tab "Map": as today
-			tab "Alerts": as today
-			tab "History": paginated list of alerts (no auto-refresh)
-		
+		tab "Control": 
+15'			clear history: implement form completely, simplify JS
+15'			activate/deactivate: convert to pure AJAX but how to cleanup?
+		tab "Alerts":
+30'			filter alerts: convert to pure AJAX if not done already
+15'			use scrollbar for alerts table
+15'			clear/reset filter input: AJAX
 1h		- improve to replace globally all POST/GET with AJAX calls
 			ensure somehow that refresh will always go back to the current tab(how?)
-			
+		
 	- monitoring improvement:
 1h		- check devices not pinging for too long
 			- avoid logging an alert every second, use graduated alerts!
