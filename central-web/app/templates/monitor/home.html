@@ -21,15 +21,7 @@
 			<div class="panel-heading">
 				<h3 class="form-heading">
 				{% if configuration %}
-					Current configuration '{{configuration.name}}'&nbsp;-&nbsp;
-					{# TODO replace with span id to be dynamically hanged by Javascript!! #}
-					<span id="config_active">
-					{% if configuration.active %}
-						Active
-					{% else %}
-						Not Active
-					{% endif %}
-					</span>
+					Current configuration '{{configuration.name}}'&nbsp;-&nbsp;<span id="config_active"></span>
 				{% else %}
 					No current configuration
 				{% endif %}
@@ -55,18 +47,13 @@
 					</ul>
 					<div class="tab-content">
 						<div role="tabpanel" {{ utils.tabpane_class('control', active_tab) }} id="control">
-							{# TODO Add monitoring controls here: clear history... #}
 							{% if current_user.is_alarm_setter() %}
 							<a	class="btn btn-primary" role="button" 
 								id="deactivate_config"
-								href="#">
-								Deactivate
-							</a>
+								href="#">Deactivate</a>
 							<a	class="btn btn-primary" role="button" 
 								id="activate_config"
-								href="#">
-								Activate
-							</a>
+								href="#">Activate</a>
 							<div class="form-history-clear">
 								<form	id="history_clear_form" 
 										class="form form-inline" 

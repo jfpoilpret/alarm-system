@@ -7,17 +7,15 @@ $(document).ready(function() {
 		'alert_filter_alert_type': $('#alert_filter_alert_type').val()
 	};
 	
-	//TODO refactor common code!
-	// AJAX function to activate current config
-	function activateConfig()
+	function changeConfigActive(url, message, active)
 	{
-		if (window.confirm('Are you sure you want to activate the alarm system?')) {
+		if (window.confirm(message)) {
 			$.ajax({
 				type: 'POST',
-				url: '/monitor/activate_config',
+				url: url,
 				success: function(results) {
 					// Update UI
-					$('#has_active_configuration').val('true');
+					$('#has_active_configuration').val(active);
 					refreshActivation();
 				}
 			});
@@ -25,21 +23,18 @@ $(document).ready(function() {
 		return false;
 	}
 	
+	// AJAX function to activate current config
+	function activateConfig()
+	{
+		return changeConfigActive('/monitor/activate_config', 
+			'Are you sure you want to activate the alarm system?', 'true');
+	}
+	
 	// AJAX function to deactivate current config
 	function deactivateConfig()
 	{
-		if (window.confirm('Are you sure you want to deactivate the alarm system?')) {
-			$.ajax({
-				type: 'POST',
-				url: '/monitor/deactivate_config',
-				success: function(results) {
-					// Update UI
-					$('#has_active_configuration').val('false');
-					refreshActivation();
-				}
-			});
-		}
-		return false;
+		return changeConfigActive('/monitor/deactivate_config', 
+			'Are you sure you want to deactivate the alarm system?', 'false');
 	}
 	
 	function refreshActivation()
@@ -58,8 +53,6 @@ $(document).ready(function() {
 	// Function that checks is current configuration is active
 	function isCurrentConfigActive()
 	{
-		console.log($('#has_active_configuration').val());
-//		return $('#has_active_configuration').length > 0;
 		return $('#has_active_configuration').val() === 'true';
 	}
 
@@ -141,6 +134,7 @@ $(document).ready(function() {
 		return false;
 	}
 	
+	// AJAX function that performs alerts history clear submit
 	function clearHistory()
 	{
 		if (window.confirm('Are you sure you want to clear all alerts?')) {
@@ -158,6 +152,23 @@ $(document).ready(function() {
 				}
 			});
 		}
+		return false;
+	}
+	
+	// AJAX function that performs alerts filter submit
+	function submitAlertsFilter()
+	{
+		filterJson = {
+			'alert_filter_period_from': $('#alert_filter_period_from').val(),
+			'alert_filter_period_to': $('#alert_filter_period_to').val(),
+			'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
+			'alert_filter_alert_type': $('#alert_filter_alert_type').val()
+		};
+		// Ensure we clear current alerts list first and reload everything that matches filter
+		$('.alerts-list > tbody').html('');
+		$('#alert_filter_latest_id').val('-1');
+		//FIXME issue here is form validation (on server side) and messages display (client side)...
+		refreshAlerts();
 		return false;
 	}
 
@@ -243,4 +254,5 @@ $(document).ready(function() {
 	$('#activate_config').on('click', activateConfig);
 	$('#deactivate_config').on('click', deactivateConfig);
 	$('#history_clear_form').on('submit', clearHistory);
+	$('#alert_filter_form').on('submit', submitAlertsFilter);
 });

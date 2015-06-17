@@ -140,13 +140,11 @@ def clear_history():
     db.session.commit()
     return ''
 
-#TODO allow AJAX call, along with limit date (only delete older alerts)
 @monitor.route('/activate_config', methods = ['POST'])
 @login_required
 def activate_config():
     return set_config_active(True)
 
-#TODO allow AJAX call, along with limit date (only delete older alerts)
 @monitor.route('/deactivate_config', methods=['POST'])
 @login_required
 def deactivate_config():
@@ -166,4 +164,3 @@ def set_config_active(active):
         else:
             MonitoringManager.instance.deactivate()
     return ''
-#    return redirect(url_for('.home'))
