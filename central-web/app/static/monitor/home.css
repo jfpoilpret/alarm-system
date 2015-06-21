@@ -55,6 +55,20 @@
 	color: #a94442;
 }
 
+.alerts-list {
+	width: 100%;	
+}
+
+.alerts-list thead, .alerts-list tbody {
+	display: block;
+}
+
+.alerts-list tbody {
+	height: 65vh;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
 .popover-content {
 	white-space:pre-wrap;
 }

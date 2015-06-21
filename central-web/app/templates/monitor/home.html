@@ -89,7 +89,7 @@
 							<table class="alerts-list table table-striped table-condensed table-hover">
 								<thead>
 									<tr>
-										<th>Level</th>
+										<th></th>
 										<th>Time</th>
 										<th>Type</th>
 										<th>Module</th>
@@ -101,12 +101,6 @@
 							</table>
 						</div>
 						<div role="tabpanel" {{ utils.tabpane_class('history', active_tab) }} id="history">
-							{#
-								TODO add proper pagination classes (for easier jquery manipulation)
-								TODO add pre-fill on first tab activation (javascript) and initialize paging area!
-									that shall include "..." to show additional pages
-								TODO add javascript on click for all pagination buttons
-							#}
 							<nav id="history-pagination">
 								<ul class="pagination">
 									<li class="disabled">

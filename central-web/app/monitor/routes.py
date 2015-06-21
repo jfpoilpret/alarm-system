@@ -11,7 +11,7 @@ from app import db
 from app.monitor.forms import AlertsFilterForm, HistoryClearForm
 from app.monitor.monitoring import MonitoringManager
 
-@monitor.route('/home', methods = ['GET', 'POST'])
+@monitor.route('/home', methods = ['GET'])
 @login_required
 def home():
     # Find current configuration

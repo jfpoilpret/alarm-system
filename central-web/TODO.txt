@@ -5,9 +5,9 @@ x			clear history: implement form completely, simplify JS
 x			activate/deactivate: convert to pure AJAX but how to cleanup?
 		tab "Alerts":
 x			filter alerts: convert to pure AJAX if not done already
-			remove home POST?
-			how to perform filter form validation (server/client sides)?
-15'			use scrollbar for alerts table
+x			remove home POST?
+??			how to perform filter form validation (server/client sides)?
+x			use scrollbar for alerts table
 15'			add clear/reset filter input: AJAX
 1h		- improve to replace globally all POST/GET with AJAX calls
 			ensure somehow that refresh will always go back to the current tab(how?)

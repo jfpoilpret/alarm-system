@@ -73,6 +73,8 @@ $(document).ready(function() {
 				$tbody.prepend(results.alerts);
 				// Update latest alert id retrieved also
 				$latest_id.val(results.latest_id);
+				// Align column headers width if needed
+				alignAlertsListColumns();
 			}
 		});
 	}
@@ -87,22 +89,22 @@ $(document).ready(function() {
 			success: function(results) {
 				// Update map (SVG) on response
 				for (var i = 0; i < results.devices.length; i++) {
-					device = results.devices[i];
-					selector = sprintf('#device-%d circle', device.id);
+					var device = results.devices[i];
+					var selector = sprintf('#device-%d circle', device.id);
 					// Add other information to data content popup?
-					message = sprintf('Voltage: %0.2f V (min.: %0.2f V)\nLatest Ping: %s\n (%d seconds ago)', 
+					var message = sprintf('Voltage: %0.2f V (min.: %0.2f V)\nLatest Ping: %s\n (%d seconds ago)', 
 						device.latest_voltage,
 						device.voltage_threshold,
 						device.latest_ping,
 						device.time_since_latest_ping);
 					$(selector).attr('data-content', message);
 					// Ensure correct refresh of popover if currently displayed
-					idPopover = $(selector).attr('aria-describedby');
+					var idPopover = $(selector).attr('aria-describedby');
 					if (idPopover !== undefined) {
 						$(selector).popover('show');
 					}
 					// Change colors based on alerts
-					classes = sprintf('ping-alert-%d voltage-alert-%d', device.ping_alert, device.voltage_alert);
+					var classes = sprintf('ping-alert-%d voltage-alert-%d', device.ping_alert, device.voltage_alert);
 					$(selector).attr('class', classes);
 				}
 			}
@@ -114,7 +116,7 @@ $(document).ready(function() {
 	{
 		var $tbody = $('.history-list > tbody');
 		var $pagination = $('#history-pagination');
-		url = sprintf('/monitor/load_history_page/%d', page);
+		var url = sprintf('/monitor/load_history_page/%d', page);
 		// Send AJAX request
 		$.ajax({
 			type: 'GET',
@@ -191,6 +193,29 @@ $(document).ready(function() {
 			$popovers = null;
 		}
 	}
+	
+	var alertsListColumnsAligned = false;
+	
+	function alignAlertsListColumns()
+	{
+		if (!alertsListColumnsAligned) {
+			var $table = $('.alerts-list'),
+			$bodyCells = $table.find('tbody tr:first').children(),
+			colWidth;
+			// Get width of tbody columns
+			colWidth = $bodyCells.map(function() {
+				return $(this).width();
+			}).get();
+			// Force width of first column to hard-code value because the one got from tbdoy/tr does not
+			// match reality
+			colWidth[0] = 14;
+			// Set width of thead columns from tbody columns widths
+			$table.find('thead tr').children().each(function(i, v) {
+				$(v).width(colWidth[i]);
+			});
+			alertsListColumnsAligned = true;
+		}
+	}
 
 	// Automatically refresh map on timer every 5 seconds
 	var map_timer = null;
@@ -255,4 +280,9 @@ $(document).ready(function() {
 	$('#deactivate_config').on('click', deactivateConfig);
 	$('#history_clear_form').on('submit', clearHistory);
 	$('#alert_filter_form').on('submit', submitAlertsFilter);
+	// Ensure alerts list header columns widths match content columns after resizing window
+	$(window).resize(function() {
+		alertsListColumnsAligned = false;
+		alignAlertsListColumns();
+	});
 });
