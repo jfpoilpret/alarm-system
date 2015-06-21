@@ -6,6 +6,12 @@ $(document).ready(function() {
 		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
 		'alert_filter_alert_type': $('#alert_filter_alert_type').val()
 	};
+	var defaultFilter = {
+		'alert_filter_period_from': $('#alert_filter_period_from').val(),
+		'alert_filter_period_to': $('#alert_filter_period_to').val(),
+		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
+		'alert_filter_alert_type': $('#alert_filter_alert_type').val()
+	};
 	
 	function changeConfigActive(url, message, active)
 	{
@@ -173,6 +179,15 @@ $(document).ready(function() {
 		refreshAlerts();
 		return false;
 	}
+	
+	function resetAlertsFilter()
+	{
+		$('#alert_filter_period_from').val(defaultFilter['alert_filter_period_from']);
+		$('#alert_filter_period_to').val(defaultFilter['alert_filter_period_to']);
+		$('#alert_filter_alert_level').val(defaultFilter['alert_filter_alert_level']);
+		$('#alert_filter_alert_type').val(defaultFilter['alert_filter_alert_type']);
+		submitAlertsFilter();
+	}
 
 	var $popovers = null;
 	
@@ -280,6 +295,7 @@ $(document).ready(function() {
 	$('#deactivate_config').on('click', deactivateConfig);
 	$('#history_clear_form').on('submit', clearHistory);
 	$('#alert_filter_form').on('submit', submitAlertsFilter);
+	$('#reset_filter').on('click', resetAlertsFilter);
 	// Ensure alerts list header columns widths match content columns after resizing window
 	$(window).resize(function() {
 		alertsListColumnsAligned = false;

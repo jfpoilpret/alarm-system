@@ -1,16 +1,11 @@
 
 	- monitoring UI
-		tab "Control": 
-x			clear history: implement form completely, simplify JS
-x			activate/deactivate: convert to pure AJAX but how to cleanup?
+1h		rework (epurate) Monitoring UI: remove panel (quite useless in fact) and replace
+		with information directly in top bar?
+
 		tab "Alerts":
-x			filter alerts: convert to pure AJAX if not done already
-x			remove home POST?
 ??			how to perform filter form validation (server/client sides)?
-x			use scrollbar for alerts table
-15'			add clear/reset filter input: AJAX
-1h		- improve to replace globally all POST/GET with AJAX calls
-			ensure somehow that refresh will always go back to the current tab(how?)
+??		ensure somehow that refresh will always go back to the current tab (how?)
 		
 	- monitoring improvement:
 1h		- check devices not pinging for too long

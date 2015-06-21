@@ -9,11 +9,10 @@
 
 {% block scripts %}
 {{super()}}
-<script language="javascript" type="text/javascript" src="{{url_for('static', filename='monitor/sprintf.js')}}"></script>
-<script language="javascript" type="text/javascript" src="{{url_for('static', filename='monitor/Monitor.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='monitor/sprintf.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='monitor/Monitor.js')}}"></script>
 {% endblock %}
 
-{# TODO Make all actions in this page AJAX actions (avoid POST/GET as much as possible) #}
 {% block page_content %}
 	<input type="hidden" id="has_active_configuration" name="has_active_configuration" value="{{ configuration and configuration.active }}">
 	<div class="monitor">
@@ -73,7 +72,6 @@
 						</div>
 						<div role="tabpanel" {{ utils.tabpane_class('alerts', active_tab) }} id="alerts">
 							<div class="form-alert-filter">
-							{# TODO add a show all button to clear filter #}
 								<form id="alert_filter_form" class="form form-inline" method="post" role="form">
 									{{ filter_form.hidden_tag() }}
 									{{ wtf.form_errors(filter_form, hiddens = "only") }}
@@ -82,10 +80,12 @@
 									{{ wtf.form_field(filter_form.alert_level, 'inline') }}
 									{{ wtf.form_field(filter_form.alert_type, 'inline') }}
 									{{ wtf.form_field(filter_form.submit, 'inline', button_map = {'alert_filter_submit': 'primary'}) }}
+									<a	class="btn btn-default" role="button" 
+										id="reset_filter"
+										href="#">Reset</a>
 								</form>
 							</div>
 
-							{# TODO add scrollbar to table body and avoid global browser scrollbar #}
 							<table class="alerts-list table table-striped table-condensed table-hover">
 								<thead>
 									<tr>
@@ -133,7 +133,7 @@
 							<table class="history-list table table-striped table-condensed table-hover">
 								<thead>
 									<tr>
-										<th>Level</th>
+										<th></th>
 										<th>Time</th>
 										<th>Type</th>
 										<th>Module</th>
