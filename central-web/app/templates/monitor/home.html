@@ -27,138 +27,125 @@
 {% block page_content %}
 	<input type="hidden" id="has_active_configuration" name="has_active_configuration" value="{{ configuration and configuration.active }}">
 	<div class="monitor">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<h3 class="form-heading">
-				{% if configuration %}
-					Current configuration '{{configuration.name}}'&nbsp;-&nbsp;<span id="config_active"></span>
-				{% else %}
-					No current configuration
-				{% endif %}
-				</h3>
-			</div>
-			<div class="panel-body">
-			{% if configuration %}
-				{# TODO improve restoring the latest active tab on refresh (how to do that?) #}
-				<div class="monitor-tabs" role="tablist">
-					<ul class="nav nav-tabs" role="tablist">
-						<li role="presentation" {{ utils.tab_class('control', active_tab) }}>
-							<a id="tab_control" href="#control" aria-controls="control" role="tab" data-toggle="tab">Control</a>
-						</li>
-						<li role="presentation" {{ utils.tab_class('maps', active_tab) }}>
-							<a id="tab_map" href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a>
-						</li>
-						<li role="presentation" {{ utils.tab_class('alerts', active_tab) }}>
-							<a id = "tab_alerts" href="#alerts" aria-controls="alerts" role="tab" data-toggle="tab">Alerts</a>
-						</li>
-						<li role="presentation" {{ utils.tab_class('history', active_tab) }}>
-							<a id = "tab_history" href="#history" aria-controls="history" role="tab" data-toggle="tab">History</a>
-						</li>
-					</ul>
-					<div class="tab-content">
-						<div role="tabpanel" {{ utils.tabpane_class('control', active_tab) }} id="control">
-							{% if current_user.is_alarm_setter() %}
-							<a	class="btn btn-primary" role="button" 
-								id="deactivate_config"
-								href="#">Deactivate</a>
-							<a	class="btn btn-primary" role="button" 
-								id="activate_config"
-								href="#">Activate</a>
-							<div class="form-history-clear">
-								<form	id="history_clear_form" 
-										class="form form-inline" 
-										method="post" role="form">
-									{{ history_clear_form.hidden_tag() }}
-									{{ wtf.form_errors(history_clear_form, hiddens = "only") }}
-									{{ wtf.form_field(history_clear_form.clear_until, 'inline', placeholder = 'Until') }}
-									{{ wtf.form_field(history_clear_form.submit, 'inline', button_map = {'history_clear_submit': 'primary'}) }}
-								</form>
-							</div>
-							{% endif %}
-						</div>
-						<div role="tabpanel" {{ utils.tabpane_class('maps', active_tab) }} id="map">
-							<div class="monitor-map-area">
-								{{ svg_map|safe }}
-							</div>
-						</div>
-						<div role="tabpanel" {{ utils.tabpane_class('alerts', active_tab) }} id="alerts">
-							<div class="form-alert-filter">
-								<form id="alert_filter_form" class="form form-inline" method="post" role="form">
-									{{ filter_form.hidden_tag() }}
-									{{ wtf.form_errors(filter_form, hiddens = "only") }}
-									{{ wtf.form_field(filter_form.period_from, 'inline', placeholder = 'From') }}
-									{{ wtf.form_field(filter_form.period_to, 'inline', placeholder = 'To') }}
-									{{ wtf.form_field(filter_form.alert_level, 'inline') }}
-									{{ wtf.form_field(filter_form.alert_type, 'inline') }}
-									{{ wtf.form_field(filter_form.submit, 'inline', button_map = {'alert_filter_submit': 'primary'}) }}
-									<a	class="btn btn-default" role="button" 
-										id="reset_filter"
-										href="#">Reset</a>
-								</form>
-							</div>
-
-							<table class="alerts-list table table-striped table-condensed table-hover">
-								<thead>
-									<tr>
-										<th></th>
-										<th>Time</th>
-										<th>Type</th>
-										<th>Module</th>
-										<th>Message</th>
-									</tr>
-								</thead>
-								<tbody>
-								</tbody>
-							</table>
-						</div>
-						<div role="tabpanel" {{ utils.tabpane_class('history', active_tab) }} id="history">
-							<nav id="history-pagination">
-								<ul class="pagination">
-									<li class="disabled">
-										<a href="#" id="history-first" aria-label="First">
-											<span aria-hidden="true">&laquo;</span>
-										</a>
-									</li>
-									<li class="disabled">
-										<a href="#" id="history-previous" aria-label="Previous">
-											<span aria-hidden="true">&lsaquo;</span>
-										</a>
-									</li>
-									<li class="active">
-										<a href="#" id="history-page-1" >
-											1<span class="sr-only">(current)</span>
-										</a>
-									</li>
-									<li class="disabled">
-										<a href="#" id="history-next" aria-label="Next">
-											<span aria-hidden="true">&rsaquo;</span>
-										</a>
-									</li>
-									<li class="disabled">
-										<a href="#" id="history-last" aria-label="Last">
-											<span aria-hidden="true">&raquo;</span>
-										</a>
-									</li>
-								</ul>
-							</nav>
-							<table class="history-list table table-striped table-condensed table-hover">
-								<thead>
-									<tr>
-										<th></th>
-										<th>Time</th>
-										<th>Type</th>
-										<th>Module</th>
-										<th>Message</th>
-									</tr>
-								</thead>
-								<tbody>
-								</tbody>
-							</table>
-						</div>
+	{% if configuration %}
+		{# TODO improve restoring the latest active tab on refresh (how to do that?) #}
+		<div class="monitor-tabs" role="tablist">
+			<ul class="nav nav-tabs" role="tablist">
+				<li role="presentation" {{ utils.tab_class('control', active_tab) }}>
+					<a id="tab_control" href="#control" aria-controls="control" role="tab" data-toggle="tab">Control</a>
+				</li>
+				<li role="presentation" {{ utils.tab_class('maps', active_tab) }}>
+					<a id="tab_map" href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a>
+				</li>
+				<li role="presentation" {{ utils.tab_class('alerts', active_tab) }}>
+					<a id = "tab_alerts" href="#alerts" aria-controls="alerts" role="tab" data-toggle="tab">Alerts</a>
+				</li>
+				<li role="presentation" {{ utils.tab_class('history', active_tab) }}>
+					<a id = "tab_history" href="#history" aria-controls="history" role="tab" data-toggle="tab">History</a>
+				</li>
+			</ul>
+			<div class="tab-content">
+				<div role="tabpanel" {{ utils.tabpane_class('control', active_tab) }} id="control">
+					{% if current_user.is_alarm_setter() %}
+					<a	class="btn btn-primary" role="button" 
+						id="deactivate_config"
+						href="#">Deactivate</a>
+					<a	class="btn btn-primary" role="button" 
+						id="activate_config"
+						href="#">Activate</a>
+					<div class="form-history-clear">
+						<form	id="history_clear_form" 
+								class="form form-inline" 
+								method="post" role="form">
+							{{ history_clear_form.hidden_tag() }}
+							{{ wtf.form_errors(history_clear_form, hiddens = "only") }}
+							{{ wtf.form_field(history_clear_form.clear_until, 'inline', placeholder = 'Until') }}
+							{{ wtf.form_field(history_clear_form.submit, 'inline', button_map = {'history_clear_submit': 'primary'}) }}
+						</form>
+					</div>
+					{% endif %}
+				</div>
+				<div role="tabpanel" {{ utils.tabpane_class('maps', active_tab) }} id="map">
+					<div class="monitor-map-area">
+						{{ svg_map|safe }}
 					</div>
 				</div>
-			{% endif %}
+				<div role="tabpanel" {{ utils.tabpane_class('alerts', active_tab) }} id="alerts">
+					<div class="form-alert-filter">
+						<form id="alert_filter_form" class="form form-inline" method="post" role="form">
+							{{ filter_form.hidden_tag() }}
+							{{ wtf.form_errors(filter_form, hiddens = "only") }}
+							{{ wtf.form_field(filter_form.period_from, 'inline', placeholder = 'From') }}
+							{{ wtf.form_field(filter_form.period_to, 'inline', placeholder = 'To') }}
+							{{ wtf.form_field(filter_form.alert_level, 'inline') }}
+							{{ wtf.form_field(filter_form.alert_type, 'inline') }}
+							{{ wtf.form_field(filter_form.submit, 'inline', button_map = {'alert_filter_submit': 'primary'}) }}
+							<a	class="btn btn-default" role="button" 
+								id="reset_filter"
+								href="#">Reset</a>
+						</form>
+					</div>
+
+					<table class="alerts-list table table-striped table-condensed table-hover">
+						<thead>
+							<tr>
+								<th></th>
+								<th>Time</th>
+								<th>Type</th>
+								<th>Module</th>
+								<th>Message</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+				<div role="tabpanel" {{ utils.tabpane_class('history', active_tab) }} id="history">
+					<nav id="history-pagination">
+						<ul class="pagination">
+							<li class="disabled">
+								<a href="#" id="history-first" aria-label="First">
+									<span aria-hidden="true">&laquo;</span>
+								</a>
+							</li>
+							<li class="disabled">
+								<a href="#" id="history-previous" aria-label="Previous">
+									<span aria-hidden="true">&lsaquo;</span>
+								</a>
+							</li>
+							<li class="active">
+								<a href="#" id="history-page-1" >
+									1<span class="sr-only">(current)</span>
+								</a>
+							</li>
+							<li class="disabled">
+								<a href="#" id="history-next" aria-label="Next">
+									<span aria-hidden="true">&rsaquo;</span>
+								</a>
+							</li>
+							<li class="disabled">
+								<a href="#" id="history-last" aria-label="Last">
+									<span aria-hidden="true">&raquo;</span>
+								</a>
+							</li>
+						</ul>
+					</nav>
+					<table class="history-list table table-striped table-condensed table-hover">
+						<thead>
+							<tr>
+								<th></th>
+								<th>Time</th>
+								<th>Type</th>
+								<th>Module</th>
+								<th>Message</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
+	{% endif %}
 	</div>
 {% endblock %}

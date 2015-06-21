@@ -1,10 +1,8 @@
 
 	- monitoring UI
-1h		rework (epurate) Monitoring UI: remove panel (quite useless in fact) and replace
-		with information directly in top bar?
-
 		tab "Alerts":
-??			how to perform filter form validation (server/client sides)?
+1h+			how to perform WTF filter form validation (server/client sides)?
+			find a generic way to retrieve flashed messages through JSON and display them
 ??		ensure somehow that refresh will always go back to the current tab (how?)
 		
 	- monitoring improvement:
