@@ -13,6 +13,17 @@
 <script type="text/javascript" src="{{url_for('static', filename='monitor/Monitor.js')}}"></script>
 {% endblock %}
 
+{% block navbar_left_supplement %}
+{# TODO Add more labels (and actions?) in navbar for monitoring UI #}
+<p class="navbar-text">
+{% if configuration %}
+	[Current configuration '{{configuration.name}}'&nbsp;-&nbsp;<span id="config_active"></span>]
+{% else %}
+	[No current configuration]
+{% endif %}
+</p>
+{% endblock %}
+
 {% block page_content %}
 	<input type="hidden" id="has_active_configuration" name="has_active_configuration" value="{{ configuration and configuration.active }}">
 	<div class="monitor">
