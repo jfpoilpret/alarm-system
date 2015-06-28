@@ -54,16 +54,18 @@
 
 {% block content %}
 {% block modal_content %}{% endblock %}
-<div class="container" id="flash-messages">
+<div class="container">
 	{% block messages %}
-	{% set icon_categories = {'success': 'ok-sign', 'info': 'info-sign', 'warning': 'exclamation-sign', 'danger': 'exclamation-sign' } %}
-    {% for category, message in get_flashed_messages(with_categories = True) %}
-    <div class="alert alert-{{category}}">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <span class="glyphicon glyphicon-{{icon_categories[category]}}" aria-hidden="true"></span>
-        {{ message }}
+	<div id="flash-messages">
+		{% set icon_categories = {'success': 'ok-sign', 'info': 'info-sign', 'warning': 'exclamation-sign', 'danger': 'exclamation-sign' } %}
+	    {% for category, message in get_flashed_messages(with_categories = True) %}
+	    <div class="alert alert-{{category}}">
+	        <button type="button" class="close" data-dismiss="alert">&times;</button>
+	        <span class="glyphicon glyphicon-{{icon_categories[category]}}" aria-hidden="true"></span>
+	        {{ message }}
+	    </div>
+	    {% endfor %}
     </div>
-    {% endfor %}
 	{% endblock %}
     {% block page_content %}{% endblock %}
 </div>

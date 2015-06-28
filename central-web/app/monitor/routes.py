@@ -54,6 +54,16 @@ def filter_alerts(config_id, filter_form, limit = False, max_rows = 100):
         query = query.limit(max_rows)
     return query.all()
     
+@monitor.route('/pre_refresh_alerts', methods = ['POST'])
+@login_required
+def pre_refresh_alerts():
+    # Check alerts filter form
+    filter_form = AlertsFilterForm(prefix = 'alert_filter_')
+    if not filter_form.validate():
+        #TODO preformat errors with flash messages
+        return jsonify(result = 'ERROR', errors = filter_form.errors)
+    return jsonify(result = 'OK')
+
 @monitor.route('/refresh_alerts', methods = ['POST'])
 @login_required
 def refresh_alerts():

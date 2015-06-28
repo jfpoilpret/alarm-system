@@ -4,13 +4,15 @@ $(document).ready(function() {
 		'alert_filter_period_from': $('#alert_filter_period_from').val(),
 		'alert_filter_period_to': $('#alert_filter_period_to').val(),
 		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
-		'alert_filter_alert_type': $('#alert_filter_alert_type').val()
+		'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
+		'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
 	};
 	var defaultFilter = {
 		'alert_filter_period_from': $('#alert_filter_period_from').val(),
 		'alert_filter_period_to': $('#alert_filter_period_to').val(),
 		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
-		'alert_filter_alert_type': $('#alert_filter_alert_type').val()
+		'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
+		'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
 	};
 	
 	function changeConfigActive(url, message, active)
@@ -166,18 +168,70 @@ $(document).ready(function() {
 	// AJAX function that performs alerts filter submit
 	function submitAlertsFilter()
 	{
-		filterJson = {
+		// Use temporary JSON structure for prior form validation through AJAX
+		var formJson = {
 			'alert_filter_period_from': $('#alert_filter_period_from').val(),
 			'alert_filter_period_to': $('#alert_filter_period_to').val(),
 			'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
-			'alert_filter_alert_type': $('#alert_filter_alert_type').val()
+			'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
+			'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
 		};
-		// Ensure we clear current alerts list first and reload everything that matches filter
-		$('.alerts-list > tbody').html('');
-		$('#alert_filter_latest_id').val('-1');
-		//FIXME issue here is form validation (on server side) and messages display (client side)...
-		refreshAlerts();
+		// Send AJAX request to validate form input first
+		$.ajax({
+			type: 'POST',
+			url: '/monitor/pre_refresh_alerts',
+			data: formJson,
+			success: function(results) {
+				// Check if form submission is valid
+				if (results.result === 'OK') {
+					// if OK, we can copy to filterJSON and request immediate refresh
+					filterJson = {
+						'alert_filter_period_from': $('#alert_filter_period_from').val(),
+						'alert_filter_period_to': $('#alert_filter_period_to').val(),
+						'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
+						'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
+						'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
+					};
+					// Ensure we clear current alerts list first and reload everything that matches filter
+					$('.alerts-list > tbody').html('');
+					$('#alert_filter_latest_id').val('-1');
+					clearErrors('alert_filter_');
+					refreshAlerts();
+				} else {
+					// Get errors and display them in form
+					handleErrors('alert_filter_', results.errors);
+				}
+			}
+		});
 		return false;
+	}
+	
+	function clearErrors(formPrefix)
+	{
+		//TODO remove previous flash messages
+		// Remove previous errors from all fields
+		$('#' + formPrefix + 'form .form-group').removeClass('has-error');
+	}
+	
+	//TODO later also add flash messages?
+	//TODO this function is quite general and should be refactored outside
+	function handleErrors(formPrefix, errors)
+	{
+		// Remove previous errors
+		clearErrors(formPrefix);
+		
+		// For each error, mark the field and add a flash message
+		$.each(errors, function(fieldName, fieldErrors) {
+			$field = $('#' + formPrefix + fieldName);
+			console.log(fieldName);
+			$.each(fieldErrors, function(i, error) {
+				type = $field.attr('type');
+				if (type !== 'hidden') {
+					$field.parent('.form-group').addClass('has-error');
+				}
+				//TODO flash message?
+			});
+		});
 	}
 	
 	function resetAlertsFilter()
