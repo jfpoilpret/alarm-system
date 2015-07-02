@@ -25,6 +25,8 @@
 15'	- ensure all classes use new-style classes (subclass object)
 30'	- review all FIXME/TODO
 
+	- refactoring of form validation through AJAX
+	
 	- improve DB model to:
 		- have several codes for a config, each with an associated message
 		  (typically: owner)

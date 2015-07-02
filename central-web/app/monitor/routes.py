@@ -1,12 +1,12 @@
 from datetime import datetime
 from time import time
-from flask import redirect, render_template, url_for, jsonify
+from flask import render_template, jsonify
 from flask_login import login_required
 
 from . import monitor
 
 from app.models import Configuration, Alert
-from app.common import check_alarm_setter, prepare_map_for_monitoring
+from app.common import check_alarm_setter, pre_check, prepare_map_for_monitoring
 from app import db
 from app.monitor.forms import AlertsFilterForm, HistoryClearForm
 from app.monitor.monitoring import MonitoringManager
@@ -58,17 +58,7 @@ def filter_alerts(config_id, filter_form, limit = False, max_rows = 100):
 @login_required
 def pre_refresh_alerts():
     # Check alerts filter form
-    filter_form = AlertsFilterForm(prefix = 'alert_filter_')
-    if not filter_form.validate():
-        # Get list of fields in error
-        fields = list(filter_form.errors.keys())
-        # Get all error messages and remove duplicates
-        messages = {error for errors in filter_form.errors.values() for error in errors}
-        # Format all error messages as flash messages
-        flash_messages = '\n'.join([render_template(
-            'flash_messages.html', message = message, category = 'warning') for message in messages])
-        return jsonify(result = 'ERROR', fields = fields, flash_messages = flash_messages)
-    return jsonify(result = 'OK')
+    return pre_check(AlertsFilterForm(prefix = 'alert_filter_'))
 
 @monitor.route('/refresh_alerts', methods = ['POST'])
 @login_required
@@ -140,6 +130,11 @@ def load_history_page(page):
     # Prepare rendering of pagination buttons
     pagination_display = render_template('monitor/history_pagination.html', pagination = pagination)
     return jsonify(alerts = alerts_display, pagination = pagination_display)
+
+@monitor.route('/pre_clear_history', methods = ['POST'])
+@login_required
+def pre_clear_history():
+    return pre_check(HistoryClearForm(prefix = 'history_clear_'))
 
 @monitor.route('/clear_history', methods = ['POST'])
 @login_required

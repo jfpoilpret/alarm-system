@@ -144,25 +144,52 @@ $(document).ready(function() {
 		return false;
 	}
 	
-	// AJAX function that performs alerts history clear submit
-	function clearHistory()
+	// AJAX function that performs alerts filter submit
+	function submitClearHistory()
 	{
 		if (window.confirm('Are you sure you want to clear all alerts?')) {
 			// POST form
 			var clearJson = {
 				'history_clear_clear_until': $('#history_clear_clear_until').val(),
+				'history_clear_csrf_token': $('#history_clear_csrf_token').val()
 			};
-			// Send AJAX request
 			$.ajax({
 				type: 'POST',
-				url: '/monitor/clear_history',
+				url: '/monitor/pre_clear_history',
 				data: clearJson,
 				success: function(results) {
-					//TODO do we have some cleanup to perform on the current DOM?
+					// Check if form submission is valid
+					if (results.result === 'OK') {
+						// if OK, we can copy to filterJSON and request immediate refresh
+						clearErrors('history_clear_');
+						clearHistory();
+					} else {
+						// Get errors and display them in form
+						handleErrors('history_clear_', results.fields, results.flash_messages);
+					}
 				}
 			});
 		}
 		return false;
+	}
+	
+	// AJAX function that performs alerts history clear submit
+	function clearHistory()
+	{
+		// POST form
+		var clearJson = {
+			'history_clear_clear_until': $('#history_clear_clear_until').val(),
+			'history_clear_csrf_token': $('#history_clear_csrf_token').val()
+		};
+		// Send AJAX request
+		$.ajax({
+			type: 'POST',
+			url: '/monitor/clear_history',
+			data: clearJson,
+			success: function(results) {
+				//TODO do we have some cleanup to perform on the current DOM?
+			}
+		});
 	}
 	
 	// AJAX function that performs alerts filter submit
@@ -347,7 +374,7 @@ $(document).ready(function() {
 	// Register other handlers
 	$('#activate_config').on('click', activateConfig);
 	$('#deactivate_config').on('click', deactivateConfig);
-	$('#history_clear_form').on('submit', clearHistory);
+	$('#history_clear_form').on('submit', submitClearHistory);
 	$('#alert_filter_form').on('submit', submitAlertsFilter);
 	$('#reset_filter').on('click', resetAlertsFilter);
 	// Ensure alerts list header columns widths match content columns after resizing window

@@ -1,5 +1,5 @@
 from re import compile
-from flask import abort, session, url_for
+from flask import abort, jsonify, render_template, session, url_for
 from flask_login import current_user
 from app.models import Device
 from xmltodict import parse, unparse
@@ -18,6 +18,21 @@ device_kinds = {
     Device.KIND_CAMERA: DeviceKind(list(range(0x30, 0x38))),
     #TODO later add new modules such as: laser beam, door open detection, smoke detector...
 }
+
+# AJAX form validation
+#----------------------
+def pre_check(form):
+    # Check form is valid
+    if not form.validate():
+        # Get list of fields in error
+        fields = list(form.errors.keys())
+        # Get all error messages and remove duplicates
+        messages = {error for errors in form.errors.values() for error in errors}
+        # Format all error messages as flash messages
+        flash_messages = '\n'.join([render_template(
+            'flash_messages.html', message = message, category = 'warning') for message in messages])
+        return jsonify(result = 'ERROR', fields = fields, flash_messages = flash_messages)
+    return jsonify(result = 'OK')
 
 # Authorization checks
 #----------------------
