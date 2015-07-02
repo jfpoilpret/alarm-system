@@ -1,11 +1,7 @@
-
+	- BUG in User management:
+		- user creation seems not work any more?
+		
 	- monitoring UI
-		tab "Alerts":
-1h+			how to perform WTF filter form validation (server/client sides)?
-			find a generic way to retrieve flashed messages through JSON and display them
-			- issue is more on JS side as error display will depend on field visibility
-			(see wtf.html to see how field errors are handled, but it is not that clear...)
-			Maybe the best way is to check on a real form submit (config)
 ??		ensure somehow that refresh will always go back to the current tab (how?)
 		
 	- monitoring improvement:

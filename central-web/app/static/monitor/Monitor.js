@@ -199,7 +199,7 @@ $(document).ready(function() {
 					refreshAlerts();
 				} else {
 					// Get errors and display them in form
-					handleErrors('alert_filter_', results.errors);
+					handleErrors('alert_filter_', results.fields, results.flash_messages);
 				}
 			}
 		});
@@ -208,30 +208,30 @@ $(document).ready(function() {
 	
 	function clearErrors(formPrefix)
 	{
-		//TODO remove previous flash messages
+		// Remove previous flash messages
+		$('#flash-messages').html('');
 		// Remove previous errors from all fields
 		$('#' + formPrefix + 'form .form-group').removeClass('has-error');
 	}
 	
-	//TODO later also add flash messages?
 	//TODO this function is quite general and should be refactored outside
-	function handleErrors(formPrefix, errors)
+	function handleErrors(formPrefix, fields, messages)
 	{
 		// Remove previous errors
 		clearErrors(formPrefix);
 		
-		// For each error, mark the field and add a flash message
-		$.each(errors, function(fieldName, fieldErrors) {
+		// For each error field, mark the field
+		$.each(fields, function(index, fieldName) {
 			$field = $('#' + formPrefix + fieldName);
 			console.log(fieldName);
-			$.each(fieldErrors, function(i, error) {
-				type = $field.attr('type');
-				if (type !== 'hidden') {
-					$field.parent('.form-group').addClass('has-error');
-				}
-				//TODO flash message?
-			});
+			type = $field.attr('type');
+			if (type !== 'hidden') {
+				$field.parent('.form-group').addClass('has-error');
+			}
 		});
+
+		// For each message, add a flash message
+		$('#flash-messages').html(messages);
 	}
 	
 	function resetAlertsFilter()

@@ -1,0 +1,6 @@
+{% set icon_categories = {'success': 'ok-sign', 'info': 'info-sign', 'warning': 'exclamation-sign', 'danger': 'exclamation-sign' } %}
+<div class="alert alert-{{category}}">
+	<button type="button" class="close" data-dismiss="alert">&times;</button>
+	<span class="glyphicon glyphicon-{{icon_categories[category]}}" aria-hidden="true"></span>
+	{{ message }}
+</div>

@@ -60,8 +60,14 @@ def pre_refresh_alerts():
     # Check alerts filter form
     filter_form = AlertsFilterForm(prefix = 'alert_filter_')
     if not filter_form.validate():
-        #TODO preformat errors with flash messages
-        return jsonify(result = 'ERROR', errors = filter_form.errors)
+        # Get list of fields in error
+        fields = list(filter_form.errors.keys())
+        # Get all error messages and remove duplicates
+        messages = {error for errors in filter_form.errors.values() for error in errors}
+        # Format all error messages as flash messages
+        flash_messages = '\n'.join([render_template(
+            'flash_messages.html', message = message, category = 'warning') for message in messages])
+        return jsonify(result = 'ERROR', fields = fields, flash_messages = flash_messages)
     return jsonify(result = 'OK')
 
 @monitor.route('/refresh_alerts', methods = ['POST'])
