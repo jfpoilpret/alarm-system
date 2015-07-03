@@ -8,11 +8,3 @@
 	{% set types = {1:'Module Power',2:'Module Presence',3:'Lock',4:'Unlock',5:'Bad code'} %}
 	{{ types[alert.alert_type] }}
 {%- endmacro %}
-
-{% macro tab_class(tab, active_tab) -%}
-	{% if active_tab == tab -%}class="active"{%- endif %}
-{%- endmacro %}
-
-{% macro tabpane_class(tab, active_tab) -%}
-	{% if active_tab == tab -%}class="tab-pane active"{% else %}class="tab-pane"{%- endif %}
-{%- endmacro %}

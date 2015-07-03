@@ -1,6 +1,6 @@
 from datetime import datetime
 from time import time
-from flask import render_template, jsonify
+from flask import render_template, request, jsonify
 from flask_login import login_required
 
 from . import monitor
@@ -17,17 +17,13 @@ def home():
     # Find current configuration
     #FIXME handle situation where there is no current configuration setup yet!
     current_config = Configuration.query.filter_by(current = True).first()
-    # Check alerts filter form
-    filter_form = AlertsFilterForm(prefix = 'alert_filter_', latest_id = '-1')
     # Set default active tab
-    if filter_form.is_submitted():
-        active_tab = 'alerts'
-    else:
-        active_tab = 'maps'
-    if not filter_form.validate_on_submit():
-        # Limit to last 30 days by default
-        limit = datetime.fromtimestamp(time() - 30 * 24 * 3600)
-        filter_form.period_from.data = limit
+    active_tab = request.args.get('tab', 'tab_map')
+    # Setup filter form
+    filter_form = AlertsFilterForm(prefix = 'alert_filter_', latest_id = '-1')
+    # Limit to last 30 days by default
+    limit = datetime.fromtimestamp(time() - 30 * 24 * 3600)
+    filter_form.period_from.data = limit
     return render_template('monitor/home.html', 
         configuration = current_config,
         filter_form = filter_form,

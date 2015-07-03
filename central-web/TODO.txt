@@ -1,6 +1,3 @@
-	- monitoring UI
-??		ensure somehow that refresh will always go back to the current tab (how?)
-		
 	- monitoring improvement:
 1h		- check devices not pinging for too long
 			- avoid logging an alert every second, use graduated alerts!

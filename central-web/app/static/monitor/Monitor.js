@@ -316,11 +316,7 @@ $(document).ready(function() {
 	// Automatically refresh map on timer every 5 seconds
 	var map_timer = null;
 	var alerts_timer = null;
-	if (isCurrentConfigActive()) {
-		refreshMap();
-		map_timer = window.setInterval(refreshMap, 5000);
-	}
-
+	
 	// We enable only one refresh timer, based on current active tab
 	function disableTab(e)
 	{
@@ -345,27 +341,28 @@ $(document).ready(function() {
 	
 	function enableTab(e)
 	{
-		if ($(e.target).attr('id') === 'tab_alerts') {
+		targetTab = $(e.target).attr('id');
+		if (targetTab === 'tab_alerts') {
 			// Always refresh alert once immediately, even if no config is active
 			refreshAlerts();
-		} else if ($(e.target).attr('id') === 'tab_map') {
+		} else if (targetTab === 'tab_map') {
 			// Restore all popovers that were previously shown in the map
 			restoreMapPopups();
-		} else if ($(e.target).attr('id') === 'tab_history') {
+		} else if (targetTab === 'tab_history') {
 			// Refresh history with pagination
 			pageHistory(1);
 		}
 		if (isCurrentConfigActive()) {
-			if ($(e.target).attr('id') === 'tab_map') {
+			if (targetTab === 'tab_map') {
 				refreshMap();
 				map_timer = window.setInterval(refreshMap, 5000);
-			} else if ($(e.target).attr('id') === 'tab_alerts') {
+			} else if (targetTab === 'tab_alerts') {
 				alerts_timer = window.setInterval(refreshAlerts, 5000);
 			}
 		}
+		// Keep track of latest tab in current URL so that refresh will go to the last visible tab
+		window.history.replaceState(targetTab, targetTab, '/monitor/home?tab=' + targetTab);
 	}
-	
-	refreshActivation();
 
 	// Register tab event handlers
     $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
@@ -382,4 +379,11 @@ $(document).ready(function() {
 		alertsListColumnsAligned = false;
 		alignAlertsListColumns();
 	});
+	
+	// Force update of current configuration activation state display
+	refreshActivation();
+
+	// Force active tab based on current active_tab
+	activeTab = $('#active_tab').val();
+	$('#' + activeTab).tab('show');
 });

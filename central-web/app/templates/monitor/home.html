@@ -14,7 +14,6 @@
 {% endblock %}
 
 {% block navbar_left_supplement %}
-{# TODO Add more labels (and actions?) in navbar for monitoring UI #}
 <p class="navbar-text">
 {% if configuration %}
 	[Current configuration '{{configuration.name}}'&nbsp;-&nbsp;<span id="config_active"></span>]
@@ -26,26 +25,26 @@
 
 {% block page_content %}
 	<input type="hidden" id="has_active_configuration" name="has_active_configuration" value="{{ configuration and configuration.active }}">
+	<input type="hidden" id="active_tab" name="active_tab" value="{{ active_tab }}">
 	<div class="monitor">
 	{% if configuration %}
-		{# TODO improve restoring the latest active tab on refresh (how to do that?) #}
 		<div class="monitor-tabs" role="tablist">
 			<ul class="nav nav-tabs" role="tablist">
-				<li role="presentation" {{ utils.tab_class('control', active_tab) }}>
+				<li role="presentation">
 					<a id="tab_control" href="#control" aria-controls="control" role="tab" data-toggle="tab">Control</a>
 				</li>
-				<li role="presentation" {{ utils.tab_class('maps', active_tab) }}>
+				<li role="presentation">
 					<a id="tab_map" href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a>
 				</li>
-				<li role="presentation" {{ utils.tab_class('alerts', active_tab) }}>
+				<li role="presentation">
 					<a id = "tab_alerts" href="#alerts" aria-controls="alerts" role="tab" data-toggle="tab">Alerts</a>
 				</li>
-				<li role="presentation" {{ utils.tab_class('history', active_tab) }}>
+				<li role="presentation">
 					<a id = "tab_history" href="#history" aria-controls="history" role="tab" data-toggle="tab">History</a>
 				</li>
 			</ul>
 			<div class="tab-content">
-				<div role="tabpanel" {{ utils.tabpane_class('control', active_tab) }} id="control">
+				<div role="tabpanel" class="tab-pane" id="control">
 					{% if current_user.is_alarm_setter() %}
 					<a	class="btn btn-primary" role="button" 
 						id="deactivate_config"
@@ -65,12 +64,12 @@
 					</div>
 					{% endif %}
 				</div>
-				<div role="tabpanel" {{ utils.tabpane_class('maps', active_tab) }} id="map">
+				<div role="tabpanel" class="tab-pane" id="map">
 					<div class="monitor-map-area">
 						{{ svg_map|safe }}
 					</div>
 				</div>
-				<div role="tabpanel" {{ utils.tabpane_class('alerts', active_tab) }} id="alerts">
+				<div role="tabpanel" class="tab-pane" id="alerts">
 					<div class="form-alert-filter">
 						<form id="alert_filter_form" class="form form-inline" method="post" role="form">
 							{{ filter_form.hidden_tag() }}
@@ -100,7 +99,7 @@
 						</tbody>
 					</table>
 				</div>
-				<div role="tabpanel" {{ utils.tabpane_class('history', active_tab) }} id="history">
+				<div role="tabpanel" class="tab-pane" id="history">
 					<nav id="history-pagination">
 						<ul class="pagination">
 							<li class="disabled">
