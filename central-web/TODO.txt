@@ -1,6 +1,3 @@
-	- BUG in User management:
-		- user creation seems not work any more?
-		
 	- monitoring UI
 ??		ensure somehow that refresh will always go back to the current tab (how?)
 		
@@ -25,7 +22,7 @@
 15'	- ensure all classes use new-style classes (subclass object)
 30'	- review all FIXME/TODO
 
-	- refactoring of form validation through AJAX
+30'	- refactoring of JavaScript form validation through AJAX
 	
 	- improve DB model to:
 		- have several codes for a config, each with an associated message

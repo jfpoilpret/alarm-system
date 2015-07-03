@@ -24,6 +24,9 @@
 				{{ wtf.form_errors(user_form, hiddens = "only") }}
 				
 				{{ wtf.form_field(user_form.username) }}
+				{% if is_new %}
+				{{ wtf.form_field(user_form.password) }}
+				{% endif %}
 				{{ wtf.form_field(user_form.fullname) }}
 				{{ wtf.form_field(user_form.role) }}
 
