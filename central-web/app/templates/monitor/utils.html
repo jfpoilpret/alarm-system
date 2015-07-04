@@ -5,6 +5,6 @@
 {%- endmacro %}
 
 {% macro map_alert_type(alert) -%}
-	{% set types = {1:'Module Power',2:'Module Presence',3:'Lock',4:'Unlock',5:'Bad code'} %}
+	{% set types = {1:'Module Power',2:'Module Presence',3:'Lock',4:'Unlock',5:'Bad code',6:'Activation',7:'Deactivation'} %}
 	{{ types[alert.alert_type] }}
 {%- endmacro %}

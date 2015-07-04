@@ -1,3 +1,9 @@
+
+1h	- monitoring:
+		- add lock/unlock in addition to activate/deactivate (different notions)
+			- MonitoringManager
+			- Monitoring UI
+		
 	- monitoring improvement:
 1h		- check devices not pinging for too long
 			- avoid logging an alert every second, use graduated alerts!
@@ -8,18 +14,15 @@
 30'	- if default config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
 		
-5'	- store INFO alerts about when config activated/deactivated
-
-1h+	- propose function to cleanup alert history:
-		- for a given config
-		- for a given period of time
-		- for a given level of alert
-		
 15'	- review all .py headers (encoding!)
 15'	- ensure all classes use new-style classes (subclass object)
 30'	- review all FIXME/TODO
 
 30'	- refactoring of JavaScript form validation through AJAX
+30'	- monitoring UI:
+		- improve error display in AJAX if possible 
+		(avoid flash messages and replace with <p class="help-block">xxx</p>)
+		not sure it is OK with inline forms?
 	
 	- improve DB model to:
 		- have several codes for a config, each with an associated message
@@ -36,9 +39,11 @@
 30'	- improve CSS files for every screen; check padding/margins in particular
 45'	- review labels/titles everywhere
 
-
-
-
+1h+	- improve function to cleanup alert history:
+		- for a given config
+		- for a given period of time
+		- for a given level of alert
+		
 15'	- check no possible direct access to some routes
 30'	- force password change (when password empty)
 

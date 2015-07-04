@@ -87,6 +87,20 @@ class Device(db.Model):
     #TODO missing unique index on config_id + device_id
     #TODO missing unique index on config_id + name
     #TODO name does not have to be unique all the way!
+    
+    def detached(self):
+        class Copy(object):
+            pass
+        copy = Copy()
+        copy.id = self.id
+        copy.name = self.name
+        copy.kind = self.kind
+        copy.device_id = self.device_id
+        copy.voltage_threshold = self.voltage_threshold
+        copy.config_id = self.config_id
+        copy.location_x = self.location_x
+        copy.location_y = self.location_y
+        return copy
 
 #TODO Define alert types somewhere
 #TODO Improve to include LEVEL with each KIND
@@ -96,6 +110,8 @@ class AlertType:
     LOCK = 3
     UNLOCK = 4
     WRONG_LOCK_CODE = 5
+    SYSTEM_ACTIVATION = 6
+    SYSTEM_DEACTIVATION = 7
 
 # ALERT
 #------

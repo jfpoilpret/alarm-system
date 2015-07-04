@@ -19,7 +19,7 @@ class AlarmStatus(object):
     
 class LiveDevice(object):
     def __init__(self, device):
-        self.source = device
+        self.source = device.detached()
         self.latest_ping = 0
         self.latest_voltage_level = None
 
@@ -76,6 +76,15 @@ class MonitoringManager(object):
 
         # Instantiate DevicesManager (based on app.config)
         self.devices_manager = self.devices_manager_class(self.event_queue, self.devices)
+        
+        # Create info alert
+        self.store_alert(Alert(
+            config_id = self.config_id,
+            when = datetime.fromtimestamp(time()),
+            level = Alert.LEVEL_INFO,
+            alert_type = AlertType.SYSTEM_ACTIVATION,
+            message = 'System activated',
+            device = None))
         print('activate() thread started')
     
     def deactivate(self):
@@ -95,10 +104,19 @@ class MonitoringManager(object):
             self.ping_checker.join()
             self.ping_checker = None
             # Finally clear all configuration
+            config_id = self.config_id
             self.config_id = None
             self.lock_code = None
             self.status = None
             self.devices = {}
+            # Create info alert
+            self.store_alert(Alert(
+                config_id = config_id,
+                when = datetime.fromtimestamp(time()),
+                level = Alert.LEVEL_INFO,
+                alert_type = AlertType.SYSTEM_DEACTIVATION,
+                message = 'System deactivated',
+                device = None))
             print('deactivate() thread stopped')
     
     #FIXME should we clone each device under locking (multi-thread!!!)
@@ -122,10 +140,10 @@ class MonitoringManager(object):
             #TODO that should be configurable!
             time_limit = time() - 6.0
             #FIXME how to deal with devices that have not been connected yet (time = 0)?
-            no_ping_devices = [dev for dev in self.devices.values() if dev.latest_ping < time_limit]
-            for dev in no_ping_devices:
+            no_ping_devices = [id for id, dev in self.devices.items() if dev.latest_ping < time_limit]
+            for id in no_ping_devices:
                 # Push event for all those devices
-                self.event_queue.put(Event(EventType.NO_PING_FOR_LONG, dev.source.device_id))
+                self.event_queue.put(Event(EventType.NO_PING_FOR_LONG, id))
     
     # EVENT HANDLERS
     #----------------
