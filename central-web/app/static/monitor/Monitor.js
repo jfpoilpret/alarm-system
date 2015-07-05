@@ -73,34 +73,40 @@ $(document).ready(function() {
 		});
 	}
 	
+	var last_status_hash = 0;
+	
 	function updateStatus(results)
 	{
-		//TODO optimize: only update if changes (use hash code to capture changes?)
-		// Update title in menu bar
-		$('#status').html(results.status);
-		// Update buttons state
-		if (results.active === null) {
-			hasActiveConfiguration = false;
-			$('.monitor').hide();
-		} else if (results.active) {
-			hasActiveConfiguration = true;
-			$('.monitor').show();
-			$('#activate_config').hide();
-			$('#deactivate_config').show();
-			if (results.locked) {
-				$('#lock_config').hide();
-				$('#unlock_config').show();
+		// Only update if changes sicne last call
+		if (results.hashcode != last_status_hash) {
+			console.log('updateStatus()');
+			last_status_hash = results.hashcode;
+			// Update title in menu bar
+			$('#status').html(results.status);
+			// Update buttons state
+			if (results.active === null) {
+				hasActiveConfiguration = false;
+				$('.monitor').hide();
+			} else if (results.active) {
+				hasActiveConfiguration = true;
+				$('.monitor').show();
+				$('#activate_config').hide();
+				$('#deactivate_config').show();
+				if (results.locked) {
+					$('#lock_config').hide();
+					$('#unlock_config').show();
+				} else {
+					$('#lock_config').show();
+					$('#unlock_config').hide();
+				}
 			} else {
-				$('#lock_config').show();
+				hasActiveConfiguration = false;
+				$('.monitor').show();
+				$('#deactivate_config').hide();
+				$('#activate_config').show();
+				$('#lock_config').hide();
 				$('#unlock_config').hide();
 			}
-		} else {
-			hasActiveConfiguration = false;
-			$('.monitor').show();
-			$('#deactivate_config').hide();
-			$('#activate_config').show();
-			$('#lock_config').hide();
-			$('#unlock_config').hide();
 		}
 	}
 	

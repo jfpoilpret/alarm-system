@@ -41,7 +41,8 @@ def create_status():
     active = config.active if config else None
     locked = (MonitoringManager.instance.get_status() == AlarmStatus.LOCKED)
     status_display = render_template('monitor/status.html', configuration = config, locked = locked)
-    return jsonify(active = active, locked = locked, status = status_display)
+    hash_code =hash(status_display)
+    return jsonify(active = active, locked = locked, status = status_display, hashcode = hash_code)
 
 def filter_alerts(config_id, filter_form, limit = False, max_rows = 100):
     query = Alert.query.filter_by(config_id = config_id)

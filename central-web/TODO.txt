@@ -1,11 +1,7 @@
 
 	- monitoring:
-x		- add lock/unlock in addition to activate/deactivate (different notions)
-			- MonitoringManager
-			- Monitoring UI
-		- filter alerts stored upon events when status is unlocked
+		- [LATER] filter alerts stored upon events when status is unlocked
 			- eg presence detected
-		
 45'		- ensure svgmap is correctly reloaded if active config has changed!
 		
 	- monitoring improvement:
