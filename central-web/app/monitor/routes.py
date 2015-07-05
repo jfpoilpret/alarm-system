@@ -14,9 +14,6 @@ from app.monitor.monitoring import MonitoringManager, AlarmStatus
 @monitor.route('/home', methods = ['GET'])
 @login_required
 def home():
-    # Find current configuration
-    #FIXME handle situation where there is no current configuration setup yet!
-    current_config = Configuration.query.filter_by(current = True).first()
     # Set default active tab
     active_tab = request.args.get('tab', 'tab_map')
     # Setup filter form
@@ -27,8 +24,7 @@ def home():
     return render_template('monitor/home.html', 
         filter_form = filter_form,
         history_clear_form = HistoryClearForm(prefix = 'history_clear_'),
-        active_tab = active_tab,
-        svg_map = prepare_map_for_monitoring(current_config))
+        active_tab = active_tab)
 
 @monitor.route('/refresh_status', methods = ['POST'])
 @login_required
@@ -125,6 +121,12 @@ def refresh_devices():
     now = time()
     devices = [create_device_for_refresh(device, now) for device in MonitoringManager.instance.get_devices().values()]
     return jsonify(devices = devices)
+
+@monitor.route('/get_map', methods = ['POST'])
+@login_required
+def get_map():
+    current_config = Configuration.query.filter_by(current = True).first()
+    return prepare_map_for_monitoring(current_config) if current_config else ''
 
 @monitor.route('/load_history_page/<int:page>', methods = ['GET'])
 @login_required

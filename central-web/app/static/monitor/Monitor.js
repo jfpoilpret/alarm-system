@@ -84,7 +84,9 @@ $(document).ready(function() {
 			// Update title in menu bar
 			$('#status').html(results.status);
 			// Update buttons state
+			needsMapReload = true;
 			if (results.active === null) {
+				needsMapReload = false;
 				hasActiveConfiguration = false;
 				$('.monitor').hide();
 			} else if (results.active) {
@@ -106,6 +108,12 @@ $(document).ready(function() {
 				$('#activate_config').show();
 				$('#lock_config').hide();
 				$('#unlock_config').hide();
+			}
+			
+			//TODO map is too frequently reloaded currently (it should be only if config has really changed!)
+			if (needsMapReload) {
+				// Reload map if needed
+				reloadMap();
 			}
 		}
 	}
@@ -131,6 +139,22 @@ $(document).ready(function() {
 				alignAlertsListColumns();
 			}
 		});
+	}
+	
+	// AJAX function to completely replace map
+	function reloadMap()
+	{
+		// Send AJAX request
+		$.ajax({
+			type: 'POST',
+			url: '/monitor/get_map',
+			success: function(results) {
+				// Replace map SVG in DOM
+				$('.monitor-map-area').html(results);
+			    $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
+			}
+		});
+		return false;
 	}
 	
 	// AJAX function to update device state on monitoring map
@@ -414,7 +438,6 @@ $(document).ready(function() {
 	}
 
 	// Register tab event handlers
-    $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
 	$('a[data-toggle="tab"]').on('hide.bs.tab', disableTab);
 	$('a[data-toggle="tab"]').on('shown.bs.tab', enableTab);
 	// Register other handlers
