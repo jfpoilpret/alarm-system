@@ -2,13 +2,12 @@
 $(document).ready(function() {
 	var hasActiveConfiguration = false;
 	
-	//TODO normally intialization is useless here, remove it (filterJson only)
 	var filterJson = {
-//		'alert_filter_period_from': $('#alert_filter_period_from').val(),
-//		'alert_filter_period_to': $('#alert_filter_period_to').val(),
-//		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
-//		'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
-//		'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
+		'alert_filter_period_from': $('#alert_filter_period_from').val(),
+		'alert_filter_period_to': $('#alert_filter_period_to').val(),
+		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
+		'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
+		'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
 	};
 	var defaultFilter = {
 		'alert_filter_period_from': $('#alert_filter_period_from').val(),
@@ -26,8 +25,7 @@ $(document).ready(function() {
 				url: url,
 				success: function(results) {
 					// Update UI
-					//TODO optimize by directly calling updateStatus(results) once activate/deactivate routes have been updated to return status
-					refreshStatus();
+					updateStatus(results);
 				}
 			});
 		}
@@ -81,7 +79,6 @@ $(document).ready(function() {
 		// Update title in menu bar
 		$('#status').html(results.status);
 		// Update buttons state
-		//TODO add lock/unlock buttons later
 		if (results.active === null) {
 			hasActiveConfiguration = false;
 			$('.monitor').hide();
@@ -276,6 +273,7 @@ $(document).ready(function() {
 		return false;
 	}
 	
+	//TODO this function is quite general and should be refactored outside
 	function clearErrors(formPrefix)
 	{
 		// Remove previous flash messages
@@ -338,21 +336,23 @@ $(document).ready(function() {
 	function alignAlertsListColumns()
 	{
 		if (!alertsListColumnsAligned) {
-			var $table = $('.alerts-list'),
-			$bodyCells = $table.find('tbody tr:first').children(),
-			colWidth;
-			// Get width of tbody columns
-			colWidth = $bodyCells.map(function() {
-				return $(this).width();
-			}).get();
-			// Force width of first column to hard-code value because the one got from tbdoy/tr does not
-			// match reality
-			colWidth[0] = 14;
-			// Set width of thead columns from tbody columns widths
-			$table.find('thead tr').children().each(function(i, v) {
-				$(v).width(colWidth[i]);
-			});
-			alertsListColumnsAligned = true;
+			var	$table = $('.alerts-list'),
+				$bodyCells = $table.find('tbody tr:first').children();
+			// Resize only if there is at least one row
+			if ($bodyCells.length > 0) {
+				// Get width of tbody columns
+				var colWidth = $bodyCells.map(function() {
+					return $(this).width();
+				}).get();
+				// Force width of first column to hard-code value because the one got from tbdoy/tr does not
+				// match reality
+				colWidth[0] = 14;
+				// Set width of thead columns from tbody columns widths
+				$table.find('thead tr').children().each(function(i, v) {
+					$(v).width(colWidth[i]);
+				});
+				alertsListColumnsAligned = true;
+			}
 		}
 	}
 

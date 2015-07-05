@@ -33,14 +33,14 @@ def home():
 @monitor.route('/refresh_status', methods = ['POST'])
 @login_required
 def refresh_status():
-    # Get current monitoring status:
-    # - current configuration name
-    # - active/not active
-    # - locked/unlocked
-    current_config = Configuration.query.filter_by(current = True).first()
-    active = current_config.active if current_config else None
+    # Get current monitoring status
+    return create_status()
+
+def create_status():
+    config = Configuration.query.filter_by(current=True).first()
+    active = config.active if config else None
     locked = (MonitoringManager.instance.get_status() == AlarmStatus.LOCKED)
-    status_display = render_template('monitor/status.html', configuration = current_config, locked = locked)
+    status_display = render_template('monitor/status.html', configuration = config, locked = locked)
     return jsonify(active = active, locked = locked, status = status_display)
 
 def filter_alerts(config_id, filter_form, limit = False, max_rows = 100):
@@ -177,12 +177,11 @@ def set_config_active(active):
         db.session.add(current_config)
         db.session.commit()
         # Actually activate/deactivate the alarm system
-#         from app.monitor.monitoring import MonitoringManager
         if active:
             MonitoringManager.instance.activate(current_config)
         else:
             MonitoringManager.instance.deactivate()
-    return ''
+    return create_status()
 
 @monitor.route('/lock_config', methods = ['POST'])
 @login_required
@@ -203,5 +202,5 @@ def set_config_lock(locked):
                 MonitoringManager.instance.lock()
             else:
                 MonitoringManager.instance.unlock()
-    return ''
+    return create_status()
 
