@@ -25,7 +25,6 @@ def home():
     limit = datetime.fromtimestamp(time() - 30 * 24 * 3600)
     filter_form.period_from.data = limit
     return render_template('monitor/home.html', 
-        configuration = current_config,
         filter_form = filter_form,
         history_clear_form = HistoryClearForm(prefix = 'history_clear_'),
         active_tab = active_tab,
@@ -178,9 +177,31 @@ def set_config_active(active):
         db.session.add(current_config)
         db.session.commit()
         # Actually activate/deactivate the alarm system
-        from app.monitor.monitoring import MonitoringManager
+#         from app.monitor.monitoring import MonitoringManager
         if active:
             MonitoringManager.instance.activate(current_config)
         else:
             MonitoringManager.instance.deactivate()
     return ''
+
+@monitor.route('/lock_config', methods = ['POST'])
+@login_required
+def lock_config():
+    return set_config_lock(AlarmStatus.LOCKED)
+
+@monitor.route('/unlock_config', methods=['POST'])
+@login_required
+def unlock_config():
+    return set_config_lock(AlarmStatus.UNLOCKED)
+
+def set_config_lock(locked):
+    check_alarm_setter()
+    current_config = Configuration.query.filter_by(current=True).first()
+    if current_config.active:
+        if MonitoringManager.instance.get_status() != locked:
+            if locked == AlarmStatus.LOCKED:
+                MonitoringManager.instance.lock()
+            else:
+                MonitoringManager.instance.unlock()
+    return ''
+

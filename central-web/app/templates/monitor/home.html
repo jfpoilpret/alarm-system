@@ -20,7 +20,6 @@
 {% block page_content %}
 	<input type="hidden" id="active_tab" name="active_tab" value="{{ active_tab }}">
 	<div class="monitor">
-	{% if configuration %}
 		<div class="monitor-tabs" role="tablist">
 			<ul class="nav nav-tabs" role="tablist">
 				<li role="presentation">
@@ -40,11 +39,21 @@
 				<div role="tabpanel" class="tab-pane" id="control">
 					{% if current_user.is_alarm_setter() %}
 					<a	class="btn btn-primary" role="button" 
+						style="display: none;"
 						id="deactivate_config"
 						href="#">Deactivate</a>
 					<a	class="btn btn-primary" role="button" 
+						style="display: none;"
 						id="activate_config"
 						href="#">Activate</a>
+					<a	class="btn btn-primary" role="button" 
+						style="display: none;"
+						id="lock_config"
+						href="#">Lock</a>
+					<a	class="btn btn-primary" role="button" 
+						style="display: none;"
+						id="unlock_config"
+						href="#">Unlock</a>
 					<div class="form-history-clear">
 						<form	id="history_clear_form" 
 								class="form form-inline" 
@@ -94,33 +103,6 @@
 				</div>
 				<div role="tabpanel" class="tab-pane" id="history">
 					<nav id="history-pagination">
-						<ul class="pagination">
-							<li class="disabled">
-								<a href="#" id="history-first" aria-label="First">
-									<span aria-hidden="true">&laquo;</span>
-								</a>
-							</li>
-							<li class="disabled">
-								<a href="#" id="history-previous" aria-label="Previous">
-									<span aria-hidden="true">&lsaquo;</span>
-								</a>
-							</li>
-							<li class="active">
-								<a href="#" id="history-page-1" >
-									1<span class="sr-only">(current)</span>
-								</a>
-							</li>
-							<li class="disabled">
-								<a href="#" id="history-next" aria-label="Next">
-									<span aria-hidden="true">&rsaquo;</span>
-								</a>
-							</li>
-							<li class="disabled">
-								<a href="#" id="history-last" aria-label="Last">
-									<span aria-hidden="true">&raquo;</span>
-								</a>
-							</li>
-						</ul>
 					</nav>
 					<table class="history-list table table-striped table-condensed table-hover">
 						<thead>
@@ -138,6 +120,5 @@
 				</div>
 			</div>
 		</div>
-	{% endif %}
 	</div>
 {% endblock %}

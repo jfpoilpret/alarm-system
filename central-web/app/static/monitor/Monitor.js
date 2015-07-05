@@ -18,7 +18,7 @@ $(document).ready(function() {
 		'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
 	};
 	
-	function changeConfigActive(url, message, active)
+	function changeConfig(url, message)
 	{
 		if (window.confirm(message)) {
 			$.ajax({
@@ -37,15 +37,29 @@ $(document).ready(function() {
 	// AJAX function to activate current config
 	function activateConfig()
 	{
-		return changeConfigActive('/monitor/activate_config', 
-			'Are you sure you want to activate the alarm system?', 'true');
+		return changeConfig('/monitor/activate_config', 
+			'Are you sure you want to activate the alarm system?');
 	}
 	
 	// AJAX function to deactivate current config
 	function deactivateConfig()
 	{
-		return changeConfigActive('/monitor/deactivate_config', 
-			'Are you sure you want to deactivate the alarm system?', 'false');
+		return changeConfig('/monitor/deactivate_config', 
+			'Are you sure you want to deactivate the alarm system?');
+	}
+	
+	// AJAX function to lock current config
+	function lockConfig()
+	{
+		return changeConfig('/monitor/lock_config', 
+			'Are you sure you want to lock the alarm?');
+	}
+	
+	// AJAX function to unlock current config
+	function unlockConfig()
+	{
+		return changeConfig('/monitor/unlock_config', 
+			'Are you sure you want to unlock the alarm?');
 	}
 	
 	// AJAX function to update current configuration state
@@ -70,16 +84,26 @@ $(document).ready(function() {
 		//TODO add lock/unlock buttons later
 		if (results.active === null) {
 			hasActiveConfiguration = false;
-			$('#activate_config').hide();
-			$('#deactivate_config').hide();
+			$('.monitor').hide();
 		} else if (results.active) {
 			hasActiveConfiguration = true;
+			$('.monitor').show();
 			$('#activate_config').hide();
 			$('#deactivate_config').show();
+			if (results.locked) {
+				$('#lock_config').hide();
+				$('#unlock_config').show();
+			} else {
+				$('#lock_config').show();
+				$('#unlock_config').hide();
+			}
 		} else {
 			hasActiveConfiguration = false;
+			$('.monitor').show();
 			$('#deactivate_config').hide();
 			$('#activate_config').show();
+			$('#lock_config').hide();
+			$('#unlock_config').hide();
 		}
 	}
 	
@@ -390,6 +414,8 @@ $(document).ready(function() {
 	// Register other handlers
 	$('#activate_config').on('click', activateConfig);
 	$('#deactivate_config').on('click', deactivateConfig);
+	$('#lock_config').on('click', lockConfig);
+	$('#unlock_config').on('click', unlockConfig);
 	$('#history_clear_form').on('submit', submitClearHistory);
 	$('#alert_filter_form').on('submit', submitAlertsFilter);
 	$('#reset_filter').on('click', resetAlertsFilter);
