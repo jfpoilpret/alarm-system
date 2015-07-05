@@ -1,12 +1,14 @@
 
 $(document).ready(function() {
+	var hasActiveConfiguration = false;
+	
 	//TODO normally intialization is useless here, remove it (filterJson only)
 	var filterJson = {
-		'alert_filter_period_from': $('#alert_filter_period_from').val(),
-		'alert_filter_period_to': $('#alert_filter_period_to').val(),
-		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
-		'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
-		'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
+//		'alert_filter_period_from': $('#alert_filter_period_from').val(),
+//		'alert_filter_period_to': $('#alert_filter_period_to').val(),
+//		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
+//		'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
+//		'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
 	};
 	var defaultFilter = {
 		'alert_filter_period_from': $('#alert_filter_period_from').val(),
@@ -67,27 +69,20 @@ $(document).ready(function() {
 		// Update buttons state
 		//TODO add lock/unlock buttons later
 		if (results.active === null) {
-			$('#has_active_configuration').val('false');
+			hasActiveConfiguration = false;
 			$('#activate_config').hide();
 			$('#deactivate_config').hide();
-		} else if (result.active) {
-			$('#has_active_configuration').val('true');
+		} else if (results.active) {
+			hasActiveConfiguration = true;
 			$('#activate_config').hide();
 			$('#deactivate_config').show();
 		} else {
-			$('#has_active_configuration').val('false');
+			hasActiveConfiguration = false;
 			$('#deactivate_config').hide();
 			$('#activate_config').show();
 		}
 	}
 	
-	// Function that checks is current configuration is active
-	function isCurrentConfigActive()
-	{
-		//TODO optimize by simply using a global JS variable and remove the extra input field!
-		return $('#has_active_configuration').val() === 'true';
-	}
-
 	// AJAX function to update list with latest (new) alerts
 	function refreshAlerts()
 	{
@@ -344,7 +339,7 @@ $(document).ready(function() {
 	// We enable only one refresh timer, based on current active tab
 	function disableTab(e)
 	{
-		if (isCurrentConfigActive()) {
+		if (hasActiveConfiguration) {
 			if ($(e.target).attr('id') === 'tab_map') {
 				if (map_timer !== null) {
 					window.clearInterval(map_timer);
@@ -376,7 +371,7 @@ $(document).ready(function() {
 			// Refresh history with pagination
 			pageHistory(1);
 		}
-		if (isCurrentConfigActive()) {
+		if (hasActiveConfiguration) {
 			if (targetTab === 'tab_map') {
 				refreshMap();
 				map_timer = window.setInterval(refreshMap, 5000);

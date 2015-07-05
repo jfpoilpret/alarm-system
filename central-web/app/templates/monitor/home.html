@@ -18,7 +18,6 @@
 {% endblock %}
 
 {% block page_content %}
-	<input type="hidden" id="has_active_configuration" name="has_active_configuration" value="{{ configuration and configuration.active }}">
 	<input type="hidden" id="active_tab" name="active_tab" value="{{ active_tab }}">
 	<div class="monitor">
 	{% if configuration %}
