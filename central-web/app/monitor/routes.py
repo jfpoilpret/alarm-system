@@ -9,7 +9,7 @@ from app.models import Configuration, Alert
 from app.common import check_alarm_setter, pre_check, prepare_map_for_monitoring
 from app import db
 from app.monitor.forms import AlertsFilterForm, HistoryClearForm
-from app.monitor.monitoring import MonitoringManager
+from app.monitor.monitoring import MonitoringManager, AlarmStatus
 
 @monitor.route('/home', methods = ['GET'])
 @login_required
@@ -30,6 +30,19 @@ def home():
         history_clear_form = HistoryClearForm(prefix = 'history_clear_'),
         active_tab = active_tab,
         svg_map = prepare_map_for_monitoring(current_config))
+
+@monitor.route('/refresh_status', methods = ['POST'])
+@login_required
+def refresh_status():
+    # Get current monitoring status:
+    # - current configuration name
+    # - active/not active
+    # - locked/unlocked
+    current_config = Configuration.query.filter_by(current = True).first()
+    active = current_config.active if current_config else None
+    locked = (MonitoringManager.instance.get_status() == AlarmStatus.LOCKED)
+    status_display = render_template('monitor/status.html', configuration = current_config, locked = locked)
+    return jsonify(active = active, locked = locked, status = status_display)
 
 def filter_alerts(config_id, filter_form, limit = False, max_rows = 100):
     query = Alert.query.filter_by(config_id = config_id)

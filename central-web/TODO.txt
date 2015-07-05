@@ -1,9 +1,12 @@
 
 1h	- monitoring:
+		- refactor html to make it static and then use only JS to update
+		
 		- add lock/unlock in addition to activate/deactivate (different notions)
 			- MonitoringManager
 			- Monitoring UI
-		
+		- filter alerts stored upon events when status is unlocked
+			- eg presence detected
 	- monitoring improvement:
 1h		- check devices not pinging for too long
 			- avoid logging an alert every second, use graduated alerts!

@@ -1,5 +1,6 @@
 
 $(document).ready(function() {
+	//TODO normally intialization is useless here, remove it (filterJson only)
 	var filterJson = {
 		'alert_filter_period_from': $('#alert_filter_period_from').val(),
 		'alert_filter_period_to': $('#alert_filter_period_to').val(),
@@ -23,8 +24,8 @@ $(document).ready(function() {
 				url: url,
 				success: function(results) {
 					// Update UI
-					$('#has_active_configuration').val(active);
-					refreshActivation();
+					//TODO optimize by directly calling updateStatus(results) once activate/deactivate routes have been updated to return status
+					refreshStatus();
 				}
 			});
 		}
@@ -45,22 +46,45 @@ $(document).ready(function() {
 			'Are you sure you want to deactivate the alarm system?', 'false');
 	}
 	
-	function refreshActivation()
+	// AJAX function to update current configuration state
+	function refreshStatus()
 	{
-		if (isCurrentConfigActive()) {
+		// Send AJAX request
+		$.ajax({
+			type: 'POST',
+			url: '/monitor/refresh_status',
+			success: function(results) {
+				updateStatus(results);
+			}
+		});
+	}
+	
+	function updateStatus(results)
+	{
+		//TODO optimize: only update if changes (use hash code to capture changes?)
+		// Update title in menu bar
+		$('#status').html(results.status);
+		// Update buttons state
+		//TODO add lock/unlock buttons later
+		if (results.active === null) {
+			$('#has_active_configuration').val('false');
+			$('#activate_config').hide();
+			$('#deactivate_config').hide();
+		} else if (result.active) {
+			$('#has_active_configuration').val('true');
 			$('#activate_config').hide();
 			$('#deactivate_config').show();
-			$('#config_active').html('Active');
 		} else {
+			$('#has_active_configuration').val('false');
 			$('#deactivate_config').hide();
 			$('#activate_config').show();
-			$('#config_active').html('Not Active');
 		}
 	}
 	
 	// Function that checks is current configuration is active
 	function isCurrentConfigActive()
 	{
+		//TODO optimize by simply using a global JS variable and remove the extra input field!
 		return $('#has_active_configuration').val() === 'true';
 	}
 
@@ -381,7 +405,8 @@ $(document).ready(function() {
 	});
 	
 	// Force update of current configuration activation state display
-	refreshActivation();
+	refreshStatus();
+	status_timer = window.setInterval(refreshStatus, 5000);
 
 	// Force active tab based on current active_tab
 	activeTab = $('#active_tab').val();

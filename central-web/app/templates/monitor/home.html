@@ -14,13 +14,7 @@
 {% endblock %}
 
 {% block navbar_left_supplement %}
-<p class="navbar-text">
-{% if configuration %}
-	[Current configuration '{{configuration.name}}'&nbsp;-&nbsp;<span id="config_active"></span>]
-{% else %}
-	[No current configuration]
-{% endif %}
-</p>
+<p id="status" class="navbar-text"></p>
 {% endblock %}
 
 {% block page_content %}

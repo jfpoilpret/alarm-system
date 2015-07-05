@@ -1,0 +1,15 @@
+{% if not configuration %}
+	[No current configuration]
+{% elif configuration.active %}
+	[Current configuration 
+	'<span id="config_name">{{configuration.name}}</span>'
+	&nbsp;-&nbsp;
+	<span id="config_active">Active</span>
+	&nbsp;-&nbsp;
+	<span id="config_locked">{{ 'Locked' if locked else 'Unlocked'}}</span>]
+{% else %}
+	[Current configuration 
+	'<span id="config_name">{{configuration.name}}</span>'
+	&nbsp;-&nbsp;
+	<span id="config_active">Not Active</span>]
+{% endif %}

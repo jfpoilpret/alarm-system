@@ -57,7 +57,7 @@ class MonitoringManager(object):
         print('activate(%s)' % config.name)
         # Deactivate if already active
         self.deactivate()
-        self.status = AlarmStatus.LOCKED
+        self.status = AlarmStatus.UNLOCKED
         self.config_id = config.id
         # Store lock code from config
         self.lock_code = config.lockcode
@@ -119,6 +119,23 @@ class MonitoringManager(object):
                 device = None))
             print('deactivate() thread stopped')
     
+    def lock(self):
+        alert = self.create_lock_event(
+            AlarmStatus.LOCKED, AlertType.LOCK, 'Lock through monitoring application')
+        alert.when = datetime.fromtimestamp(time())
+        alert.config_id = self.config_id
+        self.store_alert(alert)
+    
+    def unlock(self):
+        alert = self.create_lock_event(
+            AlarmStatus.UNLOCKED, AlertType.UNLOCK, 'Unlock through monitoring application')
+        alert.when = datetime.fromtimestamp(time())
+        alert.config_id = self.config_id
+        self.store_alert(alert)
+    
+    def get_status(self):
+        return self.status
+    
     #FIXME should we clone each device under locking (multi-thread!!!)
     def get_devices(self):
         return self.devices
@@ -169,26 +186,21 @@ class MonitoringManager(object):
         else:
             return None
 
-    def create_lock_event(self, status, alert_type):
+    def create_lock_event(self, status, alert_type, message = None):
         self.status = status
         self.devices_manager.set_status(self.status)
         return Alert(
             level = Alert.LEVEL_INFO, 
-            alert_type = alert_type)
+            alert_type = alert_type,
+            message = message)
         
     def handle_lock_event(self, event_type, device, event_detail):
-        alert = self.check_code(device, event_detail)
-        if alert:
-            return alert
-        else:
-            return self.create_lock_event(AlarmStatus.LOCKED, AlertType.LOCK)
+        return (self.check_code(device, event_detail) or 
+            self.create_lock_event(AlarmStatus.LOCKED, AlertType.LOCK))
     
     def handle_unlock_event(self, event_type, device, event_detail):
-        alert = self.check_code(device, event_detail)
-        if alert:
-            return alert
-        else:
-            return self.create_lock_event(AlarmStatus.UNLOCKED, AlertType.UNLOCK)
+        return (self.check_code(device, event_detail) or
+            self.create_lock_event(AlarmStatus.UNLOCKED, AlertType.UNLOCK))
     
     #TODO improve alerts by generating several levels of alerts based on duration without ping
     #TODO also we should not insert alerts every second but 'aggregate' consecutive alerts into 
