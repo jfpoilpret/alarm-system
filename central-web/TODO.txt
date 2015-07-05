@@ -11,11 +11,15 @@
 	- introduce concept of "priority" (or recurrent, repeated...) alerts that 
 	shall always show first until they are "cleared"
 	
-30'	- if default config is changed, previous config must be forced inactive if needed
+30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
+30'	- configuration changes of an active config should be limited
+		- or there should be mechanisms to propagate change to MonitoringManager
+		(because devices are deep copies of config devices, hence are not up-to-date)
 		
 15'	- review all .py headers (encoding!)
 15'	- ensure all classes use new-style classes (subclass object)
+1h	- rename "private" methods with leading underscore (convention)
 30'	- review all FIXME/TODO
 
 30'	- refactoring of JavaScript form validation through AJAX
