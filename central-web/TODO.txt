@@ -1,9 +1,4 @@
 
-	- monitoring:
-		- [LATER] filter alerts stored upon events when status is unlocked
-			- eg presence detected
-45'		- ensure svgmap is correctly reloaded if active config has changed!
-		
 	- monitoring improvement:
 1h		- check devices not pinging for too long
 			- avoid logging an alert every second, use graduated alerts!
@@ -51,6 +46,10 @@
 15'	- check no possible direct access to some routes
 30'	- force password change (when password empty)
 
+	- monitoring:
+		- [LATER] filter alerts stored upon events when status is unlocked
+			- eg presence detected
+		
 1h	- infer on i18n
 
 	- add email?

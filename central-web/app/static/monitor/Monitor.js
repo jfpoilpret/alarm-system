@@ -73,20 +73,19 @@ $(document).ready(function() {
 		});
 	}
 	
-	var last_status_hash = 0;
+	var lastStatusHash = 0;
+	var lastConfigNameHash = 0;
 	
 	function updateStatus(results)
 	{
 		// Only update if changes sicne last call
-		if (results.hashcode != last_status_hash) {
+		if (results.hashcode != lastStatusHash) {
 			console.log('updateStatus()');
-			last_status_hash = results.hashcode;
+			lastStatusHash = results.hashcode;
 			// Update title in menu bar
 			$('#status').html(results.status);
 			// Update buttons state
-			needsMapReload = true;
 			if (results.active === null) {
-				needsMapReload = false;
 				hasActiveConfiguration = false;
 				$('.monitor').hide();
 			} else if (results.active) {
@@ -110,9 +109,9 @@ $(document).ready(function() {
 				$('#unlock_config').hide();
 			}
 			
-			//TODO map is too frequently reloaded currently (it should be only if config has really changed!)
-			if (needsMapReload) {
+			if (results.namehash != lastConfigNameHash) {
 				// Reload map if needed
+				lastConfigNameHash = results.namehash;
 				reloadMap();
 			}
 		}
