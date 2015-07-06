@@ -1,10 +1,17 @@
 
 	- monitoring improvement:
-1h		- check devices not pinging for too long
-			- avoid logging an alert every second, use graduated alerts!
+15'		- how to deal with devices that have not pinged yet 
+		(wrong calculation of no ping time...)
+			- init latest_ping to activate time (minus a few seconds?)
 ??		- should voltage alerts be repeated forever?
-	- introduce concept of "priority" (or recurrent, repeated...) alerts that 
-	shall always show first until they are "cleared"
+			- maybe introduce voltage thresholds (like for no ping time)
+			- then introduce repeating time when a threshold has been reached for long
+	
+3h	- configuration must include addition settings used in monitoring:
+		- thresholds of alerts for no pings and voltage
+		- do it at DB time, reset DB
+		- update UI config UI!
+		- update Monitoring Manager to get info from COnfiguration too
 	
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
@@ -18,6 +25,8 @@
 30'	- review all FIXME/TODO
 
 30'	- refactoring of JavaScript form validation through AJAX
+1h	- monitoring UI bug
+		- Clear History often leads to CSRF token error???...
 30'	- monitoring UI:
 		- improve error display in AJAX if possible 
 		(avoid flash messages and replace with <p class="help-block">xxx</p>)

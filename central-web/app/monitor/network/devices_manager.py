@@ -32,7 +32,7 @@ class DevicesManagerSimulator(AbstractDevicesManager, Thread):
     def run(self):
         keypads = [device.source.device_id for device in self.devices.values() if device.source.kind == Device.KIND_KEYPAD]
         while True:
-            sleep(1.0)
+            sleep(10.0)
             if self.stop:
                 return
             # Simulate Device events randomly

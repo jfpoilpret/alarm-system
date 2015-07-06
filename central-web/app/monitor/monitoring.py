@@ -21,9 +21,9 @@ class LiveDevice(object):
     def __init__(self, device):
         self.source = device.detached()
         self.latest_ping = 0
+        self.latest_ping_alert_threshold = -1
         self.latest_voltage_level = None
 
-#TODO Add monitoring of device pings and generate alerts if no ping during a given time...
 class MonitoringManager(object):
     instance = None
     
@@ -61,6 +61,16 @@ class MonitoringManager(object):
         self.config_id = config.id
         # Store lock code from config
         self.lock_code = config.lockcode
+        #TODO Get the following values from config
+        self.no_ping_time_thresholds = [
+            (6.0, Alert.LEVEL_INFO), 
+            (10.0, Alert.LEVEL_INFO), 
+            (30.0, Alert.LEVEL_WARNING), 
+            (60.0, Alert.LEVEL_WARNING), 
+            (120.0, Alert.LEVEL_ALARM), 
+            (300.0, Alert.LEVEL_ALARM), 
+            (600.0, Alert.LEVEL_ALARM), 
+            (3600.0, Alert.LEVEL_ALARM)]
         # Create dictionary of LiveDevices from config
         self.devices = {id: LiveDevice(device) for id, device in config.devices.items()}
         # Start thread that reads queues and act upon received messages (DB, SMS...)
@@ -145,8 +155,6 @@ class MonitoringManager(object):
             db.session.add(alert)
             db.session.commit()
     
-    #TODO improve by setting additional info to device for further generation of alerts
-    # (eg time without ping)
     def check_pings(self):
         while not self.ping_checker_stop.is_set():
             # Perform check every 1 second
@@ -154,14 +162,30 @@ class MonitoringManager(object):
             if not self.active:
                 return
             # Check list of all devices where last ping > 6 seconds
-            #TODO that should be configurable!
-            time_limit = time() - 6.0
+            time_limit = time() - self.no_ping_time_thresholds[0][0]
             #FIXME how to deal with devices that have not been connected yet (time = 0)?
-            no_ping_devices = [id for id, dev in self.devices.items() if dev.latest_ping < time_limit]
-            for id in no_ping_devices:
-                # Push event for all those devices
-                self.event_queue.put(Event(EventType.NO_PING_FOR_LONG, id))
+            for id, dev in self.devices.items():
+                if dev.latest_ping < time_limit:
+                    # Push event for all those devices
+                    self.event_queue.put(Event(EventType.NO_PING_FOR_LONG, id))
+#             no_ping_devices = [id for id, dev in self.devices.items() if dev.latest_ping < time_limit]
+#             for id in no_ping_devices:
+#                 # Push event for all those devices
+#                 self.event_queue.put(Event(EventType.NO_PING_FOR_LONG, id))
+
+    def get_no_ping_time_threshold(self, no_ping_time):
+        for i, (threshold, level) in enumerate(self.no_ping_time_thresholds):
+            if no_ping_time <= threshold:
+                return i - 1
+        # If we come here, this means we have passed the last threshold already,
+        # This is a special case where we use multiples of the last threshold repeatedly
+        return i + int(no_ping_time / threshold) - 1 
     
+    def get_no_ping_time_threshold_alert_level(self, index):
+        if index < len(self.no_ping_time_thresholds):
+            return self.no_ping_time_thresholds[index][1]
+        return self.no_ping_time_thresholds[-1][1]
+        
     # EVENT HANDLERS
     #----------------
     def handle_voltage_event(self, event_type, device, event_detail):
@@ -202,14 +226,20 @@ class MonitoringManager(object):
         return (self.check_code(device, event_detail) or
             self.create_lock_event(AlarmStatus.UNLOCKED, AlertType.UNLOCK))
     
-    #TODO improve alerts by generating several levels of alerts based on duration without ping
-    #TODO also we should not insert alerts every second but 'aggregate' consecutive alerts into 
-    # one every XX seconds...
     def handle_no_ping_for_long(self, event_type, device, event_detail):
-        message = 'Module %s has provided no presence signal for %d seconds' % (
-            device.source.name, device.latest_ping - time())
+        threshold = device.latest_ping_alert_threshold
+        no_ping_time = time() - device.latest_ping
+        new_threshold = self.get_no_ping_time_threshold(no_ping_time)
+        device.latest_ping_alert_threshold = new_threshold
+        # First check if alert condition has disappeared or has not changed
+        if new_threshold <= threshold:
+            return None
+        # We have passed a new threshold, we must generate an alert of appropriate level
+        level = self.get_no_ping_time_threshold_alert_level(new_threshold)
+        message = 'Module %s has provided no presence signal for %.0f seconds' % (
+            device.source.name, no_ping_time)
         return Alert(
-            level = Alert.LEVEL_WARNING,
+            level = level,
             alert_type = AlertType.DEVICE_NO_PING_FOR_TOO_LONG,
             message = message)
     
@@ -219,11 +249,10 @@ class MonitoringManager(object):
             # Detect stop condition
             if event.event_type == EventType.STOP:
                 return
-            if event.device_id:
-                device = self.devices[event.device_id]
+            device = self.devices[event.device_id] if event.device_id else None
+            if device and event.event_type != EventType.NO_PING_FOR_LONG:
                 device.latest_ping = event.timestamp
-            else:
-                device = None
+                device.latest_ping_alert_threshold = -1
             # Check event type and decide what to do with it
             handler = self.handlers.get(event.event_type, None)
             if handler:
@@ -231,7 +260,6 @@ class MonitoringManager(object):
                 if alert:
                     alert.when = datetime.fromtimestamp(event.timestamp)
                     alert.config_id = self.config_id
-                    if device:
-                        alert.device_id = device.source.id
+                    alert.device_id = event.device_id
                     self.store_alert(alert)
 
