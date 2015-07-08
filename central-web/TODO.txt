@@ -1,8 +1,5 @@
 
 	- monitoring improvement:
-15'		- how to deal with devices that have not pinged yet 
-		(wrong calculation of no ping time...)
-			- init latest_ping to activate time (minus a few seconds?)
 ??		- should voltage alerts be repeated forever?
 			- maybe introduce voltage thresholds (like for no ping time)
 			- then introduce repeating time when a threshold has been reached for long

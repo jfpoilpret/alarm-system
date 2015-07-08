@@ -9,7 +9,7 @@ from app import db
 from app.models import Alert, AlertType
 from app.monitor.network.events import Event, EventType
 from app.monitor.network.devices_manager import DevicesManager, DevicesManagerSimulator
-from time import sleep, time
+from time import time
 
 monitoring_manager = None
 
@@ -20,7 +20,7 @@ class AlarmStatus(object):
 class LiveDevice(object):
     def __init__(self, device):
         self.source = device.detached()
-        self.latest_ping = 0
+        self.latest_ping = time() - 0.5
         self.latest_ping_alert_threshold = -1
         self.latest_voltage_level = None
 
@@ -163,15 +163,10 @@ class MonitoringManager(object):
                 return
             # Check list of all devices where last ping > 6 seconds
             time_limit = time() - self.no_ping_time_thresholds[0][0]
-            #FIXME how to deal with devices that have not been connected yet (time = 0)?
             for id, dev in self.devices.items():
                 if dev.latest_ping < time_limit:
                     # Push event for all those devices
                     self.event_queue.put(Event(EventType.NO_PING_FOR_LONG, id))
-#             no_ping_devices = [id for id, dev in self.devices.items() if dev.latest_ping < time_limit]
-#             for id in no_ping_devices:
-#                 # Push event for all those devices
-#                 self.event_queue.put(Event(EventType.NO_PING_FOR_LONG, id))
 
     def get_no_ping_time_threshold(self, no_ping_time):
         for i, (threshold, level) in enumerate(self.no_ping_time_thresholds):
@@ -262,4 +257,3 @@ class MonitoringManager(object):
                     alert.config_id = self.config_id
                     alert.device_id = event.device_id
                     self.store_alert(alert)
-
