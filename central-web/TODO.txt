@@ -1,9 +1,4 @@
 
-	- monitoring improvement:
-??		- should voltage alerts be repeated forever?
-			- maybe introduce voltage thresholds (like for no ping time)
-			- then introduce repeating time when a threshold has been reached for long
-	
 3h	- configuration must include addition settings used in monitoring:
 		- thresholds of alerts for no pings and voltage
 		- do it at DB time, reset DB
