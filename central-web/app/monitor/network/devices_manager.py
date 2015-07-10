@@ -1,5 +1,5 @@
 from threading import Thread
-from time import sleep
+from threading import Event as ThreadEvent
 from random import Random
 from app.monitor.network.events import EventType, Event
 from app.models import Device
@@ -22,18 +22,19 @@ class DevicesManagerSimulator(AbstractDevicesManager, Thread):
         AbstractDevicesManager.__init__(self, *args, **kwargs)
         Thread.__init__(self)
         self.random = Random()
-        self.stop = False
+        self.stop = ThreadEvent()
+        self.stop.clear()
         self.start()
         
     def deactivate(self):
-        self.stop = True
+        self.stop.set()
         self.join()
     
     def run(self):
         keypads = [device.source.device_id for device in self.devices.values() if device.source.kind == Device.KIND_KEYPAD]
         while True:
-            sleep(10.0)
-            if self.stop:
+            self.stop.wait(10.0)
+            if self.stop.is_set():
                 return
             # Simulate Device events randomly
             device_id = self.random.choice(list(self.devices.keys()))
