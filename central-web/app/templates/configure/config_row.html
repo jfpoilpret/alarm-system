@@ -1,0 +1,46 @@
+<tr>
+	<td>
+	{# TODO prevent modification of config when active #}
+	{# Enable link only if not already current #}
+	{% if not config.current %}
+		<a  class="btn btn-xs btn-default config-set-current" href="#"
+			data-config="{{ config.id }}">
+			<span class="glyphicon glyphicon-star"></span>
+		</a>
+	{% else %}
+		<a  class="btn btn-xs btn-default config-set-current disabled" href="#"
+			data-config="{{ config.id }}">
+			<span class="glyphicon glyphicon-star"></span>
+		</a>
+	{% endif %}
+		<a  class="btn btn-xs btn-default config-edit" 
+			href="{{ url_for('configure.edit_config', id = config.id) }}">
+			<span class="glyphicon glyphicon-pencil"></span>
+		</a>
+		<a  class="btn btn-xs btn-default config-map" 
+			href="{{ url_for('configure.edit_config_map', id = config.id) }}">
+			<span class="glyphicon glyphicon-home"></span>
+		</a>
+		<a  class="btn btn-xs btn-default config-delete" href="#" 
+			data-config="{{ config.id }}">
+			<span class="glyphicon glyphicon-remove"></span>
+		</a>
+	</td>
+	<td class="config_name">
+		{{ config.name }}
+	</td>
+	<td class="config_current">
+	{% if config.current %}
+		<span class="glyphicon glyphicon-ok"></span>
+	{% else %}
+		<span class="glyphicon glyphicon-remove"></span>
+	{% endif %}
+	</td>
+	<td class="config_active">
+	{% if config.active %}
+		<span class="glyphicon glyphicon-ok"></span>
+	{% else %}
+		<span class="glyphicon glyphicon-remove"></span>
+	{% endif %}
+	</td>
+</tr>

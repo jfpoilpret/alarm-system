@@ -9,7 +9,8 @@
 
 {% block scripts %}
 {{super()}}
-<script type="text/javascript" src="{{url_for('static', filename='monitor/sprintf.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='common/sprintf.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='common/errors.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='monitor/Monitor.js')}}"></script>
 {% endblock %}
 

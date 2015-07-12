@@ -1,5 +1,16 @@
-
-3h	- configuration must include addition settings used in monitoring:
+	- refactor configuration UI
+		- more AJAX (just like monitoring UI)
+		- UX:
+1h			- create config as modal dialog
+				- pure AJAX to save config
+1h			- edit config as modal dialog
+				- pure AJAX to save config
+2h			- new: advanced config modal dialog
+				- alerts repeat for no ping
+				- alerts repeat and thresholds for voltage
+1h			- improve flash messages transmission (AJAX)
+		
+	- configuration must include addition settings used in monitoring:
 		- thresholds of alerts for no pings and voltage
 		- do it at DB time, reset DB
 		- update UI config UI!
@@ -23,6 +34,8 @@
 		- improve error display in AJAX if possible 
 		(avoid flash messages and replace with <p class="help-block">xxx</p>)
 		not sure it is OK with inline forms?
+		- improve alerts tab when not active, by displaying badge with number of new alerts
+		(will require special AJAX code to get the number of new alerts only)
 	
 	- improve DB model to:
 		- have several codes for a config, each with an associated message

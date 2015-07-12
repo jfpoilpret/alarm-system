@@ -1,6 +1,6 @@
 from json import loads
 from re import compile
-from flask import flash, redirect, render_template, url_for
+from flask import flash, jsonify, redirect, render_template, url_for
 from flask_login import login_required
 from sqlalchemy import update
 
@@ -13,8 +13,15 @@ from app.common import device_kinds, check_configurator, prepare_map_for_config,
 @configure.route('/home')
 @login_required
 def home():
+    return render_template('configure/home.html')
+
+@configure.route('/get_configs_list')
+@login_required
+def get_configs_list():
+    #TODO order by name!!!
     all_configs = Configuration.query.all()
-    return render_template('configure/home.html', configurations = all_configs)
+    configs = render_template('configure/all_config_rows.html', configurations = all_configs)
+    return jsonify(configs = configs);
 
 @configure.route('/edit_config/<int:id>', methods = ['GET', 'POST'])
 @login_required
@@ -97,21 +104,23 @@ def edit_config_map(id):
         svg_map = prepare_map_for_config(config),
         config_map_form = config_map_form)
 
-@configure.route('/delete_config/<int:id>')
+@configure.route('/delete_config/<int:id>', methods = ['POST'])
 @login_required
 def delete_config(id):
     check_configurator()
     config = Configuration.query.get(id)
+    #TODO pass flash messages through JSON...
     if not config:
-        flash('This configuration does not exist! It cannot be deleted!', 'danger')
+        pass
+#        flash('This configuration does not exist! It cannot be deleted!', 'danger')
     else:
         db.session.delete(config)
         db.session.commit()
-        flash('Configuration has been deleted', 'success')
-    return redirect(url_for('.home'))
+#        flash('Configuration has been deleted', 'success')
+    return get_configs_list()
 
-#TODO if previously current config is active, deactivate it!
-@configure.route('/set_current_config/<int:id>')
+#TODO if previously current config is active, deactivate it first!
+@configure.route('/set_current_config/<int:id>', methods = ['POST'])
 @login_required
 def set_current_config(id):
     check_configurator()
@@ -121,7 +130,7 @@ def set_current_config(id):
         config.current = True
         db.session.add(config)
         db.session.commit()
-    return redirect(url_for('.home'))
+    return get_configs_list()
 
 @configure.route('/edit_device/<int:id>', methods = ['GET', 'POST'])
 @login_required

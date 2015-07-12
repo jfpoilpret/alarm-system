@@ -23,10 +23,7 @@ $(document).ready(function() {
 			$.ajax({
 				type: 'POST',
 				url: url,
-				success: function(results) {
-					// Update UI
-					updateStatus(results);
-				}
+				success: updateStatus
 			});
 		}
 		return false;
@@ -67,9 +64,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: 'POST',
 			url: '/monitor/refresh_status',
-			success: function(results) {
-				updateStatus(results);
-			}
+			success: updateStatus
 		});
 	}
 	
@@ -230,7 +225,7 @@ $(document).ready(function() {
 					// Check if form submission is valid
 					if (results.result === 'OK') {
 						// if OK, we can copy to filterJSON and request immediate refresh
-						clearErrors('history_clear_');
+						clearFormErrors('history_clear_');
 						clearHistory();
 					} else {
 						// Get errors and display them in form
@@ -291,7 +286,7 @@ $(document).ready(function() {
 					// Ensure we clear current alerts list first and reload everything that matches filter
 					$('.alerts-list > tbody').html('');
 					$('#alert_filter_latest_id').val('-1');
-					clearErrors('alert_filter_');
+					clearFormErrors('alert_filter_');
 					refreshAlerts();
 				} else {
 					// Get errors and display them in form
@@ -302,33 +297,14 @@ $(document).ready(function() {
 		return false;
 	}
 	
-	//TODO this function is quite general and should be refactored outside
-	function clearErrors(formPrefix)
-	{
-		// Remove previous flash messages
-		$('#flash-messages').html('');
-		// Remove previous errors from all fields
-		$('#' + formPrefix + 'form .form-group').removeClass('has-error');
-	}
-	
-	//TODO this function is quite general and should be refactored outside
 	function handleErrors(formPrefix, fields, messages)
 	{
 		// Remove previous errors
-		clearErrors(formPrefix);
-		
+		clearFormErrors(formPrefix);
 		// For each error field, mark the field
-		$.each(fields, function(index, fieldName) {
-			$field = $('#' + formPrefix + fieldName);
-			console.log(fieldName);
-			type = $field.attr('type');
-			if (type !== 'hidden') {
-				$field.parent('.form-group').addClass('has-error');
-			}
-		});
-
+		handleFormErrors(formPrefix, fields);
 		// For each message, add a flash message
-		$('#flash-messages').html(messages);
+		handleFlashMessages(messages);
 	}
 	
 	function resetAlertsFilter()
