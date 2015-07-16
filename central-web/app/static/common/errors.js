@@ -10,6 +10,7 @@
 	{
 		// Remove previous errors from all fields
 		$('#' + formPrefix + 'form .form-group').removeClass('has-error');
+		$('.help-block').remove();
 	}
 	
 	function handleFlashMessages(messages)
@@ -18,7 +19,26 @@
 		$('#flash-messages').html(messages);
 	}
 	
-	function handleFormErrors(formPrefix, fields)
+	function handleFormErrorsInForm(formPrefix, fields)
+	{
+		// For each error field, mark the field
+		$.each(fields, function(fieldName, errors) {
+			$field = $('#' + formPrefix + fieldName);
+			console.log(fieldName);
+			type = $field.attr('type');
+			if (type !== 'hidden') {
+				$group = $field.parent('.form-group');
+				$group.addClass('has-error');
+				// Add <p> after fields (within same field group)
+				$group.append(errors);
+			} else {
+				// Hidden field: add <p> before all fields
+				$('#' + formPrefix + 'form').prepend(errors);
+			}
+		});
+	}
+	
+	function handleFormErrorsInline(formPrefix, fields)
 	{
 		// For each error field, mark the field
 		$.each(fields, function(index, fieldName) {
@@ -38,13 +58,15 @@
         exports.clearFlashMessages = clearFlashMessages
         exports.clearFormErrors = clearFormErrors
         exports.handleFlashMessages = handleFlashMessages
-        exports.handleFormErrors = handleFormErrors
+        exports.handleFormErrorsInline = handleFormErrorsInline
+        exports.handleFormErrorsInForm = handleFormErrorsInForm
     }
     else {
         window.clearFlashMessages = clearFlashMessages
         window.clearFormErrors = clearFormErrors
         window.handleFlashMessages = handleFlashMessages
-        window.handleFormErrors = handleFormErrors
+        window.handleFormErrorsInline = handleFormErrorsInline
+        window.handleFormErrorsInForm = handleFormErrorsInForm
 
         if (typeof define === "function" && define.amd) {
             define(function() {
@@ -52,7 +74,8 @@
                     clearFlashMessages: clearFlashMessages,
                     clearFormErrors: clearFormErrors,
                     handleFlashMessages: handleFlashMessages,
-                    handleFormErrors: handleFormErrors
+                    handleFormErrorsInline: handleFormErrorsInline,
+                    handleFormErrorsInForm: handleFormErrorsInForm
                 }
             })
         }

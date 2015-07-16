@@ -8,12 +8,13 @@ from app import db
 from app.models import Configuration, Device
 from app.configure.forms import NewConfigForm, EditConfigForm, NewDeviceForm, EditDeviceForm, DevicesLocationForm
 from app.configure import configure
-from app.common import device_kinds, check_configurator, prepare_map_for_config, extract_viewbox_from_config
+from app.common import device_kinds, check_configurator, prepare_map_for_config, extract_viewbox_from_config,\
+    pre_check
 
 @configure.route('/home')
 @login_required
 def home():
-    return render_template('configure/home.html')
+    return render_template('configure/home.html', config_form = NewConfigForm(prefix = 'config_'))
 
 @configure.route('/get_configs_list')
 @login_required
@@ -21,7 +22,7 @@ def get_configs_list():
     #TODO order by name!!!
     all_configs = Configuration.query.all()
     configs = render_template('configure/all_config_rows.html', configurations = all_configs)
-    return jsonify(configs = configs);
+    return jsonify(result = 'OK', configs = configs);
 
 @configure.route('/edit_config/<int:id>', methods = ['GET', 'POST'])
 @login_required
@@ -32,6 +33,33 @@ def edit_config(id):
         config_form = EditConfigForm(prefix = 'config_', obj = config),
         config = config, 
         is_new = False)
+
+# DEBUG
+@configure.route('/create_config_ajax', methods = ['POST'])
+@login_required
+def create_config_ajax():
+    check_configurator()
+    config_form = NewConfigForm(prefix = 'config_')
+    #def pre_check(form, return_none_if_ok = False, use_flash_for_errors = True):
+    check_errors = pre_check(config_form, True, False)
+    if check_errors:
+        print('create_config_ajax() error on form validation')
+        print('errors = %s' % config_form.errors)
+        return check_errors
+    config = Configuration()
+    config_form.populate_obj(config)
+    # If uploaded, read uploaded SVG file (XML)
+    if config_form.map_area_file.has_file():
+        map_area_field_data = config_form.map_area_file.data
+        data = map_area_field_data.read().decode('utf-8')
+        # Store XML SVG to DB
+        config.map_area = data
+        config.map_area_filename = map_area_field_data.filename
+    db.session.add(config)
+    db.session.commit()
+    return get_configs_list()
+# DEBUG
+
 
 @configure.route('/create_config', methods = ['GET', 'POST'])
 @login_required

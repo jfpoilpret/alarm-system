@@ -1,4 +1,3 @@
-
 $(document).ready(function() {
 	var hasActiveConfiguration = false;
 	
@@ -302,7 +301,7 @@ $(document).ready(function() {
 		// Remove previous errors
 		clearFormErrors(formPrefix);
 		// For each error field, mark the field
-		handleFormErrors(formPrefix, fields);
+		handleFormErrorsInline(formPrefix, fields);
 		// For each message, add a flash message
 		handleFlashMessages(messages);
 	}

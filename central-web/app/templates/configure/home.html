@@ -12,6 +12,10 @@
 <script type="text/javascript" src="{{url_for('static', filename='configure/Configure.js')}}"></script>
 {% endblock %}
 
+{% block modal_content %}
+{% include "configure/dialog_create_config.html" %}
+{% endblock %}
+
 {% block page_content %}
 	<div class="configurations">
 		<div class="panel panel-primary">
@@ -32,10 +36,7 @@
 					</tbody>
 				</table>
 				<h3 id="empty-configs-list" style="display:none">No configuration created yet!</h3>
-				<a  class="btn btn-primary config-new" 
-					href="{{ url_for('configure.create_config') }}">
-					Create Configuration
-				</a>
+				<a  class="btn btn-primary config-new" href="#">Create Configuration</a>
 			</div>
 		</div>
 	</div>

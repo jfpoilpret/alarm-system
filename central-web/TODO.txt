@@ -1,14 +1,15 @@
 	- refactor configuration UI
 		- more AJAX (just like monitoring UI)
 		- UX:
-1h			- create config as modal dialog
+x			- create config as modal dialog
+x				- pure AJAX to save config -> use FormData for that
+x			- improve flash messages transmission (AJAX)
+2h			- edit config as modal dialog
 				- pure AJAX to save config
-1h			- edit config as modal dialog
-				- pure AJAX to save config
+1h			- refactor create/edit as much as possible (html, javascript, python)
 2h			- new: advanced config modal dialog
 				- alerts repeat for no ping
 				- alerts repeat and thresholds for voltage
-1h			- improve flash messages transmission (AJAX)
 		
 	- configuration must include addition settings used in monitoring:
 		- thresholds of alerts for no pings and voltage
@@ -16,6 +17,9 @@
 		- update UI config UI!
 		- update Monitoring Manager to get info from COnfiguration too
 	
+	- refactor all AJAX form submission code to use FormData?
+		- if it works, it is musch simpler code!
+		
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
 30'	- configuration changes of an active config should be limited

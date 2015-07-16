@@ -21,18 +21,23 @@ device_kinds = {
 
 # AJAX form validation
 #----------------------
-def pre_check(form):
+def pre_check(form, return_none_if_ok = False, use_flash_for_errors = True):
     # Check form is valid
     if not form.validate():
-        # Get list of fields in error
-        fields = list(form.errors.keys())
-        # Get all error messages and remove duplicates
-        messages = {error for errors in form.errors.values() for error in errors}
-        # Format all error messages as flash messages
-        flash_messages = '\n'.join([render_template(
-            'flash_messages.html', message = message, category = 'warning') for message in messages])
-        return jsonify(result = 'ERROR', fields = fields, flash_messages = flash_messages)
-    return jsonify(result = 'OK')
+        if use_flash_for_errors:
+            # Get list of fields in error
+            fields = list(form.errors.keys())
+            # Get all error messages and remove duplicates
+            messages = {error for errors in form.errors.values() for error in errors}
+            # Format all error messages as flash messages
+            flash_messages = '\n'.join([render_template(
+                'flash_messages.html', message = message, category = 'warning') for message in messages])
+            return jsonify(result = 'ERROR', fields = fields, flash_messages = flash_messages)
+        else:
+            #TODO
+            fields = {field: render_template('field_errors.html', errors = list(errors)) for field, errors in form.errors.items()}
+            return jsonify(result = 'ERROR', fields = fields, flash_messages = [])
+    return None if return_none_if_ok else jsonify(result = 'OK')
 
 # Authorization checks
 #----------------------
