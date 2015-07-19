@@ -18,8 +18,7 @@ def home():
 @configure.route('/get_configs_list')
 @login_required
 def get_configs_list():
-    #TODO order by name!!!
-    all_configs = Configuration.query.all()
+    all_configs = Configuration.query.order_by(Configuration.name).all()
     return render_template('configure/all_config_rows.html', configurations = all_configs)
 
 @configure.route('/get_config/<int:id>')
@@ -83,16 +82,28 @@ def find_device(config, device_id):
     id = int(DEVICEID_REGEX.findall(device_id)[0])
     return config.devices[id]
 
-@configure.route('/edit_config_map/<int:id>', methods = ['GET', 'POST'])
+@configure.route('/get_config_map/<int:id>')
 @login_required
-def edit_config_map(id):
+def get_config_map(id):
     check_configurator()
-    config = Configuration.query.get(id)
+    config = Configuration.query.get_or_404(id)
     if not config.map_area:
+        #FIXME use pure AJAX!
         flash('Configuration ''%s'' has no Monitored Zone Map set yet!' % config.name, 'warning')
         return redirect(url_for('.home'))
+    config_map_form = DevicesLocationForm(prefix = 'config_', id = id)
+    return render_template('configure/dialog_config_map.html', 
+        config = config,
+        svg_map = prepare_map_for_config(config),
+        config_map_form = config_map_form)
+
+@configure.route('/save_config_map', methods = ['POST'])
+@login_required
+def save_config_map():
+    check_configurator()
     config_map_form = DevicesLocationForm(prefix = 'config_')
-    if config_map_form.validate_on_submit():
+    if config_map_form.validate():
+        config = Configuration.query.get_or_404(config_map_form.id.data)
         # Get all modified devices locations as a JSON object
         new_locations = loads(config_map_form.devices_locations.data)
         dimensions = extract_viewbox_from_config(config)
@@ -104,12 +115,13 @@ def edit_config_map(id):
             device.location_y = (location['y'] - dimensions[1]) / dimensions[3]
             db.session.add(device)
         db.session.commit()
-        flash('New devices locations for ''%s''  have been saved' % config.name, 'success')
-        return redirect(url_for('.edit_config_map', id = id))
-    return render_template('configure/edit_config_map.html', 
-        config = config,
-        svg_map = prepare_map_for_config(config),
-        config_map_form = config_map_form)
+        message  = 'New devices locations for ''%s''  have been saved' % config.name
+        return jsonify(result = 'OK', flash = message)
+    else:
+        return jsonify(result = 'ERROR', form = render_template('configure/dialog_config_map.html', 
+            config = config,
+            svg_map = prepare_map_for_config(config),
+            config_map_form = config_map_form))
 
 @configure.route('/delete_config/<int:id>', methods = ['POST'])
 @login_required
@@ -200,26 +212,6 @@ def save_device():
             result = 'ERROR',
             form = render_template('configure/edit_device_form.html', device_form = device_form))
 
-@configure.route('/edit_device/<int:id>', methods = ['GET', 'POST'])
-@login_required
-def edit_device(id):
-    check_configurator()
-    device = Device.query.get(id)
-    device_config = device_kinds[device.kind]
-    device_form = EditDeviceForm(prefix = 'device_', obj = device)
-    init_device_id_choices(device_form, device_config)
-    return validate_device_form(device_form, device, False)
-
-@configure.route('/create_device/<int:id>/<int:kind>', methods = ['GET', 'POST'])
-@login_required
-def create_device(id, kind):
-    check_configurator()
-    device_config = device_kinds[kind]
-    device = Device(config_id = id, kind = kind, voltage_threshold = device_config.threshold)
-    device_form = NewDeviceForm(prefix = 'device_', obj = device)
-    init_device_id_choices(device_form, device_config)
-    return validate_device_form(device_form, device, True)
-
 @configure.route('/delete_device/<int:id>', methods = ['POST'])
 @login_required
 def delete_device(id):
@@ -236,23 +228,3 @@ def init_device_id_choices(device_form, device_config):
     for allowed_id in device_config.allowed_ids:
         choices.append((allowed_id, str(allowed_id)))
     device_form.device_id.choices = choices
-
-def validate_device_form(device_form, device, is_new):
-    #TODO optimize models to directly get config from device
-    config = Configuration.query.get(device.config_id)
-    if device_form.validate_on_submit():
-        device_form.populate_obj(device)
-        db.session.add(device)
-        db.session.commit()
-        if is_new:
-            flash('New module ''%s''  has been added' % device.name, 'success')
-        else:
-            flash('Module ''%s''  has been saved' % device.name, 'success')
-        return redirect(url_for('.edit_config', id = config.id))
-    config_form = EditConfigForm(prefix = 'config_', obj = config)
-    return render_template('configure/edit_config.html', 
-        id = config.id, 
-        kind = device.kind, 
-        config = config, 
-        config_form = config_form, 
-        device_form = device_form)

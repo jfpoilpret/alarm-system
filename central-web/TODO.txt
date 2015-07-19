@@ -28,9 +28,10 @@ x				- pure AJAX to save config -> use FormData for that
 x			- improve flash messages transmission (AJAX)
 x			- edit config as modal dialog
 x			- new embedded inline form for modules creation/edition
-1h			- new dialog for edit config map
+x			- new dialog for edit config map
 1h			- refactor create/edit as much as possible (html, javascript, python)
 				dialog_create_config.html Vs. dialog_edit_config.html
+				remove obsolete templates
 2h			- new: advanced config setup modal dialog
 				- alerts repeat for no ping
 				- alerts repeat and thresholds for voltage

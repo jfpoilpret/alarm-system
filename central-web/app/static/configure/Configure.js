@@ -31,6 +31,26 @@ $(document).ready(function() {
 		return false;
 	}
 	
+	function openConfigMapDialog()
+	{
+		// Load data for this config
+		var id = $(this).attr('data-config');
+		var url = sprintf('/configure/get_config_map/%d', id);
+		// Send AJAX request
+		$.ajax({
+			type: 'GET',
+			url: url,
+			success: function(dialog) {
+				// update config dialog info
+				$('#config-dialog').replaceWith(dialog);
+				$('#config-dialog').modal('show');
+			    $('[data-toggle="popover"]').popover(
+			    	{'container': 'body', 'trigger': 'hover focus', 'placement': 'right'});
+			}
+		});
+		return false;
+	}
+	
 	// AJAX function to change current configuration
 	function setCurrentConfig()
 	{
@@ -94,6 +114,37 @@ $(document).ready(function() {
 					$('#flash-messages').html(results.flash);
 					$('#config-dialog').modal('hide');
 					//TODO if new config we should go ahead with edit config!!!
+				} else {
+					// Remove flash messages if any
+					$('#flash-messages').html('');
+					// Hide dialog before replacing content (otherwise background may stay forever)
+					$('#config-dialog').modal('hide');
+					// Show form errors by replacing the form
+					$('#config-dialog').replaceWith(results.form);
+					// Have to show dialog again as replacement hid it
+					$('#config-dialog').modal('show');
+				}
+			}
+		});
+		return false;
+	}
+	
+	// AJAX function to save map configuration
+	function submitMap()
+	{
+		console.log('submitMap()');
+		// Submit form alongside map file if provided
+		fd = new FormData($('#config_map_form').get(0));
+		$.ajax({
+			url: '/configure/save_config_map',
+			type: 'POST',
+			data: fd,
+			processData: false,
+			contentType: false,
+			success: function(results) {
+				if (results.result === 'OK') {
+					$('#flash-messages').html(results.flash);
+					$('#config-dialog').modal('hide');
 				} else {
 					// Remove flash messages if any
 					$('#flash-messages').html('');
@@ -243,12 +294,14 @@ $(document).ready(function() {
 	$('.configs-list').on('click', '.config-set-current:not(.disabled)', setCurrentConfig);
 	$('.configs-list').on('click', '.config-delete', deleteConfig);
 	$('.configs-list').on('click', '.config-edit', openEditConfigDialog);
-	//TODO missing devices setup in map
+	$('.configs-list').on('click', '.config-map', openConfigMapDialog);
 	// - for config modal dialog
 	$('#modal-content').on('click', '.cancel', function() {
 		$('#config-dialog').modal('hide');
 	});
 	$('#modal-content').on('submit', '#config_form', submitConfig);
+	// - for config map (devices location setup)
+	$('#modal-content').on('submit', '#config_map_form', submitMap);
 	// - for list of modules
 	$('#modal-content').on('click', '.create-device', openCreateDeviceForm);
 	$('#modal-content').on('click', '.device-edit', openEditDeviceForm);

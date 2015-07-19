@@ -24,6 +24,7 @@ class EditConfigForm(AbstractConfigForm):
 
 # Special form to setup devices location (and only that): JavaScript based
 class DevicesLocationForm(Form):
+    id = HiddenInteger()
     devices_locations = HiddenField('JSONLocations')
     submit = SubmitField('Save Modules Location')
 
