@@ -23,18 +23,15 @@
 			
 				
 	- refactor configuration UI
-		- more AJAX (just like monitoring UI)
-		- UX:
 x			- create config as modal dialog
 x				- pure AJAX to save config -> use FormData for that
 x			- improve flash messages transmission (AJAX)
 x			- edit config as modal dialog
-2h			- new dialog for modules creation/edition?
-				- not directly supported by bootstrap...
-				- or add form directly within dialog (must disable everything else...)
+x			- new embedded inline form for modules creation/edition
 1h			- new dialog for edit config map
 1h			- refactor create/edit as much as possible (html, javascript, python)
-2h			- new: advanced config modal dialog
+				dialog_create_config.html Vs. dialog_edit_config.html
+2h			- new: advanced config setup modal dialog
 				- alerts repeat for no ping
 				- alerts repeat and thresholds for voltage
 		

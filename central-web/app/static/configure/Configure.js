@@ -110,30 +110,28 @@ $(document).ready(function() {
 	}
 	
 	// AJAX function to get form html to create a new device for current configuration
-	function openCreateDeviceDialog()
+	function openCreateDeviceForm()
 	{
 		// Get config id and device kind from clicked link
 		var id = $(this).attr('data-config');
 		var kind = $(this).attr('data-kind');
 		var url = sprintf('/configure/get_new_device_form/%d/%d', id, kind);
 		// Get form through AJAX
-		$.ajax({
-			type: 'GET',
-			url: url,
-			success: function(form) {
-				// Add form to DOM
-				$('#device_form').replaceWith(form);
-			}
-		});
-		return false;
+		return prepareDeviceForm(url);
 	}
 	
 	// AJAX function to get form html to edit an existing device for current configuration
-	function openEditDeviceDialog()
+	function openEditDeviceForm()
 	{
 		// Get device id from clicked link
 		var id = $(this).attr('data-device');
 		var url = sprintf('/configure/get_edit_device_form/%d', id);
+		// Get form through AJAX
+		return prepareDeviceForm(url);
+	}
+	
+	function prepareDeviceForm(url)
+	{
 		// Get form through AJAX
 		$.ajax({
 			type: 'GET',
@@ -141,9 +139,30 @@ $(document).ready(function() {
 			success: function(form) {
 				// Add form to DOM
 				$('#device_form').replaceWith(form);
+				// Disable all config_form
+				$('#config_name').attr('disabled', true);
+				$('#config_lockcode').attr('disabled', true);
+				$('#config_map_area_file').attr('disabled', true);
+				$('.device-edit').attr('disabled', true);
+				$('.device-delete').attr('disabled', true);
+				$('#create-device').attr('disabled', true);
+				$('#config_submit').attr('disabled', true);
 			}
 		});
 		return false;
+	}
+	
+	function closeDeviceForm()
+	{
+		// Disable all config_form
+		$('#config_name').attr('disabled', false);
+		$('#config_lockcode').attr('disabled', false);
+		$('#config_map_area_file').attr('disabled', false);
+		$('.device-edit').attr('disabled', false);
+		$('.device-delete').attr('disabled', false);
+		$('#create-device').attr('disabled', false);
+		$('#config_submit').attr('disabled', false);
+		$('#device_form').hide();
 	}
 	
 	// AJAX function to save device
@@ -165,7 +184,7 @@ $(document).ready(function() {
 				if (results.result === 'OK') {
 					// If OK, update devices list and hide device form
 					updateDevicesList(results.devices);
-					$('#device_form').hide();
+					closeDeviceForm();
 				} else {
 					// Show form errors by replacing the form
 					$('#device_form').replaceWith(results.form);
@@ -178,7 +197,7 @@ $(document).ready(function() {
 	// AJAX function to cancel device edit form
 	function cancelDevice()
 	{
-		$('#device_form').hide();
+		closeDeviceForm();
 		return false;
 	}
 	
@@ -231,8 +250,8 @@ $(document).ready(function() {
 	});
 	$('#modal-content').on('submit', '#config_form', submitConfig);
 	// - for list of modules
-	$('#modal-content').on('click', '.create-device', openCreateDeviceDialog);
-	$('#modal-content').on('click', '.device-edit', openEditDeviceDialog);
+	$('#modal-content').on('click', '.create-device', openCreateDeviceForm);
+	$('#modal-content').on('click', '.device-edit', openEditDeviceForm);
 	$('#modal-content').on('click', '.device-delete', deleteDevice);
 	// - for device form
 	$('#modal-content').on('click', '.device-submit', submitDevice);
