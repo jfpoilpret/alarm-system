@@ -7,7 +7,7 @@ The application needs python 3.4 installed on the host machine and in the PATH.
 Open a command-line window on central-web directory (in this example, Python 3.4 is isntalled on D:\Python34):
 > python d:\Python34\tools\Scripts\pyvenv.py venv
 > venv\Scripts\activate
-(venv) pip install -r requirements-latest.txt
+(venv) pip install -r requirements.txt
 (venv) pip list
 The last command should show the following output:
 	Flask (0.10.1)
