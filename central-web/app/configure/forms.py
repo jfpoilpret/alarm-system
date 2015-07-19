@@ -4,10 +4,11 @@ from wtforms.validators import InputRequired, Length, Regexp
 from wtforms.fields.core import FloatField
 from wtforms.fields.simple import HiddenField
 from flask.ext.wtf.file import FileField, FileAllowed
+from app.common import HiddenInteger
 
 # Form to create a new configuration (general information only)
 class AbstractConfigForm(Form):
-    id = HiddenField(default = '')
+    id = HiddenInteger()
     name = StringField('Name', validators = [InputRequired(), Length(1, 64)])
     lockcode = StringField('Lock code', validators = [InputRequired(), Regexp('[0-9]{6}')])
     map_area_file = FileField("Monitored Zone Map", 
@@ -27,14 +28,15 @@ class DevicesLocationForm(Form):
     submit = SubmitField('Save Modules Location')
 
 class AbstractDeviceForm(Form):
-    id = HiddenField(default = '')
+    id = HiddenInteger(default = 0)
+    config_id = HiddenInteger()
     name = StringField('Name', validators = [InputRequired(), Length(1, 64)])
-    kind = HiddenField('Kind')
+    kind = HiddenInteger()
     voltage_threshold = FloatField('Voltage Threshold', validators = [InputRequired()])
     device_id = SelectField('Module ID', coerce = int)
 
 class NewDeviceForm(AbstractDeviceForm):
-    submit = SubmitField('Add Module')
+    submit = SubmitField('Add')
 
 class EditDeviceForm(AbstractDeviceForm):
-    submit = SubmitField('Save Module')
+    submit = SubmitField('Save')

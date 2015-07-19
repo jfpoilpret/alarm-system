@@ -27,27 +27,37 @@ def get_configs_list():
 def get_config(id):
     config = Configuration.query.get_or_404(id)
     config_form = EditConfigForm(prefix = 'config_', obj = config)
-    return render_template('configure/dialog_edit_config.html', config = config, config_form = config_form)
+    device_form = NewDeviceForm(prefix = 'device_')
+    return render_template('configure/dialog_edit_config.html', 
+        config = config, config_form = config_form, device_form = device_form)
 
 @configure.route('/save_config', methods = ['POST'])
 @login_required
 def save_config():
-    id = request.form.get('id')
+    check_configurator()
+    id = request.form.get('config_id')
     if id:
-        # New configuration
-        config = Configuration.query.get_or_404(int(id))
-        config_form = NewConfigForm(prefix = 'config_', obj = config)
-        template = 'configure/dialog_edit_config.html'
-        success = 'Configuration ''%s''  has been saved'
-    else:
         # Existing configuration
-        config = Configuration()
+        config = Configuration.query.get_or_404(int(id))
         config_form = EditConfigForm(prefix = 'config_', obj = config)
+        device_form = NewDeviceForm(prefix = 'device_')
+        template = 'configure/dialog_edit_config.html'
+        success = 'Configuration ''%s'' has been saved'
+    else:
+        # New configuration
+        config = Configuration()
+        config_form = NewConfigForm(prefix = 'config_', obj = config)
+        device_form = None
         template = 'configure/dialog_create_config.html'
-        success = 'New configuration ''%s''  has been created'
+        success = 'New configuration ''%s'' has been created'
     # Try to validate form first
     if config_form.validate():
+        # Temporarily store id & filename to restore them after they are overwritten by populate_obj
+        id = config.id
+        filename = config.map_area_filename
         config_form.populate_obj(config)
+        config.id = id
+        config.map_area_filename = filename
         # If uploaded, read uploaded SVG file (XML)
         if config_form.map_area_file.has_file():
             map_area_field_data = config_form.map_area_file.data
@@ -58,16 +68,15 @@ def save_config():
         db.session.add(config)
         db.session.commit()
         message = success % config.name
-        print('save_config() OK')
         return jsonify(
             result = 'OK',
-            flash = render_template('flash_messages', message = message, category = 'success'),
+            flash = render_template('flash_messages.html', message = message, category = 'success'),
             configs = get_configs_list())
     else:
-        print('save_config() ERROR')
         return jsonify(
             result = 'ERROR',
-            form = render_template(template, config = config, config_form = config_form))
+            form = render_template(template, 
+                config = config, config_form = config_form, device_form = device_form))
 
 DEVICEID_REGEX = compile('[0-9]+')
 def find_device(config, device_id):
@@ -135,6 +144,61 @@ def set_current_config(id):
 def get_devices(id):
     config = Configuration.query.get_or_404(id)
     return render_template('configure/all_module_rows.html', config = config)
+
+@configure.route('/get_new_device_form/<int:id>/<int:kind>')
+@login_required
+def get_new_device_form(id, kind):
+    check_configurator()
+    device_config = device_kinds[kind]
+    device_form = NewDeviceForm(prefix = 'device_', 
+        id = 0, config_id = id, kind = kind, voltage_threshold = device_config.threshold)
+    init_device_id_choices(device_form, device_config)
+    return render_template('configure/edit_device_form.html', device_form = device_form)
+
+@configure.route('/get_edit_device_form/<int:id>')
+@login_required
+def get_edit_device_form(id):
+    check_configurator()
+    device = Device.query.get_or_404(id)
+    device_config = device_kinds[device.kind]
+    device_form = EditDeviceForm(prefix = 'device_', obj = device)
+    init_device_id_choices(device_form, device_config)
+    return render_template('configure/edit_device_form.html', device_form = device_form)
+
+@configure.route('/save_device', methods = ['POST'])
+@login_required
+def save_device():
+    check_configurator()
+    id = int(request.form.get('device_id'))
+    if id:
+        # Existing device
+        device = Device.query.get_or_404(id)
+        device_form = EditDeviceForm(prefix = 'device_', obj = device)
+    else:
+        # New device
+        device = Device(kind = int(request.form.get('device_kind')))
+        device_form = NewDeviceForm(prefix = 'device_', obj = device)
+    device_config = device_kinds[device.kind]
+    init_device_id_choices(device_form, device_config)
+    # Try to validate form first
+    if device_form.validate():
+        # Temporarily store id to restore it after it is overwritten by populate_obj
+        id = device.id
+        device_form.populate_obj(device)
+        device.id = id
+        # If uploaded, read uploaded SVG file (XML)
+        db.session.add(device)
+        db.session.commit()
+        print('save_device() OK')
+        return jsonify(
+            result = 'OK',
+            devices = get_devices(device.config_id))
+    else:
+        print('save_device() ERROR')
+        print(device_form.errors)
+        return jsonify(
+            result = 'ERROR',
+            form = render_template('configure/edit_device_form.html', device_form = device_form))
 
 @configure.route('/edit_device/<int:id>', methods = ['GET', 'POST'])
 @login_required

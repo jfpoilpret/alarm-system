@@ -4,6 +4,8 @@ from flask_login import current_user
 from app.models import Device
 from xmltodict import parse, unparse
 from unittest.test.testmock.support import is_instance
+from wtforms.fields.core import IntegerField
+from wtforms.widgets.core import HiddenInput
 
 # Common constants
 #------------------
@@ -18,6 +20,11 @@ device_kinds = {
     Device.KIND_CAMERA: DeviceKind(list(range(0x30, 0x38))),
     #TODO later add new modules such as: laser beam, door open detection, smoke detector...
 }
+
+# WTF Form Utilities
+#--------------------
+class HiddenInteger(IntegerField):
+    widget = HiddenInput()
 
 # AJAX form validation
 #----------------------

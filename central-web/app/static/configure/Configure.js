@@ -77,6 +77,7 @@ $(document).ready(function() {
 	// AJAX function to save configuration
 	function submitConfig()
 	{
+		console.log('submitConfig()');
 		// Submit form alongside map file if provided
 		fd = new FormData($('#config_form').get(0));
 		$.ajax({
@@ -96,6 +97,8 @@ $(document).ready(function() {
 				} else {
 					// Remove flash messages if any
 					$('#flash-messages').html('');
+					// Hide dialog before replacing content (otherwise background may stay forever)
+					$('#config-dialog').modal('hide');
 					// Show form errors by replacing the form
 					$('#config-dialog').replaceWith(results.form);
 					// Have to show dialog again as replacement hid it
@@ -106,15 +109,76 @@ $(document).ready(function() {
 		return false;
 	}
 	
+	// AJAX function to get form html to create a new device for current configuration
 	function openCreateDeviceDialog()
 	{
-		//TODO
+		// Get config id and device kind from clicked link
+		var id = $(this).attr('data-config');
+		var kind = $(this).attr('data-kind');
+		var url = sprintf('/configure/get_new_device_form/%d/%d', id, kind);
+		// Get form through AJAX
+		$.ajax({
+			type: 'GET',
+			url: url,
+			success: function(form) {
+				// Add form to DOM
+				$('#device_form').replaceWith(form);
+			}
+		});
 		return false;
 	}
 	
+	// AJAX function to get form html to edit an existing device for current configuration
 	function openEditDeviceDialog()
 	{
-		//TODO
+		// Get device id from clicked link
+		var id = $(this).attr('data-device');
+		var url = sprintf('/configure/get_edit_device_form/%d', id);
+		// Get form through AJAX
+		$.ajax({
+			type: 'GET',
+			url: url,
+			success: function(form) {
+				// Add form to DOM
+				$('#device_form').replaceWith(form);
+			}
+		});
+		return false;
+	}
+	
+	// AJAX function to save device
+	function submitDevice()
+	{
+		console.log('submitDevice()');
+		// Submit device form
+		fd = new FormData($('#device_form').get(0));
+		$.ajax({
+			url: '/configure/save_device',
+			type: 'POST',
+			data: fd,
+			processData: false,
+			contentType: false,
+			success: function(results) {
+				// Remove flash messages if any
+				$('#flash-messages').html('');
+				// Check if form submission is valid
+				if (results.result === 'OK') {
+					// If OK, update devices list and hide device form
+					updateDevicesList(results.devices);
+					$('#device_form').hide();
+				} else {
+					// Show form errors by replacing the form
+					$('#device_form').replaceWith(results.form);
+				}
+			}
+		});
+		return false;
+	}
+	
+	// AJAX function to cancel device edit form
+	function cancelDevice()
+	{
+		$('#device_form').hide();
 		return false;
 	}
 	
@@ -170,5 +234,7 @@ $(document).ready(function() {
 	$('#modal-content').on('click', '.create-device', openCreateDeviceDialog);
 	$('#modal-content').on('click', '.device-edit', openEditDeviceDialog);
 	$('#modal-content').on('click', '.device-delete', deleteDevice);
-	// TODO - for device modal dialog
+	// - for device form
+	$('#modal-content').on('click', '.device-submit', submitDevice);
+	$('#modal-content').on('click', '.device-cancel', cancelDevice);
 });
