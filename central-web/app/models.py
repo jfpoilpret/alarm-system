@@ -68,6 +68,10 @@ class Configuration(db.Model):
     map_area = deferred(db.Column(db.Text, nullable = True))
     map_area_filename = db.Column(db.String(256), nullable = True)
 
+    def __repr__(self):
+        return 'Configuration(id = %s, name = %s, current = %s, active = %s, file = %s)' % (
+            str(self.id), self.name, self.current, self.active, self.map_area_filename)
+
 # DEVICE
 #-------
 class Device(db.Model):
