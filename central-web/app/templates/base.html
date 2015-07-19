@@ -53,7 +53,9 @@
 {% endblock %}
 
 {% block content %}
-{% block modal_content %}{% endblock %}
+<div id="modal-content">
+	{% block modal_content %}{% endblock %}
+</div>
 <div class="container">
 	{% block messages %}
 	<div id="flash-messages">

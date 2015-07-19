@@ -7,6 +7,7 @@ from flask.ext.wtf.file import FileField, FileAllowed
 
 # Form to create a new configuration (general information only)
 class AbstractConfigForm(Form):
+    id = HiddenField(default = '')
     name = StringField('Name', validators = [InputRequired(), Length(1, 64)])
     lockcode = StringField('Lock code', validators = [InputRequired(), Regexp('[0-9]{6}')])
     map_area_file = FileField("Monitored Zone Map", 
@@ -26,6 +27,7 @@ class DevicesLocationForm(Form):
     submit = SubmitField('Save Modules Location')
 
 class AbstractDeviceForm(Form):
+    id = HiddenField(default = '')
     name = StringField('Name', validators = [InputRequired(), Length(1, 64)])
     kind = HiddenField('Kind')
     voltage_threshold = FloatField('Voltage Threshold', validators = [InputRequired()])

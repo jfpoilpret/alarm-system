@@ -1,6 +1,6 @@
 from json import loads
 from re import compile
-from flask import flash, jsonify, redirect, render_template, url_for
+from flask import flash, jsonify, redirect, render_template, request, url_for
 from flask_login import login_required
 from sqlalchemy import update
 
@@ -8,8 +8,7 @@ from app import db
 from app.models import Configuration, Device
 from app.configure.forms import NewConfigForm, EditConfigForm, NewDeviceForm, EditDeviceForm, DevicesLocationForm
 from app.configure import configure
-from app.common import device_kinds, check_configurator, prepare_map_for_config, extract_viewbox_from_config,\
-    pre_check
+from app.common import device_kinds, check_configurator, prepare_map_for_config, extract_viewbox_from_config
 
 @configure.route('/home')
 @login_required
@@ -21,58 +20,33 @@ def home():
 def get_configs_list():
     #TODO order by name!!!
     all_configs = Configuration.query.all()
-    configs = render_template('configure/all_config_rows.html', configurations = all_configs)
-    return jsonify(result = 'OK', configs = configs);
+    return render_template('configure/all_config_rows.html', configurations = all_configs)
 
-@configure.route('/edit_config/<int:id>', methods = ['GET', 'POST'])
+@configure.route('/get_config/<int:id>')
 @login_required
-def edit_config(id):
-    check_configurator()
-    config = Configuration.query.get(id)
-    return check_config_submit(
-        config_form = EditConfigForm(prefix = 'config_', obj = config),
-        config = config, 
-        is_new = False)
+def get_config(id):
+    config = Configuration.query.get_or_404(id)
+    config_form = EditConfigForm(prefix = 'config_', obj = config)
+    return render_template('configure/dialog_edit_config.html', config = config, config_form = config_form)
 
-# DEBUG
-@configure.route('/create_config_ajax', methods = ['POST'])
+@configure.route('/save_config', methods = ['POST'])
 @login_required
-def create_config_ajax():
-    check_configurator()
-    config_form = NewConfigForm(prefix = 'config_')
-    #def pre_check(form, return_none_if_ok = False, use_flash_for_errors = True):
-    check_errors = pre_check(config_form, True, False)
-    if check_errors:
-        print('create_config_ajax() error on form validation')
-        print('errors = %s' % config_form.errors)
-        return check_errors
-    config = Configuration()
-    config_form.populate_obj(config)
-    # If uploaded, read uploaded SVG file (XML)
-    if config_form.map_area_file.has_file():
-        map_area_field_data = config_form.map_area_file.data
-        data = map_area_field_data.read().decode('utf-8')
-        # Store XML SVG to DB
-        config.map_area = data
-        config.map_area_filename = map_area_field_data.filename
-    db.session.add(config)
-    db.session.commit()
-    return get_configs_list()
-# DEBUG
-
-
-@configure.route('/create_config', methods = ['GET', 'POST'])
-@login_required
-def create_config():
-    check_configurator()
-    return check_config_submit(
-        config_form = NewConfigForm(prefix = 'config_'), 
-        config = Configuration(), 
-        is_new = True)
-
-# Common handling of config creation/edition requests
-def check_config_submit(config_form, config, is_new):
-    if config_form.validate_on_submit():
+def save_config():
+    id = request.form.get('id')
+    if id:
+        # New configuration
+        config = Configuration.query.get_or_404(int(id))
+        config_form = NewConfigForm(prefix = 'config_', obj = config)
+        template = 'configure/dialog_edit_config.html'
+        success = 'Configuration ''%s''  has been saved'
+    else:
+        # Existing configuration
+        config = Configuration()
+        config_form = EditConfigForm(prefix = 'config_', obj = config)
+        template = 'configure/dialog_create_config.html'
+        success = 'New configuration ''%s''  has been created'
+    # Try to validate form first
+    if config_form.validate():
         config_form.populate_obj(config)
         # If uploaded, read uploaded SVG file (XML)
         if config_form.map_area_file.has_file():
@@ -83,21 +57,17 @@ def check_config_submit(config_form, config, is_new):
             config.map_area_filename = map_area_field_data.filename
         db.session.add(config)
         db.session.commit()
-        if is_new:
-            flash('New configuration ''%s''  has been created' % config.name, 'success')
-        else:
-            flash('Configuration ''%s''  has been saved' % config.name, 'success')
-        return redirect(url_for('.edit_config', id = config.id))
-    if is_new:
-        return render_template('configure/create_config.html', 
-            config_form = config_form,
-            url_return = url_for('.home'))
+        message = success % config.name
+        print('save_config() OK')
+        return jsonify(
+            result = 'OK',
+            flash = render_template('flash_messages', message = message, category = 'success'),
+            configs = get_configs_list())
     else:
-        return render_template('configure/edit_config.html', 
-            config = config,
-            config_form = config_form,
-            device_form = None,
-            url_return = url_for('.home'))
+        print('save_config() ERROR')
+        return jsonify(
+            result = 'ERROR',
+            form = render_template(template, config = config, config_form = config_form))
 
 DEVICEID_REGEX = compile('[0-9]+')
 def find_device(config, device_id):
@@ -136,7 +106,7 @@ def edit_config_map(id):
 @login_required
 def delete_config(id):
     check_configurator()
-    config = Configuration.query.get(id)
+    config = Configuration.query.get_or_404(id)
     #TODO pass flash messages through JSON...
     if not config:
         pass
@@ -152,13 +122,19 @@ def delete_config(id):
 @login_required
 def set_current_config(id):
     check_configurator()
-    config = Configuration.query.get(id)
+    config = Configuration.query.get_or_404(id)
     if not config.current:
         db.session.execute(update(Configuration.__table__).values(current = False))
         config.current = True
         db.session.add(config)
         db.session.commit()
     return get_configs_list()
+
+@configure.route('/get_devices/<int:id>')
+@login_required
+def get_devices(id):
+    config = Configuration.query.get_or_404(id)
+    return render_template('configure/all_module_rows.html', config = config)
 
 @configure.route('/edit_device/<int:id>', methods = ['GET', 'POST'])
 @login_required
@@ -180,19 +156,16 @@ def create_device(id, kind):
     init_device_id_choices(device_form, device_config)
     return validate_device_form(device_form, device, True)
 
-@configure.route('/delete_device/<int:id>')
+@configure.route('/delete_device/<int:id>', methods = ['POST'])
 @login_required
 def delete_device(id):
     check_configurator()
-    device = Device.query.get(id)
-    if not device:
-        flash('This module does not exist! It cannot be deleted!', 'danger')
-    else:
-        db.session.delete(device)
-        db.session.commit()
-        flash('Module has been deleted', 'success')
-        return redirect(url_for('.edit_config', id = device.config_id))
-    return redirect(url_for('.home'))
+    device = Device.query.get_or_404(id)
+    db.session.delete(device)
+    db.session.commit()
+    #TODO send flash throug JSON...
+    flash('Module has been deleted', 'success')
+    return get_devices(device.config_id)
 
 def init_device_id_choices(device_form, device_config):
     choices = []

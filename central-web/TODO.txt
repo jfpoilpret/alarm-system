@@ -1,11 +1,38 @@
+	- AJAX refactoring
+		- all rendering always done in flask (server-side)
+		- JS only attaches rendered HTML to the right place in the DOM
+		- render as much as possible in flask, in particular use forms for rendering
+			-> never populate forms from JSON on cient-side 
+				=> too much work (to produce JSON in flask and to populate form in JS)!
+			-> same for form errors => return the rendered form (includes error)
+			-> same for flash messages
+		- AJAX calls:
+			return simple JSON with:
+				- result OK/KO (not sure if really needed)
+				- flash_messages [] (replace all flash container content)
+				- form id: id of form which content to replace
+				- form: new form content (including <form> tag)
+		- html templates:
+			- one for each form (including <form> tag)
+			- one for flash messages (already done)
+			- one home.html for every main page (already done)
+		- JS:
+			- essentially event handler with simple AJAX calls and simple callback
+			- callback just replaces flash messages and form id
+			- careful about lost event handlers (or try to use jQuery delegate!)
+			
+				
 	- refactor configuration UI
 		- more AJAX (just like monitoring UI)
 		- UX:
 x			- create config as modal dialog
 x				- pure AJAX to save config -> use FormData for that
 x			- improve flash messages transmission (AJAX)
-2h			- edit config as modal dialog
-				- pure AJAX to save config
+x			- edit config as modal dialog
+2h			- new dialog for modules creation/edition?
+				- not directly supported by bootstrap...
+				- or add form directly within dialog (must disable everything else...)
+1h			- new dialog for edit config map
 1h			- refactor create/edit as much as possible (html, javascript, python)
 2h			- new: advanced config modal dialog
 				- alerts repeat for no ping

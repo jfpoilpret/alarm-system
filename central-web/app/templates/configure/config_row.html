@@ -1,3 +1,4 @@
+{# TODO refactor and put config.id only once per row #}
 <tr>
 	<td>
 	{# TODO prevent modification of config when active #}
@@ -13,8 +14,8 @@
 			<span class="glyphicon glyphicon-star"></span>
 		</a>
 	{% endif %}
-		<a  class="btn btn-xs btn-default config-edit" 
-			href="{{ url_for('configure.edit_config', id = config.id) }}">
+		<a  class="btn btn-xs btn-default config-edit" href="#"
+			data-config="{{ config.id }}">
 			<span class="glyphicon glyphicon-pencil"></span>
 		</a>
 		<a  class="btn btn-xs btn-default config-map" 
