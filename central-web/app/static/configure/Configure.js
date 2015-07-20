@@ -23,7 +23,7 @@ $(document).ready(function() {
 			success: function(dialog) {
 				// update config dialog info
 				$('#config-dialog').replaceWith(dialog);
-				// check if devices already exist for this configuration TODO
+				// check if devices already exist for this configuration
 				updateDevicesList($('.devices-list > tbody').html().trim());
 				$('#config-dialog').modal('show');
 			}
@@ -75,7 +75,10 @@ $(document).ready(function() {
 			$.ajax({
 				type: 'POST',
 				url: url,
-				success: updateConfigsList
+				success: function(results) {
+					$('#flash-messages').html(results.flash);
+					updateConfigsList(results.config);
+				}
 			});
 		}
 		return false;
@@ -262,7 +265,10 @@ $(document).ready(function() {
 			$.ajax({
 				type: 'POST',
 				url: url,
-				success: updateDevicesList
+				success: function(results) {
+					$('#flash-messages').html(results.flash);
+					updateDevicesList(results.devices);
+				}
 			});
 		}
 		return false;

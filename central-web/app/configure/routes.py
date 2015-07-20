@@ -128,15 +128,13 @@ def save_config_map():
 def delete_config(id):
     check_configurator()
     config = Configuration.query.get_or_404(id)
-    #TODO pass flash messages through JSON...
-    if not config:
-        pass
-#        flash('This configuration does not exist! It cannot be deleted!', 'danger')
-    else:
-        db.session.delete(config)
-        db.session.commit()
-#        flash('Configuration has been deleted', 'success')
-    return get_configs_list()
+    db.session.delete(config)
+    db.session.commit()
+    message = 'Configuration ''%s'' has been deleted' % config.name
+    return jsonify(
+        result = 'OK',
+        flash = render_template('flash_messages.html', message = message, category = 'success'),
+        configs = get_configs_list())
 
 #TODO if previously current config is active, deactivate it first!
 @configure.route('/set_current_config/<int:id>', methods = ['POST'])
@@ -219,9 +217,12 @@ def delete_device(id):
     device = Device.query.get_or_404(id)
     db.session.delete(device)
     db.session.commit()
-    #TODO send flash throug JSON...
+    message = 'Module ''%s'' has been deleted' % device.name
     flash('Module has been deleted', 'success')
-    return get_devices(device.config_id)
+    return jsonify(
+        result = 'OK',
+        devices = get_devices(device.config_id),
+        flash = render_template('flash_messages.html', message = message, category = 'success'))
 
 def init_device_id_choices(device_form, device_config):
     choices = []

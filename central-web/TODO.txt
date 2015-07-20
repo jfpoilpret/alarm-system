@@ -36,6 +36,8 @@ x			- new dialog for edit config map
 				- alerts repeat for no ping
 				- alerts repeat and thresholds for voltage
 		
+	- refactor admin/users UI
+	
 	- configuration must include addition settings used in monitoring:
 		- thresholds of alerts for no pings and voltage
 		- do it at DB time, reset DB
