@@ -40,14 +40,12 @@ def save_config():
         config = Configuration.query.get_or_404(int(id))
         config_form = EditConfigForm(prefix = 'config_', obj = config)
         device_form = NewDeviceForm(prefix = 'device_')
-        template = 'configure/dialog_edit_config.html'
         success = 'Configuration ''%s'' has been saved'
     else:
         # New configuration
         config = Configuration()
         config_form = NewConfigForm(prefix = 'config_', obj = config)
         device_form = None
-        template = 'configure/dialog_create_config.html'
         success = 'New configuration ''%s'' has been created'
     # Try to validate form first
     if config_form.validate():
@@ -74,7 +72,7 @@ def save_config():
     else:
         return jsonify(
             result = 'ERROR',
-            form = render_template(template, 
+            form = render_template('configure/dialog_edit_config.html', 
                 config = config, config_form = config_form, device_form = device_form))
 
 DEVICEID_REGEX = compile('[0-9]+')
@@ -116,7 +114,8 @@ def save_config_map():
             db.session.add(device)
         db.session.commit()
         message  = 'New devices locations for ''%s''  have been saved' % config.name
-        return jsonify(result = 'OK', flash = message)
+        return jsonify(result = 'OK', 
+            flash = render_template('flash_messages.html', message = message, category = 'success'))
     else:
         return jsonify(result = 'ERROR', form = render_template('configure/dialog_config_map.html', 
             config = config,

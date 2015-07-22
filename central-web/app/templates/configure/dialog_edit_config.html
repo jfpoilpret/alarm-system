@@ -4,7 +4,11 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<a href="#" role="button" class="close cancel" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+{% if device_form %}
 				<h4 class="modal-title">Edit Configuration '{{ config.name }}'</h4>
+{% else %}
+				<h4 class="modal-title">New Configuration</h4>
+{% endif %}
 			</div>
 			<div class="modal-body">
 				<form class="form" id="config_form" enctype="multipart/form-data" role="form">
@@ -16,7 +20,7 @@
 					{{ wtf.form_field(config_form.map_area_file) }}
 					{{ wtf.form_field(config_form.map_area_filename, readonly = "readonly") }}
 				</form>
-				
+{% if device_form %}
 				<h3 id="empty-devices-list" style="display:none">No module added yet!</h3>
 				<table class="table table-hover table-condensed devices-list" style="display:none">
 					<caption>Modules</caption>
@@ -52,6 +56,7 @@
 				</div>
 				<form class="form form-inline" id="device_form" role="form" style="display:none">
 				</form>
+{% endif %}
 			</div>
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>

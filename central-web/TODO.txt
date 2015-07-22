@@ -29,7 +29,7 @@ x			- improve flash messages transmission (AJAX)
 x			- edit config as modal dialog
 x			- new embedded inline form for modules creation/edition
 x			- new dialog for edit config map
-1h			- refactor create/edit as much as possible (html, javascript, python)
+x			- refactor create/edit as much as possible (html, javascript, python)
 				dialog_create_config.html Vs. dialog_edit_config.html
 				remove obsolete templates
 2h			- new: advanced config setup modal dialog

@@ -60,7 +60,10 @@ $(document).ready(function() {
 		$.ajax({
 			type: 'POST',
 			url: url,
-			success: updateConfigsList
+			success: function(configs) {
+				$('#flash-messages').html('');
+				updateConfigsList(configs);
+			}
 		});
 		return false;
 	}
@@ -77,7 +80,7 @@ $(document).ready(function() {
 				url: url,
 				success: function(results) {
 					$('#flash-messages').html(results.flash);
-					updateConfigsList(results.config);
+					updateConfigsList(results.configs);
 				}
 			});
 		}
@@ -100,7 +103,6 @@ $(document).ready(function() {
 	// AJAX function to save configuration
 	function submitConfig()
 	{
-		console.log('submitConfig()');
 		// Submit form alongside map file if provided
 		fd = new FormData($('#config_form').get(0));
 		$.ajax({
@@ -135,7 +137,6 @@ $(document).ready(function() {
 	// AJAX function to save map configuration
 	function submitMap()
 	{
-		console.log('submitMap()');
 		// Submit form alongside map file if provided
 		fd = new FormData($('#config_map_form').get(0));
 		$.ajax({
@@ -222,7 +223,6 @@ $(document).ready(function() {
 	// AJAX function to save device
 	function submitDevice()
 	{
-		console.log('submitDevice()');
 		// Submit device form
 		fd = new FormData($('#device_form').get(0));
 		$.ajax({
