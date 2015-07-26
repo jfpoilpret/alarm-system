@@ -34,10 +34,10 @@ def get_config(id):
 @login_required
 def save_config():
     check_configurator()
-    id = request.form.get('config_id')
+    id = int(request.form.get('config_id'))
     if id:
         # Existing configuration
-        config = Configuration.query.get_or_404(int(id))
+        config = Configuration.query.get_or_404(id)
         config_form = EditConfigForm(prefix = 'config_', obj = config)
         device_form = NewDeviceForm(prefix = 'device_')
         success = 'Configuration ''%s'' has been saved'

@@ -8,7 +8,7 @@ from app.common import HiddenInteger
 
 # Form to create a new configuration (general information only)
 class AbstractConfigForm(Form):
-    id = HiddenInteger()
+    id = HiddenInteger(default = 0)
     name = StringField('Name', validators = [InputRequired(), Length(1, 64)])
     lockcode = StringField('Lock code', validators = [InputRequired(), Regexp('[0-9]{6}')])
     map_area_file = FileField("Monitored Zone Map", 
@@ -24,7 +24,7 @@ class EditConfigForm(AbstractConfigForm):
 
 # Special form to setup devices location (and only that): JavaScript based
 class DevicesLocationForm(Form):
-    id = HiddenInteger()
+    id = HiddenInteger(default = 0)
     devices_locations = HiddenField('JSONLocations')
     submit = SubmitField('Save Modules Location')
 
