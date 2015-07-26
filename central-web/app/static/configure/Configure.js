@@ -290,7 +290,7 @@ $(document).ready(function() {
 	// This handler is called when a detail part of the config dialog is collapsed
 	// so that it uncollapses other parts (only one at a time)
 	// Note that Bootstrap has offers this behavior already but only inside panels.
-	function collapseConfigDetail(e)
+	function collapseConfigDetail()
 	{
 		// Find all already collapsed elements and uncollapse them
 		$('.collapse.in').collapse('hide');
