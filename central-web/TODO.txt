@@ -23,20 +23,22 @@
 			
 				
 	- refactor configuration UI
-x			- create config as modal dialog
-x				- pure AJAX to save config -> use FormData for that
-x			- improve flash messages transmission (AJAX)
-x			- edit config as modal dialog
-x			- new embedded inline form for modules creation/edition
-x			- new dialog for edit config map
-x			- refactor create/edit as much as possible (html, javascript, python)
-				dialog_create_config.html Vs. dialog_edit_config.html
-				remove obsolete templates
-2h			- new: advanced config setup modal dialog
-				- alerts repeat for no ping
-				- alerts repeat and thresholds for voltage
-		
-	- refactor admin/users UI
+4h		- new: advanced config setup modal dialog
+			- alerts repeat for no ping
+			- alerts repeat and thresholds for voltage
+			 => where to put it? New special dialog or current edit config dialog?
+				=> that would make a lot in a single dialog!!!
+				- bootstrap options to collapse diaglo parts?
+					- use collapse through group of buttons
+						- one modules button (default)
+						- one advanced settings button (or more?)
+		- improve look & feel of edit config dialog
+			- new module button too near edit module inline form!
+			- click new module button does not rollup after rolldown!
+			
+4h	- refactor admin/users UI
+		- use dialog for my profile and modify my password => common javascript everywhere
+		- use diqlog to create/modify user (admin only)
 	
 	- configuration must include addition settings used in monitoring:
 		- thresholds of alerts for no pings and voltage

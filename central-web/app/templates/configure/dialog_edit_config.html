@@ -21,41 +21,56 @@
 					{{ wtf.form_field(config_form.map_area_filename, readonly = "readonly") }}
 				</form>
 {% if device_form %}
-				<h3 id="empty-devices-list" style="display:none">No module added yet!</h3>
-				<table class="table table-hover table-condensed devices-list" style="display:none">
-					<caption>Modules</caption>
-					<thead>
-						<tr>
-							<th></th>
-							<th>Name</th>
-							<th>Kind</th>
-							<th>Device ID</th>
-							<th>Voltage Threshold</th>
-						</tr>
-					</thead>
-					<tbody>
-					{% include "configure/all_module_rows.html" %}
-					</tbody>
-				</table>
-				<div class="btn-group">
-					<button id="create-device" type="button" class="btn btn-primary dropdown-toggle" 
-						data-toggle="dropdown" aria-expanded="false">
-						Add Module <span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu" role="menu">
-						<li>
-							<a class="create-device" data-config="{{ config.id }}" data-kind="1" href="#">Add Keypad Module</a>
-						</li>
-						<li>
-							<a class="create-device" data-config="{{ config.id }}" data-kind="2" href="#">Add Motion Detection Module</a>
-						</li>
-						<li>
-							<a class="create-device" data-config="{{ config.id }}" data-kind="3" href="#">Add Camera Module</a>
-						</li>
-					</ul>
+				<div id="expandable_area">
+					<a	class="btn btn-primary" role="button" data-toggle="collapse" href="#config_modules"
+						data-parent="#expandable_area" aria-expanded="false" aria-controls="config_modules">
+						Modules
+					</a>
+					<a	class="btn btn-primary" role="button" data-toggle="collapse" href="#config_advanced"
+						data-parent="#expandable_area" aria-expanded="false" aria-controls="config_advanced">
+						Advanced
+					</a>
+					<div class="collapse" id="config_modules">
+						<h3 id="empty-devices-list" style="display:none">No module added yet!</h3>
+						<table class="table table-hover table-condensed devices-list" style="display:none">
+							<thead>
+								<tr>
+									<th></th>
+									<th>Name</th>
+									<th>Kind</th>
+									<th>Device ID</th>
+									<th>Voltage Threshold</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% include "configure/all_module_rows.html" %}
+							</tbody>
+						</table>
+						<div class="btn-group">
+							<button id="create-device" type="button" class="btn btn-primary dropdown-toggle" 
+								data-toggle="dropdown" aria-expanded="false">
+								Add Module <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" role="menu">
+								<li>
+									<a class="create-device" data-config="{{ config.id }}" data-kind="1" href="#">Add Keypad Module</a>
+								</li>
+								<li>
+									<a class="create-device" data-config="{{ config.id }}" data-kind="2" href="#">Add Motion Detection Module</a>
+								</li>
+								<li>
+									<a class="create-device" data-config="{{ config.id }}" data-kind="3" href="#">Add Camera Module</a>
+								</li>
+							</ul>
+						</div>
+						<form class="form form-inline" id="device_form" role="form" style="display:none">
+						</form>
+					</div>
+					<div class="collapse" id="config_advanced">
+					{# TODO advanced settings form #}
+						Advanced settings come here...
+					</div>
 				</div>
-				<form class="form form-inline" id="device_form" role="form" style="display:none">
-				</form>
 {% endif %}
 			</div>
 			<div class="modal-footer">

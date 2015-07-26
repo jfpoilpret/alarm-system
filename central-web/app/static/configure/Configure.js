@@ -287,6 +287,15 @@ $(document).ready(function() {
 		}
 	}
 	
+	// This handler is called when a detail part of the config dialog is collapsed
+	// so that it uncollapses other parts (only one at a time)
+	// Note that Bootstrap has offers this behavior already but only inside panels.
+	function collapseConfigDetail(e)
+	{
+		// Find all already collapsed elements and uncollapse them
+		$('.collapse.in').collapse('hide');
+	}
+	
 	// Now get the list of configurations through AJAX
 	$.ajax({
 		type: 'GET',
@@ -306,6 +315,7 @@ $(document).ready(function() {
 		$('#config-dialog').modal('hide');
 	});
 	$('#modal-content').on('submit', '#config_form', submitConfig);
+	$('#modal-content').on('show.bs.collapse', collapseConfigDetail);
 	// - for config map (devices location setup)
 	$('#modal-content').on('submit', '#config_map_form', submitMap);
 	// - for list of modules
