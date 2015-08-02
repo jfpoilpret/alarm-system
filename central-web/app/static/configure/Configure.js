@@ -297,21 +297,20 @@ $(document).ready(function() {
 		var url = sprintf('/configure/add_ping_alert/%d', id);
 		//TODO Prepare JSON
 		var request = {
-				'id': id,
-				'level': level,
-				'time': time
+			id: id,
+			level: level,
+			time: time
 		};
 		// Send AJAX request
 		$.ajax({
 			type: 'POST',
 			url: '/configure/add_ping_alert',
-			data: request,
+			data: JSON.stringify(request),
 			contentType: 'application/json',
 			processData: false,
 			success: function(results) {
-				console.log('addPingAlert');
-				$('#flash-messages').html(results.flash);
-//				updateDevicesList(results.devices);
+				$('#flash-messages').html('');
+				$('#config_ping_alerts .list-group').html(results);
 			}
 		});
 		
@@ -362,6 +361,6 @@ $(document).ready(function() {
 	$('#modal-content').on('click', '.device-submit', submitDevice);
 	$('#modal-content').on('click', '.device-cancel', cancelDevice);
 	// - for ping alerts settings
-	$('#modal-content').on('submit', '#config_ping_alerts button', addPingAlert);
-	$('#modal-content').on('submit', '.ping-alert-remove', removePingAlert);
+	$('#modal-content').on('click', '#config_ping_alerts button', addPingAlert);
+	$('#modal-content').on('click', '.ping-alert-remove', removePingAlert);
 });

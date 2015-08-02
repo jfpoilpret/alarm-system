@@ -5,7 +5,7 @@ from flask_login import login_required
 from sqlalchemy import update
 
 from app import db
-from app.models import Configuration, Device
+from app.models import Configuration, Device, NoPingTimeAlertThreshold
 from app.configure.forms import NewConfigForm, EditConfigForm, NewDeviceForm, EditDeviceForm, DevicesLocationForm
 from app.configure import configure
 from app.common import device_kinds, check_configurator, prepare_map_for_config, extract_viewbox_from_config
@@ -223,13 +223,26 @@ def delete_device(id):
         devices = get_devices(device.config_id),
         flash = render_template('flash_messages.html', message = message, category = 'success'))
 
+@configure.route('/get_ping_alerts/<int:id>', methods = ['GET'])
+@login_required
+def get_ping_alerts(id):
+    config = Configuration.query.get_or_404(id)
+    return render_template('configure/all_ping_alert_rows.html', config = config)
+
 @configure.route('/add_ping_alert', methods = ['POST'])
 @login_required
 def add_ping_alert():
     check_configurator()
-#    request
-    #TODO
-    pass
+    json = request.get_json()
+    print('add-ping_alert(%s)' % str(json))
+    ping_alert = NoPingTimeAlertThreshold(
+        config_id = json['id'],
+        alert_level = json['level'],
+        alert_time = json['time'])
+    db.session.add(ping_alert)
+    db.session.commit()
+    # return new list of alerts
+    return get_ping_alerts(json['id'])
 
 def init_device_id_choices(device_form, device_config):
     choices = []
