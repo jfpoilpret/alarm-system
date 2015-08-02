@@ -287,6 +287,42 @@ $(document).ready(function() {
 		}
 	}
 	
+	// AJAX function to add a new png alert setting
+	function addPingAlert()
+	{
+		//TODO
+		var id = $(this).attr('data-config');
+		var level = $(this).attr('data-level');
+		var time = $(this).closest('div.input-group').children('input').val();
+		var url = sprintf('/configure/add_ping_alert/%d', id);
+		//TODO Prepare JSON
+		var request = {
+				'id': id,
+				'level': level,
+				'time': time
+		};
+		// Send AJAX request
+		$.ajax({
+			type: 'POST',
+			url: '/configure/add_ping_alert',
+			data: request,
+			contentType: 'application/json',
+			processData: false,
+			success: function(results) {
+				console.log('addPingAlert');
+				$('#flash-messages').html(results.flash);
+//				updateDevicesList(results.devices);
+			}
+		});
+		
+	}
+	
+	// AJAX function to delete a ping alert setting
+	function removePingAlert()
+	{
+		//TODO
+	}
+	
 	// This handler is called when a detail part of the config dialog is collapsed
 	// so that it uncollapses other parts (only one at a time)
 	// Note that Bootstrap has offers this behavior already but only inside panels.
@@ -325,4 +361,7 @@ $(document).ready(function() {
 	// - for device form
 	$('#modal-content').on('click', '.device-submit', submitDevice);
 	$('#modal-content').on('click', '.device-cancel', cancelDevice);
+	// - for ping alerts settings
+	$('#modal-content').on('submit', '#config_ping_alerts button', addPingAlert);
+	$('#modal-content').on('submit', '.ping-alert-remove', removePingAlert);
 });

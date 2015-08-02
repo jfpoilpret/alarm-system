@@ -1,0 +1,28 @@
+{# TODO add events listeners and ajax #}
+{% for level in [1,2,3] %}
+{% set group_item_class = {1:'info',2:'warning',3:'danger'}[level] %}
+{% set level_icon = {1:'info-sign',2:'exclamation-sign',3:'warning-sign'}[level] %}
+{% set alert_level = {1:'Info',2:'Warning',3:'Alarm'}[level] %}
+<li class="list-group-item list-group-item-{{ group_item_class }} form-inline">
+	{% for ping_time_alert in config.no_ping_time_alert_thresholds|sort(reverse=True, attribute='alert_time') %}
+	{% if ping_time_alert.alert_level == level %}
+	<span class="badge">
+		{{ ping_time_alert.alert_time }}s
+		<a class="ping-alert-remove" data-config="{{ config.id }}" data-alert="{{ ping_time_alert.id }}" href="#">
+			<span class="glyphicon glyphicon-remove"/>
+		</a>
+	</span>
+	{% endif %}
+	{% endfor %}
+	<span class="glyphicon glyphicon-{{level_icon}}"/>
+	<div class="ping-alert-type">{{ alert_level }}</div>
+	<div class="input-group input-group-sm">
+		<input type="text" class="form-control"/>
+		<span class="input-group-btn">
+			<button class="btn btn-default" data-config="{{ config.id }}" data-level="{{ level }}" type="button">
+				<span class="glyphicon glyphicon-ok"/>
+			</button>
+		</span>
+	</div>
+</li>
+{% endfor %}

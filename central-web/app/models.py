@@ -62,11 +62,15 @@ class Configuration(db.Model):
     current = db.Column(db.Boolean, nullable = False, default = False)
     active = db.Column(db.Boolean, nullable = False, default = False)
     lockcode = db.Column(db.String(6), nullable = False)
-    #TODO ensure cascaded delete of devices; Question: do we really need a dictionary here, isn't a list enough?
+    #TODO ensure cascaded delete of devices
     devices = db.relationship('Device', 
         collection_class = attribute_mapped_collection('device_id'), lazy = 'select')
     map_area = deferred(db.Column(db.Text, nullable = True))
     map_area_filename = db.Column(db.String(256), nullable = True)
+    no_ping_time_alert_thresholds = db.relationship('NoPingTimeAlertThreshold', 
+        cascade = 'all, delete-orphan', lazy = 'select')
+    voltage_rate_alert_thresholds = db.relationship('VoltageRateAlertThreshold', 
+        cascade = 'all, delete-orphan', lazy = 'select')
 
     def __repr__(self):
         return 'Configuration(id = %s, name = %s, current = %s, active = %s, file = %s)' % (
@@ -105,6 +109,21 @@ class Device(db.Model):
         copy.location_x = self.location_x
         copy.location_y = self.location_y
         return copy
+
+class NoPingTimeAlertThreshold(db.Model):
+    __tablename__ = 'no_ping_time_threshold'
+    id = db.Column(db.Integer, primary_key = True)
+    config_id = db.Column(db.Integer, db.ForeignKey('configuration.id'), nullable = False)
+    alert_level = db.Column(db.Integer, nullable = False)
+    alert_time = db.Column(db.Integer, nullable = False)
+
+class VoltageRateAlertThreshold(db.Model):
+    __tablename__ = 'voltage_rate_threshold'
+    id = db.Column(db.Integer, primary_key = True)
+    config_id = db.Column(db.Integer, db.ForeignKey('configuration.id'), nullable = False)
+    alert_level = db.Column(db.Integer, nullable = False)
+    alert_time = db.Column(db.Integer, nullable = False)
+    voltage_rate = db.Column(db.Float, nullable = False)
 
 #TODO Define alert types somewhere
 #TODO Improve to include LEVEL with each KIND

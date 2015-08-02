@@ -23,15 +23,19 @@
 {% if device_form %}
 				<div id="expandable_area">
 					<a	class="btn btn-primary" role="button" data-toggle="collapse" href="#config_modules"
-						data-parent="#expandable_area" aria-expanded="false" aria-controls="config_modules">
+						aria-expanded="false" aria-controls="config_modules">
 						Modules
 					</a>
-					<a	class="btn btn-primary" role="button" data-toggle="collapse" href="#config_advanced"
-						data-parent="#expandable_area" aria-expanded="false" aria-controls="config_advanced">
-						Advanced
+					<a	class="btn btn-primary" role="button" data-toggle="collapse" href="#config_ping_alerts"
+						aria-expanded="false" aria-controls="config_ping_alerts">
+						Signal Alerts
+					</a>
+					<a	class="btn btn-primary" role="button" data-toggle="collapse" href="#config_voltage_alerts"
+						aria-expanded="false" aria-controls="config_voltage_alerts">
+						Voltage Alerts
 					</a>
 					<div class="collapse" id="config_modules">
-						<h3 id="empty-devices-list" style="display:none">No module added yet!</h3>
+						<h4 id="empty-devices-list" style="display:none">No module added yet!</h4>
 						<table class="table table-hover table-condensed devices-list" style="display:none">
 							<thead>
 								<tr>
@@ -66,9 +70,16 @@
 						<form class="form form-inline" id="device_form" role="form" style="display:none">
 						</form>
 					</div>
-					<div class="collapse" id="config_advanced">
-					{# TODO advanced settings form #}
-						Advanced settings come here...
+					<div class="collapse" id="config_ping_alerts">
+						<h4>Time (in seconds) without ping after which alerts must be triggered</h4>
+						<ul class="list-group">
+							{% include "configure/all_ping_alert_rows.html" %}
+						</ul>
+					</div>
+					<div class="collapse" id="config_voltage_alerts">
+						{# TODO advanced settings form #}
+						<h4>Voltage rate (in % of device voltage threshold) without ping after which alerts must be triggers</h4>
+						
 					</div>
 				</div>
 {% endif %}

@@ -81,3 +81,43 @@
 .device-image circle:hover {
 	fill: blue;
 }
+
+.ping-alert {
+	border: 1px solid;
+	border-color: black;
+	border-radius: 5px;
+}
+
+.ping-alert-remove {
+	color: #fff;
+	filter: alpha(opacity=80);
+	opacity: .8;
+}
+
+.ping-alert-remove:hover,
+.ping-alert-remove:focus {
+	color: #000;
+	text-decoration: none;
+	filter: alpha(opacity=50);
+	opacity: .5;
+}
+
+#config_ping_alerts > ul > li > span.glyphicon-info-sign,
+#config_ping_alerts > ul > li > span.glyphicon-exclamation-sign,
+#config_ping_alerts > ul > li > span.glyphicon-warning-sign {
+	font-size: 20px;
+	vertical-align: -4px;
+}
+
+.badge {
+	margin-top: 5px;
+}
+
+#config_ping_alerts input {
+	width: 6em;
+}
+
+div.ping-alert-type {
+	display: inline-block;
+	width: 5em;
+}

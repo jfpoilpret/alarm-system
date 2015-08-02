@@ -1,4 +1,4 @@
-{% import "monitor/utils.html" as utils %}
+{% import "utils.html" as utils %}
 <tr>
 	<td>{{ utils.render_alert_level(alert) }}</td>
 	<td>{{ alert.when.strftime('%d.%m.%Y %H:%M:%S') }}</td>

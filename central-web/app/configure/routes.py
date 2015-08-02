@@ -223,6 +223,14 @@ def delete_device(id):
         devices = get_devices(device.config_id),
         flash = render_template('flash_messages.html', message = message, category = 'success'))
 
+@configure.route('/add_ping_alert', methods = ['POST'])
+@login_required
+def add_ping_alert():
+    check_configurator()
+#    request
+    #TODO
+    pass
+
 def init_device_id_choices(device_form, device_config):
     choices = []
     for allowed_id in device_config.allowed_ids:

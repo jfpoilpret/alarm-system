@@ -1,3 +1,6 @@
+	- update flask-bootstrap dependency whenever a new release is rolled out,
+	including the fix for bug: https://github.com/mbr/flask-bootstrap/issues/90
+	
 	- AJAX refactoring
 		- all rendering always done in flask (server-side)
 		- JS only attaches rendered HTML to the right place in the DOM
@@ -21,7 +24,13 @@
 			- callback just replaces flash messages and form id
 			- careful about lost event handlers (or try to use jQuery delegate!)
 			
-				
+	- future refactoring:
+		- consider template engine in javascript (nunjucks? moustache?...)
+		to render pure JSON into HTML on the client side
+		=> server would not render html during AJAX calls anymore
+		- evaluate the benefits and the cost first!
+		=> ultimately we could have a full REST-based application!
+		
 	- refactor configuration UI
 4h		- new: advanced config setup modal dialog
 			- alerts repeat for no ping
