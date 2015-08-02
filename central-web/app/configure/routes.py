@@ -223,6 +223,12 @@ def delete_device(id):
         devices = get_devices(device.config_id),
         flash = render_template('flash_messages.html', message = message, category = 'success'))
 
+def init_device_id_choices(device_form, device_config):
+    choices = []
+    for allowed_id in device_config.allowed_ids:
+        choices.append((allowed_id, str(allowed_id)))
+    device_form.device_id.choices = choices
+
 @configure.route('/get_ping_alerts/<int:id>', methods = ['GET'])
 @login_required
 def get_ping_alerts(id):
@@ -234,7 +240,6 @@ def get_ping_alerts(id):
 def add_ping_alert():
     check_configurator()
     json = request.get_json()
-    print('add-ping_alert(%s)' % str(json))
     ping_alert = NoPingTimeAlertThreshold(
         config_id = json['id'],
         alert_level = json['level'],
@@ -244,8 +249,14 @@ def add_ping_alert():
     # return new list of alerts
     return get_ping_alerts(json['id'])
 
-def init_device_id_choices(device_form, device_config):
-    choices = []
-    for allowed_id in device_config.allowed_ids:
-        choices.append((allowed_id, str(allowed_id)))
-    device_form.device_id.choices = choices
+@configure.route('/delete_ping_alert/<int:id>', methods = ['POST'])
+@login_required
+def delete_ping_alert(id):
+    check_configurator()
+    ping_alert = NoPingTimeAlertThreshold.query.get_or_404(id)
+    config_id = ping_alert.config_id
+    db.session.delete(ping_alert)
+    db.session.commit()
+    # return new list of alerts
+    return get_ping_alerts(config_id)
+

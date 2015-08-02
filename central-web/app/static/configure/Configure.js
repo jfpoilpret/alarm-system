@@ -313,13 +313,24 @@ $(document).ready(function() {
 				$('#config_ping_alerts .list-group').html(results);
 			}
 		});
-		
+		return false;
 	}
 	
 	// AJAX function to delete a ping alert setting
 	function removePingAlert()
 	{
-		//TODO
+		var id = $(this).attr('data-alert');
+		var url = sprintf('/configure/delete_ping_alert/%d', id);
+		// Send AJAX request
+		$.ajax({
+			type: 'POST',
+			url: url,
+			success: function(results) {
+				$('#flash-messages').html('');
+				$('#config_ping_alerts .list-group').html(results);
+			}
+		});
+		return false;
 	}
 	
 	// This handler is called when a detail part of the config dialog is collapsed
