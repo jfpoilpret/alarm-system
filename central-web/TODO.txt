@@ -25,11 +25,11 @@
 			- careful about lost event handlers (or try to use jQuery delegate!)
 			
 	- future refactoring:
-		- consider template engine in javascript (nunjucks? moustache?...)
+		- consider template engine in javascript (nunjucks? moustache? handlebars?...)
 		to render pure JSON into HTML on the client side
 		=> server would not render html during AJAX calls anymore
 		- evaluate the benefits and the cost first!
-		=> ultimately we could have a full REST-based application!
+		=> ultimately we could have a (almost) full REST-based application!
 		
 	- refactor configuration UI
 4h		- new: advanced config setup modal dialog

@@ -290,12 +290,11 @@ $(document).ready(function() {
 	// AJAX function to add a new png alert setting
 	function addPingAlert()
 	{
-		//TODO
 		var id = $(this).attr('data-config');
 		var level = $(this).attr('data-level');
 		var time = $(this).closest('div.input-group').children('input').val();
 		var url = sprintf('/configure/add_ping_alert/%d', id);
-		//TODO Prepare JSON
+		// Prepare JSON
 		var request = {
 			id: id,
 			level: level,

@@ -104,7 +104,10 @@
 
 #config_ping_alerts > ul > li > span.glyphicon-info-sign,
 #config_ping_alerts > ul > li > span.glyphicon-exclamation-sign,
-#config_ping_alerts > ul > li > span.glyphicon-warning-sign {
+#config_ping_alerts > ul > li > span.glyphicon-warning-sign,
+#config_voltage_alerts > ul > li > span.glyphicon-info-sign,
+#config_voltage_alerts > ul > li > span.glyphicon-exclamation-sign,
+#config_voltage_alerts > ul > li > span.glyphicon-warning-sign {
 	font-size: 20px;
 	vertical-align: -4px;
 }
@@ -113,11 +116,13 @@
 	margin-top: 5px;
 }
 
-#config_ping_alerts input {
+#config_ping_alerts input,
+#config_voltage_alerts input {
 	width: 6em;
 }
 
-div.ping-alert-type {
+div.ping-alert-type, 
+div.voltage-alert-type {
 	display: inline-block;
 	width: 5em;
 }

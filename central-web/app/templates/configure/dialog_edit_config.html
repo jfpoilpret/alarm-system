@@ -77,9 +77,10 @@
 						</ul>
 					</div>
 					<div class="collapse" id="config_voltage_alerts">
-						{# TODO advanced settings form #}
-						<h4>Voltage rate (in % of device voltage threshold) without ping after which alerts must be triggers</h4>
-						
+						<h4>Voltage rate (in % of device voltage threshold) under which alerts must be triggered</h4>
+						<ul class="list-group">
+							{% include "configure/all_voltage_alert_rows.html" %}
+						</ul>
 					</div>
 				</div>
 {% endif %}
