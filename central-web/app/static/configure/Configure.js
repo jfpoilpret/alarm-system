@@ -287,13 +287,12 @@ $(document).ready(function() {
 		}
 	}
 	
-	// AJAX function to add a new png alert setting
+	// AJAX function to add a new ping alert setting
 	function addPingAlert()
 	{
 		var id = $(this).attr('data-config');
 		var level = $(this).attr('data-level');
-		var time = $(this).closest('div.input-group').children('input').val();
-		var url = sprintf('/configure/add_ping_alert/%d', id);
+		var time = $(this).closest('div.input-group').children('input.ping-alert-time').val();
 		// Prepare JSON
 		var request = {
 			id: id,
@@ -327,6 +326,53 @@ $(document).ready(function() {
 			success: function(results) {
 				$('#flash-messages').html('');
 				$('#config_ping_alerts .list-group').html(results);
+			}
+		});
+		return false;
+	}
+	
+	// AJAX function to add a new voltage alert setting
+	function addVoltageAlert()
+	{
+		var id = $(this).attr('data-config');
+		var level = $(this).attr('data-level');
+		var $parent = $(this).closest('li.list-group-item');
+		var rate = $parent.find('input.voltage-alert-threshold').val();
+		var time = $parent.find('input.voltage-alert-time').val();
+		// Prepare JSON
+		var request = {
+			id: id,
+			level: level,
+			rate: rate,
+			time: time
+		};
+		// Send AJAX request
+		$.ajax({
+			type: 'POST',
+			url: '/configure/add_voltage_alert',
+			data: JSON.stringify(request),
+			contentType: 'application/json',
+			processData: false,
+			success: function(results) {
+				$('#flash-messages').html('');
+				$('#config_voltage_alerts .list-group').html(results);
+			}
+		});
+		return false;
+	}
+	
+	// AJAX function to delete a ping voltage setting
+	function removeVoltageAlert()
+	{
+		var id = $(this).attr('data-alert');
+		var url = sprintf('/configure/delete_voltage_alert/%d', id);
+		// Send AJAX request
+		$.ajax({
+			type: 'POST',
+			url: url,
+			success: function(results) {
+				$('#flash-messages').html('');
+				$('#config_voltage_alerts .list-group').html(results);
 			}
 		});
 		return false;
@@ -373,4 +419,7 @@ $(document).ready(function() {
 	// - for ping alerts settings
 	$('#modal-content').on('click', '#config_ping_alerts button', addPingAlert);
 	$('#modal-content').on('click', '.ping-alert-remove', removePingAlert);
+	// - for ping alerts settings
+	$('#modal-content').on('click', '#config_voltage_alerts button', addVoltageAlert);
+	$('#modal-content').on('click', '.voltage-alert-remove', removeVoltageAlert);
 });

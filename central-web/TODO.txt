@@ -32,28 +32,21 @@
 		=> ultimately we could have a (almost) full REST-based application!
 		
 	- refactor configuration UI
-4h		- new: advanced config setup modal dialog
-			- alerts repeat for no ping
-			- alerts repeat and thresholds for voltage
-			 => where to put it? New special dialog or current edit config dialog?
-				=> that would make a lot in a single dialog!!!
-				- bootstrap options to collapse diaglo parts?
-					- use collapse through group of buttons
-						- one modules button (default)
-						- one advanced settings button (or more?)
-		- improve look & feel of edit config dialog
+30'		- advanced config setup
+			- improve values rendering: 100.0% => 100%
+				(or change to integer in DB?)
+			- for voltage, time should be in minutes!
+				(store in minutes or seconds?)
+30'		- improve look & feel of edit config dialog
 			- new module button too near edit module inline form!
 			- click new module button does not rollup after rolldown!
-			
+30'		- new config should include default values for advanced settings!
+30'	- MonitoringManager shall use new DB model for advanced settings
+		- need to convert %, minutes, seconds...
+		
 4h	- refactor admin/users UI
 		- use dialog for my profile and modify my password => common javascript everywhere
 		- use diqlog to create/modify user (admin only)
-	
-	- configuration must include addition settings used in monitoring:
-		- thresholds of alerts for no pings and voltage
-		- do it at DB time, reset DB
-		- update UI config UI!
-		- update Monitoring Manager to get info from COnfiguration too
 	
 	- refactor all AJAX form submission code to use FormData?
 		- if it works, it is musch simpler code!

@@ -5,7 +5,8 @@ from flask_login import login_required
 from sqlalchemy import update
 
 from app import db
-from app.models import Configuration, Device, NoPingTimeAlertThreshold
+from app.models import Configuration, Device, NoPingTimeAlertThreshold,\
+    VoltageRateAlertThreshold
 from app.configure.forms import NewConfigForm, EditConfigForm, NewDeviceForm, EditDeviceForm, DevicesLocationForm
 from app.configure import configure
 from app.common import device_kinds, check_configurator, prepare_map_for_config, extract_viewbox_from_config
@@ -259,4 +260,36 @@ def delete_ping_alert(id):
     db.session.commit()
     # return new list of alerts
     return get_ping_alerts(config_id)
+
+@configure.route('/get_voltage_alerts/<int:id>', methods = ['GET'])
+@login_required
+def get_voltage_alerts(id):
+    config = Configuration.query.get_or_404(id)
+    return render_template('configure/all_voltage_alert_rows.html', config = config)
+
+@configure.route('/add_voltage_alert', methods = ['POST'])
+@login_required
+def add_voltage_alert():
+    check_configurator()
+    json = request.get_json()
+    voltage_alert = VoltageRateAlertThreshold(
+        config_id = json['id'],
+        alert_level = json['level'],
+        voltage_rate = json['rate'],
+        alert_time = json['time'])
+    db.session.add(voltage_alert)
+    db.session.commit()
+    # return new list of alerts
+    return get_voltage_alerts(json['id'])
+
+@configure.route('/delete_voltage_alert/<int:id>', methods = ['POST'])
+@login_required
+def delete_voltage_alert(id):
+    check_configurator()
+    voltage_alert = VoltageRateAlertThreshold.query.get_or_404(id)
+    config_id = voltage_alert.config_id
+    db.session.delete(voltage_alert)
+    db.session.commit()
+    # return new list of alerts
+    return get_voltage_alerts(config_id)
 
