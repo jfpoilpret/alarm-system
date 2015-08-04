@@ -25,24 +25,28 @@
 			- careful about lost event handlers (or try to use jQuery delegate!)
 			
 	- future refactoring:
-		- consider template engine in javascript (nunjucks? moustache? handlebars?...)
-		to render pure JSON into HTML on the client side
-		=> server would not render html during AJAX calls anymore
+		- AJAX+RESTful webapp (but not exactly single page: one page per main menu in fact)
+		- consider template engine in javascript (nunjucks? handlebars?...)
+		- Flask-RESTful extension with JSON marshallers
+		- how to deal with authentication to REST API?
+			=> server would not render html during AJAX calls anymore
 		- evaluate the benefits and the cost first!
-		=> ultimately we could have a (almost) full REST-based application!
+			- Javascript rendering performance?
+			- build process complexification (template compilation)
+			- XSRF protection (no use of flask-wtf anymore!)
+			- payload size (js + templates)
+		
+??	- monitoring bug:
+		- alerts don't show module any more?
 		
 	- refactor configuration UI
 30'		- advanced config setup
 			- improve values rendering: 100.0% => 100%
-				(or change to integer in DB?)
-			- for voltage, time should be in minutes!
-				(store in minutes or seconds?)
+				(or change to integer in DB!!!)
 30'		- improve look & feel of edit config dialog
 			- new module button too near edit module inline form!
 			- click new module button does not rollup after rolldown!
 30'		- new config should include default values for advanced settings!
-30'	- MonitoringManager shall use new DB model for advanced settings
-		- need to convert %, minutes, seconds...
 		
 4h	- refactor admin/users UI
 		- use dialog for my profile and modify my password => common javascript everywhere

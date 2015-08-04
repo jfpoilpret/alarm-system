@@ -6,7 +6,7 @@ from sqlalchemy import update
 
 from app import db
 from app.models import Configuration, Device, NoPingTimeAlertThreshold,\
-    VoltageRateAlertThreshold
+    VoltageRateAlertThreshold, Alert
 from app.configure.forms import NewConfigForm, EditConfigForm, NewDeviceForm, EditDeviceForm, DevicesLocationForm
 from app.configure import configure
 from app.common import device_kinds, check_configurator, prepare_map_for_config, extract_viewbox_from_config
@@ -48,6 +48,8 @@ def save_config():
         config_form = NewConfigForm(prefix = 'config_', obj = config)
         device_form = None
         success = 'New configuration ''%s'' has been created'
+        # Add default settings (ping and threshold alerts)
+        init_new_config(config)
     # Try to validate form first
     if config_form.validate():
         # Temporarily store id & filename to restore them after they are overwritten by populate_obj
@@ -75,6 +77,19 @@ def save_config():
             result = 'ERROR',
             form = render_template('configure/dialog_edit_config.html', 
                 config = config, config_form = config_form, device_form = device_form))
+
+# Add default settings (ping and threshold alerts) for a new config
+def init_new_config(config):
+    config.no_ping_time_alert_thresholds = [
+        NoPingTimeAlertThreshold(alert_time = 10, alert_level = Alert.LEVEL_INFO),
+        NoPingTimeAlertThreshold(alert_time = 20, alert_level = Alert.LEVEL_WARNING),
+        NoPingTimeAlertThreshold(alert_time = 60, alert_level = Alert.LEVEL_ALARM),
+    ]
+    config.voltage_rate_alert_thresholds = [
+        VoltageRateAlertThreshold(voltage_rate = 100.0, alert_level = Alert.LEVEL_INFO, alert_time = 60),
+        VoltageRateAlertThreshold(voltage_rate = 90.0, alert_level = Alert.LEVEL_WARNING, alert_time = 30),
+        VoltageRateAlertThreshold(voltage_rate = 80.0, alert_level = Alert.LEVEL_ALARM, alert_time = 10),
+    ]
 
 DEVICEID_REGEX = compile('[0-9]+')
 def find_device(config, device_id):

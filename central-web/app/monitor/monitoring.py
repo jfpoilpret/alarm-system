@@ -63,30 +63,22 @@ class MonitoringManager(object):
         self.config_id = config.id
         # Store lock code from config
         self.lock_code = config.lockcode
-        #TODO Get the following values from config
+        # Get alerts thresholds from config
+        # Alerts after some time without ping
         # Format is (time, level)
         # where time is the time (in seconds) during which the device has not pinged
         # An alert of the given level is emitted each time a new time threshold is reached
         # When the last threshold has been reached, the same alert is repeated once every 
         # "time" has elapsed
-        self.no_ping_time_thresholds = [
-            (6.0, Alert.LEVEL_INFO), 
-            (10.0, Alert.LEVEL_INFO), 
-            (30.0, Alert.LEVEL_WARNING), 
-            (60.0, Alert.LEVEL_WARNING), 
-            (120.0, Alert.LEVEL_ALARM), 
-            (300.0, Alert.LEVEL_ALARM), 
-            (600.0, Alert.LEVEL_ALARM), 
-            (3600.0, Alert.LEVEL_ALARM)]
+        self.no_ping_time_thresholds = [(float(entry.alert_time), entry.alert_level) for entry in config.no_ping_time_alert_thresholds]
+        self.no_ping_time_thresholds = sorted(self.no_ping_time_thresholds, key = lambda x: x[0], reverse = False)
+        # Alerts when device voltage under some rate wrt device voltage threshold
         # Format is (ratio, level, period)
         # Whenever the ratio of voltage level over a device voltage threshold becomes under ratio,
         # an alert of the given level is emitted, if after period (minutes) the actual ratio is still
         # under the same ratio, the same alert is emitted again.
-        self.voltage_alert_thresholds = [
-            (1.0, Alert.LEVEL_INFO, 240.0),
-            (0.9, Alert.LEVEL_WARNING, 60.0),
-            (0.8, Alert.LEVEL_WARNING, 30.0),
-            (0.7, Alert.LEVEL_ALARM, 10.0)]
+        self.voltage_alert_thresholds = [(entry.voltage_rate/100.0, entry.alert_level, entry.alert_time * 60.0) for entry in config.voltage_rate_alert_thresholds]
+        self.voltage_alert_thresholds = sorted(self.voltage_alert_thresholds, key = lambda x: x[0], reverse = True)
         # Create dictionary of LiveDevices from config
         self.devices = {id: LiveDevice(device) for id, device in config.devices.items()}
         # Start thread that reads queues and act upon received messages (DB, SMS...)
@@ -223,7 +215,7 @@ class MonitoringManager(object):
         if new_threshold <= old_threshold:
             # Check if we need to re-send the alarm (based on last time)
             delay = now - device.latest_voltage_alert_time if device.latest_voltage_alert_time else 0.0
-            if delay < alert_threshold[2] * 60.0:
+            if delay < alert_threshold[2]:
                 return None
         device.latest_voltage_alert_time = now
         message = 'Module %s current voltage (%.02fV) is under threshold (%.02fV)' % (

@@ -8,7 +8,7 @@
 	{% if voltage_rate_alert.alert_level == level %}
 	<span class="badge">
 		{{ voltage_rate_alert.voltage_rate }}%
-		({{ voltage_rate_alert.alert_time }}s)
+		({{ voltage_rate_alert.alert_time }}')
 		<a class="voltage-alert-remove" data-config="{{ config.id }}" data-alert="{{ voltage_rate_alert.id }}" href="#">
 			<span class="glyphicon glyphicon-remove"/>
 		</a>
@@ -19,7 +19,7 @@
 	<div class="voltage-alert-type">{{ alert_level }}</div>
 	<input type="text" class="form-control input-sm voltage-alert-threshold" placeholder="rate (%)"/>
 	<div class="input-group input-group-sm">
-		<input type="text" class="form-control voltage-alert-time" placeholder="time (s)"/>
+		<input type="text" class="form-control voltage-alert-time" placeholder="time (')"/>
 		<span class="input-group-btn">
 			<button class="btn btn-default" data-config="{{ config.id }}" data-level="{{ level }}" type="button">
 				<span class="glyphicon glyphicon-ok"/>
