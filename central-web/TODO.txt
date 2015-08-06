@@ -37,9 +37,6 @@
 			- CSRF protection (no use of flask-wtf anymore!)
 			- payload size (js + templates)
 		
-??	- monitoring bug:
-		- alerts don't show module any more?
-		
 	- refactor configuration UI
 30'		- improve look & feel of edit config dialog
 			- click new module button does not rollup after rolldown!

@@ -285,5 +285,6 @@ class MonitoringManager(object):
                 if alert:
                     alert.when = datetime.fromtimestamp(event.timestamp)
                     alert.config_id = self.config_id
-                    alert.device_id = event.device_id
+                    if device:
+                        alert.device_id = device.source.id
                     self.store_alert(alert)
