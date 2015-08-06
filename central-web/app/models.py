@@ -123,7 +123,7 @@ class VoltageRateAlertThreshold(db.Model):
     config_id = db.Column(db.Integer, db.ForeignKey('configuration.id'), nullable = False)
     alert_level = db.Column(db.Integer, nullable = False)
     alert_time = db.Column(db.Integer, nullable = False)
-    voltage_rate = db.Column(db.Float, nullable = False)
+    voltage_rate = db.Column(db.Integer, nullable = False)
 
 #TODO Define alert types somewhere
 #TODO Improve to include LEVEL with each KIND

@@ -33,20 +33,17 @@
 		- evaluate the benefits and the cost first!
 			- Javascript rendering performance?
 			- build process complexification (template compilation)
-			- XSRF protection (no use of flask-wtf anymore!)
+			- XSS protection?
+			- CSRF protection (no use of flask-wtf anymore!)
 			- payload size (js + templates)
 		
 ??	- monitoring bug:
 		- alerts don't show module any more?
 		
 	- refactor configuration UI
-30'		- advanced config setup
-			- improve values rendering: 100.0% => 100%
-				(or change to integer in DB!!!)
 30'		- improve look & feel of edit config dialog
-			- new module button too near edit module inline form!
 			- click new module button does not rollup after rolldown!
-30'		- new config should include default values for advanced settings!
+			- new module button too near edit module inline form!
 		
 4h	- refactor admin/users UI
 		- use dialog for my profile and modify my password => common javascript everywhere
