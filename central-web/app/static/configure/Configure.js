@@ -172,7 +172,8 @@ $(document).ready(function() {
 		var kind = $(this).attr('data-kind');
 		var url = sprintf('/configure/get_new_device_form/%d/%d', id, kind);
 		// Get form through AJAX
-		return prepareDeviceForm(url);
+		prepareDeviceForm(url);
+		return true;
 	}
 	
 	// AJAX function to get form html to edit an existing device for current configuration
@@ -182,7 +183,8 @@ $(document).ready(function() {
 		var id = $(this).attr('data-device');
 		var url = sprintf('/configure/get_edit_device_form/%d', id);
 		// Get form through AJAX
-		return prepareDeviceForm(url);
+		prepareDeviceForm(url);
+		return false;
 	}
 	
 	function prepareDeviceForm(url)
@@ -204,7 +206,6 @@ $(document).ready(function() {
 				$('#config_submit').attr('disabled', true);
 			}
 		});
-		return false;
 	}
 	
 	function closeDeviceForm()

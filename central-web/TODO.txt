@@ -36,6 +36,9 @@
 			- XSS protection?
 			- CSRF protection (no use of flask-wtf anymore!)
 			- payload size (js + templates)
+	
+	- security:
+		- check prevention against SVG exploits
 		
 	- refactor configuration UI
 30'		- improve look & feel of edit config dialog
@@ -44,7 +47,7 @@
 		
 4h	- refactor admin/users UI
 		- use dialog for my profile and modify my password => common javascript everywhere
-		- use diqlog to create/modify user (admin only)
+		- use dialog to create/modify user (admin only)
 	
 	- refactor all AJAX form submission code to use FormData?
 		- if it works, it is musch simpler code!
