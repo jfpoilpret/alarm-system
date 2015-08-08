@@ -40,11 +40,6 @@
 	- security:
 		- check prevention against SVG exploits
 		
-	- refactor configuration UI
-30'		- improve look & feel of edit config dialog
-			- click new module button does not rollup after rolldown!
-			- new module button too near edit module inline form!
-		
 4h	- refactor admin/users UI
 		- use dialog for my profile and modify my password => common javascript everywhere
 		- use dialog to create/modify user (admin only)
@@ -83,10 +78,11 @@
 		- unique key => special warning message
 		- reference key => other special warning
 	
-30'	- refactor CSS files (one css per module, with same name as module or 
-	  one unique name, the same across all modules...)
+1h	- refactor CSS files
+		one css per module, with same name as module or one unique name, the same across all modules...)
+		remove obsolete styles (some selectors don't exist any more after refactoring...)
 30'	- improve CSS files for every screen; check padding/margins in particular
-45'	- review labels/titles everywhere
+2h	- review labels/titles everywhere and review look overall
 
 1h+	- improve function to cleanup alert history:
 		- for a given config
