@@ -40,13 +40,14 @@
 	- security:
 		- check prevention against SVG exploits
 		
-4h	- refactor admin/users UI
-		- use dialog for my profile and modify my password => common javascript everywhere
+2h	- refactor admin/users UI
+x		- use dialog for my profile: update navbar after profile update!
+x		- use dialog for modify my password
 		- use dialog to create/modify user (admin only)
-	
-	- refactor all AJAX form submission code to use FormData?
-		- if it works, it is musch simpler code!
 		
+2h	- refactor JavaScript as all open/save dialog have the same structure!
+		- also create AJAX functions to avoid always copy/paste of the same arguments
+	
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
 30'	- configuration changes of an active config should be limited

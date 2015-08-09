@@ -1,0 +1,24 @@
+{% import "bootstrap/wtf.html" as wtf %}
+<div id="profile-dialog" class="modal" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<a href="#" role="button" class="close cancel" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+				<h4 class="modal-title">My Profile</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form" id="profile_form" role="form">
+					{{ profile_form.hidden_tag() }}
+					{{ wtf.form_errors(profile_form, hiddens = "only") }}
+					
+					{{ wtf.form_field(profile_form.username) }}
+					{{ wtf.form_field(profile_form.fullname) }}
+				</form>
+			</div>
+			<div class="modal-footer">
+				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
+				{{ wtf.form_field(profile_form.submit, button_map = {'profile_submit': 'primary'}, form = "profile_form") }}
+			</div>
+		</div>
+	</div>
+</div>

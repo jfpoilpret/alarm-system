@@ -3,9 +3,17 @@
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='auth/home.css')}}">
 {% endblock %}
 
 {% block title %}Boulemix{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script type="text/javascript" src="{{url_for('static', filename='common/sprintf.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='common/errors.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='common/Profile.js')}}"></script>
+{% endblock %}
 
 {% block navbar %}
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -33,13 +41,13 @@
 			<ul class="nav navbar-nav navbar-right">
 				{% if current_user.is_authenticated() %}
 				<li class="dropdown">
-				    <a id="nav_username" href="#" class="dropdown-toggle" data-toggle="dropdown">{{ current_user.username }} <b class="caret"></b></a>
+				    <a id="nav_username" href="#" class="dropdown-toggle" data-toggle="dropdown"><span>{{ current_user.username }}</span> <b class="caret"></b></a>
 				    <ul class="dropdown-menu">
 				    	{% if current_user.is_admin() %}
 				        <li><a id="nav_allusers" href="{{ url_for('admin.users') }}">All users</a></li>
 				        {% endif %}
-				        <li><a id="nav_myprofile" href="{{ url_for('auth.edit_profile') }}">My Profile</a></li>
-				        <li><a id="nav_mypassword" href="{{ url_for('auth.change_password') }}">Modify My Password</a></li>
+				        <li><a id="nav_myprofile" href="#">My Profile</a></li>
+				        <li><a id="nav_mypassword" href="#">Modify My Password</a></li>
 				        <li><a id="nav_logout" href="{{ url_for('auth.logout') }}">Logout</a></li>
 				    </ul>
 				</li>
@@ -54,6 +62,8 @@
 
 {% block content %}
 <div id="modal-content">
+	<div id="profile-dialog"></div>
+	<div id="password-dialog"></div>
 	{% block modal_content %}{% endblock %}
 </div>
 <div class="container">
