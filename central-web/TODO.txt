@@ -40,11 +40,6 @@
 	- security:
 		- check prevention against SVG exploits
 		
-2h	- refactor admin/users UI
-x		- use dialog for my profile: update navbar after profile update!
-x		- use dialog for modify my password
-		- use dialog to create/modify user (admin only)
-		
 2h	- refactor JavaScript as all open/save dialog have the same structure!
 		- also create AJAX functions to avoid always copy/paste of the same arguments
 	

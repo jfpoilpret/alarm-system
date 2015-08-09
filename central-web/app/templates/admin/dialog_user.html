@@ -1,0 +1,34 @@
+{% import "bootstrap/wtf.html" as wtf %}
+<div id="user-dialog" class="modal" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<a href="#" role="button" class="close cancel" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+				<h4 class="modal-title">
+				{% if is_new %}
+					New User
+				{% else %}
+					Edit User
+				{% endif %}
+				</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form" id="user_form" role="form">
+					{{ user_form.hidden_tag() }}
+					{{ wtf.form_errors(user_form, hiddens = "only") }}
+					
+					{{ wtf.form_field(user_form.username) }}
+					{% if is_new %}
+					{{ wtf.form_field(user_form.password) }}
+					{% endif %}
+					{{ wtf.form_field(user_form.fullname) }}
+					{{ wtf.form_field(user_form.role) }}
+				</form>
+			</div>
+			<div class="modal-footer">
+				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
+				{{ wtf.form_field(user_form.submit, button_map = {'user_submit': 'primary'}, form = "user_form") }}
+			</div>
+		</div>
+	</div>
+</div>

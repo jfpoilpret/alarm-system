@@ -3,8 +3,10 @@ from wtforms import StringField, SubmitField, SelectField, PasswordField
 from wtforms.validators import InputRequired, Length
 
 from app.models import Account
+from app.common import HiddenInteger
 
 class AbstractUserForm(Form):
+    id = HiddenInteger(default = 0)
     username = StringField('User Name', validators=[InputRequired(), Length(3, 64)])
     fullname = StringField('Full Name', validators=[InputRequired(), Length(4, 128)])
     role = SelectField('Role', coerce=int, choices = 

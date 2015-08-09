@@ -5,15 +5,23 @@
 <link rel="stylesheet" href="{{url_for('static', filename='admin/users.css')}}">
 {% endblock %}
 
+{% block scripts %}
+{{super()}}
+<script type="text/javascript" src="{{url_for('static', filename='admin/Admin.js')}}"></script>
+{% endblock %}
+
+{% block modal_content %}
+{% include "admin/dialog_user.html" %}
+{% endblock %}
+
 {% block page_content %}
-{% set roles = {1:'Administrator',2:'Configurator',3:'Alarm Setter',4:'Alarm Viewer'} %}
-<div class="users-list">
+<div class="users">
 	<div class="panel panel-primary">
 		<div class="panel-heading">
 			<h3 class="form-heading">All Users</h3>
 		</div>
 		<div class="panel-body">
-			<table class="table table-hover">
+			<table class="table table-hover users-list">
 				<thead>
 					<tr>
 						<th></th>
@@ -23,38 +31,9 @@
 					</tr>
 				</thead>
 				<tbody>
-				{% for user in users %}
-					<tr>
-						<td>
-							<a  class="btn btn-xs btn-default user-edit" 
-								href="{{ url_for('admin.edit_user', userid = user.id) }}">
-								<span class="glyphicon glyphicon-pencil"></span>
-							</a>
-							<a  class="btn btn-xs btn-default user-reset-password" 
-								title="Reset password of this user"
-							    onclick="return window.confirm('Are you sure you want to reset the password of this user?');"
-								href="{{ url_for('admin.reset_user_password', userid = user.id) }}">
-								<span class="glyphicon glyphicon-flash"></span>
-							</a>
-						{% if current_user.id != user.id %}
-							<a  class="btn btn-xs btn-default user-delete" 
-							    href="{{ url_for('admin.delete_user', userid = user.id) }}" 
-							    onclick="return window.confirm('Are you sure you want to remove this user?');">
-								<span class="glyphicon glyphicon-remove"></span>
-							</a>
-						{% endif %}
-						</td>
-						<td class="user_username">{{ user.username }}</td>
-						<td class="user_fullname">{{ user.fullname }}</td>
-						<td class="user_role">{{ roles[user.role] }}</td>
-					</tr>
-				{% endfor %}
 				</tbody>
 			</table>
-			<a  class="btn btn-primary user-new" 
-				href="{{ url_for('admin.create_user') }}">
-				Create User
-			</a>
+			<a  class="btn btn-primary user-new" href="#">Create User</a>
 		</div>
 	</div>
 </div>
