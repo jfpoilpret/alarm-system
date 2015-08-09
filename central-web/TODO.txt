@@ -54,7 +54,6 @@
 1h	- rename "private" methods with leading underscore (convention)
 30'	- review all FIXME/TODO
 
-30'	- refactoring of JavaScript form validation through AJAX
 1h	- monitoring UI bug
 		- Clear History often leads to CSRF token error???...
 30'	- monitoring UI:
