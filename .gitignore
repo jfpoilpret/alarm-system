@@ -3,3 +3,8 @@
 **/*.pyc
 venv
 
+central-web/.settings/org.eclipse.ltk.core.refactoring.prefs
+central-web/.settings/org.eclipse.wst.sse.core.prefs
+*.sqlite
+central/.settings/org.eclipse.core.resources.prefs
+doc/ActivationModule_bom.html
