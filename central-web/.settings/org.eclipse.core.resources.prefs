@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
+encoding//app/api_v1_0/resources/__init__.py=utf-8
+encoding//app/api_v1_0/resources/users.py=utf-8
 encoding//app/models.py=utf-8
 encoding//app/monitor/monitoring.py=utf-8
 encoding//venv/Lib/site-packages/flask/__init__.py=utf-8

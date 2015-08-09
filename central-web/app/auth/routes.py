@@ -6,7 +6,6 @@ from app.auth.forms import SigninForm
 from app.models import Account
 from app.auth.forms import ProfileForm, PasswordForm
 from app import db
-from app.common import get_return_url
 
 def render_signin_page(signin_form = None):
     if not signin_form:

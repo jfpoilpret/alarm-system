@@ -72,6 +72,13 @@ $(document).ready(function() {
 		$('.users-list > tbody').html(users);
 	}
 	
+	function updateUsersList2(users)
+	{
+		// render JSON with nunjucks
+		var usersHtml = nunjucks.render('all_user_rows.html', {users: users});
+		$('.users-list > tbody').html(usersHtml);
+	}
+	
 	// AJAX function to save user
 	function submitUser()
 	{
@@ -105,11 +112,14 @@ $(document).ready(function() {
 		return true;
 	}
 	
+	// Initialize nunjucks
+	nunjucks.configure('/static/views', {autoescape: true});
+	
 	// Now get the list of users through AJAX
 	$.ajax({
 		type: 'GET',
-		url: '/admin/get_users_list',
-		success: updateUsersList
+		url: '/api/1.0/users',
+		success: updateUsersList2
 	});
 	
 	// Register event handlers

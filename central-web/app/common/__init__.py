@@ -46,6 +46,10 @@ def pre_check(form, return_none_if_ok = False, use_flash_for_errors = True):
             return jsonify(result = 'ERROR', fields = fields, flash_messages = [])
     return None if return_none_if_ok else jsonify(result = 'OK')
 
+# Authentication for REST services
+#----------------------------------
+
+
 # Authorization checks
 #----------------------
 def check_admin():
