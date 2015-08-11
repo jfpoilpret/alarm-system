@@ -49,11 +49,12 @@ class Users(Resource):
     
     @marshal_with(USER_FIELDS)
     def get(self):
-        return Account.query.order_by(Account.username).all()
+        return Account.query.all()
 
     @marshal_with(USER_FIELDS)
     def post(self):
         args = self.reqparse.parse_args(strict = True)
+        #TODO optimize and avoid creating the object; checking it exists is enough!
         if Account.query.filter_by(username = args.username).first():
             abort(409, message = 'A user already exists with that name!')
         account = Account(**args)

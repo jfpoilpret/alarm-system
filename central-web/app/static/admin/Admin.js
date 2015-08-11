@@ -1,4 +1,31 @@
 $(document).ready(function() {
+	//TODO Generic functions should be factored out
+	function listToDict(list, id)
+	{
+		var dict = {};
+		$.each(list, function(index, value) {
+			dict[value[id]] = value;
+		});
+		return dict;
+	}
+	
+	function dictToList(dict)
+	{
+		var list = [];
+		$.each(dict, function(key, value) {
+			list.push(value);
+		});
+		return list;
+	}
+	
+	function fillForm(form, prefix, data)
+	{
+		//TODO
+	}
+	
+	// Store current user id for later usage in templates
+	var currentUserId = Number($('#current-user').val());
+
 	// Store empty content of form as a way to reset it
 	var $newUserForm = $('#user-dialog').clone();
 
@@ -72,10 +99,15 @@ $(document).ready(function() {
 		$('.users-list > tbody').html(users);
 	}
 	
+	var allUsers = {};
+	
 	function updateUsersList2(users)
 	{
+		allUsers = listToDict(users, 'id');
 		// render JSON with nunjucks
-		var usersHtml = nunjucks.render('all_user_rows.html', {users: users});
+//		var usersHtml = nunjucks.render('all_user_rows.html', {users: users});
+		var usersHtml = nunjucks.render(
+			'all_user_rows.html', {current_user_id: currentUserId, users: dictToList(allUsers)});
 		$('.users-list > tbody').html(usersHtml);
 	}
 	

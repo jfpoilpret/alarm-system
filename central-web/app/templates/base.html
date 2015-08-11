@@ -61,6 +61,7 @@
 {% endblock %}
 
 {% block content %}
+<input type="hidden" id="current-user" value="{{ current_user.id }}">
 <div id="modal-content">
 	<div id="profile-dialog"></div>
 	<div id="password-dialog"></div>

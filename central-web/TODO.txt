@@ -26,10 +26,26 @@
 			
 	- future refactoring:
 		- AJAX+RESTful webapp (but not exactly single page: one page per main menu in fact)
-		- consider template engine in javascript (nunjucks? handlebars?...)
-		- Flask-RESTful extension with JSON marshallers
+x		- consider template engine in javascript (nunjucks? handlebars?...)
+x		- Flask-RESTful extension with JSON marshallers
+
+		- JS should store objects list as dict (key is id) and use it for direct manipulation (reduce AJAX calls when data already present on browser)
+		- Admin:
+			- adapt bootstrap/wtf.html macros to nunjucks!
+				- need macros to create bootstrap fields from JS
+					- id prefix
+					- field name
+					- field value
+					- field error
+					- field type: one macro per type?
+					- what else?
+				- how to pass form/field info (JS, JSON) to macro?
+					- eg one prefix, one JSON for values, one JSON for errors?
+			- Admin.js:
+
 		- how to deal with authentication to REST API?
 			=> server would not render html during AJAX calls anymore
+			
 		- evaluate the benefits and the cost first!
 			- Javascript rendering performance?
 			- build process complexification (template compilation)

@@ -9,7 +9,8 @@
 			title="Reset password of this user">
 			<span class="glyphicon glyphicon-flash"></span>
 		</a>
-	{% if current_user.id != user.id %}
+	{# FIXME current_user is not available in JavaScript! #}
+	{% if current_user_id != user.id %}
 		<a  class="btn btn-xs btn-default user-delete" 
 			data-user="{{ user.id }}">
 			<span class="glyphicon glyphicon-remove"></span>
