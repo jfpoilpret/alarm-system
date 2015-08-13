@@ -4,27 +4,52 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<a href="#" role="button" class="close cancel" aria-label="Close"><span aria-hidden="true">&times;</span></a>
-				<h4 class="modal-title" data-bind="text: isNew ? 'New User' : 'Edit User'"></h4>
+				<h4 class="modal-title" data-bind="text: isNew() ? 'New User' : 'Edit User'"></h4>
 			</div>
 			<div class="modal-body">
-				{# TODO replace with pure Bootstrap? Then create minimalist macros for each field... #}
 				<form class="form" id="user_form" role="form">
-					{{ user_form.hidden_tag() }}
+					<div style="display:none;">
+						{# TODO LATER add security somehow #}
+						<input id="user_csrf_token" name="user_csrf_token" type="hidden" value="1439496720##8035a82cafc7ae18f43e8ff829f83e285808e62f">
+					</div>
+					{# TODO LATER replace with actual div for errors (bound with KnockOut) #}
 					{{ wtf.form_errors(user_form, hiddens = "only") }}
-					
-					{{ wtf.form_field(user_form.username, data_bind = "value: username") }}
-					{{ wtf.form_field(user_form.password, data_bind = "visible: isNew, value: password") }}
-					{{ wtf.form_field(user_form.fullname, data_bind = "value: fullname") }}
-					{{ wtf.form_field(user_form.role, data_bind = "value: role") }}
+					<div class="form-group required">
+						<label class="control-label" for="user_username">User Name</label>
+						<input class="form-control" data-bind="value: username" id="user_username" name="user_username" required type="text" value="">
+					</div>
+					<!-- ko if: isNew -->
+					<div class="form-group required">
+						<label class="control-label" for="user_password">Password</label>
+						<input class="form-control" data-bind="value: password" id="user_password" name="user_password" required type="password" value="">
+					</div>
+					<!-- /ko -->
+					<div class="form-group required">
+						<label class="control-label" for="user_fullname">Full Name</label>
+						<input class="form-control" data-bind="value: fullname" id="user_fullname" name="user_fullname" required type="text" value="">
+					</div>
+					<div class="form-group ">
+						<label class="control-label" for="user_role">Role</label>
+						{# TODO set options through KnockOut #}
+						<select class="form-control" data-bind="value: role" id="user_role" name="user_role">
+							<option value="Administrator">Administrator</option>
+							<option value="Configurator">Configurator</option>
+							<option value="Alarm Setter">Alarm Setter</option>
+							<option value="Alarm Viewer">Alarm Viewer</option>
+						</select>
+					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
+				<!-- ko if: isNew -->
 				<a	href="#" role="button" class="btn btn-primary" id="user_submit"
-					data-bind="text: isNew ? 'Create User' : 'Save User', click: $root.allUsers.saveUser"></a>
-{#
-				{{ wtf.form_field(user_form.submit, button_map = {'user_submit': 'primary'}, form = "user_form", data_bind = "submit: $root.allUsers.saveUser") }}
-#}
+					data-bind="click: $root.allUsers.saveNewUser">Create User</a>
+				<!-- /ko -->
+				<!-- ko ifnot: isNew -->
+				<a	href="#" role="button" class="btn btn-primary" id="user_submit"
+					data-bind="click: $root.allUsers.saveUser">Save User</a>
+				<!-- /ko -->
 			</div>
 		</div>
 	</div>
