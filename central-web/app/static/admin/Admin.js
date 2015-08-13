@@ -60,6 +60,8 @@ $(document).ready(function() {
 		self.role = ko.observable();
 		self.isNew = ko.observable();
 		
+		self.allRoles = ['Administrator', 'Configurator', 'Alarm Setter', 'Alarm Viewer'];
+		
 		self.toJSON = function() {
 			return extract(self, ['username', 'fullname', 'password', 'role']);
 		}

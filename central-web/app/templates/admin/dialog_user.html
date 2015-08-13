@@ -1,4 +1,3 @@
-{% import "bootstrap/wtf.html" as wtf %}
 <div id="user-dialog" class="modal" data-backdrop="static" data-bind="with: editedUser">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -12,8 +11,8 @@
 						{# TODO LATER add security somehow #}
 						<input id="user_csrf_token" name="user_csrf_token" type="hidden" value="1439496720##8035a82cafc7ae18f43e8ff829f83e285808e62f">
 					</div>
-					{# TODO LATER replace with actual div for errors (bound with KnockOut) #}
-					{{ wtf.form_errors(user_form, hiddens = "only") }}
+					{# TODO LATER replace with actual div for errors (bound with KnockOut)
+					{{ wtf.form_errors(user_form, hiddens = "only") }}  #}
 					<div class="form-group required">
 						<label class="control-label" for="user_username">User Name</label>
 						<input class="form-control" data-bind="value: username" id="user_username" name="user_username" required type="text" value="">
@@ -30,13 +29,7 @@
 					</div>
 					<div class="form-group ">
 						<label class="control-label" for="user_role">Role</label>
-						{# TODO set options through KnockOut #}
-						<select class="form-control" data-bind="value: role" id="user_role" name="user_role">
-							<option value="Administrator">Administrator</option>
-							<option value="Configurator">Configurator</option>
-							<option value="Alarm Setter">Alarm Setter</option>
-							<option value="Alarm Viewer">Alarm Viewer</option>
-						</select>
+						<select class="form-control" data-bind="options: allRoles, value: role" id="user_role" name="user_role"></select>
 					</div>
 				</form>
 			</div>
