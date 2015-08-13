@@ -31,10 +31,22 @@ x		- Flask-RESTful extension with JSON marshallers
 		- evaluate knockout with plugin:
 			https://github.com/svtguy88/knockout.mapping latest fork
 			- open questions:
-				- how to sort data (on ViewModel)
-				- best way to create ViewModel from JSON with least code?
 				- validation? suggested to use jQuery validation: what's that?
-				
+
+		- migration:
+			- admin
+			- flash
+			- form errors
+			- profile
+			- modify password
+
+			- configurations REST
+			- configurations UI
+			
+			- monitoring REST
+			- monitoring UI
+			
+			- security
 
 		- JS should store objects list as dict (key is id) and use it for direct manipulation (reduce AJAX calls when data already present on browser)
 		- Admin:

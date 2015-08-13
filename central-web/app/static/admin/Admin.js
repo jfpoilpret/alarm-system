@@ -7,7 +7,7 @@ $(document).ready(function() {
 	// REFACTORING WITH KNOCKOUT STARTS HERE //
 	//=======================================//
 
-	// Utilities
+	// Utilities (TODO factor out)
 	//==========
 	function extract(item, keys, includeUndefined) {
 		item = ko.toJS(item);
@@ -48,18 +48,31 @@ $(document).ready(function() {
     	return firstIndex;
     }
     
+	function filterById(id) {
+		return function(item) {
+			return item.id == id;
+		}
+	}
+    
+	function compareByString(attribute) {
+		return function(item1, item2) {
+			var value1 = item1[attribute],
+				value2 = item2[attribute];
+			if (value1 === value2) return 0;
+			return value1 < value2 ? -1 : +1;
+		}
+	}
+	
 	// ViewModels
 	//============
 	// ViewModel for user dialog (only)
 	function UserViewModel(user) {
 		var self = this;
-		
 		self.username = ko.observable();
 		self.fullname = ko.observable();
 		self.password = ko.observable();
 		self.role = ko.observable();
 		self.isNew = ko.observable();
-		
 		self.allRoles = ['Administrator', 'Configurator', 'Alarm Setter', 'Alarm Viewer'];
 		
 		self.toJSON = function() {
@@ -76,14 +89,13 @@ $(document).ready(function() {
 					username: undefined,
 					fullname: undefined,
 					password: undefined,
-					role: 'Alert Viewer'
+					role: self.allRoles[self.allRoles.length - 1]
 				};
 			}
 			self.id = newUser.id;
 			self.uri = newUser.uri;
 			self.username(newUser.username);
 			self.fullname(newUser.fullname);
-			//TODO deal with user objects without password (ie not new users)
 			self.password(newUser.password);
 			self.role(newUser.role);
 			self.isNew(isNew);
@@ -94,41 +106,24 @@ $(document).ready(function() {
 	
 	function UsersViewModel(currentUser, users, editUserVM) {
 		var self = this;
-		
 		self.editUserViewModel = editUserVM;
 		
 		// Local utility functions (internal use)
-		var filter = function(id) {
-			return function(user) {
-				return user.id == id;
-			}
-		}
-		
-		var compare = function(user1, user2) {
-			if (user1.username === user2.username) return 0;
-			return user1.username < user2.username ? -1 : +1;
-		}
-		
+		var compare = compareByString('username');
 		var initUser = function(user) {
 			user.canBeDeleted = (user.id !== currentUser);
 			return user;
 		}
 		
-		// Add additional properties/methods to each user VM?
-		var count = users.length;
-		for (var i = 0; i < count; i++) {
-			users[i] = initUser(users[i]);
-		}
-//		// Make each individual user an observable (as a whole)
-//		self.users = ko.observableArray($.map(users, function(user) {
-//			return ko.observable(user);
-//		}));
-		self.users = ko.observableArray(users.sort(compare));
+		// Add additional properties/methods to each user
+//		users = $.map(users, initUser);
+//		var count = users.length;
+//		for (var i = 0; i < count; i++) {
+//			users[i] = initUser(users[i]);
+//		}
+		self.users = ko.observableArray($.map(users, initUser).sort(compare));
 		
 		self.editUser = function(user) {
-			//TODO
-			console.log('editUser');
-			console.log(user);
 			self.editUserViewModel.reset(user);
 			$('#user-dialog').modal('show');
 		}
@@ -143,16 +138,17 @@ $(document).ready(function() {
 			if (window.confirm('Are you sure you want to remove this user?')) {
 				// Send AJAX request
 				ajax(user.uri, 'DELETE').done(function(results) {
-					self.users.remove(filter(user.id));
+					self.users.remove(filterById(user.id));
 				});
 			}
-			return true;
 		}
 		
 		self.resetUserPassword = function(user) {
-			//TODO
-			console.log('resetUserPassword');
-			console.log(user);
+			if (window.confirm('Are you sure you want to reset the password of this user?')) {
+				ajax(user.uri, 'PUT', {password: ''}).done(function(user) {
+					//TODO flash
+				});
+			}
 		}
 		
 		self.saveUser = function() {
@@ -161,7 +157,7 @@ $(document).ready(function() {
 			ajax(vm.uri, 'PUT', user).done(function(user) {
 				// Replace existing user
 				user = initUser(user);
-				index = firstIndex(self.users.peek(), filter(user.id));
+				index = firstIndex(self.users.peek(), filterById(user.id));
 				self.users.peek()[index] = user;
 				// Sort array!
 				self.users.sort(compare);
@@ -183,9 +179,9 @@ $(document).ready(function() {
 		}
 	} 
 	
+	//TODO remove and integrate content directly into UsersViewModel
 	function GlobalViewModel(users) {
 		var self = this;
-		
 		//TODO Add CSRF token here?
 		self.currentUser = Number($('#current-user').val());
 		self.editedUser = new UserViewModel();
@@ -200,44 +196,4 @@ $(document).ready(function() {
 		globalViewModel = new GlobalViewModel(users);
 		ko.applyBindings(globalViewModel);
 	});
-
-/*
-	// AJAX function to prepare and open dialog to edit user
-	function openEditUserDialog()
-	{
-		// Load data for this user
-		var id = $(this).attr('data-user');
-		var url = sprintf('/admin/get_user/%d', id);
-		// Send AJAX request
-		$.ajax({
-			type: 'GET',
-			url: url,
-			success: function(dialog) {
-				// update edit dialog info
-				$('#user-dialog').replaceWith(dialog);
-				$('#user-dialog').modal('show');
-			}
-		});
-		return true;
-	}
-	
-	// AJAX function to reset a user's password
-	function resetUserPassword()
-	{
-		if (window.confirm('Are you sure you want to reset the password of this user?')) {
-			var id = $(this).attr('data-user');
-			var url = sprintf('/admin/reset_user_password/%d', id);
-			// Send AJAX request
-			$.ajax({
-				type: 'POST',
-				url: url,
-				success: function(results) {
-					$('#flash-messages').html(results.flash);
-				}
-			});
-		}
-		return true;
-	}
-	
-*/
 });

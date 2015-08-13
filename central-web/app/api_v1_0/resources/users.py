@@ -23,9 +23,7 @@ class Role(Raw):
         return None
 
 def role(value):
-    print('role(%s)' % value)
     for (code, label) in ROLES:
-        print('\t%s' % label)
         if value == label:
             return code
     return None
@@ -78,8 +76,7 @@ class User(Resource):
         self.reqparse.add_argument(
             'password', required = False, type = str, location = 'json', store_missing = False)
         self.reqparse.add_argument(
-            'role', required = False, type = role, location = 'json', 
-            choices = [label for (_, label) in ROLES], store_missing = False)
+            'role', required = False, type = role, location = 'json', store_missing = False)
 
     @marshal_with(USER_FIELDS)
     def get(self, id):
@@ -95,7 +92,7 @@ class User(Resource):
     def put(self, id):
         account = Account.query.get_or_404(id)
         args = self.reqparse.parse_args(strict = True)
-        for key, value in args:
+        for key, value in args.items():
             setattr(account, key, value)
         db.session.add(account)
         db.session.commit()
