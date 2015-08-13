@@ -12,4 +12,4 @@ restApi = Api(api)
 from .resources import User, Users
 
 restApi.add_resource(Users, '/users', endpoint = 'users')
-restApi.add_resource(User, '/user/<int:id>', endpoint = 'user')
+restApi.add_resource(User, '/users/<int:id>', endpoint = 'user')

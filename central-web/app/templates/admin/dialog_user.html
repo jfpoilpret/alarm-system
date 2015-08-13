@@ -1,33 +1,30 @@
 {% import "bootstrap/wtf.html" as wtf %}
-<div id="user-dialog" class="modal" data-backdrop="static">
+<div id="user-dialog" class="modal" data-backdrop="static" data-bind="with: editedUser">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<a href="#" role="button" class="close cancel" aria-label="Close"><span aria-hidden="true">&times;</span></a>
-				<h4 class="modal-title">
-				{% if is_new %}
-					New User
-				{% else %}
-					Edit User
-				{% endif %}
-				</h4>
+				<h4 class="modal-title" data-bind="text: isNew ? 'New User' : 'Edit User'"></h4>
 			</div>
 			<div class="modal-body">
+				{# TODO replace with pure Bootstrap? Then create minimalist macros for each field... #}
 				<form class="form" id="user_form" role="form">
 					{{ user_form.hidden_tag() }}
 					{{ wtf.form_errors(user_form, hiddens = "only") }}
 					
-					{{ wtf.form_field(user_form.username) }}
-					{% if is_new %}
-					{{ wtf.form_field(user_form.password) }}
-					{% endif %}
-					{{ wtf.form_field(user_form.fullname) }}
-					{{ wtf.form_field(user_form.role) }}
+					{{ wtf.form_field(user_form.username, data_bind = "value: username") }}
+					{{ wtf.form_field(user_form.password, data_bind = "visible: isNew, value: password") }}
+					{{ wtf.form_field(user_form.fullname, data_bind = "value: fullname") }}
+					{{ wtf.form_field(user_form.role, data_bind = "value: role") }}
 				</form>
 			</div>
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
-				{{ wtf.form_field(user_form.submit, button_map = {'user_submit': 'primary'}, form = "user_form") }}
+				<a	href="#" role="button" class="btn btn-primary" id="user_submit"
+					data-bind="text: isNew ? 'Create User' : 'Save User', click: $root.allUsers.saveUser"></a>
+{#
+				{{ wtf.form_field(user_form.submit, button_map = {'user_submit': 'primary'}, form = "user_form", data_bind = "submit: $root.allUsers.saveUser") }}
+#}
 			</div>
 		</div>
 	</div>

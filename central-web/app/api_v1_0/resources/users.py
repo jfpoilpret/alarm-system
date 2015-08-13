@@ -5,8 +5,9 @@ from ...models import Account
 
 from flask_restful import abort, fields, marshal_with, reqparse, Resource
 from flask_restful.fields import Raw
-import code
 
+
+#TODO factor this out somewhere? (used in forms too)
 ROLES = [
     (Account.ROLE_ADMINISTRATOR, 'Administrator'),
     (Account.ROLE_CONFIGURATOR, 'Configurator'),
@@ -22,10 +23,12 @@ class Role(Raw):
         return None
 
 def role(value):
+    print('role(%s)' % value)
     for (code, label) in ROLES:
+        print('\t%s' % label)
         if value == label:
             return code
-        return None
+    return None
 
 USER_FIELDS = {
     'id': fields.Integer,
@@ -45,7 +48,7 @@ class Users(Resource):
         self.reqparse.add_argument(
             'password', required = True, type = str, location = 'json')
         self.reqparse.add_argument(
-            'role', required = True, type = role, location = 'json', choices = [label for (_, label) in ROLES])
+            'role', required = True, type = role, location = 'json')
     
     @marshal_with(USER_FIELDS)
     def get(self):
@@ -53,7 +56,9 @@ class Users(Resource):
 
     @marshal_with(USER_FIELDS)
     def post(self):
+        print('post')
         args = self.reqparse.parse_args(strict = True)
+        print('args = %s' % str(args))
         #TODO optimize and avoid creating the object; checking it exists is enough!
         if Account.query.filter_by(username = args.username).first():
             abort(409, message = 'A user already exists with that name!')

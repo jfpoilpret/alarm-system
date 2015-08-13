@@ -13,20 +13,34 @@
 			</div>
 			<div class="modal-body">
 				<form class="form" id="user_form" role="form">
-					{{ user_form.hidden_tag() }}
-					{{ wtf.form_errors(user_form, hiddens = "only") }}
-					
-					{{ wtf.form_field(user_form.username) }}
+					<div style="display:none;">
+						<input id="user_csrf_token" name="user_csrf_token" type="hidden" value="1439281469##c864b6eb954e18d8741fe41cbb89d79981bf5c3b">
+						<input id="user_id" name="user_id" type="hidden" value="0">
+					</div>
+					<div class="form-group  required"><label class="control-label" for="user_username">User Name</label>
+						<input class="form-control" id="user_username" name="user_username" required="" type="text" value="">
+					</div>
 					{% if is_new %}
-					{{ wtf.form_field(user_form.password) }}
+					<div class="form-group  required"><label class="control-label" for="user_password">Password</label>
+						<input class="form-control" id="user_password" name="user_password" required="" type="password" value="">
+					</div>
 					{% endif %}
-					{{ wtf.form_field(user_form.fullname) }}
-					{{ wtf.form_field(user_form.role) }}
+					<div class="form-group  required"><label class="control-label" for="user_fullname">Full Name</label>
+						<input class="form-control" id="user_fullname" name="user_fullname" required="" type="text" value="">
+					</div>
+					<div class="form-group "><label class="control-label" for="user_role">Role</label>
+						<select class="form-control" id="user_role" name="user_role">
+							<option value="4">Alarm Viewer</option>
+							<option value="3">Alarm Setter</option>
+							<option value="2">Configurator</option>
+							<option value="1">Administrator</option>
+						</select>
+					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
-				{{ wtf.form_field(user_form.submit, button_map = {'user_submit': 'primary'}, form = "user_form") }}
+				<input class="btn btn-primary" form="user_form" id="user_submit" name="user_submit" type="submit" value="Create User">
 			</div>
 		</div>
 	</div>

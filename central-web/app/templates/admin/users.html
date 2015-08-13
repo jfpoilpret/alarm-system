@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 
 {% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('static', filename='admin/users.css')}}">
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='admin/users.css') }}">
 {% endblock %}
 
 {% block scripts %}
-{{super()}}
-<script type="text/javascript" src="{{url_for('static', filename='common/nunjucks.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='admin/Admin.js')}}"></script>
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='admin/Admin.js') }}"></script>
 {% endblock %}
 
 {% block modal_content %}
@@ -16,7 +15,7 @@
 {% endblock %}
 
 {% block page_content %}
-<div class="users">
+<div class="users" data-bind="with: allUsers">
 	<div class="panel panel-primary">
 		<div class="panel-heading">
 			<h3 class="form-heading">All Users</h3>
@@ -31,10 +30,30 @@
 						<th>Role</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody data-bind="foreach: users">
+					<tr>
+						<td>
+							<a	class="btn btn-xs btn-default user-edit" href="#" 
+								data-bind="click: $parent.editUser">
+								<span class="glyphicon glyphicon-pencil"></span>
+							</a>
+							<a  class="btn btn-xs btn-default user-reset-password"  href= "#" 
+								data-bind="click: $parent.resetUserPassword"
+								title="Reset password of this user">
+								<span class="glyphicon glyphicon-flash"></span>
+							</a>
+							<a	class="btn btn-xs btn-default user-delete" href="#" 
+								data-bind="visible: canBeDeleted, click: $parent.deleteUser">
+								<span class="glyphicon glyphicon-remove"></span>
+							</a>
+						</td>
+						<td class="user_username" data-bind="text: username"></td>
+						<td class="user_fullname" data-bind="text: fullname"></td>
+						<td class="user_role" data-bind="text: role"></td>
+					</tr>
 				</tbody>
 			</table>
-			<a  class="btn btn-primary user-new" href="#">Create User</a>
+			<a class="btn btn-primary user-new" href="#" data-bind="click: editNewUser">Create User</a>
 		</div>
 	</div>
 </div>
