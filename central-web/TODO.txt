@@ -34,10 +34,17 @@ x		- Flask-RESTful extension with JSON marshallers
 				- validation? suggested to use jQuery validation: what's that?
 
 		- migration:
-			- admin
-			- flash
-			- form errors
+x			- admin
 			- profile
+x				- template remove WTF
+				- Profile.js add model
+				- template add bindings
+				- add save method (use REST PUT)
+			- flash
+				- jinja2 template using KnockOut should override {% block messages %}
+				- refactor later on (to avoid too much block override...)
+				- js for flash?
+			- form errors
 			- modify password
 
 			- configurations REST

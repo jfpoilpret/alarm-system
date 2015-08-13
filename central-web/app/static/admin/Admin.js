@@ -3,66 +3,6 @@ $(document).ready(function() {
 	//TODO missing flash messages if OK (to be done also with KnockOut)
 	//TODO missing error handling: ajax callback and update dialog form or update flash messages (with KnockOut!)
 	
-	//=======================================//
-	// REFACTORING WITH KNOCKOUT STARTS HERE //
-	//=======================================//
-
-	// Utilities (TODO factor out)
-	//==========
-	function extract(item, keys, includeUndefined) {
-		item = ko.toJS(item);
-		var result = {};
-		for (var key in item) {
-			if ($.inArray(key, keys) > -1) {
-				var value = item[key];
-				if (includeUndefined || value !== undefined) {
-					result[key] = value;
-				}
-			}
-		}
-		return result;
-	}
-	
-    function ajax(uri, method, data) {
-        var request = {
-            url: uri,
-            type: method,
-            accepts: "application/json",
-            cache: false
-        };
-        if (data !== undefined) {
-            request.contentType = "application/json";
-            request.dataType = 'json';
-        	request.data = JSON.stringify(data); 
-        }
-        return $.ajax(request);
-    }
-	
-    function firstIndex(list, predicate) {
-    	var firstIndex = -1;
-    	$.grep(list, function(item, index) {
-    		if (predicate(item) && (firstIndex == -1))
-    			firstIndex = index;
-    		return false;
-    	});
-    	return firstIndex;
-    }
-    
-	function filterById(id) {
-		return function(item) {
-			return item.id == id;
-		}
-	}
-    
-	function compareByString(attribute) {
-		return function(item1, item2) {
-			var value1 = item1[attribute],
-				value2 = item2[attribute];
-			if (value1 === value2) return 0;
-			return value1 < value2 ? -1 : +1;
-		}
-	}
-	
 	// ViewModels
 	//============
 	// ViewModel for user dialog (only)
@@ -116,11 +56,6 @@ $(document).ready(function() {
 		}
 		
 		// Add additional properties/methods to each user
-//		users = $.map(users, initUser);
-//		var count = users.length;
-//		for (var i = 0; i < count; i++) {
-//			users[i] = initUser(users[i]);
-//		}
 		self.users = ko.observableArray($.map(users, initUser).sort(compare));
 		
 		self.editUser = function(user) {

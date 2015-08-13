@@ -1,4 +1,3 @@
-{% import "bootstrap/wtf.html" as wtf %}
 <div id="profile-dialog" class="modal" data-backdrop="static">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -8,17 +7,26 @@
 			</div>
 			<div class="modal-body">
 				<form class="form" id="profile_form" role="form">
-					{{ profile_form.hidden_tag() }}
-					{{ wtf.form_errors(profile_form, hiddens = "only") }}
-					
-					{{ wtf.form_field(profile_form.username) }}
-					{{ wtf.form_field(profile_form.fullname) }}
+					<div style="display:none;">
+						<input id="profile_csrf_token" name="profile_csrf_token" type="hidden" value="1439504563##9e2ff3ac41f1f3cc5ff13d648416655c7d60a429">
+					</div>
+{#					{{ wtf.form_errors(profile_form, hiddens = "only") }} #}
+					<div class="form-group required">
+						<label class="control-label" for="profile_username">User Name</label>
+						<input class="form-control" id="profile_username" name="profile_username" required="" type="text" value="admin">
+					</div>
+					<div class="form-group required">
+						<label class="control-label" for="profile_fullname">Full Name</label>
+						<input class="form-control" id="profile_fullname" name="profile_fullname" required="" type="text" value="Administrator">
+					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
-				{{ wtf.form_field(profile_form.submit, button_map = {'profile_submit': 'primary'}, form = "profile_form") }}
+				<input class="btn btn-primary" form="profile_form" id="profile_submit" name="profile_submit" type="submit" value="Save Profile">
 			</div>
 		</div>
 	</div>
 </div>
+
+
