@@ -11,29 +11,41 @@
 						{# TODO LATER add security somehow #}
 						<input id="user_csrf_token" type="hidden" value="1439496720##8035a82cafc7ae18f43e8ff829f83e285808e62f">
 					</div>
-					{# TODO LATER replace with actual div for errors (bound with KnockOut) #}
+					<!-- ko if: errors.global -->
 					<div class="has-error">
-						<p class="help-block">Some general error here<br>Some general error here</p>
-					</div>
-					
-					<div class="form-group required has-error">
-						<label class="control-label" for="user_username">User Name</label>
-						<input class="form-control" type="text" id="user_username" data-bind="value: username" required>
-						<p class="help-block">Error 1 on username<br>Error 2 on username</p>
-					</div>
-					<!-- ko if: isNew -->
-					<div class="form-group required">
-						<label class="control-label" for="user_password">Password</label>
-						<input class="form-control" type="password" id="user_password" data-bind="value: password" required>
+						<p class="help-block" data-bind="text: errors.global"></p>
 					</div>
 					<!-- /ko -->
-					<div class="form-group required">
+					
+					<div class="form-group required" data-bind="css: {'has-error': errors.username}">
+						<label class="control-label" for="user_username">User Name</label>
+						<input class="form-control" type="text" id="user_username" data-bind="value: username" required>
+						<!-- ko if: errors.username -->
+						<p class="help-block" data-bind="text: errors.username"></p>
+						<!-- /ko -->
+					</div>
+					<!-- ko if: isNew -->
+					<div class="form-group required" data-bind="css: {'has-error': errors.password}">
+						<label class="control-label" for="user_password">Password</label>
+						<input class="form-control" type="password" id="user_password" data-bind="value: password" required>
+						<!-- ko if: errors.password -->
+						<p class="help-block" data-bind="text: errors.password"></p>
+						<!-- /ko -->
+					</div>
+					<!-- /ko -->
+					<div class="form-group required" data-bind="css: {'has-error': errors.fullname}">
 						<label class="control-label" for="user_fullname">Full Name</label>
 						<input class="form-control" type="text" id="user_fullname" data-bind="value: fullname" required>
+						<!-- ko if: errors.fullname -->
+						<p class="help-block" data-bind="text: errors.fullname"></p>
+						<!-- /ko -->
 					</div>
-					<div class="form-group">
+					<div class="form-group" data-bind="css: {'has-error': errors.role}">
 						<label class="control-label" for="user_role">Role</label>
 						<select class="form-control" id="user_role" data-bind="options: allRoles, value: role"></select>
+						<!-- ko if: errors.role -->
+						<p class="help-block" data-bind="text: errors.role"></p>
+						<!-- /ko -->
 					</div>
 				</form>
 			</div>

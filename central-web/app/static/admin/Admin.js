@@ -1,6 +1,35 @@
 $(document).ready(function() {
 	//TODO missing flash messages if OK (to be done also with KnockOut)
 	//TODO missing error handling: ajax callback and update dialog form or update flash messages (with KnockOut!)
+	function ErrorsViewModel(keys) {
+		var self = this;
+
+		self.global = ko.observable('');
+		$.each(keys, function(key) {
+			self[key] = ko.observable('');
+		});
+
+		self.clear = function() {
+			$.each(keys, function(key) {
+				self[key]('');
+			});
+			self.global('');
+		}
+		
+		self.reset = function(keyErrors, errors) {
+			self.clear();
+			$.each(keyErrors, function(key, error) {
+				if (self[key] !== undefined) {
+					self[key](error);
+				} else {
+					errors.push(error);
+				}
+			});
+			if (errors) {
+				self.global(errors.join('<br>'));
+			}
+		}
+	}
 	
 	// ViewModel for user dialog (only)
 	function EditUserViewModel() {
@@ -11,9 +40,37 @@ $(document).ready(function() {
 		self.role = ko.observable();
 		self.isNew = ko.observable();
 		self.allRoles = ['Administrator', 'Configurator', 'Alarm Setter', 'Alarm Viewer'];
+
+		var properties = ['username', 'fullname', 'password', 'role'];
+		self.errors = new ErrorsViewModel(properties);
+		
+		// Local utility functions (internal use)
+		//TODO should it be a function of ErrorsViewModel?
+		var errorHandler = function(xhr) {
+			var status = xhr.status;
+			var result = xhr.responseJSON.message;
+			console.log('xhr.status: ' + xhr.status);
+			console.log('xhr.responseJSON: ');
+			console.log(xhr.responseJSON);
+			if (status >= 500) {
+				alert(sprintf(
+					'A server error %d has occurred:\n%s', status, result));
+			} else {
+				var errors = [];
+				var keyErrors = {};
+				if ($.isArray(result)) {
+					errors = result;
+				} else if ($.isPlainObject(result)) {
+					keyErrors = result;
+				} else {
+					errors = [result];
+				}
+				self.errors.reset(keyErrors, errors);
+			}
+		}
 		
 		self.toJSON = function() {
-			return extract(self, ['username', 'fullname', 'password', 'role']);
+			return extract(self, properties);
 		}
 		
 		self.reset = function(newUser) {
@@ -39,7 +96,7 @@ $(document).ready(function() {
 		}
 		
 		self.saveUser = function() {
-			ajax(self.uri, 'PUT', self.toJSON()).done(function(user) {
+			ajax(self.uri, 'PUT', self.toJSON()).fail(errorHandler).done(function(user) {
 				// Signal VM of all users
 				usersViewModel.userUpdated(user);
 				// Hide dialog
@@ -48,7 +105,7 @@ $(document).ready(function() {
 		}
 		
 		self.saveNewUser = function() {
-			ajax('/api/1.0/users', 'POST', self.toJSON()).done(function(user) {
+			ajax('/api/1.0/users', 'POST', self.toJSON()).fail(errorHandler).done(function(user) {
 				// Signal VM of all users
 				usersViewModel.userAdded(user);
 				// Hide dialog
