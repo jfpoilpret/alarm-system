@@ -66,7 +66,7 @@
 {% block content %}
 <input type="hidden" id="current-user" value="{{ current_user.id }}">
 <div id="modal-content">
-	<div id="profile-dialog"></div>
+	{% include "auth/dialog_profile.html" %}
 	<div id="password-dialog"></div>
 	{% block modal_content %}{% endblock %}
 </div>

@@ -1,4 +1,4 @@
-<div id="user-dialog" class="modal" data-backdrop="static" data-bind="with: editedUser">
+<div id="user-dialog" class="modal" data-backdrop="static">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -37,11 +37,11 @@
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
 				<!-- ko if: isNew -->
 				<a	href="#" role="button" class="btn btn-primary" id="user_submit"
-					data-bind="click: $root.allUsers.saveNewUser">Create User</a>
+					data-bind="click: saveNewUser">Create User</a>
 				<!-- /ko -->
 				<!-- ko ifnot: isNew -->
 				<a	href="#" role="button" class="btn btn-primary" id="user_submit"
-					data-bind="click: $root.allUsers.saveUser">Save User</a>
+					data-bind="click: saveUser">Save User</a>
 				<!-- /ko -->
 			</div>
 		</div>

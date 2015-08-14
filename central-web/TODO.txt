@@ -37,15 +37,17 @@ x		- Flask-RESTful extension with JSON marshallers
 x			- admin
 			- profile
 x				- template remove WTF
-				- Profile.js add model
-				- template add bindings
-				- add save method (use REST PUT)
+x				- Profile.js add model
+x				- template add bindings
+x				- add save method (use REST PUT)
+		==> bug with "Uncaught Error: You cannot apply bindings multiple times to the same element."
+		
+			- modify password
 			- flash
 				- jinja2 template using KnockOut should override {% block messages %}
 				- refactor later on (to avoid too much block override...)
 				- js for flash?
 			- form errors
-			- modify password
 
 			- configurations REST
 			- configurations UI
@@ -53,25 +55,10 @@ x				- template remove WTF
 			- monitoring REST
 			- monitoring UI
 			
-			- security
+			- security (login, token)
+				- login must enable both REST services and Web pages serving!
+				- use time-limited tokens (is it enough for CSRF protection?)
 
-		- JS should store objects list as dict (key is id) and use it for direct manipulation (reduce AJAX calls when data already present on browser)
-		- Admin:
-			- adapt bootstrap/wtf.html macros to nunjucks!
-				- need macros to create bootstrap fields from JS
-					- id prefix
-					- field name
-					- field value
-					- field error
-					- field type: one macro per type?
-					- what else?
-				- how to pass form/field info (JS, JSON) to macro?
-					- eg one prefix, one JSON for values, one JSON for errors?
-			- Admin.js:
-
-		- how to deal with authentication to REST API?
-			=> server would not render html during AJAX calls anymore
-			
 		- evaluate the benefits and the cost first!
 			- Javascript rendering performance?
 			- build process complexification (template compilation)

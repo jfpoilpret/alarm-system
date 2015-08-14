@@ -13,11 +13,11 @@
 {#					{{ wtf.form_errors(profile_form, hiddens = "only") }} #}
 					<div class="form-group required">
 						<label class="control-label" for="profile_username">User Name</label>
-						<input class="form-control" id="profile_username" name="profile_username" required="" type="text" value="admin">
+						<input class="form-control" data-bind="value: username" id="profile_username" name="profile_username" required="" type="text" value="">
 					</div>
 					<div class="form-group required">
 						<label class="control-label" for="profile_fullname">Full Name</label>
-						<input class="form-control" id="profile_fullname" name="profile_fullname" required="" type="text" value="Administrator">
+						<input class="form-control" data-bind="value: fullname" id="profile_fullname" name="profile_fullname" required="" type="text" value="">
 					</div>
 				</form>
 			</div>

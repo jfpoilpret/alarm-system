@@ -1,19 +1,47 @@
 $(document).ready(function() {
-	//TODO optimize code by using global variables for various jquery selectors
+	// ViewModels
+	//============
+	// ViewModel for profile dialog (only)
+	function UserProfileViewModel(user) {
+		var self = this;
+		self.uri = user.uri;
+		self.username = ko.observable(user.username);
+		self.fullname = ko.observable(user.fullname);
+		
+		self.toJSON = function() {
+			return extract(self, ['username', 'fullname']);
+		}
+		
+		self.saveProfile = function() {
+			var	user = self.toJSON();
+			ajax(self.uri, 'PUT', user).done(function(user) {
+				//TODO How to pass information to users list if currently displayed?
+				// Hide dialog
+				$('#profile-dialog').modal('hide');
+			});
+		}
+
+		self.editProfile = function() {
+			$('#profile-dialog').modal('show');
+		}
+	}
+	
+	// Declare VM
+	var userProfileViewModel;
+	var uri = sprintf('/api/1.0/users/%s', $('#current-user').val());
+	console.log('profile.js');
+	console.log(uri);
+	$.getJSON(uri, function(user) {
+		console.log('getJSON');
+		console.log(user);
+		userProfileViewModel = new UserProfileViewModel(user);
+		ko.applyBindings(userProfileViewModel, $('#profile-dialog').get(0));
+	});
 	
 	// AJAX function to prepare and open dialog to edit current user's profile
 	function openProfileDialog()
 	{
-		// Send AJAX request
-		$.ajax({
-			type: 'GET',
-			url: '/auth/get_profile',
-			success: function(dialog) {
-				// update config dialog info
-				$('#profile-dialog').replaceWith(dialog);
-				$('#profile-dialog').modal('show');
-			}
-		});
+		userProfileViewModel.editProfile();
 		return true;
 	}
 	
@@ -31,40 +59,6 @@ $(document).ready(function() {
 			}
 		});
 		return true;
-	}
-	
-	// AJAX function to save new profile of current user
-	function submitProfile()
-	{
-		// Submit form alongside map file if provided
-		fd = new FormData($('#profile_form').get(0));
-		$.ajax({
-			url: '/auth/save_profile',
-			type: 'POST',
-			data: fd,
-			processData: false,
-			contentType: false,
-			success: function(results) {
-				// Check if form submission is valid
-				if (results.result === 'OK') {
-					// If OK, flash messages, and hide dialog
-					$('#flash-messages').html(results.flash);
-					$('#profile-dialog').modal('hide');
-					// update navbar
-					$('#nav_username > span').text(results.username);
-				} else {
-					// Remove flash messages if any
-					$('#flash-messages').html('');
-					// Hide dialog before replacing content (otherwise background may stay forever)
-					$('#profile-dialog').modal('hide');
-					// Show form errors by replacing the form
-					$('#profile-dialog').replaceWith(results.form);
-					// Have to show dialog again as replacement hid it
-					$('#profile-dialog').modal('show');
-				}
-			}
-		});
-		return false;
 	}
 	
 	// AJAX function to save new password of current user
@@ -106,6 +100,6 @@ $(document).ready(function() {
 	$('#modal-content').on('click', '.cancel', function() {
 		$('.modal').modal('hide');
 	});
-	$('#modal-content').on('submit', '#profile_form', submitProfile);
+//	$('#modal-content').on('submit', '#profile_form', submitProfile);
 	$('#modal-content').on('submit', '#password_form', submitPassword);
 });
