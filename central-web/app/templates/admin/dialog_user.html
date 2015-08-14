@@ -9,39 +9,41 @@
 				<form class="form" id="user_form" role="form">
 					<div style="display:none;">
 						{# TODO LATER add security somehow #}
-						<input id="user_csrf_token" name="user_csrf_token" type="hidden" value="1439496720##8035a82cafc7ae18f43e8ff829f83e285808e62f">
+						<input id="user_csrf_token" type="hidden" value="1439496720##8035a82cafc7ae18f43e8ff829f83e285808e62f">
 					</div>
-					{# TODO LATER replace with actual div for errors (bound with KnockOut)
-					{{ wtf.form_errors(user_form, hiddens = "only") }}  #}
-					<div class="form-group required">
+					{# TODO LATER replace with actual div for errors (bound with KnockOut) #}
+					<div class="has-error">
+						<p class="help-block">Some general error here<br>Some general error here</p>
+					</div>
+					
+					<div class="form-group required has-error">
 						<label class="control-label" for="user_username">User Name</label>
-						<input class="form-control" data-bind="value: username" id="user_username" name="user_username" required type="text" value="">
+						<input class="form-control" type="text" id="user_username" data-bind="value: username" required>
+						<p class="help-block">Error 1 on username<br>Error 2 on username</p>
 					</div>
 					<!-- ko if: isNew -->
 					<div class="form-group required">
 						<label class="control-label" for="user_password">Password</label>
-						<input class="form-control" data-bind="value: password" id="user_password" name="user_password" required type="password" value="">
+						<input class="form-control" type="password" id="user_password" data-bind="value: password" required>
 					</div>
 					<!-- /ko -->
 					<div class="form-group required">
 						<label class="control-label" for="user_fullname">Full Name</label>
-						<input class="form-control" data-bind="value: fullname" id="user_fullname" name="user_fullname" required type="text" value="">
+						<input class="form-control" type="text" id="user_fullname" data-bind="value: fullname" required>
 					</div>
-					<div class="form-group ">
+					<div class="form-group">
 						<label class="control-label" for="user_role">Role</label>
-						<select class="form-control" data-bind="options: allRoles, value: role" id="user_role" name="user_role"></select>
+						<select class="form-control" id="user_role" data-bind="options: allRoles, value: role"></select>
 					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
 				<!-- ko if: isNew -->
-				<a	href="#" role="button" class="btn btn-primary" id="user_submit"
-					data-bind="click: saveNewUser">Create User</a>
+				<a	href="#" role="button" class="btn btn-primary" id="user_submit" data-bind="click: saveNewUser">Create User</a>
 				<!-- /ko -->
 				<!-- ko ifnot: isNew -->
-				<a	href="#" role="button" class="btn btn-primary" id="user_submit"
-					data-bind="click: saveUser">Save User</a>
+				<a	href="#" role="button" class="btn btn-primary" id="user_submit" data-bind="click: saveUser">Save User</a>
 				<!-- /ko -->
 			</div>
 		</div>

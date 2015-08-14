@@ -19,6 +19,9 @@ x			- modify password
 					40* -> specific errors (pure text)
 				- binding of general errors on dialog
 				- binding of field errors (class + helper text div)
+			- review forms html: remove useless markup 
+				- eg input "name" attribute
+				- value="": can it be removed altogether?
 2h+			- flash
 				- jinja2 template using KnockOut should override {% block messages %}
 				- refactor later on (to avoid too much block override...)

@@ -54,9 +54,7 @@ class Users(Resource):
 
     @marshal_with(USER_FIELDS)
     def post(self):
-        print('post')
         args = self.reqparse.parse_args(strict = True)
-        print('args = %s' % str(args))
         #TODO optimize and avoid creating the object; checking it exists is enough!
         if Account.query.filter_by(username = args.username).first():
             abort(409, message = 'A user already exists with that name!')
