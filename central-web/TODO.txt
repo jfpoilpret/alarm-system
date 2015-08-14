@@ -1,37 +1,10 @@
 	- update flask-bootstrap dependency whenever a new release is rolled out,
 	including the fix for bug: https://github.com/mbr/flask-bootstrap/issues/90
 	
-	- AJAX refactoring
-		- all rendering always done in flask (server-side)
-		- JS only attaches rendered HTML to the right place in the DOM
-		- render as much as possible in flask, in particular use forms for rendering
-			-> never populate forms from JSON on cient-side 
-				=> too much work (to produce JSON in flask and to populate form in JS)!
-			-> same for form errors => return the rendered form (includes error)
-			-> same for flash messages
-		- AJAX calls:
-			return simple JSON with:
-				- result OK/KO (not sure if really needed)
-				- flash_messages [] (replace all flash container content)
-				- form id: id of form which content to replace
-				- form: new form content (including <form> tag)
-		- html templates:
-			- one for each form (including <form> tag)
-			- one for flash messages (already done)
-			- one home.html for every main page (already done)
-		- JS:
-			- essentially event handler with simple AJAX calls and simple callback
-			- callback just replaces flash messages and form id
-			- careful about lost event handlers (or try to use jQuery delegate!)
-			
-	- future refactoring:
+	- Major refactoring:
 		- AJAX+RESTful webapp (but not exactly single page: one page per main menu in fact)
-x		- consider template engine in javascript (nunjucks? handlebars?...)
 x		- Flask-RESTful extension with JSON marshallers
-		- evaluate knockout with plugin:
-			https://github.com/svtguy88/knockout.mapping latest fork
-			- open questions:
-				- validation? suggested to use jQuery validation: what's that?
+x		- knockout js for data binding and actions (MVVM)
 
 		- migration:
 x			- admin
@@ -40,39 +13,40 @@ x			- profile
 				- update navbar and users list if displayed
 x			- modify password
 				- clear password if different, reset focus and show error in dialog
-			- form errors
+2h			- form errors
 				- methods to analyze errors from REST response
 					400 -> typically error on arguments
 					40* -> specific errors (pure text)
 				- binding of general errors on dialog
 				- binding of field errors (class + helper text div)
-			- flash
+2h+			- flash
 				- jinja2 template using KnockOut should override {% block messages %}
 				- refactor later on (to avoid too much block override...)
 				- js for flash?
 
-			- configurations REST
-			- configurations UI
+8h			- configurations REST
+8h			- configurations UI
 			
-			- monitoring REST
-			- monitoring UI
+8h			- monitoring REST
+8h			- monitoring UI
 			
-			- security (login, token)
+4h			- cleanup wep site part:
+				- remove all forms (except login)
+				- remove all routes that are superseded by API
+				- only 2 blueprints: API Vs. Web
+			
+8h			- security (login, token)
 				- login must enable both REST services and Web pages serving!
 				- use time-limited tokens (is it enough for CSRF protection?)
-
-		- evaluate the benefits and the cost first!
-			- Javascript rendering performance?
-			- build process complexification (template compilation)
-			- XSS protection?
-			- CSRF protection (no use of flask-wtf anymore!)
-			- payload size (js + templates)
+				- check if login can be done with knockout also (remove WTF altogether)
 	
+	- open questions:
+		- validation? suggested to use jQuery validation: what's that?
+		
 	- security:
 		- check prevention against SVG exploits
 		
-2h	- refactor JavaScript as all open/save dialog have the same structure!
-		- also create AJAX functions to avoid always copy/paste of the same arguments
+	- study JavaScript and refactor as much as possible
 	
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
@@ -80,6 +54,7 @@ x			- modify password
 		- or there should be mechanisms to propagate change to MonitoringManager
 		(because devices are deep copies of config devices, hence are not up-to-date)
 		
+30'	- review all .js files: lowercase filename only!
 15'	- review all .py headers (encoding!)
 15'	- ensure all classes use new-style classes (subclass object)
 1h	- rename "private" methods with leading underscore (convention)
