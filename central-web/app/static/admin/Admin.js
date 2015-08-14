@@ -2,8 +2,6 @@ $(document).ready(function() {
 	//TODO missing flash messages if OK (to be done also with KnockOut)
 	//TODO missing error handling: ajax callback and update dialog form or update flash messages (with KnockOut!)
 	
-	// ViewModels
-	//============
 	// ViewModel for user dialog (only)
 	function EditUserViewModel() {
 		var self = this;
@@ -103,30 +101,27 @@ $(document).ready(function() {
 		}
 		
 		self.userUpdated = function(user) {
-			// Replace existing user
+			// Replace existing user and re-sort list
 			index = firstIndex(self.users.peek(), filterById(user.id));
 			self.users.peek()[index] = initUser(user);
-			// Sort array!
 			self.users.sort(compare);
 		}
 		
 		self.userAdded = function(user) {
-			// Add new user
+			// Add new user and re-sort list
 			self.users.push(initUser(user));
-			// Sort array!
 			users.sort(compare);
 		}
 	}
 	
 	// Declare VM
-	var editUserViewModel;
+	var editUserViewModel = new EditUserViewModel();
+	ko.applyBindings(editUserViewModel, $('#user-dialog').get(0));
+
 	var usersViewModel;
-	
 	// Now get the list of users through AJAX and populate the global VM
 	$.getJSON('/api/1.0/users', function(users) {
-		editUserViewModel = new EditUserViewModel();
 		usersViewModel = new UsersViewModel(users);
-		ko.applyBindings(editUserViewModel, $('#user-dialog').get(0));
 		ko.applyBindings(usersViewModel, $('.users').get(0));
 	});
 });

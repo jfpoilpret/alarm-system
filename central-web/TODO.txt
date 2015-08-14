@@ -35,19 +35,21 @@ x		- Flask-RESTful extension with JSON marshallers
 
 		- migration:
 x			- admin
-			- profile
-x				- template remove WTF
-x				- Profile.js add model
-x				- template add bindings
-x				- add save method (use REST PUT)
-		==> bug with "Uncaught Error: You cannot apply bindings multiple times to the same element."
-		
-			- modify password
+				- update navbar if modify self
+x			- profile
+				- update navbar and users list if displayed
+x			- modify password
+				- clear password if different, reset focus and show error in dialog
+			- form errors
+				- methods to analyze errors from REST response
+					400 -> typically error on arguments
+					40* -> specific errors (pure text)
+				- binding of general errors on dialog
+				- binding of field errors (class + helper text div)
 			- flash
 				- jinja2 template using KnockOut should override {% block messages %}
 				- refactor later on (to avoid too much block override...)
 				- js for flash?
-			- form errors
 
 			- configurations REST
 			- configurations UI

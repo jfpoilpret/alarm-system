@@ -1,6 +1,4 @@
 $(document).ready(function() {
-	// ViewModels
-	//============
 	// ViewModel for profile dialog (only)
 	function UserProfileViewModel(user) {
 		var self = this;
@@ -29,11 +27,7 @@ $(document).ready(function() {
 	// Declare VM
 	var userProfileViewModel;
 	var uri = sprintf('/api/1.0/users/%s', $('#current-user').val());
-	console.log('profile.js');
-	console.log(uri);
 	$.getJSON(uri, function(user) {
-		console.log('getJSON');
-		console.log(user);
 		userProfileViewModel = new UserProfileViewModel(user);
 		ko.applyBindings(userProfileViewModel, $('#profile-dialog').get(0));
 	});
@@ -45,51 +39,38 @@ $(document).ready(function() {
 		return true;
 	}
 	
+	// ViewModel for password dialog (only)
+	function UserPasswordViewModel() {
+		var self = this;
+		self.password1 = ko.observable();
+		self.password2 = ko.observable();
+		
+		self.savePassword = function() {
+			// Check both passwords are identical
+			if (self.password1() !== self.password2()) {
+				//TODO show message
+				self.password1('');
+				self.password2('');
+			} else {
+				ajax(uri, 'PUT', {password: seld.password1()}).done(function(user) {
+					// Hide dialog
+					$('#password-dialog').modal('hide');
+				});
+			}
+		}
+
+		self.editPassword = function() {
+			$('#password-dialog').modal('show');
+		}
+	}
+	
+	var userPasswordViewModel = new UserPasswordViewModel();
+	
 	// AJAX function to prepare and open dialog to edit current user's password
 	function openPasswordDialog()
 	{
-		// Send AJAX request
-		$.ajax({
-			type: 'GET',
-			url: '/auth/get_password',
-			success: function(dialog) {
-				// update config dialog info
-				$('#password-dialog').replaceWith(dialog);
-				$('#password-dialog').modal('show');
-			}
-		});
+		userPasswordViewModel.editPassword();
 		return true;
-	}
-	
-	// AJAX function to save new password of current user
-	function submitPassword()
-	{
-		//TODO
-		// Submit form alongside map file if provided
-		fd = new FormData($('#password_form').get(0));
-		$.ajax({
-			url: '/auth/save_password',
-			type: 'POST',
-			data: fd,
-			processData: false,
-			contentType: false,
-			success: function(results) {
-				$('#flash-messages').html(results.flash);
-				// Check if form submission is valid
-				if (results.result === 'OK') {
-					// If OK, hide dialog
-					$('#password-dialog').modal('hide');
-				} else if (results.form) {
-					// Hide dialog before replacing content (otherwise background may stay forever)
-					$('#password-dialog').modal('hide');
-					// Show form errors by replacing the form
-					$('#password-dialog').replaceWith(results.form);
-					// Have to show dialog again as replacement hid it
-					$('#password-dialog').modal('show');
-				}
-			}
-		});
-		return false;
 	}
 	
 	// Register event handlers
@@ -100,6 +81,4 @@ $(document).ready(function() {
 	$('#modal-content').on('click', '.cancel', function() {
 		$('.modal').modal('hide');
 	});
-//	$('#modal-content').on('submit', '#profile_form', submitProfile);
-	$('#modal-content').on('submit', '#password_form', submitPassword);
 });
