@@ -1,3 +1,4 @@
+{% import "forms.html" as forms %}
 <div id="user-dialog" class="modal" data-backdrop="static">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -6,56 +7,23 @@
 				<h4 class="modal-title" data-bind="text: isNew() ? 'New User' : 'Edit User'"></h4>
 			</div>
 			<div class="modal-body">
-				<form class="form" id="user_form" role="form">
-					<div style="display:none;">
-						{# TODO LATER add security somehow #}
-						<input id="user_csrf_token" type="hidden" value="1439496720##8035a82cafc7ae18f43e8ff829f83e285808e62f">
-					</div>
-					<!-- ko if: errors.global -->
-					<div class="has-error">
-						<p class="help-block" data-bind="text: errors.global"></p>
-					</div>
-					<!-- /ko -->
-					
-					<div class="form-group required" data-bind="css: {'has-error': errors.username}">
-						<label class="control-label" for="user_username">User Name</label>
-						<input class="form-control" type="text" id="user_username" data-bind="value: username" required>
-						<!-- ko if: errors.username -->
-						<p class="help-block" data-bind="text: errors.username"></p>
-						<!-- /ko -->
-					</div>
+				<form class="form" id="user_form" role="form" href="#">
+					{{ forms.global_errors() }}
+					{{ forms.input('username', 'User Name', prefix = 'user_', required = 'required') }}
 					<!-- ko if: isNew -->
-					<div class="form-group required" data-bind="css: {'has-error': errors.password}">
-						<label class="control-label" for="user_password">Password</label>
-						<input class="form-control" type="password" id="user_password" data-bind="value: password" required>
-						<!-- ko if: errors.password -->
-						<p class="help-block" data-bind="text: errors.password"></p>
-						<!-- /ko -->
-					</div>
+					{{ forms.input('password', 'Password', prefix = 'user_', type = 'password', required = 'required') }}
 					<!-- /ko -->
-					<div class="form-group required" data-bind="css: {'has-error': errors.fullname}">
-						<label class="control-label" for="user_fullname">Full Name</label>
-						<input class="form-control" type="text" id="user_fullname" data-bind="value: fullname" required>
-						<!-- ko if: errors.fullname -->
-						<p class="help-block" data-bind="text: errors.fullname"></p>
-						<!-- /ko -->
-					</div>
-					<div class="form-group" data-bind="css: {'has-error': errors.role}">
-						<label class="control-label" for="user_role">Role</label>
-						<select class="form-control" id="user_role" data-bind="options: allRoles, value: role"></select>
-						<!-- ko if: errors.role -->
-						<p class="help-block" data-bind="text: errors.role"></p>
-						<!-- /ko -->
-					</div>
+					{{ forms.input('fullname', 'Full Name', prefix = 'user_', required = 'required') }}
+					{{ forms.select('role', 'Role', 'allRoles', prefix = 'user_') }}
 				</form>
 			</div>
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
 				<!-- ko if: isNew -->
-				<a	href="#" role="button" class="btn btn-primary" id="user_submit" data-bind="click: saveNewUser">Create User</a>
+				<a href="#" role="button" class="btn btn-primary" id="user_submit" data-bind="click: saveNewUser">Create User</a>
 				<!-- /ko -->
 				<!-- ko ifnot: isNew -->
-				<a	href="#" role="button" class="btn btn-primary" id="user_submit" data-bind="click: saveUser">Save User</a>
+				<a href="#" role="button" class="btn btn-primary" id="user_submit" data-bind="click: saveUser">Save User</a>
 				<!-- /ko -->
 			</div>
 		</div>

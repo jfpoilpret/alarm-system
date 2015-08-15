@@ -1,0 +1,37 @@
+{% macro global_errors(view_model = 'errors') -%}
+	<!-- ko if: {{ view_model }}.global -->
+	<div class="has-error">
+		<p class="help-block" data-bind="text: {{ view_model }}.global"></p>
+	</div>
+	<!-- /ko -->
+{%- endmacro %}
+
+{% macro input(name, label, type = 'text', prefix = '', view_model = 'errors', classes = '') -%}
+	{% set id = prefix + name %}
+	{% set error = view_model + '.' + name %}
+	<div class="form-group" data-bind="css: {'has-error': {{ error }} }">
+		<label class="control-label" for="{{ id }}">{{ label }}</label>
+		<input	class="form-control {{ classes }}" type="{{ type }}" 
+				id="{{ id }}" name="{{ id }}" 
+				{{ kwargs|xmlattr }}
+				data-bind="value: {{ name }}">
+		<!-- ko if: {{ error }} -->
+		<p class="help-block" data-bind="text: {{ error }}"></p>
+		<!-- /ko -->
+	</div>
+{%- endmacro %}
+
+{% macro select(name, label, options, prefix = '', view_model = 'errors', classes = '') -%}
+	{% set id = prefix + name %}
+	{% set error = view_model + '.' + name %}
+	<div class="form-group" data-bind="css: {'has-error': {{ error }} }">
+		<label class="control-label" for="{{ id }}">{{ label }}</label>
+		<select	class="form-control {{ classes }}" 
+				id="{{ id }}" name="{{ id }}" 
+				{{ kwargs|xmlattr }}
+				data-bind="options: {{ options }}, value: {{ name }}"></select>
+		<!-- ko if: {{ error }} -->
+		<p class="help-block" data-bind="text: {{ error }}"></p>
+		<!-- /ko -->
+	</div>
+{%- endmacro %}
