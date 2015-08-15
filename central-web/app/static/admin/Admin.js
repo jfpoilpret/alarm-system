@@ -10,13 +10,13 @@ $(document).ready(function() {
 		self.isNew = ko.observable();
 		self.allRoles = ['Administrator', 'Configurator', 'Alarm Setter', 'Alarm Viewer'];
 
-		var properties = ['username', 'fullname', 'password', 'role'];
-		self.errors = new ko.errors.ErrorsViewModel(properties);
+		var PROPERTIES = ['username', 'fullname', 'password', 'role'];
+		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
 		
 		self.toJSON = function() {
-			return ko.utils.extract(self, properties);
+			return ko.utils.extract(self, PROPERTIES);
 		}
-		
+
 		self.reset = function(newUser) {
 			self.user = newUser;
 			var isNew = (newUser === undefined);

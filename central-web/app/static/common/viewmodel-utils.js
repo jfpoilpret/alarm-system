@@ -70,9 +70,6 @@
 		}
 		
 		self.reset = function(keyErrors, errors) {
-			console.log('ErrorsViewModel.reset');
-			console.log(keyErrors);
-			console.log(errors);
 			self.clear();
 			$.each(keyErrors, function(key, error) {
 				if (keys.indexOf(key) > -1) {
@@ -89,9 +86,6 @@
 		self.errorHandler = function(xhr) {
 			var status = xhr.status;
 			var result = xhr.responseJSON.message;
-			console.log('xhr.status: ' + xhr.status);
-			console.log('xhr.responseJSON: ');
-			console.log(xhr.responseJSON);
 			if (status >= 500) {
 				alert(sprintf(
 					'A server error %d has occurred:\n%s', status, result));

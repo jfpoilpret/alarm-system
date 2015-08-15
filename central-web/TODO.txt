@@ -13,6 +13,8 @@ x			- profile
 				- update navbar and users list if displayed
 x			- modify password
 				- clear password if different, reset focus and show error in dialog
+			- bugs on "required" on server side: it is currently possible to create a user with empty name/fullname/password!
+				-> this is due to not submitting the form!
 			- form errors
 30'				- jinja2 macro to create input fields and global errors
 1h				- update profile and modify password (js + html)
