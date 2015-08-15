@@ -1,7 +1,4 @@
 $(document).ready(function() {
-	// Import helpers namespace
-	var vmh = viewModelHelpers;
-	
 	//TODO missing flash messages if OK (to be done also with KnockOut)
 	// ViewModel for user dialog (only)
 	function EditUserViewModel() {
@@ -14,10 +11,10 @@ $(document).ready(function() {
 		self.allRoles = ['Administrator', 'Configurator', 'Alarm Setter', 'Alarm Viewer'];
 
 		var properties = ['username', 'fullname', 'password', 'role'];
-		self.errors = new vmh.ErrorsViewModel(properties);
+		self.errors = new ko.errors.ErrorsViewModel(properties);
 		
 		self.toJSON = function() {
-			return vmh.extract(self, properties);
+			return ko.utils.extract(self, properties);
 		}
 		
 		self.reset = function(newUser) {
@@ -44,7 +41,7 @@ $(document).ready(function() {
 		}
 		
 		self.saveUser = function() {
-			vmh.ajax(self.uri, 'PUT', self.toJSON()).fail(self.errors.errorHandler).done(function(user) {
+			ko.utils.ajax(self.uri, 'PUT', self.toJSON()).fail(self.errors.errorHandler).done(function(user) {
 				// Signal VM of all users
 				usersViewModel.userUpdated(user);
 				// Hide dialog
@@ -53,7 +50,7 @@ $(document).ready(function() {
 		}
 		
 		self.saveNewUser = function() {
-			vmh.ajax('/api/1.0/users', 'POST', self.toJSON()).fail(self.errors.errorHandler).done(function(user) {
+			ko.utils.ajax('/api/1.0/users', 'POST', self.toJSON()).fail(self.errors.errorHandler).done(function(user) {
 				// Signal VM of all users
 				usersViewModel.userAdded(user);
 				// Hide dialog
@@ -73,7 +70,7 @@ $(document).ready(function() {
 			user.canBeDeleted = (user.id !== currentUser);
 			return user;
 		}
-		var compare = vmh.compareByString('username');
+		var compare = ko.utils.compareByString('username');
 		
 		// Add additional properties/methods to each user
 		self.users = ko.observableArray($.map(users, initUser).sort(compare));
@@ -91,15 +88,15 @@ $(document).ready(function() {
 		
 		self.deleteUser = function(user) {
 			if (window.confirm('Are you sure you want to remove this user?')) {
-				vmh.ajax(user.uri, 'DELETE').done(function(results) {
-					self.users.remove(vmh.filterById(user.id));
+				ko.utils.ajax(user.uri, 'DELETE').done(function(results) {
+					self.users.remove(ko.utils.filterById(user.id));
 				});
 			}
 		}
 		
 		self.resetUserPassword = function(user) {
 			if (window.confirm('Are you sure you want to reset the password of this user?')) {
-				vmh.ajax(user.uri, 'PUT', {password: ''}).done(function(user) {
+				ko.utils.ajax(user.uri, 'PUT', {password: ''}).done(function(user) {
 					//TODO flash
 				});
 			}
@@ -107,7 +104,7 @@ $(document).ready(function() {
 		
 		self.userUpdated = function(user) {
 			// Replace existing user and re-sort list
-			index = vmh.firstIndex(self.users.peek(), vmh.filterById(user.id));
+			index = ko.utils.firstIndex(self.users.peek(), ko.utils.filterById(user.id));
 			self.users.peek()[index] = initUser(user);
 			self.users.sort(compare);
 		}

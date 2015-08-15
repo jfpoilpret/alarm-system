@@ -57,7 +57,7 @@ class Users(Resource):
         args = self.reqparse.parse_args(strict = True)
         #TODO optimize and avoid creating the object; checking it exists is enough!
         if Account.query.filter_by(username = args.username).first():
-            abort(409, message = 'A user already exists with that name!')
+            abort(409, message = {'username': 'A user already exists with that name!'})
         account = Account(**args)
         db.session.add(account)
         db.session.commit()

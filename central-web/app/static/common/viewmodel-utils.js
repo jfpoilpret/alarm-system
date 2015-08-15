@@ -110,28 +110,14 @@
 		}
 	}
 	
-	var viewModelHelpers = {
-        	extract: extract,
-        	ajax: ajax,
-        	firstIndex: firstIndex,
-        	filterById: filterById,
-        	compareByString: compareByString,
-        	ErrorsViewModel: ErrorsViewModel
-	};
-	
-    /**
-     * export to either browser or node.js
-     */
-    if (typeof exports !== "undefined") {
-        exports.viewModelHelpers = viewModelHelpers;
-    } else {
-    	window.viewModelHelpers = viewModelHelpers;
-        if (typeof define === "function" && define.amd) {
-            define(function() {
-                return {
-                	viewModelHelpers: viewModelHelpers
-                };
-            });
-        }
-    }
+	// Add those methods to ko namespaces
+	if (!ko) ko = {};
+	if (!ko.utils) ko.utils = {};
+	if (!ko.errors) ko.errors = {};
+	ko.utils.extract = extract;
+	ko.utils.ajax = ajax;
+	ko.utils.firstIndex = firstIndex;
+	ko.utils.filterById = filterById;
+	ko.utils.compareByString = compareByString;
+	ko.errors.ErrorsViewModel = ErrorsViewModel;
 })(typeof window === "undefined" ? this : window);
