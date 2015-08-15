@@ -6,13 +6,16 @@ $(document).ready(function() {
 		self.username = ko.observable(user.username);
 		self.fullname = ko.observable(user.fullname);
 		
-		self.toJSON = function() {
-			return ko.utils.extract(self, ['username', 'fullname']);
-		}
+		var PROPERTIES = ['username', 'fullname'];
+		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
 		
+		self.toJSON = function() {
+			return ko.utils.extract(self, PROPERTIES);
+		}
+
 		self.saveProfile = function() {
 			var	user = self.toJSON();
-			ko.utils.ajax(self.uri, 'PUT', user).done(function(user) {
+			ko.utils.ajax(self.uri, 'PUT', user).fail(self.errors.errorHandler).done(function(user) {
 				//TODO How to pass information to users list if currently displayed?
 				// Hide dialog
 				$('#profile-dialog').modal('hide');
@@ -42,17 +45,20 @@ $(document).ready(function() {
 	// ViewModel for password dialog (only)
 	function UserPasswordViewModel() {
 		var self = this;
-		self.password1 = ko.observable();
+		self.password = ko.observable();
 		self.password2 = ko.observable();
+		
+		self.errors = new ko.errors.ErrorsViewModel(['password', 'password2']);
 		
 		self.savePassword = function() {
 			// Check both passwords are identical
-			if (self.password1() !== self.password2()) {
-				//TODO show message
-				self.password1('');
+			if (self.password() !== self.password2()) {
+				// Show error
+				self.errors.reset({}, ['Both passwords must be identical']);
+				self.password('');
 				self.password2('');
 			} else {
-				ko.utils.ajax(uri, 'PUT', {password: seld.password1()}).done(function(user) {
+				ko.utils.ajax(uri, 'PUT', {password: self.password()}).fail(self.errors.errorHandler).done(function(user) {
 					// Hide dialog
 					$('#password-dialog').modal('hide');
 				});
@@ -65,18 +71,12 @@ $(document).ready(function() {
 	}
 	
 	var userPasswordViewModel = new UserPasswordViewModel();
-	
-	// AJAX function to prepare and open dialog to edit current user's password
-	function openPasswordDialog()
-	{
-		userPasswordViewModel.editPassword();
-		return true;
-	}
-	
+	ko.applyBindings(userPasswordViewModel, $('#password-dialog').get(0));
+		
 	// Register event handlers
 	// - for list of configurations
 	$('#nav_myprofile').on('click', openProfileDialog);
-	$('#nav_mypassword').on('click', openPasswordDialog);
+	$('#nav_mypassword').on('click', userPasswordViewModel.editPassword);
 	// - for modal dialog
 	$('#modal-content').on('click', '.cancel', function() {
 		$('.modal').modal('hide');

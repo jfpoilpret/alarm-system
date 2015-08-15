@@ -1,3 +1,4 @@
+{% import "forms.html" as forms %}
 <div id="profile-dialog" class="modal" data-backdrop="static">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -7,27 +8,15 @@
 			</div>
 			<div class="modal-body">
 				<form class="form" id="profile_form" role="form">
-					<div style="display:none;">
-						<input id="profile_csrf_token" name="profile_csrf_token" type="hidden" value="1439504563##9e2ff3ac41f1f3cc5ff13d648416655c7d60a429">
-					</div>
-{#					{{ wtf.form_errors(profile_form, hiddens = "only") }} #}
-					<div class="form-group required">
-						<label class="control-label" for="profile_username">User Name</label>
-						<input class="form-control" data-bind="value: username" id="profile_username" name="profile_username" required="" type="text" value="">
-					</div>
-					<div class="form-group required">
-						<label class="control-label" for="profile_fullname">Full Name</label>
-						<input class="form-control" data-bind="value: fullname" id="profile_fullname" name="profile_fullname" required="" type="text" value="">
-					</div>
+					{{ forms.global_errors() }}
+					{{ forms.input('username', 'User Name', prefix = 'profile_', required = 'required') }}
+					{{ forms.input('fullname', 'Full Name', prefix = 'profile_', required = 'required') }}
 				</form>
 			</div>
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
-				<a	href="#" role="button" class="btn btn-primary" id="profile_submit"
-					data-bind="click: saveProfile">Save Profile</a>
+				<a href="#" role="button" class="btn btn-primary" id="profile_submit" data-bind="click: saveProfile">Save Profile</a>
 			</div>
 		</div>
 	</div>
 </div>
-
-
