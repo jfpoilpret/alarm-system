@@ -147,6 +147,16 @@
 		}
 	}
 	
+	var flashMessages;
+	
+	function getFlashMessages(element) {
+		if (!flashMessages) {
+			flashMessages = new FlashMessagesViewModel();
+			ko.applyBindings(flashMessages, element);
+		}
+		return flashMessages;
+	}
+	
 	// Add those methods to ko namespaces
 	if (!ko) ko = {};
 	if (!ko.utils) ko.utils = {};
@@ -156,6 +166,6 @@
 	ko.utils.firstIndex = firstIndex;
 	ko.utils.filterById = filterById;
 	ko.utils.compareByString = compareByString;
-	ko.utils.FlashMessagesViewModel = FlashMessagesViewModel;
+	ko.utils.getFlashMessages = getFlashMessages;
 	ko.errors.ErrorsViewModel = ErrorsViewModel;
 })(typeof window === "undefined" ? this : window);

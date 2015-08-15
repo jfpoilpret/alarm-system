@@ -7,13 +7,6 @@ x		- Flask-RESTful extension with JSON marshallers
 x		- knockout js for data binding and actions (MVVM)
 
 		- migration:
-			- flash
-30'				- check same viewModel (from Admin.js) is accessible by Profile.js
-					- update Admin.js and Profile.js
-					- or update viewmodel-utils to include creation and binding
-					(singleton)
-30'				- update done() to flash messages on dialog profile and password
-
 8h			- configurations REST
 8h			- configurations UI
 			

@@ -126,12 +126,10 @@ $(document).ready(function() {
 		}
 	}
 	
-	// Declare VM
+	// Declare all VM
+	var flashMessages = ko.utils.getFlashMessages($('#flash-messages').get(0));
 	var editUserViewModel = new EditUserViewModel();
 	ko.applyBindings(editUserViewModel, $('#user-dialog').get(0));
-	
-	var flashMessages = new ko.utils.FlashMessagesViewModel();
-	ko.applyBindings(flashMessages, $('#flash-messages').get(0));
 
 	var usersViewModel;
 	// Now get the list of users through AJAX and populate the global VM

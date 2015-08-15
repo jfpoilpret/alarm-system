@@ -19,6 +19,9 @@ $(document).ready(function() {
 				//TODO How to pass information to users list if currently displayed?
 				// Hide dialog
 				$('#profile-dialog').modal('hide');
+				// Add message
+				flashMessages.clear();
+				flashMessages.success('Your profile has been saved');
 			});
 		}
 
@@ -59,6 +62,9 @@ $(document).ready(function() {
 				self.password2('');
 			} else {
 				ko.utils.ajax(uri, 'PUT', {password: self.password()}).fail(self.errors.errorHandler).done(function(user) {
+					// Add message
+					flashMessages.clear();
+					flashMessages.success('Your password has been changed');
 					// Hide dialog
 					$('#password-dialog').modal('hide');
 				});
@@ -70,9 +76,10 @@ $(document).ready(function() {
 		}
 	}
 	
+	var flashMessages = ko.utils.getFlashMessages($('#flash-messages').get(0));
 	var userPasswordViewModel = new UserPasswordViewModel();
 	ko.applyBindings(userPasswordViewModel, $('#password-dialog').get(0));
-		
+
 	// Register event handlers
 	// - for list of configurations
 	$('#nav_myprofile').on('click', openProfileDialog);
