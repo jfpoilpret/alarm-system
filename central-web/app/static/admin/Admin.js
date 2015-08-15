@@ -1,5 +1,4 @@
 $(document).ready(function() {
-	//TODO missing flash messages if OK (to be done also with KnockOut)
 	// ViewModel for user dialog (only)
 	function EditUserViewModel() {
 		var self = this;
@@ -46,6 +45,9 @@ $(document).ready(function() {
 				usersViewModel.userUpdated(user);
 				// Hide dialog
 				$('#user-dialog').modal('hide');
+				// Add message
+				flashMessages.clear();
+				flashMessages.success('User \'' + user.username + '\' has been saved');
 			});
 		}
 		
@@ -55,6 +57,9 @@ $(document).ready(function() {
 				usersViewModel.userAdded(user);
 				// Hide dialog
 				$('#user-dialog').modal('hide');
+				// Add message
+				flashMessages.clear();
+				flashMessages.success('New user \'' + user.username + '\' has been created');
 			});
 		}
 		
@@ -90,6 +95,9 @@ $(document).ready(function() {
 			if (window.confirm('Are you sure you want to remove this user?')) {
 				ko.utils.ajax(user.uri, 'DELETE').done(function(results) {
 					self.users.remove(ko.utils.filterById(user.id));
+					// Add message
+					flashMessages.clear();
+					flashMessages.success('User \'' + user.username + '\' has been removed');
 				});
 			}
 		}
@@ -97,7 +105,9 @@ $(document).ready(function() {
 		self.resetUserPassword = function(user) {
 			if (window.confirm('Are you sure you want to reset the password of this user?')) {
 				ko.utils.ajax(user.uri, 'PUT', {password: ''}).done(function(user) {
-					//TODO flash
+					// Add message
+					flashMessages.clear();
+					flashMessages.success('Password of user \'' + user.username + '\' has been reset');
 				});
 			}
 		}
@@ -119,6 +129,9 @@ $(document).ready(function() {
 	// Declare VM
 	var editUserViewModel = new EditUserViewModel();
 	ko.applyBindings(editUserViewModel, $('#user-dialog').get(0));
+	
+	var flashMessages = new ko.utils.FlashMessagesViewModel();
+	ko.applyBindings(flashMessages, $('#flash-messages').get(0));
 
 	var usersViewModel;
 	// Now get the list of users through AJAX and populate the global VM

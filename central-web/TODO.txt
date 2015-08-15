@@ -7,18 +7,12 @@ x		- Flask-RESTful extension with JSON marshallers
 x		- knockout js for data binding and actions (MVVM)
 
 		- migration:
-x			- admin
-				- update navbar if modify self
-x			- profile
-				- update navbar and users list if displayed
-x			- modify password
-				- clear password if different, reset focus and show error in dialog
-			- bugs on "required" on server side: it is currently possible to create a user with empty name/fullname/password!
-				-> this is due to not submitting the form!
-2h+			- flash
-				- jinja2 template using KnockOut should override {% block messages %}
-				- refactor later on (to avoid too much block override...)
-				- js for flash?
+			- flash
+30'				- check same viewModel (from Admin.js) is accessible by Profile.js
+					- update Admin.js and Profile.js
+					- or update viewmodel-utils to include creation and binding
+					(singleton)
+30'				- update done() to flash messages on dialog profile and password
 
 8h			- configurations REST
 8h			- configurations UI
@@ -36,6 +30,12 @@ x			- modify password
 				- use time-limited tokens (is it enough for CSRF protection?)
 				- check if login can be done with knockout also (remove WTF altogether)
 	
+		- open points/bugs:
+			- link profile ViewModel to UsersViewModel somehow
+			- bind navbar to profile ViewModel
+			- bugs on "required" on server side: it is currently possible to create a user with empty name/fullname/password!
+				-> this is due to not submitting the form!
+		
 	- open questions:
 		- validation? suggested to use jQuery validation: what's that?
 		
@@ -43,6 +43,7 @@ x			- modify password
 		- check prevention against SVG exploits
 		
 	- study JavaScript and refactor as much as possible
+	- remove useless libs as much as possible!
 	
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?

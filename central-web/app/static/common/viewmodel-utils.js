@@ -54,6 +54,7 @@
 		}
 	}
 	
+	// ViewModel for form errors
 	function ErrorsViewModel(keys) {
 		var self = this;
 
@@ -104,6 +105,48 @@
 		}
 	}
 	
+	// ViewModel for flash messages
+	function FlashMessagesViewModel() {
+		var self = this;
+		self.messages = ko.observableArray();
+		
+		self.clear = function(alert) {
+			if (alert) 
+				self.messages.remove(alert);
+			else
+				self.messages.removeAll();
+		}
+		
+		var ALERT_TYPES = {
+			success: { alertClass: 'alert-success',	iconClass: 'glyphicon-ok-sign' },
+			info:	 { alertClass: 'alert-info',	iconClass: 'glyphicon-info-sign' },
+			warning: { alertClass: 'alert-warning',	iconClass: 'glyphicon-exclamation-sign' },
+			error:	 { alertClass: 'alert-danger',	iconClass: 'glyphicon-exclamation-sign' }
+		};
+
+		var addMessage = function(message, type) {
+			var alertType = ALERT_TYPES[type];
+			self.messages.push({
+				message: message,
+				alertClass: alertType.alertClass,
+				iconClass: alertType.iconClass
+			});
+		}
+		
+		self.success = function(message) {
+			addMessage(message, 'success');
+		}
+		self.info = function(message) {
+			addMessage(message, 'info');
+		}
+		self.warning = function(message) {
+			addMessage(message, 'warning');
+		}
+		self.error = function(message) {
+			addMessage(message, 'error');
+		}
+	}
+	
 	// Add those methods to ko namespaces
 	if (!ko) ko = {};
 	if (!ko.utils) ko.utils = {};
@@ -113,5 +156,6 @@
 	ko.utils.firstIndex = firstIndex;
 	ko.utils.filterById = filterById;
 	ko.utils.compareByString = compareByString;
+	ko.utils.FlashMessagesViewModel = FlashMessagesViewModel;
 	ko.errors.ErrorsViewModel = ErrorsViewModel;
 })(typeof window === "undefined" ? this : window);
