@@ -13,13 +13,10 @@ x			- profile
 				- update navbar and users list if displayed
 x			- modify password
 				- clear password if different, reset focus and show error in dialog
-2h			- form errors
-				- methods to analyze errors from REST response
-					400 -> typically error on arguments
-					40* -> specific errors (pure text)
-				- binding of general errors on dialog
-				- binding of field errors (class + helper text div)
-			- review forms html: remove useless markup 
+			- form errors
+30'				- jinja2 macro to create input fields and global errors
+1h				- update profile and modify password (js + html)
+			- review forms html: remove useless markup
 				- eg input "name" attribute
 				- value="": can it be removed altogether?
 2h+			- flash
@@ -87,6 +84,7 @@ x			- modify password
 		remove obsolete styles (some selectors don't exist any more after refactoring...)
 30'	- improve CSS files for every screen; check padding/margins in particular
 2h	- review labels/titles everywhere and review look overall
+1h	- ensure focus is set on first field of dialog
 
 1h+	- improve function to cleanup alert history:
 		- for a given config

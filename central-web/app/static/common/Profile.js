@@ -1,4 +1,7 @@
 $(document).ready(function() {
+	// Import helpers namespace
+	var vmh = viewModelHelpers;
+	
 	// ViewModel for profile dialog (only)
 	function UserProfileViewModel(user) {
 		var self = this;
@@ -7,12 +10,12 @@ $(document).ready(function() {
 		self.fullname = ko.observable(user.fullname);
 		
 		self.toJSON = function() {
-			return extract(self, ['username', 'fullname']);
+			return vmh.extract(self, ['username', 'fullname']);
 		}
 		
 		self.saveProfile = function() {
 			var	user = self.toJSON();
-			ajax(self.uri, 'PUT', user).done(function(user) {
+			vmh.ajax(self.uri, 'PUT', user).done(function(user) {
 				//TODO How to pass information to users list if currently displayed?
 				// Hide dialog
 				$('#profile-dialog').modal('hide');
@@ -52,7 +55,7 @@ $(document).ready(function() {
 				self.password1('');
 				self.password2('');
 			} else {
-				ajax(uri, 'PUT', {password: seld.password1()}).done(function(user) {
+				vmh.ajax(uri, 'PUT', {password: seld.password1()}).done(function(user) {
 					// Hide dialog
 					$('#password-dialog').modal('hide');
 				});
