@@ -27,6 +27,13 @@
         }
         return $.ajax(request);
     }
+    
+    function range(min, max, step) {
+    	var result = [];
+    	if (!step) step = 1;
+    	for (var i = min; i < max; i += step) result.push(i);
+    	return result;
+    }
 
     //TODO Check if we can directly extend observableArray with this function
     function firstIndex(list, predicate) {
@@ -163,6 +170,7 @@
 	if (!ko.errors) ko.errors = {};
 	ko.utils.extract = extract;
 	ko.utils.ajax = ajax;
+	ko.utils.range = range;
 	ko.utils.firstIndex = firstIndex;
 	ko.utils.filterById = filterById;
 	ko.utils.compareByString = compareByString;

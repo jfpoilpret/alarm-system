@@ -1,4 +1,69 @@
 $(document).ready(function() {
+	// ViewModel for device form (only)
+	function EditDeviceModel() {
+		var self = this;
+		self.name = ko.observable();
+		self.voltage_threshold = ko.observable();
+		self.device_id = ko.observable();
+		
+		self.showDeviceForm = ko.observable(false);
+		self.allDeviceIDs = ko.observableArray();
+
+		self.isNew = ko.observable();
+
+		var PROPERTIES = ['name', 'voltage_threshold', 'device_id', 'kind'];
+		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
+
+		// Internal functions
+		var toJSON = function() {
+			return ko.utils.extract(self, PROPERTIES);
+		}
+		
+		self.cancelDeviceForm = function() {
+			self.showDeviceForm(false);
+		}
+		
+		self.saveDevice = function() {
+			//TODO add device to list
+			if (self.isNew) {
+				editConfigViewModel.addDevice(toJSON());
+			} else {
+//				editConfigViewModel.updateDevice(self.id, toJSON());
+			}
+			self.showDeviceForm(false);
+		}
+		
+		self.reset = function(deviceCreator, newDevice) {
+			var isNew = (newDevice === undefined);
+			if (isNew) {
+				newDevice = {
+					id: undefined,
+					uri: undefined,
+					name: undefined,
+					kind: (deviceCreator ? deviceCreator.kind : undefined),
+					voltage_threshold: undefined,
+					device_id: undefined
+				};
+			}
+			self.id = newDevice.id;
+			self.uri = newDevice.uri;
+			self.kind = newDevice.kind;
+			self.name(newDevice.name);
+			self.voltage_threshold(newDevice.voltage_threshold);
+			self.device_id(newDevice.device_id);
+			self.allDeviceIDs(deviceCreator ? deviceCreator.deviceIds : []);
+			self.isNew(isNew);
+			self.errors.clear();
+			if (isNew) {
+				//TODO
+			}
+			if (deviceCreator)
+				self.showDeviceForm(true);
+		}
+		
+		self.reset();
+	}
+	
 	// ViewModel for configuration dialog (only)
 	function EditConfigurationViewModel() {
 		var self = this;
@@ -8,17 +73,30 @@ $(document).ready(function() {
 		self.hasMap = false;
 		self.mustDeleteMap = false;
 		self.mustUploadMap = false;
-		//TODO LATER add devices and alerts thresholds
+		
+		self.devices = ko.observableArray();
+		self.emptyList = ko.pureComputed(function() {
+			return self.devices().length == 0;
+		});
+		self.editDeviceModel = new EditDeviceModel();
+		
+		//TODO LATER add alerts thresholds
 		self.isNew = ko.observable();
 		
 		var PROPERTIES = ['name', 'lockcode', 'map_area'];
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
-		
-		self.toJSON = function() {
-			return ko.utils.extract(self, PROPERTIES);
-		}
+
+		// List of modules kind that can be created through dropdown button
+		self.deviceCreators = [
+   			{label: 'Add Keypad Module',			kind: 'Keypad', deviceIds: ko.utils.range(0x10, 0x14)},
+			{label: 'Add Motion Detection Module',	kind: 'Motion', deviceIds: ko.utils.range(0x20, 0x30)},
+			{label: 'Add Camera Module',			kind: 'Camera', deviceIds: ko.utils.range(0x30, 0x38)}
+		];
 		
 		// Internal functions
+		var toJSON = function() {
+			return ko.utils.extract(self, PROPERTIES);
+		}
 		var postMap = function(uri, done) {
 			// Submit form alongside map file if provided
 			var fd = new FormData($('#config_map_form').get(0));
@@ -38,9 +116,7 @@ $(document).ready(function() {
 			}).fail(self.errors.errorHandler).done(done);
 		}
 
-		//TODO will need to get additional details through JSON calls
 		self.reset = function(newConfig) {
-			self.config = newConfig;
 			var isNew = (newConfig === undefined);
 			if (isNew) {
 				newConfig = {
@@ -61,11 +137,19 @@ $(document).ready(function() {
 			self.mustUploadMap = false;
 			self.isNew(isNew);
 			self.errors.clear();
+			if (isNew) {
+				// Clear devices list
+				self.devices([]);
+			} else {
+				// Read devices from server
+				$.getJSON(newConfig.devices, self.devices);
+				//TODO will need to get additional details through JSON calls
+			}
 			$('#config_map_form').get(0).reset();
 		}
 		
 		self.saveConfig = function() {
-			ko.utils.ajax(self.uri, 'PUT', self.toJSON()).fail(self.errors.errorHandler).done(function(config) {
+			ko.utils.ajax(self.uri, 'PUT', toJSON()).fail(self.errors.errorHandler).done(function(config) {
 				// Signal VM of all configs
 				configurationsViewModel.configUpdated(config);
 				var done = function(config) {
@@ -88,7 +172,7 @@ $(document).ready(function() {
 		}
 		
 		self.saveNewConfig = function() {
-			ko.utils.ajax('/api/1.0/configurations', 'POST', self.toJSON()).fail(self.errors.errorHandler).done(function(config) {
+			ko.utils.ajax('/api/1.0/configurations', 'POST', toJSON()).fail(self.errors.errorHandler).done(function(config) {
 				// Signal VM of all configs
 				configurationsViewModel.configAdded(config);
 				var done = function(config) {
@@ -130,6 +214,17 @@ $(document).ready(function() {
 			self.mustUploadMap = true;
 		}
 		
+		self.editNewDevice = function(creator) {
+			console.log('editNewDevice');
+			console.log(creator.kind);
+			self.editDeviceModel.reset(creator);
+		}
+		
+		self.addDevice = function(device) {
+			self.devices.push(device);
+		}
+		
+		// Initialize the VM the first time
 		self.reset();
 	}
 	
@@ -209,27 +304,6 @@ $(document).ready(function() {
 		ko.applyBindings(configurationsViewModel, $('.configurations').get(0));
 	});
 	
-//	// AJAX function to prepare and open dialog to edit configuration
-//	function openEditConfigDialog()
-//	{
-//		// Load data for this config
-//		var id = $(this).attr('data-config');
-//		var url = sprintf('/configure/get_config/%d', id);
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'GET',
-//			url: url,
-//			success: function(dialog) {
-//				// update config dialog info
-//				$('#config-dialog').replaceWith(dialog);
-//				// check if devices already exist for this configuration
-//				updateDevicesList($('.devices-list > tbody').html().trim());
-//				$('#config-dialog').modal('show');
-//			}
-//		});
-//		return false;
-//	}
-//	
 //	function openConfigMapDialog()
 //	{
 //		// Load data for this config
@@ -245,40 +319,6 @@ $(document).ready(function() {
 //				$('#config-dialog').modal('show');
 //			    $('[data-toggle="popover"]').popover(
 //			    	{'container': 'body', 'trigger': 'hover focus', 'placement': 'right'});
-//			}
-//		});
-//		return false;
-//	}
-//	
-//	// AJAX function to save configuration
-//	function submitConfig()
-//	{
-//		// Submit form alongside map file if provided
-//		fd = new FormData($('#config_form').get(0));
-//		$.ajax({
-//			url: '/configure/save_config',
-//			type: 'POST',
-//			data: fd,
-//			processData: false,
-//			contentType: false,
-//			success: function(results) {
-//				// Check if form submission is valid
-//				if (results.result === 'OK') {
-//					// If OK, update config list, flash messages, and hide dialog
-//					updateConfigsList(results.configs);
-//					$('#flash-messages').html(results.flash);
-//					$('#config-dialog').modal('hide');
-//					//TODO if new config we should go ahead with edit config!!!
-//				} else {
-//					// Remove flash messages if any
-//					$('#flash-messages').html('');
-//					// Hide dialog before replacing content (otherwise background may stay forever)
-//					$('#config-dialog').modal('hide');
-//					// Show form errors by replacing the form
-//					$('#config-dialog').replaceWith(results.form);
-//					// Have to show dialog again as replacement hid it
-//					$('#config-dialog').modal('show');
-//				}
 //			}
 //		});
 //		return false;
@@ -313,131 +353,7 @@ $(document).ready(function() {
 //		});
 //		return false;
 //	}
-//	
-//	// AJAX function to get form html to create a new device for current configuration
-//	function openCreateDeviceForm()
-//	{
-//		// Get config id and device kind from clicked link
-//		var id = $(this).attr('data-config');
-//		var kind = $(this).attr('data-kind');
-//		var url = sprintf('/configure/get_new_device_form/%d/%d', id, kind);
-//		// Get form through AJAX
-//		prepareDeviceForm(url);
-//		return true;
-//	}
-//	
-//	// AJAX function to get form html to edit an existing device for current configuration
-//	function openEditDeviceForm()
-//	{
-//		// Get device id from clicked link
-//		var id = $(this).attr('data-device');
-//		var url = sprintf('/configure/get_edit_device_form/%d', id);
-//		// Get form through AJAX
-//		prepareDeviceForm(url);
-//		return false;
-//	}
-//	
-//	function prepareDeviceForm(url)
-//	{
-//		// Get form through AJAX
-//		$.ajax({
-//			type: 'GET',
-//			url: url,
-//			success: function(form) {
-//				// Add form to DOM
-//				$('#device_form').replaceWith(form);
-//				// Disable all config_form
-//				$('#config_name').attr('disabled', true);
-//				$('#config_lockcode').attr('disabled', true);
-//				$('#config_map_area_file').attr('disabled', true);
-//				$('.device-edit').attr('disabled', true);
-//				$('.device-delete').attr('disabled', true);
-//				$('#create-device').attr('disabled', true);
-//				$('#config_submit').attr('disabled', true);
-//			}
-//		});
-//	}
-//	
-//	function closeDeviceForm()
-//	{
-//		// Disable all config_form
-//		$('#config_name').attr('disabled', false);
-//		$('#config_lockcode').attr('disabled', false);
-//		$('#config_map_area_file').attr('disabled', false);
-//		$('.device-edit').attr('disabled', false);
-//		$('.device-delete').attr('disabled', false);
-//		$('#create-device').attr('disabled', false);
-//		$('#config_submit').attr('disabled', false);
-//		$('#device_form').hide();
-//	}
-//	
-//	// AJAX function to save device
-//	function submitDevice()
-//	{
-//		// Submit device form
-//		fd = new FormData($('#device_form').get(0));
-//		$.ajax({
-//			url: '/configure/save_device',
-//			type: 'POST',
-//			data: fd,
-//			processData: false,
-//			contentType: false,
-//			success: function(results) {
-//				// Remove flash messages if any
-//				$('#flash-messages').html('');
-//				// Check if form submission is valid
-//				if (results.result === 'OK') {
-//					// If OK, update devices list and hide device form
-//					updateDevicesList(results.devices);
-//					closeDeviceForm();
-//				} else {
-//					// Show form errors by replacing the form
-//					$('#device_form').replaceWith(results.form);
-//				}
-//			}
-//		});
-//		return false;
-//	}
-//	
-//	// AJAX function to cancel device edit form
-//	function cancelDevice()
-//	{
-//		closeDeviceForm();
-//		return false;
-//	}
-//	
-//	// AJAX function to delete a configuration
-//	function deleteDevice()
-//	{
-//		if (window.confirm('Are you sure you want to remove this module?')) {
-//			var id = $(this).attr('data-device');
-//			var url = sprintf('/configure/delete_device/%d', id);
-//			// Send AJAX request
-//			$.ajax({
-//				type: 'POST',
-//				url: url,
-//				success: function(results) {
-//					$('#flash-messages').html(results.flash);
-//					updateDevicesList(results.devices);
-//				}
-//			});
-//		}
-//		return false;
-//	}
-//	
-//	function updateDevicesList(devices)
-//	{
-//		if (devices.length == 0) {
-//			$('.devices-list').hide();
-//			$('#empty-devices-list').show();
-//		} else {
-//			$('#empty-devices-list').hide();
-//			$('.devices-list > tbody').html(devices);
-//			// Finally show the configurations list
-//			$('.devices-list').show();
-//		}
-//	}
-//	
+
 //	// AJAX function to add a new ping alert setting
 //	function addPingAlert()
 //	{
@@ -464,7 +380,7 @@ $(document).ready(function() {
 //		});
 //		return false;
 //	}
-//	
+
 //	// AJAX function to delete a ping alert setting
 //	function removePingAlert()
 //	{
@@ -532,32 +448,14 @@ $(document).ready(function() {
 	// This handler is called when a detail part of the config dialog is collapsed
 	// so that it uncollapses other parts (only one at a time)
 	// Note that Bootstrap has offers this behavior already but only inside panels.
-//	function collapseConfigDetail()
-//	{
-//		// Find all already collapsed elements and uncollapse them
-//		$('.collapse.in').collapse('hide');
-//	}
-	
-	// Now get the list of configurations through AJAX
-//	$.ajax({
-//		type: 'GET',
-//		url: '/configure/get_configs_list',
-//		success: updateConfigsList
-//	});
+	function collapseConfigDetail() {
+		// Find all already collapsed elements and uncollapse them
+		$('.collapse.in').collapse('hide');
+	}
 	
 	// Register event handlers
-	// - for list of configurations
-//	$('.config-new').on('click', openNewConfigDialog);
-//	$('.configs-list').on('click', '.config-set-current:not(.disabled)', setCurrentConfig);
-//	$('.configs-list').on('click', '.config-delete', deleteConfig);
-//	$('.configs-list').on('click', '.config-edit', openEditConfigDialog);
-//	$('.configs-list').on('click', '.config-map', openConfigMapDialog);
-	// - for config modal dialog
-//	$('#modal-content').on('click', '.cancel', function() {
-//		$('#config-dialog').modal('hide');
-//	});
-//	$('#modal-content').on('submit', '#config_form', submitConfig);
-//	$('#modal-content').on('show.bs.collapse', collapseConfigDetail);
+	$('#modal-content').on('show.bs.collapse', collapseConfigDetail);
+	
 //	// - for config map (devices location setup)
 //	$('#modal-content').on('submit', '#config_map_form', submitMap);
 //	// - for list of modules

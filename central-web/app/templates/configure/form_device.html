@@ -1,0 +1,17 @@
+{% import "forms.html" as forms %}
+<!-- ko with: editDeviceModel -->
+<form class="form form-inline" id="device_form" role="form" data-bind="visible: showDeviceForm">
+	{{ forms.inline_input('name', 'Name', hide_label = True, prefix = 'device_', 
+		required = 'required', placeholder = 'Name') }}
+	{{ forms.inline_input('voltage_threshold', 'Voltage Threshold', hide_label = True, prefix = 'device_', 
+		required = 'required', placeholder = 'Voltage Threshold (V)') }}
+	{# TODO add placeholder help in the popup (how?) #}
+	{{ forms.inline_select('device_id', 'Device ID', options = 'allDeviceIDs', hide_label = True, prefix = 'device_') }}
+	<a class="btn btn-danger device-cancel" href="#" data-bind="click: cancelDeviceForm">
+		<span class="glyphicon glyphicon-remove-circle"></span>
+	</a>
+	<a class="btn btn-success device-submit" href="#" data-bind="click: saveDevice">
+		<span class="glyphicon glyphicon-ok-circle"></span>
+	</a>
+</form>
+<!-- /ko -->

@@ -19,3 +19,8 @@ restApi.add_resource(ConfigurationResource, '/configurations/<int:id>', endpoint
 
 from .resources import ConfigurationMapResource
 restApi.add_resource(ConfigurationMapResource, '/configurations/<int:id>/map', endpoint = 'map')
+
+from .resources import DeviceResource, DevicesResource
+restApi.add_resource(DevicesResource, '/configurations/<int:id>/devices', endpoint = 'devices')
+restApi.add_resource(DeviceResource, '/devices/<int:id>', endpoint = 'device')
+

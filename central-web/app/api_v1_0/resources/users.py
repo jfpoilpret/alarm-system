@@ -6,8 +6,6 @@ from ...models import Account
 from flask_restful import abort, fields, marshal_with, reqparse, Resource
 from flask_restful.fields import Raw
 
-
-#TODO factor this out somewhere? (used in forms too)
 ROLES = [
     (Account.ROLE_ADMINISTRATOR, 'Administrator'),
     (Account.ROLE_CONFIGURATOR, 'Configurator'),

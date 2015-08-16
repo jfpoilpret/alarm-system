@@ -14,8 +14,9 @@ CONFIG_FIELDS = {
     'lockcode': fields.String,
     'map_area_filename': fields.String,
     'uri': fields.Url('.configuration', absolute =  False),
-    'map': fields.Url('.map', absolute =  False)
-    #TODO Add uri to get devices, no_ping_time_alert_thresholds, voltage_rate_alert_thresholds
+    'map': fields.Url('.map', absolute =  False),
+    'devices': fields.Url('.devices', absolute = False)
+    #TODO Add uri to no_ping_time_alert_thresholds, voltage_rate_alert_thresholds
 }
 
 class ConfigurationsResource(Resource):

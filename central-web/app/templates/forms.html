@@ -35,3 +35,29 @@
 		<!-- /ko -->
 	</div>
 {%- endmacro %}
+
+{% macro inline_input(name, label , hide_label = False, type = 'text', prefix = '', view_model = 'errors', classes = '') -%}
+	{% set id = prefix + name %}
+	{% set error = view_model + '.' + name %}
+	{% set label_class = 'sr-only' if hide_label else '' %}
+	<div class="form-group" data-bind="css: {'has-error': {{ error }} }">
+		<label class="control-label {{ label_class }}" for="{{ id }}">{{ label }}</label>
+		<input	class="form-control {{ classes }}" type="{{ type }}" 
+				id="{{ id }}" name="{{ id }}" 
+				{{ kwargs|xmlattr }}
+				data-bind="value: {{ name }}">
+	</div>
+{%- endmacro %}
+
+{% macro inline_select(name, label , options, hide_label = False, prefix = '', view_model = 'errors', classes = '') -%}
+	{% set id = prefix + name %}
+	{% set error = view_model + '.' + name %}
+	{% set label_class = 'sr-only' if hide_label else '' %}
+	<div class="form-group" data-bind="css: {'has-error': {{ error }} }">
+		<label class="control-label {{ label_class }}" for="{{ id }}">{{ label }}</label>
+		<select	class="form-control {{ classes }}" 
+				id="{{ id }}" name="{{ id }}" 
+				{{ kwargs|xmlattr }}
+				data-bind="options: {{ options }}, value: {{ name }}"></select>
+	</div>
+{%- endmacro %}

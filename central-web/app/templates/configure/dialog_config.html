@@ -21,7 +21,7 @@
 									data-bind="value: map_area_filename"
 									readonly="readonly">
 							<span class="input-group-btn">
-								{# FIXME: cannot diasble a link! replace with button/input? #}
+								{# FIXME: cannot disable a link! replace with button/input? #}
 								<a class="btn btn-default" data-bind="click: showMapUpload">Select...</a> 
 								<a class="btn btn-default" data-bind="enable: map_area_filename, click: deleteMap">Delete</a>
 							</span>
@@ -33,7 +33,7 @@
 					<input	id="map_area" name="map_area" type="file" accept=".svg" 
 							data-bind="event: { change: mapUploadChanged }">
 				</form>
-				<!-- ko if: !isNew -->
+				<!-- ko ifnot: isNew -->
 				<div id="expandable_area">
 					<a	class="btn btn-primary" role="button" data-toggle="collapse" href="#config_modules"
 						aria-expanded="false" aria-controls="config_modules">
@@ -47,10 +47,11 @@
 						aria-expanded="false" aria-controls="config_voltage_alerts">
 						Voltage Alerts
 					</a>
-{#
 					<div class="collapse" id="config_modules">
-						<h4 id="empty-devices-list" style="display:none">No module added yet!</h4>
-						<table class="table table-hover table-condensed devices-list" style="display:none">
+					{# TODO refactor and split into several smaller templates #}
+						<h4 id="empty-devices-list" data-bind="visible: emptyList">No module added yet!</h4>
+						<table	class="table table-hover table-condensed devices-list"
+								data-bind="visible: !emptyList()">
 							<thead>
 								<tr>
 									<th></th>
@@ -60,8 +61,23 @@
 									<th>Voltage Threshold</th>
 								</tr>
 							</thead>
-							<tbody>
-							{% include "configure/all_module_rows.html" %}
+							<tbody data-bind="foreach: devices">
+								<tr>
+									<td>
+										<a  class="btn btn-xs btn-default device-edit" href="#"
+											data-bind="click: $parent.editDevice">
+											<span class="glyphicon glyphicon-pencil"></span>
+										</a>
+										<a  class="btn btn-xs btn-default device-delete" href="#"
+											data-bind="click: $parent.deleteDevice">
+											<span class="glyphicon glyphicon-remove"></span>
+										</a>
+									</td>
+									<td class="device_name" data-bind="text: name"></td>
+									<td class="device_kind" data-bind="text: kind"></td>
+									<td class="device_id" data-bind="text: device_id"></td>
+									<td class="device_voltage" data-bind="text: voltage_threshold + ' V'"></td>
+								</tr>
 							</tbody>
 						</table>
 						<div class="btn-group">
@@ -69,21 +85,16 @@
 								data-toggle="dropdown" aria-expanded="false">
 								Add Module <span class="caret"></span>
 							</button>
-							<ul class="dropdown-menu" role="menu">
+							<ul class="dropdown-menu" role="menu" data-bind="foreach: deviceCreators">
 								<li>
-									<a class="create-device" data-config="{{ config.id }}" data-kind="1" href="#">Add Keypad Module</a>
-								</li>
-								<li>
-									<a class="create-device" data-config="{{ config.id }}" data-kind="2" href="#">Add Motion Detection Module</a>
-								</li>
-								<li>
-									<a class="create-device" data-config="{{ config.id }}" data-kind="3" href="#">Add Camera Module</a>
+									<a class="create-device" href="#" data-bind="text: label, click: $parent.editNewDevice"></a>
 								</li>
 							</ul>
 						</div>
-						<form class="form form-inline" id="device_form" role="form" style="display:none">
-						</form>
+						{# TODO include and manage form #}
+						{% include "configure/form_device.html" %}
 					</div>
+{#
 					<div class="collapse" id="config_ping_alerts">
 						<h4>Time (in seconds) without ping after which alerts must be triggered</h4>
 						<ul class="list-group">
