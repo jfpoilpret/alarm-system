@@ -7,9 +7,11 @@ x		- Flask-RESTful extension with JSON marshallers
 x		- knockout js for data binding and actions (MVVM)
 
 		- migration:
-8h			- configurations REST
-8h			- configurations UI
-			
+4h			- devices REST: GET/POST & GET/PUT/DELETE
+4h			- devices UI
+4h			- alert thresholds REST: GET/PUT only?
+4h			- alert thresholds UI
+
 8h			- monitoring REST
 8h			- monitoring UI
 			
@@ -17,6 +19,7 @@ x		- knockout js for data binding and actions (MVVM)
 				- remove all forms (except login)
 				- remove all routes that are superseded by API
 				- only 2 blueprints: API Vs. Web
+				=> rename all html and css to be more meaningful (rather than "home"...)
 			
 8h			- security (login, token)
 				- login must enable both REST services and Web pages serving!
@@ -28,6 +31,7 @@ x		- knockout js for data binding and actions (MVVM)
 			- bind navbar to profile ViewModel
 			- bugs on "required" on server side: it is currently possible to create a user with empty name/fullname/password!
 				-> this is due to not submitting the form!
+			- all REST resources: improve reqparse args checks by providing dedicated checks
 		
 	- open questions:
 		- validation? suggested to use jQuery validation: what's that?
@@ -37,7 +41,7 @@ x		- knockout js for data binding and actions (MVVM)
 		
 	- study JavaScript and refactor as much as possible
 	- remove useless libs as much as possible!
-	
+		
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
 30'	- configuration changes of an active config should be limited

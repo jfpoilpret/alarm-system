@@ -36,7 +36,7 @@ USER_FIELDS = {
     'uri': fields.Url('.user', absolute =  False)
 }
 
-class Users(Resource):
+class UsersResource(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser(bundle_errors = True)
         self.reqparse.add_argument(
@@ -64,7 +64,7 @@ class Users(Resource):
         db.session.refresh(account)
         return account, 201
 
-class User(Resource):
+class UserResource(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser(bundle_errors = True)
         self.reqparse.add_argument(

@@ -9,7 +9,13 @@ restApi = Api(api)
 #TODO ensure authentication (with token)
 
 #TODO register all REST resources
-from .resources import User, Users
+from .resources import UserResource, UsersResource
+restApi.add_resource(UsersResource, '/users', endpoint = 'users')
+restApi.add_resource(UserResource, '/users/<int:id>', endpoint = 'user')
 
-restApi.add_resource(Users, '/users', endpoint = 'users')
-restApi.add_resource(User, '/users/<int:id>', endpoint = 'user')
+from .resources import ConfigurationResource, ConfigurationsResource
+restApi.add_resource(ConfigurationsResource, '/configurations', endpoint = 'configurations')
+restApi.add_resource(ConfigurationResource, '/configurations/<int:id>', endpoint = 'configuration')
+
+from .resources import ConfigurationMapResource
+restApi.add_resource(ConfigurationMapResource, '/configurations/<int:id>/map', endpoint = 'map')

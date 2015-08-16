@@ -122,7 +122,7 @@ $(document).ready(function() {
 		self.userAdded = function(user) {
 			// Add new user and re-sort list
 			self.users.push(initUser(user));
-			users.sort(compare);
+			self.users.sort(compare);
 		}
 	}
 	
