@@ -7,11 +7,9 @@ x		- Flask-RESTful extension with JSON marshallers
 x		- knockout js for data binding and actions (MVVM)
 
 		- migration:
-1h			- devices REST: GET/POST & GET/PUT/DELETE: debug
-4h			- devices UI
-				- sort device list
-				- finish missing methods: edit device, save device, delete device
-				- ensure only minimum calls of PUT, POST, DELETE 
+30'			- devices REST: GET/DELETE: verify
+			
+1h			- devices on map (UI only)
 
 4h			- alert thresholds REST: GET/PUT only?
 4h			- alert thresholds UI
@@ -24,6 +22,10 @@ x		- knockout js for data binding and actions (MVVM)
 				- remove all routes that are superseded by API
 				- only 2 blueprints: API Vs. Web
 				=> rename all html and css to be more meaningful (rather than "home"...)
+
+			- javascript: make it more modular?
+				- investigate requirejs
+				- refactor ViewModel and JS files
 			
 8h			- security (login, token)
 				- login must enable both REST services and Web pages serving!

@@ -9,8 +9,8 @@
 			<div class="modal-body">
 				<form class="form" id="config_form" role="form" href="#">
 					{{ forms.global_errors() }}
-					{{ forms.input('name', 'Name', prefix = 'config_', required = 'required') }}
-					{{ forms.input('lockcode', 'Lock Code', prefix = 'config_', required = 'required') }}
+					{{ forms.input('name', 'Name', prefix = 'config_', classes = 'disablable', required = 'required') }}
+					{{ forms.input('lockcode', 'Lock Code', prefix = 'config_', classes = 'disablable', required = 'required') }}
 
 					{# TODO add errors if any on this field #}
 					<div class="form-group">
@@ -21,9 +21,10 @@
 									data-bind="value: map_area_filename"
 									readonly="readonly">
 							<span class="input-group-btn">
-								{# FIXME: cannot disable a link! replace with button/input? #}
-								<a class="btn btn-default" data-bind="click: showMapUpload">Select...</a> 
-								<a class="btn btn-default" data-bind="enable: map_area_filename, click: deleteMap">Delete</a>
+								<button type="button" class="btn btn-default disablable" 
+										data-bind="click: showMapUpload">Select...</button> 
+								<button type="button" class="btn btn-default" 
+										data-bind="enable: map_area_filename() && !editDeviceModel.showDeviceForm(), click: deleteMap">Delete</button>
 							</span>
 						</div>
 					</div>
@@ -35,18 +36,18 @@
 				</form>
 				<!-- ko ifnot: isNew -->
 				<div id="expandable_area">
-					<a	class="btn btn-primary" role="button" data-toggle="collapse" href="#config_modules"
-						aria-expanded="false" aria-controls="config_modules">
+					<button type="button" class="btn btn-primary disablable" role="button" data-toggle="collapse" 
+						href="#config_modules" aria-expanded="false" aria-controls="config_modules">
 						Modules
-					</a>
-					<a	class="btn btn-primary" role="button" data-toggle="collapse" href="#config_ping_alerts"
-						aria-expanded="false" aria-controls="config_ping_alerts">
+					</button>
+					<button type="button" class="btn btn-primary disablable" role="button" data-toggle="collapse" 
+						href="#config_ping_alerts" aria-expanded="false" aria-controls="config_ping_alerts">
 						Signal Alerts
-					</a>
-					<a	class="btn btn-primary" role="button" data-toggle="collapse" href="#config_voltage_alerts"
-						aria-expanded="false" aria-controls="config_voltage_alerts">
+					</button>
+					<button type="button" class="btn btn-primary disablable" role="button" data-toggle="collapse" 
+						href="#config_voltage_alerts" aria-expanded="false" aria-controls="config_voltage_alerts">
 						Voltage Alerts
-					</a>
+					</button>
 					<div class="collapse" id="config_modules">
 					{# TODO refactor and split into several smaller templates #}
 						<h4 id="empty-devices-list" data-bind="visible: emptyList">No module added yet!</h4>
@@ -64,14 +65,14 @@
 							<tbody data-bind="foreach: devices">
 								<tr>
 									<td>
-										<a  class="btn btn-xs btn-default device-edit" href="#"
-											data-bind="click: $parent.editDevice">
+										<button type="button" class="btn btn-xs btn-default device-edit disablable" 
+											href="#" data-bind="click: $parent.editDevice">
 											<span class="glyphicon glyphicon-pencil"></span>
-										</a>
-										<a  class="btn btn-xs btn-default device-delete" href="#"
-											data-bind="click: $parent.deleteDevice">
+										</button>
+										<button type="button" class="btn btn-xs btn-default device-delete disablable" 
+											href="#" data-bind="click: $parent.deleteDevice">
 											<span class="glyphicon glyphicon-remove"></span>
-										</a>
+										</button>
 									</td>
 									<td class="device_name" data-bind="text: name"></td>
 									<td class="device_kind" data-bind="text: kind"></td>
@@ -81,7 +82,7 @@
 							</tbody>
 						</table>
 						<div class="btn-group">
-							<button id="create-device" type="button" class="btn btn-primary dropdown-toggle" 
+							<button id="create-device" type="button" class="btn btn-primary dropdown-toggle disablable" 
 								data-toggle="dropdown" aria-expanded="false">
 								Add Module <span class="caret"></span>
 							</button>
@@ -114,10 +115,12 @@
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
 				<!-- ko if: isNew -->
-				<a href="#" role="button" class="btn btn-primary" id="config_submit" data-bind="click: saveNewConfig">Create Configuration</a>
+				<button	type="button" href="#" role="button" class="btn btn-primary disablable" id="config_submit" 
+						data-bind="click: saveNewConfig">Create Configuration</button>
 				<!-- /ko -->
 				<!-- ko ifnot: isNew -->
-				<a href="#" role="button" class="btn btn-primary" id="config_submit" data-bind="click: saveConfig">Save Configuration</a>
+				<button	type="button" href="#" role="button" class="btn btn-primary disablable" id="config_submit" 
+						data-bind="click: saveConfig">Save Configuration</button>
 				<!-- /ko -->
 			</div>
 		</div>

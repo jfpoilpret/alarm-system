@@ -1,5 +1,6 @@
 $(document).ready(function() {
 	// ViewModel for device form (only)
+	// NOTE: devices changes are immediately transferred to server (not when saving whole config)
 	function EditDeviceModel() {
 		var self = this;
 		self.name = ko.observable();
@@ -18,22 +19,37 @@ $(document).ready(function() {
 		var toJSON = function() {
 			return ko.utils.extract(self, PROPERTIES);
 		}
+		var postDevice = function(done) {
+			var uri = '/api/1.0/configurations/' + self.config_id + '/devices';
+			ko.utils.ajax(uri, 'POST', toJSON()).fail(self.errors.errorHandler).done(done);
+		}
+		var putDevice = function(done) {
+			ko.utils.ajax(self.uri, 'PUT', toJSON()).fail(self.errors.errorHandler).done(done);
+		}
+		var showForm = function(show) {
+			$('.disablable').attr('disabled', show);
+			self.showDeviceForm(show);
+		}
 		
 		self.cancelDeviceForm = function() {
-			self.showDeviceForm(false);
+			showForm(false);
 		}
 		
 		self.saveDevice = function() {
-			//TODO add device to list
-			if (self.isNew) {
-				editConfigViewModel.addDevice(toJSON());
+			if (self.isNew()) {
+				postDevice(function(device) {
+					editConfigViewModel.addDevice(device);
+					showForm(false);
+				});
 			} else {
-//				editConfigViewModel.updateDevice(self.id, toJSON());
+				putDevice(function(device) {
+					editConfigViewModel.updateDevice(self.id, device);
+					showForm(false);
+				});
 			}
-			self.showDeviceForm(false);
 		}
 		
-		self.reset = function(deviceCreator, newDevice) {
+		self.reset = function(configId, deviceCreator, newDevice) {
 			var isNew = (newDevice === undefined);
 			if (isNew) {
 				newDevice = {
@@ -46,19 +62,20 @@ $(document).ready(function() {
 				};
 			}
 			self.id = newDevice.id;
+			self.config_id = configId;
 			self.uri = newDevice.uri;
 			self.kind = newDevice.kind;
 			self.name(newDevice.name);
 			self.voltage_threshold(newDevice.voltage_threshold);
-			self.device_id(newDevice.device_id);
 			self.allDeviceIDs(deviceCreator ? deviceCreator.deviceIds : []);
+			self.device_id(newDevice.device_id);
 			self.isNew(isNew);
 			self.errors.clear();
 			if (isNew) {
 				//TODO
 			}
 			if (deviceCreator)
-				self.showDeviceForm(true);
+				showForm(true);
 		}
 		
 		self.reset();
@@ -94,6 +111,13 @@ $(document).ready(function() {
 		];
 		
 		// Internal functions
+		var compare = ko.utils.compareByNumber('device_id');
+		var findCreator = function(kind) {
+			var found = $.grep(self.deviceCreators, function(creator) {
+				return creator.kind == kind;
+			});
+			return found ? found[0] : null;
+		}
 		var toJSON = function() {
 			return ko.utils.extract(self, PROPERTIES);
 		}
@@ -143,11 +167,13 @@ $(document).ready(function() {
 			} else {
 				// Read devices from server
 				$.getJSON(newConfig.devices, self.devices);
+				self.devices.sort(compare);
 				//TODO will need to get additional details through JSON calls
 			}
 			$('#config_map_form').get(0).reset();
 		}
 		
+		//TODO refactor 2 next functions in one common code!
 		self.saveConfig = function() {
 			ko.utils.ajax(self.uri, 'PUT', toJSON()).fail(self.errors.errorHandler).done(function(config) {
 				// Signal VM of all configs
@@ -215,13 +241,24 @@ $(document).ready(function() {
 		}
 		
 		self.editNewDevice = function(creator) {
-			console.log('editNewDevice');
-			console.log(creator.kind);
-			self.editDeviceModel.reset(creator);
+			self.editDeviceModel.reset(self.id, creator);
+		}
+		
+		self.editDevice = function(device) {
+			var creator = findCreator(device.kind);
+			self.editDeviceModel.reset(self.id, creator, device);
 		}
 		
 		self.addDevice = function(device) {
 			self.devices.push(device);
+			self.devices.sort(compare);
+		}
+		
+		self.updateDevice = function(id, device) {
+			// Replace existing device and TODO re-sort list
+			index = ko.utils.firstIndex(self.devices.peek(), ko.utils.filterById(device.id));
+			self.devices.peek()[index] = device;
+			self.devices.sort(compare);
 		}
 		
 		// Initialize the VM the first time
@@ -458,13 +495,6 @@ $(document).ready(function() {
 	
 //	// - for config map (devices location setup)
 //	$('#modal-content').on('submit', '#config_map_form', submitMap);
-//	// - for list of modules
-//	$('#modal-content').on('click', '.create-device', openCreateDeviceForm);
-//	$('#modal-content').on('click', '.device-edit', openEditDeviceForm);
-//	$('#modal-content').on('click', '.device-delete', deleteDevice);
-	// - for device form
-//	$('#modal-content').on('click', '.device-submit', submitDevice);
-//	$('#modal-content').on('click', '.device-cancel', cancelDevice);
 //	// - for ping alerts settings
 //	$('#modal-content').on('click', '#config_ping_alerts button', addPingAlert);
 //	$('#modal-content').on('click', '.ping-alert-remove', removePingAlert);

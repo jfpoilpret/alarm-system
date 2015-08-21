@@ -61,6 +61,15 @@
 		}
 	}
 	
+	function compareByNumber(attribute) {
+		return function(item1, item2) {
+			var value1 = item1[attribute],
+				value2 = item2[attribute];
+			if (value1 === value2) return 0;
+			return value1 < value2 ? -1 : +1;
+		}
+	}
+	
 	// ViewModel for form errors
 	function ErrorsViewModel(keys) {
 		var self = this;
@@ -174,6 +183,7 @@
 	ko.utils.firstIndex = firstIndex;
 	ko.utils.filterById = filterById;
 	ko.utils.compareByString = compareByString;
+	ko.utils.compareByNumber = compareByNumber;
 	ko.utils.getFlashMessages = getFlashMessages;
 	ko.errors.ErrorsViewModel = ErrorsViewModel;
 })(typeof window === "undefined" ? this : window);
