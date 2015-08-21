@@ -7,13 +7,14 @@ x		- Flask-RESTful extension with JSON marshallers
 x		- knockout js for data binding and actions (MVVM)
 
 		- migration:
-30'			- devices REST: GET/DELETE: verify
-			
 1h			- devices on map (UI only)
 
 4h			- alert thresholds REST: GET/PUT only?
 4h			- alert thresholds UI
 
+1h			- configuration: set current
+				- implement as REST GET/PUT or GET/POST
+			
 8h			- monitoring REST
 8h			- monitoring UI
 			

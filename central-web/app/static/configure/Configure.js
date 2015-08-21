@@ -249,13 +249,24 @@ $(document).ready(function() {
 			self.editDeviceModel.reset(self.id, creator, device);
 		}
 		
+		self.deleteDevice = function(device) {
+			if (window.confirm('Are you sure you want to remove this module?')) {
+				ko.utils.ajax(device.uri, 'DELETE').done(function(results) {
+					self.devices.remove(ko.utils.filterById(device.id));
+					// Add message
+					flashMessages.clear();
+					flashMessages.success('Module \'' + device.name + '\' has been removed');
+				});
+			}
+		}
+		
 		self.addDevice = function(device) {
 			self.devices.push(device);
 			self.devices.sort(compare);
 		}
 		
 		self.updateDevice = function(id, device) {
-			// Replace existing device and TODO re-sort list
+			// Replace existing device and re-sort list
 			index = ko.utils.firstIndex(self.devices.peek(), ko.utils.filterById(device.id));
 			self.devices.peek()[index] = device;
 			self.devices.sort(compare);
