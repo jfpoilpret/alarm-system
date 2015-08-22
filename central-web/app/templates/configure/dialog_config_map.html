@@ -1,23 +1,17 @@
-{% import "bootstrap/wtf.html" as wtf %}
-<div id="config-dialog" class="modal" data-backdrop="static">
+<div id="config-map-dialog" class="modal" data-backdrop="static">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<a href="#" role="button" class="close cancel" aria-label="Close"><span aria-hidden="true">&times;</span></a>
-				<h4 class="modal-title">Map for Configuration '{{ config.name }}'</h4>
+				<h4 class="modal-title" data-bind="text: 'Map for Configuration \'' + name() + '\''"></h4>
 			</div>
 			<div class="modal-body">
-				<form class="form" id="config_map_form" enctype="multipart/form-data" role="form">
-					{{ config_map_form.hidden_tag() }}
-					{{ wtf.form_errors(config_map_form, hiddens = "only") }}
-				</form>
-				<div class="config-map-area">
-					{{ svg_map|safe }}
-				</div>
+				<div class="config-map-area" data-bind="html: svgMap"></div>
 			</div>
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
-				{{ wtf.form_field(config_map_form.submit, button_map = {'config_submit': 'primary'}, form = "config_map_form") }}
+				<button	type="button" href="#" role="button" class="btn btn-primary" id="map_submit" 
+						data-bind="click: saveMapConfig">Save Modules Location</button>
 			</div>
 		</div>
 	</div>

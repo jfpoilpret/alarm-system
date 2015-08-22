@@ -75,17 +75,17 @@ class DeviceResource(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser(bundle_errors = True)
         self.reqparse.add_argument(
-            'name', required = False, type = str, location = 'json', trim = True)
+            'name', required = False, type = str, location = 'json', store_missing = False, trim = True)
         self.reqparse.add_argument(
-            'kind', required = False, type = kind, location = 'json')
+            'kind', required = False, type = kind, location = 'json', store_missing = False)
         self.reqparse.add_argument(
-            'device_id', required = False, type = int, location = 'json')
+            'device_id', required = False, type = int, location = 'json', store_missing = False)
         self.reqparse.add_argument(
-            'voltage_threshold', required = False, type = float, location = 'json')
+            'voltage_threshold', required = False, type = float, location = 'json', store_missing = False)
         self.reqparse.add_argument(
-            'location_x', required = False, type = float, location = 'json')
+            'location_x', required = False, type = float, location = 'json', store_missing = False)
         self.reqparse.add_argument(
-            'location_y', required = False, type = float, location = 'json')
+            'location_y', required = False, type = float, location = 'json', store_missing = False)
 
     @marshal_with(DEVICE_FIELDS)
     def get(self, id):

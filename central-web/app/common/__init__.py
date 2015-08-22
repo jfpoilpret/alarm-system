@@ -122,6 +122,7 @@ def prepare_map(config, update_device_image, update_device_group):
                 '@stroke': 'red',
                 '@stroke-width': '3',
                 '@fill': 'red',
+                '@data-uri': url_for('.device', id = device.id),
                 '@data-toggle': 'popover',
                 '@title': 'Module %s (ID %d)' % (device.name, id),
                 '@data-content': ''

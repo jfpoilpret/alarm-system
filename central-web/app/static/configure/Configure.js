@@ -123,21 +123,16 @@ $(document).ready(function() {
 		}
 		var postMap = function(uri, done) {
 			// Submit form alongside map file if provided
-			var fd = new FormData($('#config_map_form').get(0));
 			$.ajax({
 				url: uri,
 				type: 'POST',
-				data: fd,
+				data: new FormData($('#config_map_form').get(0)),
 				processData: false,
 				contentType: false
 			}).fail(self.errors.errorHandler).done(done);
 		}
 		var deleteMap = function(uri, done) {
-			// Submit form alongside map file if provided
-			$.ajax({
-				url: uri,
-				type: 'DELETE'
-			}).fail(self.errors.errorHandler).done(done);
+			ko.utils.ajax(uri, 'DELETE').fail(self.errors.errorHandler).done(done);
 		}
 
 		self.reset = function(newConfig) {
@@ -276,6 +271,47 @@ $(document).ready(function() {
 		self.reset();
 	}
 	
+	function EditMapLocationsModel() {
+		var self = this;
+		self.name = ko.observable();
+		self.svgMap = ko.observable();
+		self.errors = new ko.errors.ErrorsViewModel();
+		
+		self.reset = function(name, uri) {
+			DeviceCoordinates = {};
+			self.uri = uri;
+			self.name(name);
+			self.errors.clear();
+			if (uri) {
+				// Read SVG ready for drag&drop from server
+				$.getJSON(uri + '?prepare_for=configuration', function(map) {
+					self.svgMap(map);
+				    $('[data-toggle="popover"]').popover(
+				    	{'container': 'body', 'trigger': 'hover focus', 'placement': 'right'});
+				});
+			}
+		}
+		
+		self.saveMapConfig = function() {
+			// Save new devices locations
+			console.log('saveMapConfig()');
+			console.log(DeviceCoordinates);
+			var promise = null;
+			$.each(DeviceCoordinates, function(uri, location) {
+				var next = ko.utils.ajax(uri, 'PUT', {location_x: location.x, location_y: location.y});
+				promise = (promise ? promise.then(next) : next);
+			});
+			promise.fail(self.errors.errorHandler).done(function() {
+				$('#config-map-dialog').modal('hide');
+				// Add message
+				flashMessages.clear();
+				flashMessages.success('Devices locations for configuration \'' + self.name() + '\' have been saved');
+			});
+		}
+		
+		self.reset();
+	}
+	
 	// ViewModel for list of configurations
 	function ConfigurationsViewModel(configs) {
 		var self = this;
@@ -316,8 +352,9 @@ $(document).ready(function() {
 		}
 
 		self.editConfigMap = function(config) {
-			console.log('editConfigMap');
-			console.log(config);
+			// Reset Map Locations ViewModel and show dialog
+			editMapLocationsModel.reset(config.name, config.map);
+			$('#config-map-dialog').modal('show');
 		}
 
 		self.editNewConfig = function() {
@@ -340,10 +377,13 @@ $(document).ready(function() {
 		}
 	}
 	
-	// Declare all VM
 	var flashMessages = ko.utils.getFlashMessages($('#flash-messages').get(0));
+	
+	// Declare all VM
 	var editConfigViewModel = new EditConfigurationViewModel();
 	ko.applyBindings(editConfigViewModel, $('#config-dialog').get(0));
+	var editMapLocationsModel = new EditMapLocationsModel();
+	ko.applyBindings(editMapLocationsModel, $('#config-map-dialog').get(0));
 	var configurationsViewModel;
 
 	// Now get the list of configurations through AJAX and populate the global VM
@@ -352,56 +392,6 @@ $(document).ready(function() {
 		ko.applyBindings(configurationsViewModel, $('.configurations').get(0));
 	});
 	
-//	function openConfigMapDialog()
-//	{
-//		// Load data for this config
-//		var id = $(this).attr('data-config');
-//		var url = sprintf('/configure/get_config_map/%d', id);
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'GET',
-//			url: url,
-//			success: function(dialog) {
-//				// update config dialog info
-//				$('#config-dialog').replaceWith(dialog);
-//				$('#config-dialog').modal('show');
-//			    $('[data-toggle="popover"]').popover(
-//			    	{'container': 'body', 'trigger': 'hover focus', 'placement': 'right'});
-//			}
-//		});
-//		return false;
-//	}
-//	
-//	// AJAX function to save map configuration
-//	function submitMap()
-//	{
-//		// Submit form alongside map file if provided
-//		fd = new FormData($('#config_map_form').get(0));
-//		$.ajax({
-//			url: '/configure/save_config_map',
-//			type: 'POST',
-//			data: fd,
-//			processData: false,
-//			contentType: false,
-//			success: function(results) {
-//				if (results.result === 'OK') {
-//					$('#flash-messages').html(results.flash);
-//					$('#config-dialog').modal('hide');
-//				} else {
-//					// Remove flash messages if any
-//					$('#flash-messages').html('');
-//					// Hide dialog before replacing content (otherwise background may stay forever)
-//					$('#config-dialog').modal('hide');
-//					// Show form errors by replacing the form
-//					$('#config-dialog').replaceWith(results.form);
-//					// Have to show dialog again as replacement hid it
-//					$('#config-dialog').modal('show');
-//				}
-//			}
-//		});
-//		return false;
-//	}
-
 //	// AJAX function to add a new ping alert setting
 //	function addPingAlert()
 //	{
@@ -504,8 +494,6 @@ $(document).ready(function() {
 	// Register event handlers
 	$('#modal-content').on('show.bs.collapse', collapseConfigDetail);
 	
-//	// - for config map (devices location setup)
-//	$('#modal-content').on('submit', '#config_map_form', submitMap);
 //	// - for ping alerts settings
 //	$('#modal-content').on('click', '#config_ping_alerts button', addPingAlert);
 //	$('#modal-content').on('click', '.ping-alert-remove', removePingAlert);

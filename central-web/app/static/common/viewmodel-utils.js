@@ -74,6 +74,7 @@
 	function ErrorsViewModel(keys) {
 		var self = this;
 
+		keys = keys || [];
 		self.global = ko.observable('');
 		$.each(keys, function(index, key) {
 			self[key] = ko.observable('');

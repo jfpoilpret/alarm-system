@@ -5,6 +5,7 @@ from ...models import Configuration
 
 from flask_restful import abort, fields, marshal_with, reqparse, Resource
 from werkzeug.datastructures import FileStorage
+from app.common import prepare_map_for_config, prepare_map_for_monitoring
 
 CONFIG_FIELDS = {
     'id': fields.Integer,
@@ -87,14 +88,23 @@ class ConfigurationResource(Resource):
 
 class ConfigurationMapResource(Resource):
     def __init__(self):
-        self.reqparse = reqparse.RequestParser(bundle_errors = True)
-        self.reqparse.add_argument(
+        self.get_parse = reqparse.RequestParser(bundle_errors = True)
+        self.get_parse.add_argument(
+            'prepare_for', required = False, type = str, location = 'args', 
+            choices = ['configuration', 'monitoring'])
+        self.post_parse = reqparse.RequestParser(bundle_errors = True)
+        self.post_parse.add_argument(
             'map_area', required = True, type = FileStorage, location = 'files')
 
     def get(self, id):
         config = Configuration.query.get_or_404(id)
-        #TODO Prepare map for config of devices?
-        return config.map_area
+        args = self.get_parse.parse_args(strict = True)
+        if args.prepare_for == 'configuration':
+            return prepare_map_for_config(config)
+        elif args.prepare_for == 'monitoring':
+            return prepare_map_for_monitoring(config)
+        else:
+            return config.map_area
 
     @marshal_with(CONFIG_FIELDS)
     def delete(self, id):
@@ -108,7 +118,7 @@ class ConfigurationMapResource(Resource):
     @marshal_with(CONFIG_FIELDS)
     def post(self, id):
         config = Configuration.query.get_or_404(id)
-        args = self.reqparse.parse_args(strict = True)
+        args = self.post_parse.parse_args(strict = True)
         data = args.map_area.read().decode('utf-8')
         config.map_area = data
         config.map_area_filename = args.map_area.filename

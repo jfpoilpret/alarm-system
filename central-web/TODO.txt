@@ -7,8 +7,6 @@ x		- Flask-RESTful extension with JSON marshallers
 x		- knockout js for data binding and actions (MVVM)
 
 		- migration:
-1h			- devices on map (UI only)
-
 4h			- alert thresholds REST: GET/PUT only?
 4h			- alert thresholds UI
 
@@ -27,6 +25,7 @@ x		- knockout js for data binding and actions (MVVM)
 			- javascript: make it more modular?
 				- investigate requirejs
 				- refactor ViewModel and JS files
+				- how to deal with SVGHandlers (currently in global namespace...)
 			
 8h			- security (login, token)
 				- login must enable both REST services and Web pages serving!

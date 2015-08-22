@@ -1,3 +1,6 @@
+//TODO rework in its own namespace
+//TODO use standard JS conventions for variables names
+//FIXME ensure device coordinares dictionary always reset first
 
 var TransformRequestObj;
 var TransList;
@@ -6,7 +9,7 @@ var Dragging = false;
 var OffsetX = 0;
 var OffsetY = 0;
 
-var DeviceCoordinates = new Object();
+var DeviceCoordinates = {};
 
 //---mouse down over element---
 function startDrag(evt)
@@ -81,7 +84,5 @@ function endDrag(evt)
 	yy = matrix.b * x + matrix.d * y + matrix.f;
 	
 	// Add this device to the list of devices changed
-	DeviceCoordinates[DragTarget.parentNode.id] = { 'x': xx, 'y': yy };
-	// Immediately update hidden field with JSON of all device changes so that form is always ready for submit
-	config_devices_locations.value = JSON.stringify(DeviceCoordinates);
+	DeviceCoordinates[DragTarget.getAttribute('data-uri')] = { 'x': xx, 'y': yy };
 }

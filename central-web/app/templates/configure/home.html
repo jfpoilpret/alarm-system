@@ -11,8 +11,13 @@
 <script type="text/javascript" src="{{url_for('static', filename='configure/SVGHandlers.js')}}"></script>
 {% endblock %}
 
+{% block messages %}
+{% include "new_flash_messages.html" %}
+{% endblock %}
+
 {% block modal_content %}
 {% include "configure/dialog_config.html" %}
+{% include "configure/dialog_config_map.html" %}
 {% endblock %}
 
 {% block page_content %}

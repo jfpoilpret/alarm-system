@@ -37,15 +37,15 @@
 				<!-- ko ifnot: isNew -->
 				<div id="expandable_area">
 					<button type="button" class="btn btn-primary disablable" role="button" data-toggle="collapse" 
-						href="#config_modules" aria-expanded="false" aria-controls="config_modules">
+						data-target="#config_modules" aria-expanded="false" aria-controls="config_modules">
 						Modules
 					</button>
 					<button type="button" class="btn btn-primary disablable" role="button" data-toggle="collapse" 
-						href="#config_ping_alerts" aria-expanded="false" aria-controls="config_ping_alerts">
+						data-target="#config_ping_alerts" aria-expanded="false" aria-controls="config_ping_alerts">
 						Signal Alerts
 					</button>
 					<button type="button" class="btn btn-primary disablable" role="button" data-toggle="collapse" 
-						href="#config_voltage_alerts" aria-expanded="false" aria-controls="config_voltage_alerts">
+						data-target="#config_voltage_alerts" aria-expanded="false" aria-controls="config_voltage_alerts">
 						Voltage Alerts
 					</button>
 					<div class="collapse" id="config_modules">
@@ -66,11 +66,11 @@
 								<tr>
 									<td>
 										<button type="button" class="btn btn-xs btn-default device-edit disablable" 
-											href="#" data-bind="click: $parent.editDevice">
+											data-bind="click: $parent.editDevice">
 											<span class="glyphicon glyphicon-pencil"></span>
 										</button>
 										<button type="button" class="btn btn-xs btn-default device-delete disablable" 
-											href="#" data-bind="click: $parent.deleteDevice">
+											data-bind="click: $parent.deleteDevice">
 											<span class="glyphicon glyphicon-remove"></span>
 										</button>
 									</td>
@@ -115,11 +115,11 @@
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
 				<!-- ko if: isNew -->
-				<button	type="button" href="#" role="button" class="btn btn-primary disablable" id="config_submit" 
+				<button	type="button" role="button" class="btn btn-primary disablable" id="config_submit" 
 						data-bind="click: saveNewConfig">Create Configuration</button>
 				<!-- /ko -->
 				<!-- ko ifnot: isNew -->
-				<button	type="button" href="#" role="button" class="btn btn-primary disablable" id="config_submit" 
+				<button	type="button" role="button" class="btn btn-primary disablable" id="config_submit" 
 						data-bind="click: saveConfig">Save Configuration</button>
 				<!-- /ko -->
 			</div>
