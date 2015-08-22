@@ -5,6 +5,7 @@ from ...models import Configuration
 
 from flask_restful import abort, fields, marshal_with, reqparse, Resource
 from werkzeug.datastructures import FileStorage
+from sqlalchemy import update
 from app.common import prepare_map_for_config, prepare_map_for_monitoring
 
 CONFIG_FIELDS = {
@@ -127,6 +128,33 @@ class ConfigurationMapResource(Resource):
         db.session.refresh(config)
         return config, 200
 
-#TODO other resources for: config devices (GET all/POST/GET/DELETE/PUT)
+class CurrentConfigurationResource(Resource):
+    def __init__(self):
+        self.post_parse = reqparse.RequestParser(bundle_errors = True)
+        self.post_parse.add_argument(
+            'id', required = True, type = int, location = 'args')
+    
+    @marshal_with(CONFIG_FIELDS)
+    def get(self):
+        config = Configuration.query.filter_by(current = True).first()
+        if config:
+            return config, 200
+        else:
+            return {}, 204
+    
+    @marshal_with(CONFIG_FIELDS)
+    def post(self):
+        args = self.post_parse.parse_args(strict = True)
+        config = Configuration.query.get_or_404(args.id)
+        if not config.current:
+            db.session.execute(update(Configuration.__table__).values(current = False))
+            config.current = True
+            db.session.add(config)
+            db.session.commit()
+            db.session.refresh(config)
+            return config, 200
+        else:
+            return {}, 204
+
 #TODO other resources for: ping thresholds (GET all/PUT only?)
 #TODO other resources for: voltage thresholds (GET all/PUT only?)

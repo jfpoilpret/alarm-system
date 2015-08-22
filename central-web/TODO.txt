@@ -10,8 +10,7 @@ x		- knockout js for data binding and actions (MVVM)
 4h			- alert thresholds REST: GET/PUT only?
 4h			- alert thresholds UI
 
-1h			- configuration: set current
-				- implement as REST GET/PUT or GET/POST
+15'			- configuration: map config enable only if map and devices exist?
 			
 8h			- monitoring REST
 8h			- monitoring UI
@@ -24,7 +23,8 @@ x		- knockout js for data binding and actions (MVVM)
 
 			- javascript: make it more modular?
 				- investigate requirejs
-				- refactor ViewModel and JS files
+				- refactor ViewModel and JS files: try to have one parent VM with children
+				(avoid more than one global var per page)
 				- how to deal with SVGHandlers (currently in global namespace...)
 			
 8h			- security (login, token)

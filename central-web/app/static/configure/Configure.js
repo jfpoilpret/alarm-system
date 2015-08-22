@@ -294,8 +294,6 @@ $(document).ready(function() {
 		
 		self.saveMapConfig = function() {
 			// Save new devices locations
-			console.log('saveMapConfig()');
-			console.log(DeviceCoordinates);
 			var promise = null;
 			$.each(DeviceCoordinates, function(uri, location) {
 				var next = ko.utils.ajax(uri, 'PUT', {location_x: location.x, location_y: location.y});
@@ -340,9 +338,16 @@ $(document).ready(function() {
 		}
 		
 		self.setCurrent = function(config) {
-			//TODO maybe create special uri for current config first?
-			console.log('setCurrent');
-			console.log(config);
+			ko.utils.ajax('/api/1.0/configurations/current?id=' + config.id, 'POST').done(function() {
+				// Update all configurations
+				var configs = self.configurations();
+				$.each(configs, function(index, conf) {
+					conf.current = (conf.id === config.id);
+				});
+				// Force configurations list refresh
+				self.configurations([]);
+				self.configurations(configs);
+			});
 		}
 		
 		self.editConfig = function(config) {

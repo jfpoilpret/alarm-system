@@ -2,5 +2,6 @@
 
 # import all resources
 from .users import UsersResource, UserResource
-from .configurations import ConfigurationsResource, ConfigurationResource, ConfigurationMapResource
+from .configurations import ConfigurationsResource, ConfigurationResource
+from .configurations import CurrentConfigurationResource, ConfigurationMapResource
 from .devices import DevicesResource, DeviceResource
