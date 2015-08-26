@@ -1,0 +1,25 @@
+<h4>Rate (in % of device voltage threshold) under which alerts are triggered</h4>
+<ul class="list-group" data-bind="foreach: voltageThresholds">
+	<li class="list-group-item form-inline" data-bind="css: itemCss">
+		<!-- ko foreach: thresholds -->
+		<span class="badge">
+			<!-- ko text: rate + '% (' + time + '\')' --><!-- /ko -->
+			<a class="ping-alert-remove" data-bind="click: $parent.removeThreshold" href="#">
+				<span class="glyphicon glyphicon-remove"></span>
+			</a>
+		</span>
+		<!-- /ko  -->
+		<span class="glyphicon" data-bind="css: levelIcon"></span>
+		<div class="ping-alert-type" data-bind="text: levelLabel"></div>
+		<input	type="text" class="form-control input-sm voltage-alert-threshold" 
+				data-bind="value: newVoltage" placeholder="rate (%)"/>
+		<div class="input-group input-group-sm">
+			<input type="text" class="form-control ping-alert-time" data-bind="value: newTime" placeholder="time (')"/>
+			<span class="input-group-btn">
+				<button class="btn btn-default" data-bind="click: addVoltageThreshold" type="button">
+					<span class="glyphicon glyphicon-ok"></span>
+				</button>
+			</span>
+		</div>
+	</li>
+</ul>

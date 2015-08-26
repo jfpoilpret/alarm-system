@@ -2,8 +2,8 @@ Flask==0.10.1
 Flask-Bootstrap==3.3.5.3
 Flask-Login==0.2.11
 Flask-RESTful==0.3.4
-Flask-SQLAlchemy==2.0
 Flask-Script==2.0.5
+Flask-SQLAlchemy==2.0
 Flask-WTF==0.11
 Jinja2==2.7.3
 MarkupSafe==0.23
@@ -15,4 +15,5 @@ dominate==2.1.12
 itsdangerous==0.24
 pytz==2015.4
 six==1.9.0
+webargs==0.15.0
 xmltodict==0.9.2

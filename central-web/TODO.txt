@@ -5,13 +5,17 @@
 		- AJAX+RESTful webapp (but not exactly single page: one page per main menu in fact)
 x		- Flask-RESTful extension with JSON marshallers
 x		- knockout js for data binding and actions (MVVM)
+4h		- replace reqparse with webargs everywhere
+		- consider using marshmallow instead of flask restful marshalling?
+		- remove flask-restful in the end?
 
 		- migration:
-4h			- alert thresholds REST: GET/PUT only?
-4h			- alert thresholds UI
+1h			- voltage alert thresholds REST: finish PUT (save to DB)
 
 15'			- configuration: map config enable only if map and devices exist?
-			
+
+			- ensure flash messages are cleared whenever needed, in particular when canceling dialog
+
 8h			- monitoring REST
 8h			- monitoring UI
 			

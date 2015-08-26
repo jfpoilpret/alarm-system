@@ -49,66 +49,14 @@
 						Voltage Alerts
 					</button>
 					<div class="collapse" id="config_modules">
-					{# TODO refactor and split into several smaller templates #}
-						<h4 id="empty-devices-list" data-bind="visible: emptyList">No module added yet!</h4>
-						<table	class="table table-hover table-condensed devices-list"
-								data-bind="visible: !emptyList()">
-							<thead>
-								<tr>
-									<th></th>
-									<th>Name</th>
-									<th>Kind</th>
-									<th>Device ID</th>
-									<th>Voltage Threshold</th>
-								</tr>
-							</thead>
-							<tbody data-bind="foreach: devices">
-								<tr>
-									<td>
-										<button type="button" class="btn btn-xs btn-default device-edit disablable" 
-											data-bind="click: $parent.editDevice">
-											<span class="glyphicon glyphicon-pencil"></span>
-										</button>
-										<button type="button" class="btn btn-xs btn-default device-delete disablable" 
-											data-bind="click: $parent.deleteDevice">
-											<span class="glyphicon glyphicon-remove"></span>
-										</button>
-									</td>
-									<td class="device_name" data-bind="text: name"></td>
-									<td class="device_kind" data-bind="text: kind"></td>
-									<td class="device_id" data-bind="text: device_id"></td>
-									<td class="device_voltage" data-bind="text: voltage_threshold + ' V'"></td>
-								</tr>
-							</tbody>
-						</table>
-						<div class="btn-group">
-							<button id="create-device" type="button" class="btn btn-primary dropdown-toggle disablable" 
-								data-toggle="dropdown" aria-expanded="false">
-								Add Module <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu" role="menu" data-bind="foreach: deviceCreators">
-								<li>
-									<a class="create-device" href="#" data-bind="text: label, click: $parent.editNewDevice"></a>
-								</li>
-							</ul>
-						</div>
-						{# TODO include and manage form #}
-						{% include "configure/form_device.html" %}
+						{% include "configure/config_devices.html" %}
 					</div>
-{#
 					<div class="collapse" id="config_ping_alerts">
-						<h4>Time (in seconds) without ping after which alerts must be triggered</h4>
-						<ul class="list-group">
-							{% include "configure/all_ping_alert_rows.html" %}
-						</ul>
+						{% include "configure/config_ping_thresholds.html" %}
 					</div>
 					<div class="collapse" id="config_voltage_alerts">
-						<h4>Rate (in % of device voltage threshold) under which alerts are triggered</h4>
-						<ul class="list-group">
-							{% include "configure/all_voltage_alert_rows.html" %}
-						</ul>
+						{% include "configure/config_voltage_thresholds.html" %}
 					</div>
-#}
 				</div>
 				<!-- /ko -->
 			</div>

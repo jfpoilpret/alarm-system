@@ -28,3 +28,10 @@ from .resources import DeviceResource, DevicesResource
 restApi.add_resource(DevicesResource, '/configurations/<int:id>/devices', endpoint = 'devices')
 restApi.add_resource(DeviceResource, '/devices/<int:id>', endpoint = 'device')
 
+from .resources import NoPingAlertThresholdsResource
+restApi.add_resource(NoPingAlertThresholdsResource, 
+    '/configurations/<int:id>/alert-thresholds/no-ping', endpoint = 'no-ping')
+
+from .resources import VoltageAlertThresholdsResource
+restApi.add_resource(VoltageAlertThresholdsResource, 
+    '/configurations/<int:id>/alert-thresholds/voltage', endpoint = 'voltage')

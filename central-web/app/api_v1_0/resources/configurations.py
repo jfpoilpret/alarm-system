@@ -17,8 +17,9 @@ CONFIG_FIELDS = {
     'map_area_filename': fields.String,
     'uri': fields.Url('.configuration', absolute =  False),
     'map': fields.Url('.map', absolute =  False),
-    'devices': fields.Url('.devices', absolute = False)
-    #TODO Add uri to no_ping_time_alert_thresholds, voltage_rate_alert_thresholds
+    'devices': fields.Url('.devices', absolute = False),
+    'no_ping_thresholds': fields.Url('.no-ping', absolute = False),
+    'voltage_thresholds': fields.Url('.voltage', absolute = False)
 }
 
 class ConfigurationsResource(Resource):
@@ -156,5 +157,4 @@ class CurrentConfigurationResource(Resource):
         else:
             return {}, 204
 
-#TODO other resources for: ping thresholds (GET all/PUT only?)
 #TODO other resources for: voltage thresholds (GET all/PUT only?)

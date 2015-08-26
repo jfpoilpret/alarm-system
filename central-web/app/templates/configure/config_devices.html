@@ -1,0 +1,44 @@
+{% import "forms.html" as forms %}
+<h4 id="empty-devices-list" data-bind="visible: emptyDevicesList">No module added yet!</h4>
+<table	class="table table-hover table-condensed devices-list"
+		data-bind="visible: !emptyDevicesList()">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Name</th>
+			<th>Kind</th>
+			<th>Device ID</th>
+			<th>Voltage Threshold</th>
+		</tr>
+	</thead>
+	<tbody data-bind="foreach: devices">
+		<tr>
+			<td>
+				<button type="button" class="btn btn-xs btn-default device-edit disablable" 
+					data-bind="click: $parent.editDevice">
+					<span class="glyphicon glyphicon-pencil"></span>
+				</button>
+				<button type="button" class="btn btn-xs btn-default device-delete disablable" 
+					data-bind="click: $parent.deleteDevice">
+					<span class="glyphicon glyphicon-remove"></span>
+				</button>
+			</td>
+			<td class="device_name" data-bind="text: name"></td>
+			<td class="device_kind" data-bind="text: kind"></td>
+			<td class="device_id" data-bind="text: device_id"></td>
+			<td class="device_voltage" data-bind="text: voltage_threshold + ' V'"></td>
+		</tr>
+	</tbody>
+</table>
+<div class="btn-group">
+	<button id="create-device" type="button" class="btn btn-primary dropdown-toggle disablable" 
+		data-toggle="dropdown" aria-expanded="false">
+		Add Module <span class="caret"></span>
+	</button>
+	<ul class="dropdown-menu" role="menu" data-bind="foreach: deviceCreators">
+		<li>
+			<a class="create-device" href="#" data-bind="text: label, click: $parent.editNewDevice"></a>
+		</li>
+	</ul>
+</div>
+{% include "configure/form_device.html" %}

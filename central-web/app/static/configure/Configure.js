@@ -81,25 +81,99 @@ $(document).ready(function() {
 		self.reset();
 	}
 	
+	function AlertThresholdsModel(level, label, css, icon, hasVoltage) {
+		var self = this;
+		self.level = level;
+		self.itemCss = 'list-group-item-' + css;
+		self.levelIcon = 'glyphicon-' + icon;
+		self.levelLabel = label;
+		self.thresholds = ko.observableArray();
+		self.newTime = ko.observable();
+		self.newVoltage = ko.observable();
+		self.hasVoltage = hasVoltage;
+		self.dirty = false;
+
+		var compareTime = function(t1, t2) {
+			return t2 - t1;
+		}
+		var compareVoltage = function(t1, t2) {
+			if (t1.voltage == t2.voltage)
+				return t2.time - t1.time
+			return t1.voltage - t2.voltage;
+		}
+		var compare = hasVoltage ? compareVoltage : compareTime;
+		
+		self.setThresholds = function(thresholds) {
+			self.dirty = false;
+			self.thresholds(thresholds);
+			self.thresholds.sort(compare);
+		}
+		self.removeThreshold = function(threshold) {
+			self.dirty = true;
+			self.thresholds.remove(threshold);
+		}
+		self.addTimeThreshold = function() {
+			var time = self.newTime();
+			if ($.isNumeric(time)) {
+				time = Number(time);
+				if (self.thresholds.indexOf(time) < 0) {
+					self.dirty = true;
+					self.thresholds.push(time);
+					self.thresholds.sort(compare);
+				}
+				self.newTime(undefined);
+			}
+		}
+		
+		self.addVoltageThreshold = function() {
+			var voltage = self.newVoltage();
+			var time = self.newTime();
+			if ($.isNumeric(time) && $.isNumeric(voltage)) {
+				var threshold = {rate: Number(voltage), time: Number(time)};
+				if (self.thresholds.indexOf(threshold) < 0) {
+					self.dirty = true;
+					self.thresholds.push(threshold);
+					self.thresholds.sort(compare);
+				}
+				self.newTime(undefined);
+				self.newVoltage(undefined);
+			}
+		}
+	}
+	
 	// ViewModel for configuration dialog (only)
 	function EditConfigurationViewModel() {
 		var self = this;
+		// Configurations entity fields
 		self.name = ko.observable();
 		self.lockcode = ko.observable();
 		self.map_area_filename = ko.observable();
 		self.hasMap = false;
 		self.mustDeleteMap = false;
 		self.mustUploadMap = false;
-		
+		self.isNew = ko.observable();
+
+		// Devices
 		self.devices = ko.observableArray();
-		self.emptyList = ko.pureComputed(function() {
+		self.emptyDevicesList = ko.pureComputed(function() {
 			return self.devices().length == 0;
 		});
 		self.editDeviceModel = new EditDeviceModel();
 		
-		//TODO LATER add alerts thresholds
-		self.isNew = ko.observable();
-		
+		// Thresholds for no ping alerts
+		self.noPingThresholds = [
+            new AlertThresholdsModel('info', 'Info', 'info', 'info-sign'),
+            new AlertThresholdsModel('warning', 'Warning', 'warning', 'exclamation-sign'),
+            new AlertThresholdsModel('alarm', 'Alarm', 'danger', 'warning-sign')
+		];
+		// Thresholds for voltage rate alerts
+		self.voltageThresholds = [
+             new AlertThresholdsModel('info', 'Info', 'info', 'info-sign', true),
+             new AlertThresholdsModel('warning', 'Warning', 'warning', 'exclamation-sign', true),
+             new AlertThresholdsModel('alarm', 'Alarm', 'danger', 'warning-sign', true)
+ 		];
+
+		// Errors
 		var PROPERTIES = ['name', 'lockcode', 'map_area'];
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
 
@@ -112,27 +186,54 @@ $(document).ready(function() {
 		
 		// Internal functions
 		var compare = ko.utils.compareByNumber('device_id');
+		var findNoPingThreshold = function(level) {
+			var found = $.grep(self.noPingThresholds, function(threshold) {
+				return threshold.level === level;
+			});
+			return found ? found[0] : null;
+		}
+		var findVoltageThreshold = function(level) {
+			var found = $.grep(self.voltageThresholds, function(threshold) {
+				return threshold.level === level;
+			});
+			return found ? found[0] : null;
+		}
 		var findCreator = function(kind) {
 			var found = $.grep(self.deviceCreators, function(creator) {
-				return creator.kind == kind;
+				return creator.kind === kind;
 			});
 			return found ? found[0] : null;
 		}
 		var toJSON = function() {
 			return ko.utils.extract(self, PROPERTIES);
 		}
-		var postMap = function(uri, done) {
+		var postMap = function(config) {
 			// Submit form alongside map file if provided
-			$.ajax({
-				url: uri,
+			return $.ajax({
+				url: config.map,
 				type: 'POST',
 				data: new FormData($('#config_map_form').get(0)),
 				processData: false,
 				contentType: false
-			}).fail(self.errors.errorHandler).done(done);
+			}).fail(self.errors.errorHandler);
 		}
-		var deleteMap = function(uri, done) {
-			ko.utils.ajax(uri, 'DELETE').fail(self.errors.errorHandler).done(done);
+		var deleteMap = function(config) {
+			return ko.utils.ajax(config.map, 'DELETE').fail(self.errors.errorHandler);
+		}
+		//TODO refactor both functions in one with argument
+		var putNoPingThresholds = function() {
+			var thresholds = {};
+			$.each(self.noPingThresholds, function(index, threshold) {
+				thresholds[threshold.level] = threshold.thresholds();
+			});
+			return ko.utils.ajax(self.uriNoPingThresholds, 'PUT', thresholds).fail(self.errors.errorHandler);
+		}
+		var putVoltageThresholds = function() {
+			var thresholds = {};
+			$.each(self.voltageThresholds, function(index, threshold) {
+				thresholds[threshold.level] = threshold.thresholds();
+			});
+			return ko.utils.ajax(self.voltage_thresholds, 'PUT', thresholds).fail(self.errors.errorHandler);
 		}
 
 		self.reset = function(newConfig) {
@@ -143,7 +244,9 @@ $(document).ready(function() {
 					uri: undefined,
 					name: undefined,
 					lockcode: undefined,
-					map_area_filename: undefined
+					map_area_filename: undefined,
+					no_ping_thresholds: undefined,
+					voltage_thresholds: undefined
 				};
 			}
 			self.id = newConfig.id;
@@ -154,64 +257,83 @@ $(document).ready(function() {
 			self.hasMap = newConfig.map_area_filename ? true : false;
 			self.mustDeleteMap = false;
 			self.mustUploadMap = false;
+			self.uriNoPingThresholds = newConfig.no_ping_thresholds;
+			self.voltage_thresholds = newConfig.voltage_thresholds;
 			self.isNew(isNew);
 			self.errors.clear();
 			if (isNew) {
 				// Clear devices list
 				self.devices([]);
+				$.each(self.noPingThresholds, function(index, thresholds) {
+					thresholds.setThresholds([]);
+				});
+				$.each(self.voltageThresholds, function(index, thresholds) {
+					thresholds.setThresholds([]);
+				});
 			} else {
 				// Read devices from server
-				$.getJSON(newConfig.devices, self.devices);
-				self.devices.sort(compare);
-				//TODO will need to get additional details through JSON calls
+				$.getJSON(newConfig.devices, function(devices) {
+					self.devices(devices);
+					self.devices.sort(compare);
+				});
+				// Read no ping alert thresholds from server
+				$.getJSON(newConfig.no_ping_thresholds, function(thresholds) {
+					$.each(thresholds, function(level, times) {
+						var threshold = findNoPingThreshold(level);
+						threshold.setThresholds(times);
+					});
+				});
+				// Read voltage alert thresholds from server
+				$.getJSON(newConfig.voltage_thresholds, function(thresholds) {
+					$.each(thresholds, function(level, times) {
+						var threshold = findVoltageThreshold(level);
+						threshold.setThresholds(times);
+					});
+				});
 			}
 			$('#config_map_form').get(0).reset();
 		}
 		
-		//TODO refactor 2 next functions in one common code!
 		self.saveConfig = function() {
-			ko.utils.ajax(self.uri, 'PUT', toJSON()).fail(self.errors.errorHandler).done(function(config) {
-				// Signal VM of all configs
-				configurationsViewModel.configUpdated(config);
-				var done = function(config) {
-					configurationsViewModel.configUpdated(config);
-					// Add message
-					flashMessages.clear();
-					flashMessages.success('Configuration \'' + config.name + '\' has been saved');
-					// Hide dialog
-					$('#config-dialog').modal('hide');
-				}
-				// Check if we need to upload or delete a map file
-				if (self.mustUploadMap) {
-					postMap(config.map, done);
-				} else if (self.mustDeleteMap) {
-					deleteMap(config.map, done);
-				} else {
-					done(config);
-				}
+			var chain = ko.utils.ajax(self.uri, 'PUT', toJSON()).
+				fail(self.errors.errorHandler).
+				done(configurationsViewModel.configUpdated);
+			if (self.mustUploadMap) {
+				chain = chain.then(postMap).done(configurationsViewModel.configUpdated);
+			} else if (self.mustDeleteMap) {
+				chain = chain.then(deleteMap).done(configurationsViewModel.configUpdated);
+			}
+			// Add necessary PUT for no ping thresholds alerts
+			if ($.grep(self.noPingThresholds, function(item) { return item.dirty; })) {
+				chain = chain.then(putNoPingThresholds);
+			}
+			// Add necessary PUT for no ping thresholds alerts
+			if ($.grep(self.voltageThresholds, function(item) { return item.dirty; })) {
+				chain = chain.then(putVoltageThresholds);
+			}
+			chain.done(function() {
+				// Add message
+				flashMessages.clear();
+//				flashMessages.success('Configuration \'' + config.name + '\' has been saved');
+				flashMessages.success('Configuration has been saved');
+				// Hide dialog
+				$('#config-dialog').modal('hide');
 			});
 		}
 		
 		self.saveNewConfig = function() {
-			ko.utils.ajax('/api/1.0/configurations', 'POST', toJSON()).fail(self.errors.errorHandler).done(function(config) {
-				// Signal VM of all configs
-				configurationsViewModel.configAdded(config);
-				var done = function(config) {
-					configurationsViewModel.configUpdated(config);
-					// Add message
-					flashMessages.clear();
-					flashMessages.success('New configuration \'' + config.name + '\' has been created');
-					// Hide dialog
-					$('#config-dialog').modal('hide');
-				}
-				// Check if we need to upload a map file
-				if (self.mustUploadMap) {
-					postMap(config.map, done);
-				} else if (self.mustDeleteMap) {
-					deleteMap(config.map, done);
-				} else {
-					done(config);
-				}
+			var chain = ko.utils.ajax('/api/1.0/configurations', 'POST', toJSON()).
+				fail(self.errors.errorHandler).
+				done(configurationsViewModel.configAdded);
+			if (self.mustUploadMap) {
+				chain = chain.then(postMap).done(configurationsViewModel.configUpdated);
+			}
+			chain.done(function(config) {
+				// Add message
+				flashMessages.clear();
+				flashMessages.success('New configuration \'' + config.name + '\' has been created');
+				// Hide dialog
+				$('#config-dialog').modal('hide');
 			});
 		}
 		
@@ -397,97 +519,6 @@ $(document).ready(function() {
 		ko.applyBindings(configurationsViewModel, $('.configurations').get(0));
 	});
 	
-//	// AJAX function to add a new ping alert setting
-//	function addPingAlert()
-//	{
-//		var id = $(this).attr('data-config');
-//		var level = $(this).attr('data-level');
-//		var time = $(this).closest('div.input-group').children('input.ping-alert-time').val();
-//		// Prepare JSON
-//		var request = {
-//			id: id,
-//			level: level,
-//			time: time
-//		};
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'POST',
-//			url: '/configure/add_ping_alert',
-//			data: JSON.stringify(request),
-//			contentType: 'application/json',
-//			processData: false,
-//			success: function(results) {
-//				$('#flash-messages').html('');
-//				$('#config_ping_alerts .list-group').html(results);
-//			}
-//		});
-//		return false;
-//	}
-
-//	// AJAX function to delete a ping alert setting
-//	function removePingAlert()
-//	{
-//		var id = $(this).attr('data-alert');
-//		var url = sprintf('/configure/delete_ping_alert/%d', id);
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'POST',
-//			url: url,
-//			success: function(results) {
-//				$('#flash-messages').html('');
-//				$('#config_ping_alerts .list-group').html(results);
-//			}
-//		});
-//		return false;
-//	}
-//	
-//	// AJAX function to add a new voltage alert setting
-//	function addVoltageAlert()
-//	{
-//		var id = $(this).attr('data-config');
-//		var level = $(this).attr('data-level');
-//		var $parent = $(this).closest('li.list-group-item');
-//		var rate = $parent.find('input.voltage-alert-threshold').val();
-//		var time = $parent.find('input.voltage-alert-time').val();
-//		// Prepare JSON
-//		var request = {
-//			id: id,
-//			level: level,
-//			rate: rate,
-//			time: time
-//		};
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'POST',
-//			url: '/configure/add_voltage_alert',
-//			data: JSON.stringify(request),
-//			contentType: 'application/json',
-//			processData: false,
-//			success: function(results) {
-//				$('#flash-messages').html('');
-//				$('#config_voltage_alerts .list-group').html(results);
-//			}
-//		});
-//		return false;
-//	}
-//	
-//	// AJAX function to delete a ping voltage setting
-//	function removeVoltageAlert()
-//	{
-//		var id = $(this).attr('data-alert');
-//		var url = sprintf('/configure/delete_voltage_alert/%d', id);
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'POST',
-//			url: url,
-//			success: function(results) {
-//				$('#flash-messages').html('');
-//				$('#config_voltage_alerts .list-group').html(results);
-//			}
-//		});
-//		return false;
-//	}
-	
 	// This handler is called when a detail part of the config dialog is collapsed
 	// so that it uncollapses other parts (only one at a time)
 	// Note that Bootstrap has offers this behavior already but only inside panels.
@@ -498,11 +529,4 @@ $(document).ready(function() {
 	
 	// Register event handlers
 	$('#modal-content').on('show.bs.collapse', collapseConfigDetail);
-	
-//	// - for ping alerts settings
-//	$('#modal-content').on('click', '#config_ping_alerts button', addPingAlert);
-//	$('#modal-content').on('click', '.ping-alert-remove', removePingAlert);
-//	// - for ping alerts settings
-//	$('#modal-content').on('click', '#config_voltage_alerts button', addVoltageAlert);
-//	$('#modal-content').on('click', '.voltage-alert-remove', removeVoltageAlert);
 });
