@@ -10,7 +10,7 @@ x		- knockout js for data binding and actions (MVVM)
 		- remove flask-restful in the end?
 
 		- migration:
-1h			- voltage alert thresholds REST: finish PUT (save to DB)
+30'			- BUG config save: why PUT thresholds called even if not dirty?
 
 15'			- configuration: map config enable only if map and devices exist?
 

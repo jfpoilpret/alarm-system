@@ -2,14 +2,12 @@
 
 from ... import db
 
-from flask import request
-from flask_restful import abort, fields, marshal_with, reqparse, Resource
-from flask_restful.fields import Raw
+from flask_restful import fields, marshal_with, reqparse, Resource
 
 from webargs import Arg
-from webargs.flaskparser import parser, use_kwargs
+from webargs.flaskparser import use_args
 
-from app.models import Alert, NoPingTimeAlertThreshold, Configuration
+from app.models import Alert, Configuration, NoPingTimeAlertThreshold, VoltageRateAlertThreshold
 
 ALERT_LEVELS = [
     (Alert.LEVEL_INFO, 'info'),
@@ -78,12 +76,20 @@ class VoltageAlertThresholdsResource(Resource):
         return self.convert_thresholds(config), 200
 
     @marshal_with(VOLTAGE_ALERT_THRESHOLD_FIELDS)
-    @use_kwargs(VOLTAGE_ALERT_THRESHOLD_ARGS, locations = ['json'])
-    def put(self, id, info, warning, alarm):
-        print('put(%d) info = %s' % (id, str(info)))
-        print('put(%d) warning = %s' % (id, str(warning)))
-        print('put(%d) alarm = %s' % (id, str(alarm)))
+    @use_args(VOLTAGE_ALERT_THRESHOLD_ARGS, locations = ['json'])
+    def put(self, args, id):
         config = Configuration.query.get_or_404(id)
+        config.voltage_rate_alert_thresholds = []
+        for level, label in ALERT_LEVELS:
+            for threshold in args[label]:
+                threshold = VoltageRateAlertThreshold(
+                    alert_level = level,
+                    alert_time = threshold['time'],
+                    voltage_rate = threshold['rate'])
+                config.voltage_rate_alert_thresholds.append(threshold)
+        db.session.add(config)
+        db.session.commit()
+        db.session.refresh(config)
         return self.convert_thresholds(config), 200
 
     def convert_thresholds(self, config):
@@ -92,6 +98,6 @@ class VoltageAlertThresholdsResource(Resource):
         for level, label in ALERT_LEVELS:
             values = [{'rate': threshold.voltage_rate, 'time': threshold.alert_time}
                 for threshold in all_thresholds if threshold.alert_level == level]
-            thresholds[label] = sorted(values, key = 'rate', reverse = True)
+            thresholds[label] = sorted(values, key = lambda t: t['rate'], reverse = True)
         return thresholds
     

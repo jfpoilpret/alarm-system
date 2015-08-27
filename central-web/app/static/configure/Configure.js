@@ -90,7 +90,6 @@ $(document).ready(function() {
 		self.thresholds = ko.observableArray();
 		self.newTime = ko.observable();
 		self.newVoltage = ko.observable();
-		self.hasVoltage = hasVoltage;
 		self.dirty = false;
 
 		var compareTime = function(t1, t2) {
@@ -98,7 +97,7 @@ $(document).ready(function() {
 		}
 		var compareVoltage = function(t1, t2) {
 			if (t1.voltage == t2.voltage)
-				return t2.time - t1.time
+				return t2.time - t1.time;
 			return t1.voltage - t2.voltage;
 		}
 		var compare = hasVoltage ? compareVoltage : compareTime;
@@ -109,10 +108,12 @@ $(document).ready(function() {
 			self.thresholds.sort(compare);
 		}
 		self.removeThreshold = function(threshold) {
+			console.log('removeThreshold');
 			self.dirty = true;
 			self.thresholds.remove(threshold);
 		}
 		self.addTimeThreshold = function() {
+			console.log('addTimeThreshold');
 			var time = self.newTime();
 			if ($.isNumeric(time)) {
 				time = Number(time);
@@ -124,8 +125,8 @@ $(document).ready(function() {
 				self.newTime(undefined);
 			}
 		}
-		
 		self.addVoltageThreshold = function() {
+			console.log('addVoltageThreshold');
 			var voltage = self.newVoltage();
 			var time = self.newTime();
 			if ($.isNumeric(time) && $.isNumeric(voltage)) {
@@ -233,7 +234,7 @@ $(document).ready(function() {
 			$.each(self.voltageThresholds, function(index, threshold) {
 				thresholds[threshold.level] = threshold.thresholds();
 			});
-			return ko.utils.ajax(self.voltage_thresholds, 'PUT', thresholds).fail(self.errors.errorHandler);
+			return ko.utils.ajax(self.uriVoltageThresholds, 'PUT', thresholds).fail(self.errors.errorHandler);
 		}
 
 		self.reset = function(newConfig) {
@@ -258,7 +259,7 @@ $(document).ready(function() {
 			self.mustDeleteMap = false;
 			self.mustUploadMap = false;
 			self.uriNoPingThresholds = newConfig.no_ping_thresholds;
-			self.voltage_thresholds = newConfig.voltage_thresholds;
+			self.uriVoltageThresholds = newConfig.voltage_thresholds;
 			self.isNew(isNew);
 			self.errors.clear();
 			if (isNew) {
@@ -305,10 +306,12 @@ $(document).ready(function() {
 			}
 			// Add necessary PUT for no ping thresholds alerts
 			if ($.grep(self.noPingThresholds, function(item) { return item.dirty; })) {
+				//FIXME why do we get there even if no change has occurred?
 				chain = chain.then(putNoPingThresholds);
 			}
 			// Add necessary PUT for no ping thresholds alerts
 			if ($.grep(self.voltageThresholds, function(item) { return item.dirty; })) {
+				//FIXME why do we get there even if no change has occurred?
 				chain = chain.then(putVoltageThresholds);
 			}
 			chain.done(function() {
