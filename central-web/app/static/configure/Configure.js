@@ -71,9 +71,6 @@ $(document).ready(function() {
 			self.device_id(newDevice.device_id);
 			self.isNew(isNew);
 			self.errors.clear();
-			if (isNew) {
-				//TODO
-			}
 			if (deviceCreator)
 				showForm(true);
 		}
@@ -221,20 +218,18 @@ $(document).ready(function() {
 		var deleteMap = function(config) {
 			return ko.utils.ajax(config.map, 'DELETE').fail(self.errors.errorHandler);
 		}
-		//TODO refactor both functions in one with argument
-		var putNoPingThresholds = function() {
+		var putThresholds = function(array, uri) {
 			var thresholds = {};
-			$.each(self.noPingThresholds, function(index, threshold) {
+			$.each(array, function(index, threshold) {
 				thresholds[threshold.level] = threshold.thresholds();
 			});
-			return ko.utils.ajax(self.uriNoPingThresholds, 'PUT', thresholds).fail(self.errors.errorHandler);
+			return ko.utils.ajax(uri, 'PUT', thresholds).fail(self.errors.errorHandler);
+		}
+		var putNoPingThresholds = function() {
+			return putThresholds(self.noPingThresholds, self.uriNoPingThresholds);
 		}
 		var putVoltageThresholds = function() {
-			var thresholds = {};
-			$.each(self.voltageThresholds, function(index, threshold) {
-				thresholds[threshold.level] = threshold.thresholds();
-			});
-			return ko.utils.ajax(self.uriVoltageThresholds, 'PUT', thresholds).fail(self.errors.errorHandler);
+			return putThresholds(self.voltageThresholds, self.uriVoltageThresholds);
 		}
 
 		self.reset = function(newConfig) {
@@ -305,13 +300,11 @@ $(document).ready(function() {
 				chain = chain.then(deleteMap).done(configurationsViewModel.configUpdated);
 			}
 			// Add necessary PUT for no ping thresholds alerts
-			if ($.grep(self.noPingThresholds, function(item) { return item.dirty; })) {
-				//FIXME why do we get there even if no change has occurred?
+			if ($.grep(self.noPingThresholds, function(item) { return item.dirty; }).length !== 0) {
 				chain = chain.then(putNoPingThresholds);
 			}
 			// Add necessary PUT for no ping thresholds alerts
-			if ($.grep(self.voltageThresholds, function(item) { return item.dirty; })) {
-				//FIXME why do we get there even if no change has occurred?
+			if ($.grep(self.voltageThresholds, function(item) { return item.dirty; }).length !== 0) {
 				chain = chain.then(putVoltageThresholds);
 			}
 			chain.done(function() {

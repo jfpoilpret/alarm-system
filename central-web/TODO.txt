@@ -10,8 +10,6 @@ x		- knockout js for data binding and actions (MVVM)
 		- remove flask-restful in the end?
 
 		- migration:
-30'			- BUG config save: why PUT thresholds called even if not dirty?
-
 15'			- configuration: map config enable only if map and devices exist?
 
 			- ensure flash messages are cleared whenever needed, in particular when canceling dialog
