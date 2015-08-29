@@ -1,12 +1,15 @@
 # encoding: utf-8
 
 from ... import db
-from ...models import Configuration
 
 from flask_restful import abort, fields, marshal_with, reqparse, Resource
+from webargs import Arg
+from webargs.flaskparser import use_args, use_kwargs
 from werkzeug.datastructures import FileStorage
 from sqlalchemy import update
-from app.common import prepare_map_for_config, prepare_map_for_monitoring
+
+from app.models import Configuration
+from app.common import prepare_map_for_config, prepare_map_for_monitoring, trim
 
 CONFIG_FIELDS = {
     'id': fields.Integer,
@@ -22,27 +25,24 @@ CONFIG_FIELDS = {
     'voltage_thresholds': fields.Url('.voltage', absolute = False)
 }
 
+#FIXME should remove map_are from settable fields!
 class ConfigurationsResource(Resource):
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser(bundle_errors = True)
-        self.reqparse.add_argument(
-            'name', required = True, type = str, location = 'json', trim = True)
-        self.reqparse.add_argument(
-            'lockcode', required = True, type = str, location = 'json', trim = True)
-        self.reqparse.add_argument(
-            'map_area_filename', required = False, type = str, location = 'json', trim = True)
-        self.reqparse.add_argument(
-            'map_area', required = False, type = str, location = 'json', trim = True)
+    CONFIG_ARGS = {
+        'name': Arg(str, required = True, use = trim),
+        'lockcode': Arg(str, required = True, use = trim),
+        'map_area_filename': Arg(str, required = False, allow_missing = True, use = trim),
+        'map_area': Arg(str, required = False, allow_missing = True, use = trim)
+    }
     
     @marshal_with(CONFIG_FIELDS)
     def get(self):
         return Configuration.query.all()
 
+    @use_kwargs(CONFIG_ARGS, locations = ['json'])
     @marshal_with(CONFIG_FIELDS)
-    def post(self):
-        args = self.reqparse.parse_args(strict = True)
+    def post(self, **args):
         #TODO optimize and avoid creating the object; checking it exists is enough!
-        if Configuration.query.filter_by(name = args.name).first():
+        if Configuration.query.filter_by(name = args['name']).first():
             abort(409, message = {'name': 'A configuration already exists with that name!'})
         configuration = Configuration(**args)
         configuration.active = False
@@ -53,18 +53,15 @@ class ConfigurationsResource(Resource):
         db.session.refresh(configuration)
         return configuration, 201
 
+#FIXME should remove current (active also?) from settable fields!
 class ConfigurationResource(Resource):
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser(bundle_errors = True)
-        self.reqparse.add_argument(
-            'name', required = False, type = str, location = 'json', store_missing = False, trim = True)
-        self.reqparse.add_argument(
-            'current', required = False, type = bool, location = 'json', store_missing = False)
-        self.reqparse.add_argument(
-            'active', required = False, type = bool, location = 'json', store_missing = False)
-        self.reqparse.add_argument(
-            'lockcode', required = False, type = str, location = 'json', store_missing = False, trim = True)
-
+    CONFIG_ARGS = {
+        'name': Arg(str, required = False, allow_missing = True, use = trim),
+        'lockcode': Arg(str, required = False, allow_missing = True, use = trim),
+        'current': Arg(bool, required = False, allow_missing = True),
+        'active': Arg(str, required = False, allow_missing = True)
+    }
+    
     @marshal_with(CONFIG_FIELDS)
     def get(self, id):
         return Configuration.query.get_or_404(id)
@@ -75,12 +72,10 @@ class ConfigurationResource(Resource):
         db.session.commit()
         return {}, 204
 
+    @use_args(CONFIG_ARGS, locations = ['json'])
     @marshal_with(CONFIG_FIELDS)
-    def put(self, id):
+    def put(self, args, id):
         config = Configuration.query.get_or_404(id)
-        args = self.reqparse.parse_args(strict = True)
-        #TODO check current is set only if no config exists currently current
-        #TODO check active is set only if config is current
         for key, value in args.items():
             setattr(config, key, value)
         db.session.add(config)
@@ -156,5 +151,3 @@ class CurrentConfigurationResource(Resource):
             return config, 200
         else:
             return {}, 204
-
-#TODO other resources for: voltage thresholds (GET all/PUT only?)

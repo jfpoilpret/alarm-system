@@ -4,29 +4,32 @@
 	- Major refactoring: AJAX+RESTful webapp 
 
 4h		- replace reqparse with webargs everywhere
+								IMPL	TEST	GIT
+			- thresholds		X				
+			- configurations	X		X		
+			- devices							
+			- users								
 
-		- migration:
-1h			- implement utility to create dirty observable for a VM
-			https://github.com/knockout/knockout/wiki/Dirty-Tracking
-			http://www.knockmeout.net/2011/05/creating-smart-dirty-flag-in-knockoutjs.html
+			- properly handle errors thrown by webargs
+
+		- save if dirty
+30'			- improve config saves (several levels)
+30'			- save devices if dirty
+30'			- save users if dirty
 			
-15'			- config save only if dirty
+		- ensure flash messages are cleared whenever needed, in particular when canceling dialog
 
-15'			- configuration: map config enable only if map and devices exist?
-
-			- ensure flash messages are cleared whenever needed, in particular when canceling dialog
-
-8h			- monitoring REST
-				- Alerts GET (history/live)
-				- Devices status GET
-				- System status GET/PUT (map?, locked, active)
-8h			- monitoring UI
+8h		- monitoring REST
+			- Alerts GET (history/live)
+			- Devices status GET
+			- System status GET/PUT (map?, locked, active)
+8h		- monitoring UI
 			
-4h+			- cleanup wep site part:
-				- remove all forms (except login)
-				- remove all routes that are superseded by API
-				- only 2 blueprints: API Vs. Web
-				=> rename all html and css to be more meaningful (rather than "home"...)
+4h+		- cleanup wep site part:
+			- remove all forms (except login)
+			- remove all routes that are superseded by API
+			- only 2 blueprints: API Vs. Web
+			=> rename all html and css to be more meaningful (rather than "home"...)
 
 		- consider using marshmallow instead of flask restful marshalling?
 		- remove flask-restful in the end?

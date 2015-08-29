@@ -2,7 +2,7 @@
 
 from ... import db
 
-from flask_restful import fields, marshal_with, reqparse, Resource
+from flask_restful import fields, marshal_with, Resource
 
 from webargs import Arg
 from webargs.flaskparser import use_args
@@ -16,24 +16,21 @@ ALERT_LEVELS = [
 ]
     
 NO_PING_ALERT_THRESHOLD_FIELDS = {}
+NO_PING_ALERT_THRESHOLD_ARGS = {}
 for _, level in ALERT_LEVELS:
     NO_PING_ALERT_THRESHOLD_FIELDS[level] = fields.List(fields.Integer)
+    NO_PING_ALERT_THRESHOLD_ARGS[level] = Arg(int, required = True, multiple = True)
 
 class NoPingAlertThresholdsResource(Resource):
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser(bundle_errors = True)
-        for _, label in ALERT_LEVELS:
-            self.reqparse.add_argument(label, required = True, type = list, location = 'json')
-    
     @marshal_with(NO_PING_ALERT_THRESHOLD_FIELDS)
     def get(self, id):
         config = Configuration.query.get_or_404(id)
         return self.convert_thresholds(config), 200
 
+    @use_args(NO_PING_ALERT_THRESHOLD_ARGS, locations = ['json'])
     @marshal_with(NO_PING_ALERT_THRESHOLD_FIELDS)
-    def put(self, id):
+    def put(self, args, id):
         config = Configuration.query.get_or_404(id)
-        args = self.reqparse.parse_args(strict = True)
         config.no_ping_time_alert_thresholds = []
         for level, label in ALERT_LEVELS:
             for time in args[label]:
@@ -75,8 +72,8 @@ class VoltageAlertThresholdsResource(Resource):
         config = Configuration.query.get_or_404(id)
         return self.convert_thresholds(config), 200
 
-    @marshal_with(VOLTAGE_ALERT_THRESHOLD_FIELDS)
     @use_args(VOLTAGE_ALERT_THRESHOLD_ARGS, locations = ['json'])
+    @marshal_with(VOLTAGE_ALERT_THRESHOLD_FIELDS)
     def put(self, args, id):
         config = Configuration.query.get_or_404(id)
         config.voltage_rate_alert_thresholds = []

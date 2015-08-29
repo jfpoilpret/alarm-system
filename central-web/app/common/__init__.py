@@ -21,6 +21,10 @@ device_kinds = {
     #TODO later add new modules such as: laser beam, door open detection, smoke detector...
 }
 
+# Webargs utilities
+#-------------------
+trim = lambda s: s.strip()
+
 # WTF Form Utilities
 #--------------------
 class HiddenInteger(IntegerField):
