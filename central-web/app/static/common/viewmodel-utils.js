@@ -167,17 +167,16 @@
 	var flashMessages;
 	
 	// Function to create a dirty flag on a list of observables
-	//TODO change into a real constructor as this is the way it is supposed to be used...
 	//TODO Then improve to allow either a list of observable or a whole ViewModel (simple common cases)
 	function DirtyFlag(observables) {
-		var result = function() {},
+		var self = this,
 			// IMPORTANT! Note the trick [value()] to ensure $.map() will keep null values in the resulting array
 			_initialState = $.map(observables, function(value) { return [value()]; }),
 			_initiallyDirty = ko.observable(false);
 
 		_initiallyDirty.extend({ notify: 'always' });
 		
-		result.isDirty = ko.computed(function() {
+		self.isDirty = ko.computed(function() {
 			var changes = 0,
 				len = observables.length;
 			for (var i = 0; i < len; i++) {
@@ -188,13 +187,11 @@
 			return _initiallyDirty() || changes !== 0;
 		});
 		
-		result.reset = function(initiallyDirty) {
+		self.reset = function(initiallyDirty) {
 			// IMPORTANT! Note the trick [value()] to ensure $.map() will keep null values in the resulting array
 			_initialState = $.map(observables, function(value) { return [value()]; });
 			_initiallyDirty(initiallyDirty || false);
 		};
-		
-		return result;
 	}
 	
 	function getFlashMessages(element) {
