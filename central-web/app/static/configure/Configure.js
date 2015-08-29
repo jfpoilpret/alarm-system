@@ -105,12 +105,10 @@ $(document).ready(function() {
 			self.thresholds.sort(compare);
 		}
 		self.removeThreshold = function(threshold) {
-			console.log('removeThreshold');
 			self.dirty = true;
 			self.thresholds.remove(threshold);
 		}
 		self.addTimeThreshold = function() {
-			console.log('addTimeThreshold');
 			var time = self.newTime();
 			if ($.isNumeric(time)) {
 				time = Number(time);
@@ -123,7 +121,6 @@ $(document).ready(function() {
 			}
 		}
 		self.addVoltageThreshold = function() {
-			console.log('addVoltageThreshold');
 			var voltage = self.newVoltage();
 			var time = self.newTime();
 			if ($.isNumeric(time) && $.isNumeric(voltage)) {
@@ -174,6 +171,7 @@ $(document).ready(function() {
 		// Errors
 		var PROPERTIES = ['name', 'lockcode', 'map_area'];
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
+		self.dirtyFlag = new ko.utils.DirtyFlag([self.name, self.lockcode, self.map_area_filename]);
 
 		// List of modules kind that can be created through dropdown button
 		self.deviceCreators = [
@@ -240,7 +238,7 @@ $(document).ready(function() {
 					uri: undefined,
 					name: undefined,
 					lockcode: undefined,
-					map_area_filename: undefined,
+					map_area_filename: null,
 					no_ping_thresholds: undefined,
 					voltage_thresholds: undefined
 				};
@@ -257,6 +255,7 @@ $(document).ready(function() {
 			self.uriVoltageThresholds = newConfig.voltage_thresholds;
 			self.isNew(isNew);
 			self.errors.clear();
+			self.dirtyFlag.reset();
 			if (isNew) {
 				// Clear devices list
 				self.devices([]);
@@ -342,7 +341,7 @@ $(document).ready(function() {
 			// Confirm then remove from VM only
 			if (window.confirm('Are you sure you want to delete the configured map file?')) {
 				self.mustDeleteMap = self.hasMap;
-				self.map_area_filename('');
+				self.map_area_filename(null);
 				$('#config_map_form').get(0).reset();
 			}
 		}

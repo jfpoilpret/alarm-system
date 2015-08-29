@@ -64,11 +64,11 @@
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
 				<!-- ko if: isNew -->
 				<button	type="button" role="button" class="btn btn-primary disablable" id="config_submit" 
-						data-bind="click: saveNewConfig">Create Configuration</button>
+						data-bind="click: saveNewConfig, enable: dirtyFlag.isDirty">Create Configuration</button>
 				<!-- /ko -->
 				<!-- ko ifnot: isNew -->
 				<button	type="button" role="button" class="btn btn-primary disablable" id="config_submit" 
-						data-bind="click: saveConfig">Save Configuration</button>
+						data-bind="click: saveConfig, enable: dirtyFlag.isDirty">Save Configuration</button>
 				<!-- /ko -->
 			</div>
 		</div>

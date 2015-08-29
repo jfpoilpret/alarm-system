@@ -1,38 +1,46 @@
 	- update flask-bootstrap dependency whenever a new release is rolled out,
 	including the fix for bug: https://github.com/mbr/flask-bootstrap/issues/90
 	
-	- Major refactoring:
-		- AJAX+RESTful webapp (but not exactly single page: one page per main menu in fact)
-x		- Flask-RESTful extension with JSON marshallers
-x		- knockout js for data binding and actions (MVVM)
+	- Major refactoring: AJAX+RESTful webapp 
+
 4h		- replace reqparse with webargs everywhere
-		- consider using marshmallow instead of flask restful marshalling?
-		- remove flask-restful in the end?
 
 		- migration:
+1h			- implement utility to create dirty observable for a VM
+			https://github.com/knockout/knockout/wiki/Dirty-Tracking
+			http://www.knockmeout.net/2011/05/creating-smart-dirty-flag-in-knockoutjs.html
+			
+15'			- config save only if dirty
+
 15'			- configuration: map config enable only if map and devices exist?
 
 			- ensure flash messages are cleared whenever needed, in particular when canceling dialog
 
 8h			- monitoring REST
+				- Alerts GET (history/live)
+				- Devices status GET
+				- System status GET/PUT (map?, locked, active)
 8h			- monitoring UI
 			
-4h			- cleanup wep site part:
+4h+			- cleanup wep site part:
 				- remove all forms (except login)
 				- remove all routes that are superseded by API
 				- only 2 blueprints: API Vs. Web
 				=> rename all html and css to be more meaningful (rather than "home"...)
 
-			- javascript: make it more modular?
-				- investigate requirejs
-				- refactor ViewModel and JS files: try to have one parent VM with children
-				(avoid more than one global var per page)
-				- how to deal with SVGHandlers (currently in global namespace...)
+		- consider using marshmallow instead of flask restful marshalling?
+		- remove flask-restful in the end?
+		
+8h		- javascript: make it more modular?
+			- investigate requirejs
+			- refactor ViewModel and JS files: try to have one parent VM with children
+			(avoid more than one global var per page)
+			- how to deal with SVGHandlers (currently in global namespace...)
 			
-8h			- security (login, token)
-				- login must enable both REST services and Web pages serving!
-				- use time-limited tokens (is it enough for CSRF protection?)
-				- check if login can be done with knockout also (remove WTF altogether)
+8h		- security (login, token)
+			- login must enable both REST services and Web pages serving!
+			- use time-limited tokens (is it enough for CSRF protection?)
+			- check if login can be done with knockout also (remove WTF altogether)
 	
 		- open points/bugs:
 			- link profile ViewModel to UsersViewModel somehow
@@ -47,9 +55,6 @@ x		- knockout js for data binding and actions (MVVM)
 	- security:
 		- check prevention against SVG exploits
 		
-	- study JavaScript and refactor as much as possible
-	- remove useless libs as much as possible!
-		
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
 30'	- configuration changes of an active config should be limited
@@ -57,27 +62,19 @@ x		- knockout js for data binding and actions (MVVM)
 		(because devices are deep copies of config devices, hence are not up-to-date)
 		
 30'	- review all .js files: lowercase filename only!
+		- VM ensure private methods are defined as var instead of self.
 15'	- review all .py headers (encoding!)
 15'	- ensure all classes use new-style classes (subclass object)
 1h	- rename "private" methods with leading underscore (convention)
 30'	- review all FIXME/TODO
 
-1h	- monitoring UI bug
-		- Clear History often leads to CSRF token error???...
-30'	- monitoring UI:
-		- improve error display in AJAX if possible 
-		(avoid flash messages and replace with <p class="help-block">xxx</p>)
-		not sure it is OK with inline forms?
-		- improve alerts tab when not active, by displaying badge with number of new alerts
-		(will require special AJAX code to get the number of new alerts only)
-	
 	- improve DB model to:
 		- have several codes for a config, each with an associated message
 		  (typically: owner)
 1h	- review models to ensure completeness of relationships and efficiency; in particular
 	  try to limit manual queries performed in code if not needed!
 		(search for .query.)
-2h	- add correct SQL exception handling in all routes
+2h	- add correct SQL exception handling in all REST calls POST/PUT
 		- unique key => special warning message
 		- reference key => other special warning
 	
