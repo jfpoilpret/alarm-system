@@ -3,14 +3,7 @@
 	
 	- Major refactoring: AJAX+RESTful webapp 
 
-4h		- replace reqparse with webargs everywhere
-								IMPL	TEST	GIT
-			- thresholds		X		X		
-			- configurations	X		X		
-			- devices			X		X		
-			- users								
-
-			- properly handle errors thrown by webargs
+1h		- properly handle errors thrown by webargs
 
 		- save if dirty
 30'			- improve config saves (several levels)

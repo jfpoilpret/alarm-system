@@ -8,8 +8,7 @@ from webargs.flaskparser import use_args, use_kwargs
 from sqlalchemy import update
 
 from app.models import Configuration
-from app.common import prepare_map_for_config, prepare_map_for_monitoring, trim,\
-    choices
+from app.common import prepare_map_for_config, prepare_map_for_monitoring, trim, choices
 
 CONFIG_FIELDS = {
     'id': fields.Integer,
