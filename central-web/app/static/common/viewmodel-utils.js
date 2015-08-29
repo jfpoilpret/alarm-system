@@ -167,7 +167,6 @@
 	var flashMessages;
 	
 	// Function to create a dirty flag on a list of observables
-	//TODO Then improve to allow either a list of observable or a whole ViewModel (simple common cases)
 	function DirtyFlag(observables) {
 		var self = this,
 			// IMPORTANT! Note the trick [value()] to ensure $.map() will keep null values in the resulting array
@@ -194,6 +193,24 @@
 		};
 	}
 	
+	// Function to create a dirty flag on all observables of a ViewModel
+	function VMDirtyFlag(viewModel) {
+		var self = this,
+			_initialState = ko.observable(ko.toJSON(viewModel)),
+			_initiallyDirty = ko.observable(false);
+
+		_initiallyDirty.extend({ notify: 'always' });
+		
+		self.isDirty = ko.computed(function() {
+			return _initiallyDirty() || _initialState() !== ko.toJSON(viewModel);
+		});
+		
+		self.reset = function(initiallyDirty) {
+			_initialState(ko.toJSON(viewModel));
+			_initiallyDirty(initiallyDirty || false);
+		};
+	}
+	
 	function getFlashMessages(element) {
 		if (!flashMessages) {
 			flashMessages = new FlashMessagesViewModel();
@@ -215,5 +232,6 @@
 	ko.utils.compareByNumber = compareByNumber;
 	ko.utils.getFlashMessages = getFlashMessages;
 	ko.utils.DirtyFlag = DirtyFlag;
+	ko.utils.VMDirtyFlag = VMDirtyFlag;
 	ko.errors.ErrorsViewModel = ErrorsViewModel;
 })(typeof window === "undefined" ? this : window);
