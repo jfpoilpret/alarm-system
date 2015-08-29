@@ -85,6 +85,7 @@ class Device(db.Model):
     
     __tablename__ = 'device'
     id = db.Column(db.Integer, primary_key = True)
+    #FIXME name does not have to be unique only (config_id, name) must be unique
     name = db.Column(db.String(64), nullable = False, unique = True, index = True)
     kind = db.Column(db.Integer, nullable = False)
     device_id = db.Column(db.Integer, nullable = False, index = True)

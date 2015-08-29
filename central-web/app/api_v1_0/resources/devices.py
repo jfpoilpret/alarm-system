@@ -1,10 +1,13 @@
 # encoding: utf-8
 
 from ... import db
-from ...models import Device
+from app.models import Device
 
 from flask_restful import abort, fields, marshal_with, reqparse, Resource
 from flask_restful.fields import Raw
+from webargs import Arg
+from webargs.flaskparser import use_args, use_kwargs
+from app.common import trim
 
 KINDS = [
     (Device.KIND_KEYPAD, 'Keypad'),
@@ -37,32 +40,26 @@ DEVICE_FIELDS = {
 }
 
 class DevicesResource(Resource):
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser(bundle_errors = True)
-        self.reqparse.add_argument(
-            'name', required = True, type = str, location = 'json', trim = True)
-        self.reqparse.add_argument(
-            'kind', required = True, type = kind, location = 'json')
-        self.reqparse.add_argument(
-            'device_id', required = True, type = int, location = 'json')
-        self.reqparse.add_argument(
-            'voltage_threshold', required = True, type = float, location = 'json')
-        self.reqparse.add_argument(
-            'location_x', required = False, type = float, location = 'json')
-        self.reqparse.add_argument(
-            'location_y', required = False, type = float, location = 'json')
+    DEVICE_ARGS = {
+        'name': Arg(str, required = True,  use = trim),
+        'kind': Arg(int, required = True,  use = kind),
+        'device_id': Arg(int, required = True),
+        'voltage_threshold': Arg(float, required = True),
+        'location_x': Arg(float, required = False, allow_missing = True),
+        'location_y': Arg(float, required = False, allow_missing = True)
+    }
     
     @marshal_with(DEVICE_FIELDS)
     def get(self, id):
         return Device.query.filter_by(config_id = id).all()
 
+    @use_kwargs(DEVICE_ARGS, locations = ['json'])
     @marshal_with(DEVICE_FIELDS)
-    def post(self, id):
-        args = self.reqparse.parse_args(strict = True)
+    def post(self, id, **args):
         #TODO optimize and avoid creating the object; checking it exists is enough!
-        if Device.query.filter_by(config_id = id, device_id = args.device_id).first():
+        if Device.query.filter_by(config_id = id, device_id = args['device_id']).first():
             abort(409, message = {'device_id': 'A device already exists with that device ID!'})
-        if Device.query.filter_by(config_id = id, name = args.name).first():
+        if Device.query.filter_by(config_id = id, name = args['name']).first():
             abort(409, message = {'device_name': 'A device already exists with that name!'})
         device = Device(**args)
         device.config_id = id
@@ -72,21 +69,16 @@ class DevicesResource(Resource):
         return device, 201
 
 class DeviceResource(Resource):
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser(bundle_errors = True)
-        self.reqparse.add_argument(
-            'name', required = False, type = str, location = 'json', store_missing = False, trim = True)
-        self.reqparse.add_argument(
-            'kind', required = False, type = kind, location = 'json', store_missing = False)
-        self.reqparse.add_argument(
-            'device_id', required = False, type = int, location = 'json', store_missing = False)
-        self.reqparse.add_argument(
-            'voltage_threshold', required = False, type = float, location = 'json', store_missing = False)
-        self.reqparse.add_argument(
-            'location_x', required = False, type = float, location = 'json', store_missing = False)
-        self.reqparse.add_argument(
-            'location_y', required = False, type = float, location = 'json', store_missing = False)
-
+    #TODO Add validation of kind Vs. device_id
+    DEVICE_ARGS = {
+        'name': Arg(str, required = False,  use = trim, allow_missing = True),
+        'kind': Arg(int, required = False,  use = kind, allow_missing = True),
+        'device_id': Arg(int, required = False, allow_missing = True),
+        'voltage_threshold': Arg(float, required = False, allow_missing = True),
+        'location_x': Arg(float, required = False, allow_missing = True),
+        'location_y': Arg(float, required = False, allow_missing = True)
+    }
+    
     @marshal_with(DEVICE_FIELDS)
     def get(self, id):
         return Device.query.get_or_404(id)
@@ -97,10 +89,10 @@ class DeviceResource(Resource):
         db.session.commit()
         return {}, 204
 
+    @use_args(DEVICE_ARGS, locations = ['json'])
     @marshal_with(DEVICE_FIELDS)
-    def put(self, id):
+    def put(self, args, id):
         device = Device.query.get_or_404(id)
-        args = self.reqparse.parse_args(strict = True)
         for key, value in args.items():
             setattr(device, key, value)
         db.session.add(device)

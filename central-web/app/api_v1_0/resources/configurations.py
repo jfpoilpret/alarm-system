@@ -2,14 +2,14 @@
 
 from ... import db
 
-from flask_restful import abort, fields, marshal_with, reqparse, Resource
+from flask_restful import abort, fields, marshal_with, Resource
 from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
-from werkzeug.datastructures import FileStorage
 from sqlalchemy import update
 
 from app.models import Configuration
-from app.common import prepare_map_for_config, prepare_map_for_monitoring, trim
+from app.common import prepare_map_for_config, prepare_map_for_monitoring, trim,\
+    choices
 
 CONFIG_FIELDS = {
     'id': fields.Integer,
@@ -25,13 +25,10 @@ CONFIG_FIELDS = {
     'voltage_thresholds': fields.Url('.voltage', absolute = False)
 }
 
-#FIXME should remove map_are from settable fields!
 class ConfigurationsResource(Resource):
     CONFIG_ARGS = {
         'name': Arg(str, required = True, use = trim),
-        'lockcode': Arg(str, required = True, use = trim),
-        'map_area_filename': Arg(str, required = False, allow_missing = True, use = trim),
-        'map_area': Arg(str, required = False, allow_missing = True, use = trim)
+        'lockcode': Arg(str, required = True, use = trim)
     }
     
     @marshal_with(CONFIG_FIELDS)
@@ -53,13 +50,10 @@ class ConfigurationsResource(Resource):
         db.session.refresh(configuration)
         return configuration, 201
 
-#FIXME should remove current (active also?) from settable fields!
 class ConfigurationResource(Resource):
     CONFIG_ARGS = {
         'name': Arg(str, required = False, allow_missing = True, use = trim),
-        'lockcode': Arg(str, required = False, allow_missing = True, use = trim),
-        'current': Arg(bool, required = False, allow_missing = True),
-        'active': Arg(str, required = False, allow_missing = True)
+        'lockcode': Arg(str, required = False, allow_missing = True, use = trim)
     }
     
     @marshal_with(CONFIG_FIELDS)
@@ -84,21 +78,13 @@ class ConfigurationResource(Resource):
         return config, 200
 
 class ConfigurationMapResource(Resource):
-    def __init__(self):
-        self.get_parse = reqparse.RequestParser(bundle_errors = True)
-        self.get_parse.add_argument(
-            'prepare_for', required = False, type = str, location = 'args', 
-            choices = ['configuration', 'monitoring'])
-        self.post_parse = reqparse.RequestParser(bundle_errors = True)
-        self.post_parse.add_argument(
-            'map_area', required = True, type = FileStorage, location = 'files')
-
-    def get(self, id):
+    @use_kwargs({ 'prepare_for': Arg(str, required = False, location = 'query', 
+                    validate = choices('configuration', 'monitoring')) })
+    def get(self, id, prepare_for):
         config = Configuration.query.get_or_404(id)
-        args = self.get_parse.parse_args(strict = True)
-        if args.prepare_for == 'configuration':
+        if prepare_for == 'configuration':
             return prepare_map_for_config(config)
-        elif args.prepare_for == 'monitoring':
+        elif prepare_for == 'monitoring':
             return prepare_map_for_monitoring(config)
         else:
             return config.map_area
@@ -112,24 +98,19 @@ class ConfigurationMapResource(Resource):
         db.session.refresh(config)
         return config, 200
 
+    @use_kwargs({ 'map_area': Arg(required = True, location = 'files') })
     @marshal_with(CONFIG_FIELDS)
-    def post(self, id):
+    def post(self, id, map_area):
         config = Configuration.query.get_or_404(id)
-        args = self.post_parse.parse_args(strict = True)
-        data = args.map_area.read().decode('utf-8')
+        data = map_area.read().decode('utf-8')
         config.map_area = data
-        config.map_area_filename = args.map_area.filename
+        config.map_area_filename = map_area.filename
         db.session.add(config)
         db.session.commit()
         db.session.refresh(config)
         return config, 200
 
 class CurrentConfigurationResource(Resource):
-    def __init__(self):
-        self.post_parse = reqparse.RequestParser(bundle_errors = True)
-        self.post_parse.add_argument(
-            'id', required = True, type = int, location = 'args')
-    
     @marshal_with(CONFIG_FIELDS)
     def get(self):
         config = Configuration.query.filter_by(current = True).first()
@@ -138,10 +119,10 @@ class CurrentConfigurationResource(Resource):
         else:
             return {}, 204
     
+    @use_kwargs({ 'id': Arg(int, required = True, location = 'query') })
     @marshal_with(CONFIG_FIELDS)
-    def post(self):
-        args = self.post_parse.parse_args(strict = True)
-        config = Configuration.query.get_or_404(args.id)
+    def post(self, id):
+        config = Configuration.query.get_or_404(id)
         if not config.current:
             db.session.execute(update(Configuration.__table__).values(current = False))
             config.current = True

@@ -23,7 +23,12 @@ device_kinds = {
 
 # Webargs utilities
 #-------------------
+# 'use' functions
 trim = lambda s: s.strip()
+
+# 'validate' functions
+def choices(*args):
+    return lambda v: v in args
 
 # WTF Form Utilities
 #--------------------

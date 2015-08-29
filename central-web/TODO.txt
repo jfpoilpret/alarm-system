@@ -5,9 +5,9 @@
 
 4h		- replace reqparse with webargs everywhere
 								IMPL	TEST	GIT
-			- thresholds		X				
+			- thresholds		X		X		
 			- configurations	X		X		
-			- devices							
+			- devices			X		X		
 			- users								
 
 			- properly handle errors thrown by webargs
