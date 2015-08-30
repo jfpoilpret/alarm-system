@@ -11,7 +11,7 @@ $(document).ready(function() {
 
 		var PROPERTIES = ['username', 'fullname', 'password', 'role'];
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
-		self.dirtyFlag = new ko.utils.DirtyFlag([self.username, self.fullname, self.password, self.role]);
+		self.dirtyFlag = new ko.utils.VMDirtyFlag(self);
 		
 		self.toJSON = function() {
 			return ko.utils.extract(self, PROPERTIES);
