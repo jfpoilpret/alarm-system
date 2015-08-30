@@ -14,6 +14,7 @@ $(document).ready(function() {
 
 		var PROPERTIES = ['name', 'voltage_threshold', 'device_id', 'kind'];
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
+		self.dirtyFlag = new ko.utils.DirtyFlag([self.name, self.voltage_threshold, self.device_id]);
 
 		// Internal functions
 		var toJSON = function() {
@@ -27,6 +28,8 @@ $(document).ready(function() {
 			ko.utils.ajax(self.uri, 'PUT', toJSON()).fail(self.errors.errorHandler).done(done);
 		}
 		var showForm = function(show) {
+			//FIXME when show == true, this enables all components, even those that should not be
+			// (e.g. save button that have data-bind enable)
 			$('.disablable').attr('disabled', show);
 			self.showDeviceForm(show);
 		}
@@ -71,6 +74,7 @@ $(document).ready(function() {
 			self.device_id(newDevice.device_id);
 			self.isNew(isNew);
 			self.errors.clear();
+			self.dirtyFlag.reset();
 			if (deviceCreator)
 				showForm(true);
 		}
@@ -93,7 +97,7 @@ $(document).ready(function() {
 			return t2 - t1;
 		}
 		var compareVoltage = function(t1, t2) {
-			if (t1.voltage == t2.voltage)
+			if (t1.voltage === t2.voltage)
 				return t2.time - t1.time;
 			return t1.voltage - t2.voltage;
 		}
@@ -171,7 +175,12 @@ $(document).ready(function() {
 		// Errors
 		var PROPERTIES = ['name', 'lockcode', 'map_area'];
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
-		self.dirtyFlag = new ko.utils.DirtyFlag([self.name, self.lockcode, self.map_area_filename]);
+		
+		// Dirty flag
+		var dirtyObservables = [self.name, self.lockcode, self.map_area_filename];
+		$.each(self.noPingThresholds, function(index, value) { dirtyObservables.push(value.thresholds); });
+		$.each(self.voltageThresholds, function(index, value) { dirtyObservables.push(value.thresholds); });
+		self.dirtyFlag = new ko.utils.DirtyFlag(dirtyObservables);
 
 		// List of modules kind that can be created through dropdown button
 		self.deviceCreators = [
@@ -255,7 +264,6 @@ $(document).ready(function() {
 			self.uriVoltageThresholds = newConfig.voltage_thresholds;
 			self.isNew(isNew);
 			self.errors.clear();
-			self.dirtyFlag.reset();
 			if (isNew) {
 				// Clear devices list
 				self.devices([]);
@@ -265,6 +273,7 @@ $(document).ready(function() {
 				$.each(self.voltageThresholds, function(index, thresholds) {
 					thresholds.setThresholds([]);
 				});
+				self.dirtyFlag.reset();
 			} else {
 				// Read devices from server
 				$.getJSON(newConfig.devices, function(devices) {
@@ -277,6 +286,7 @@ $(document).ready(function() {
 						var threshold = findNoPingThreshold(level);
 						threshold.setThresholds(times);
 					});
+					self.dirtyFlag.reset();
 				});
 				// Read voltage alert thresholds from server
 				$.getJSON(newConfig.voltage_thresholds, function(thresholds) {
@@ -284,6 +294,7 @@ $(document).ready(function() {
 						var threshold = findVoltageThreshold(level);
 						threshold.setThresholds(times);
 					});
+					self.dirtyFlag.reset();
 				});
 			}
 			$('#config_map_form').get(0).reset();

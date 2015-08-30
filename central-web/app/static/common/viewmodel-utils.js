@@ -168,9 +168,21 @@
 	
 	// Function to create a dirty flag on a list of observables
 	function DirtyFlag(observables) {
-		var self = this,
+		var copy = function(value) {
 			// IMPORTANT! Note the trick [value()] to ensure $.map() will keep null values in the resulting array
-			_initialState = $.map(observables, function(value) { return [value()]; }),
+			if ($.isArray(value())) return [value().slice(0)]; else return [value()];
+		}
+		var equal = function(a, b) {
+			if ($.isArray(a)) {
+				return (a.length == b.length) && (a.every(function(item, i) {
+					return item === b[i];
+				}));
+			} else {
+				return a === b;
+			}
+		}
+		var self = this,
+			_initialState = $.map(observables, copy),
 			_initiallyDirty = ko.observable(false);
 
 		_initiallyDirty.extend({ notify: 'always' });
@@ -179,7 +191,7 @@
 			var changes = 0,
 				len = observables.length;
 			for (var i = 0; i < len; i++) {
-				if (_initialState[i] !== observables[i]()) {
+				if (!equal(_initialState[i], observables[i]())) {
 					changes++;
 				}
 			}
@@ -187,8 +199,7 @@
 		});
 		
 		self.reset = function(initiallyDirty) {
-			// IMPORTANT! Note the trick [value()] to ensure $.map() will keep null values in the resulting array
-			_initialState = $.map(observables, function(value) { return [value()]; });
+			_initialState = $.map(observables, copy);
 			_initiallyDirty(initiallyDirty || false);
 		};
 	}

@@ -7,10 +7,11 @@
 		required = 'required', placeholder = 'Voltage Threshold (V)') }}
 	{# TODO add placeholder help in the popup (how?) #}
 	{{ forms.inline_select('device_id', 'Device ID', options = 'allDeviceIDs', hide_label = True, prefix = 'device_') }}
-	<button type="button" class="btn btn-danger device-cancel" href="#" data-bind="click: cancelDeviceForm">
+	<button type="button" class="btn btn-danger device-cancel" data-bind="click: cancelDeviceForm">
 		<span class="glyphicon glyphicon-remove-circle"></span>
 	</button>
-	<button type="button" class="btn btn-success device-submit" href="#" data-bind="click: saveDevice">
+	<button type="button" class="btn btn-success device-submit" 
+			data-bind="click: saveDevice, enable: dirtyFlag.isDirty">
 		<span class="glyphicon glyphicon-ok-circle"></span>
 	</button>
 </form>

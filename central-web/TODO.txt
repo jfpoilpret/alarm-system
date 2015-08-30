@@ -3,12 +3,6 @@
 	
 	- Major refactoring: AJAX+RESTful webapp 
 
-		- save if dirty
-30'			- save devices if dirty
-30'			- improve config saves (several levels)
-			
-		- ensure flash messages are cleared whenever needed, in particular when canceling dialog
-
 8h		- monitoring REST
 			- Alerts GET (history/live)
 			- Devices status GET
@@ -30,6 +24,8 @@
 			(avoid more than one global var per page)
 			- how to deal with SVGHandlers (currently in global namespace...)
 			
+		- ensure flash messages are cleared whenever needed, in particular when canceling dialog
+
 8h		- security (login, token)
 			- login must enable both REST services and Web pages serving!
 			- use time-limited tokens (is it enough for CSRF protection?)
