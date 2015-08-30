@@ -7,7 +7,7 @@
 				<h4 class="modal-title" data-bind="text: isNew() ? 'New Configuration' : 'Edit Configuration \'' + name() + '\''"></h4>
 			</div>
 			<div class="modal-body">
-				<form class="form" id="config_form" role="form" href="#">
+				<form class="form" id="config_form" role="form">
 					{{ forms.global_errors() }}
 					{{ forms.input('name', 'Name', prefix = 'config_', classes = 'disablable', required = 'required') }}
 					{{ forms.input('lockcode', 'Lock Code', prefix = 'config_', classes = 'disablable', required = 'required') }}

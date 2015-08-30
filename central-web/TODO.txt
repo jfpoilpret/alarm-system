@@ -3,12 +3,9 @@
 	
 	- Major refactoring: AJAX+RESTful webapp 
 
-1h		- properly handle errors thrown by webargs
-
 		- save if dirty
-30'			- improve config saves (several levels)
 30'			- save devices if dirty
-30'			- save users if dirty
+30'			- improve config saves (several levels)
 			
 		- ensure flash messages are cleared whenever needed, in particular when canceling dialog
 

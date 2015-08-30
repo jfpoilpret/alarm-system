@@ -1,5 +1,6 @@
 from flask import Blueprint, request, g
-from flask_restful import Api
+from flask_restful import abort, Api
+from webargs.flaskparser import parser
 
 # Create blueprint for Web Services
 api = Blueprint('api', __name__)
@@ -8,7 +9,19 @@ restApi = Api(api)
 
 #TODO ensure authentication (with token)
 
-#TODO register all REST resources
+# Register error handler for webargs
+@parser.error_handler
+def handle_webargs_error(err):
+    # TODO currently only one error is thrown at first mistake (webargs issue)
+    code = getattr(err, 'status_code', 400)
+    msg = getattr(err, 'message', 'Invalid Request')
+    name = getattr(err, 'arg_name', None)
+    if name:
+        abort(code, message = {name: msg})
+    else:
+        abort(code, message = msg)
+
+# Register all REST resources
 from .resources import UserResource, UsersResource
 restApi.add_resource(UsersResource, '/users', endpoint = 'users')
 restApi.add_resource(UserResource, '/users/<int:id>', endpoint = 'user')
@@ -20,7 +33,6 @@ restApi.add_resource(ConfigurationResource, '/configurations/<int:id>', endpoint
 from .resources import ConfigurationMapResource
 restApi.add_resource(ConfigurationMapResource, '/configurations/<int:id>/map', endpoint = 'map')
 
-#TODO allow get/set current
 from .resources import CurrentConfigurationResource
 restApi.add_resource(CurrentConfigurationResource, '/configurations/current', endpoint = 'current')
 
@@ -35,3 +47,5 @@ restApi.add_resource(NoPingAlertThresholdsResource,
 from .resources import VoltageAlertThresholdsResource
 restApi.add_resource(VoltageAlertThresholdsResource, 
     '/configurations/<int:id>/alert-thresholds/voltage', endpoint = 'voltage')
+
+#TODO register missing REST resources for monitoring

@@ -7,7 +7,7 @@
 				<h4 class="modal-title" data-bind="text: isNew() ? 'New User' : 'Edit User'"></h4>
 			</div>
 			<div class="modal-body">
-				<form class="form" id="user_form" role="form" href="#">
+				<form class="form" id="user_form" role="form">
 					{{ forms.global_errors() }}
 					{{ forms.input('username', 'User Name', prefix = 'user_', required = 'required') }}
 					<!-- ko if: isNew -->
@@ -20,10 +20,12 @@
 			<div class="modal-footer">
 				<a href="#" role="button" class="btn btn-default cancel">Cancel</a>
 				<!-- ko if: isNew -->
-				<a href="#" role="button" class="btn btn-primary" id="user_submit" data-bind="click: saveNewUser">Create User</a>
+				<button	type="button" role="button" class="btn btn-primary" id="user_submit" 
+						data-bind="click: saveNewUser, enable: dirtyFlag.isDirty">Create User</button>
 				<!-- /ko -->
 				<!-- ko ifnot: isNew -->
-				<a href="#" role="button" class="btn btn-primary" id="user_submit" data-bind="click: saveUser">Save User</a>
+				<button	type="button" role="button" class="btn btn-primary" id="user_submit" 
+						data-bind="click: saveUser, enable: dirtyFlag.isDirty">Save User</button>
 				<!-- /ko -->
 			</div>
 		</div>

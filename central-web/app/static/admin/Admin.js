@@ -11,6 +11,7 @@ $(document).ready(function() {
 
 		var PROPERTIES = ['username', 'fullname', 'password', 'role'];
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
+		self.dirtyFlag = new ko.utils.DirtyFlag([self.username, self.fullname, self.password, self.role]);
 		
 		self.toJSON = function() {
 			return ko.utils.extract(self, PROPERTIES);
@@ -37,6 +38,7 @@ $(document).ready(function() {
 			self.role(newUser.role);
 			self.isNew(isNew);
 			self.errors.clear();
+			self.dirtyFlag.reset();
 		}
 		
 		self.saveUser = function() {
