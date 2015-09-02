@@ -6,6 +6,7 @@ from xmltodict import parse, unparse
 from unittest.test.testmock.support import is_instance
 from wtforms.fields.core import IntegerField
 from wtforms.widgets.core import HiddenInput
+from flask_restful.fields import Raw
 
 # Common constants
 #------------------
@@ -23,12 +24,33 @@ device_kinds = {
 
 # Webargs utilities
 #-------------------
+
 # 'use' functions
 trim = lambda s: s.strip()
+
+def label_to_code(code_label_pairs):
+    def convert(input_label):
+        for (code, label) in code_label_pairs:
+            if input_label == label:
+                return code
+        return None
+    return convert
 
 # 'validate' functions
 def choices(*args):
     return lambda v: v in args
+
+# Flask-RestFul marshalling utilities
+#-------------------------------------
+class CodeToLabelField(Raw):
+    def __init__(self, code_label_pairs):
+        self.code_label_pairs = code_label_pairs
+
+    def format(self, value):
+        for (code, label) in self.code_label_pairs:
+            if value == code:
+                return label
+        return None
 
 # WTF Form Utilities
 #--------------------

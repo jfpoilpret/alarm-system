@@ -15,16 +15,13 @@ from app.monitor.monitoring import MonitoringManager, AlarmStatus
 @login_required
 def home():
     # Set default active tab
-    active_tab = request.args.get('tab', 'tab_map')
+#     active_tab = request.args.get('tab', 'tab_map')
     # Setup filter form
-    filter_form = AlertsFilterForm(prefix = 'alert_filter_', latest_id = '-1')
-    # Limit to last 30 days by default
-    limit = datetime.fromtimestamp(time() - 30 * 24 * 3600)
-    filter_form.period_from.data = limit
-    return render_template('monitor/home.html', 
-        filter_form = filter_form,
-        history_clear_form = HistoryClearForm(prefix = 'history_clear_'),
-        active_tab = active_tab)
+#     filter_form = AlertsFilterForm(prefix = 'alert_filter_', latest_id = '-1')
+#     # Limit to last 30 days by default
+#     limit = datetime.fromtimestamp(time() - 30 * 24 * 3600)
+#     filter_form.period_from.data = limit
+    return render_template('monitor/monitoring.html')
 
 @monitor.route('/refresh_status', methods = ['POST'])
 @login_required

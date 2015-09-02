@@ -3,12 +3,22 @@
 	
 	- Major refactoring: AJAX+RESTful webapp 
 
-8h		- monitoring REST
-			- Alerts GET (history/live)
-			- Devices status GET
-			- System status GET/PUT (map?, locked, active)
+		- monitoring REST
+x			- System status GET/PUT (map?, locked, active)
+x			- Alerts GET (history/live)
+2h			- Devices status GET
+1h			- Alerts DELETE (history)
+
 8h		- monitoring UI
-			
+			- html changes: one template per tab?
+			- JS changes ViewModels
+				- tab "controls"
+				- tab "alerts"
+				- tab "history"
+				- tab "map"
+		
+4h		- debug step by step (tab per tab)
+		
 4h+		- cleanup wep site part:
 			- remove all forms (except login)
 			- remove all routes that are superseded by API

@@ -1,0 +1,24 @@
+<div role="tabpanel" class="tab-pane" id="control">
+	{% if current_user.is_alarm_setter() %}
+	<button	type="button" role="button" class="btn btn-primary"
+			data-bind="visible: name() && active()">Deactivate</button>
+	<button	type="button" role="button" class="btn btn-primary"
+			data-bind="visible: name() && !active()">Activate</button>
+	<button	type="button" role="button" class="btn btn-primary"
+			data-bind="visible: name() && active() && !locked()">Lock</button>
+	<button	type="button" role="button" class="btn btn-primary"
+			data-bind="visible: name() && active() && locked()">Unlock</button>
+	<div class="form-history-clear">
+		<form	id="history_clear_form" 
+				class="form form-inline" 
+				method="post" role="form">
+		{#
+			{{ history_clear_form.hidden_tag() }}
+			{{ wtf.form_errors(history_clear_form, hiddens = "only") }}
+			{{ wtf.form_field(history_clear_form.clear_until, 'inline', placeholder = 'Until') }}
+			{{ wtf.form_field(history_clear_form.submit, 'inline', button_map = {'history_clear_submit': 'primary'}) }}
+		#}
+		</form>
+	</div>
+	{% endif %}
+</div>

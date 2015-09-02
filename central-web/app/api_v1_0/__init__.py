@@ -48,4 +48,7 @@ from .resources import VoltageAlertThresholdsResource
 restApi.add_resource(VoltageAlertThresholdsResource, 
     '/configurations/<int:id>/alert-thresholds/voltage', endpoint = 'voltage')
 
-#TODO register missing REST resources for monitoring
+from .resources import MonitorAlertsResource, MonitorDevicesResource, MonitorStatusResource
+restApi.add_resource(MonitorStatusResource, '/monitoring/status')
+restApi.add_resource(MonitorAlertsResource, '/monitoring/alerts')
+restApi.add_resource(MonitorDevicesResource, '/monitoring/devices')
