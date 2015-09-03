@@ -1,3 +1,4 @@
+{% import "forms.html" as forms %}
 <div role="tabpanel" class="tab-pane" id="control">
 	{% if current_user.is_alarm_setter() %}
 	<button	type="button" role="button" class="btn btn-primary"
@@ -12,12 +13,10 @@
 		<form	id="history_clear_form" 
 				class="form form-inline" 
 				method="post" role="form">
-		{#
-			{{ history_clear_form.hidden_tag() }}
-			{{ wtf.form_errors(history_clear_form, hiddens = "only") }}
-			{{ wtf.form_field(history_clear_form.clear_until, 'inline', placeholder = 'Until') }}
-			{{ wtf.form_field(history_clear_form.submit, 'inline', button_map = {'history_clear_submit': 'primary'}) }}
-		#}
+			{{ forms.global_errors() }}
+			{{ forms.inline_input('clear_until', 'Until', hide_label = True, prefix = 'history_clear_', placeholder = 'Until') }}
+			<button	type="button" role="button" class="btn btn-primary" id="history_clear_submit" 
+					data-bind="click: clearHistory">Clear History</button>
 		</form>
 	</div>
 	{% endif %}

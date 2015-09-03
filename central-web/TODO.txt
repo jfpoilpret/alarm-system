@@ -6,17 +6,18 @@
 		- monitoring REST
 x			- System status GET/PUT (map?, locked, active)
 x			- Alerts GET (history/live)
+x			- Alerts DELETE (history)
 2h			- Devices status GET
-1h			- Alerts DELETE (history)
 
 		- monitoring UI
 x			- html changes: one template per tab?
 			- JS changes ViewModels
 1h				- tab "controls"
+x					- implement clear history
 					- why handler binding fails depending on applyBindings calls order?
 2h				- tab "alerts"
-2h				- tab "history"
 2h				- tab "map"
+2h				- tab "history"
 		
 4h		- debug step by step (tab per tab)
 		

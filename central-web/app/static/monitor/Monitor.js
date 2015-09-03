@@ -17,10 +17,16 @@ $(document).ready(function() {
 		});
 		self.lockedText = ko.computed(function() {
 			if (self.active())
-				return '&nbsp;-&nbsp;' + (self.locked() ? 'Locked' : 'Unlocked');
+				return self.locked() ? ' - Locked' : ' - Unlocked';
 			else
 				return '';
 		});
+
+		// Form to clear history
+		self.clear_until = ko.observable();
+		// Errors
+		var PROPERTIES = ['clear_until'];
+		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
 		
 		var timer = null;
 
@@ -36,6 +42,19 @@ $(document).ready(function() {
 		}
 		
 		// Click handlers
+		self.clearHistory = function() {
+			if (window.confirm('Are you sure you want to clear all alerts?')) {
+				$.ajax({
+					url: '/api/1.0/monitoring/alerts',
+					method: 'DELETE',
+					data: { clear_until: self.clear_until() }
+				}).fail(self.errors.errorHandler).done(function() {
+					// Clear history form
+					self.clear_until(null);
+					//TODO LATER clear all alerts viewmodels
+				});
+			}
+		}
 		self.activate = function() {
 			return changeStatus('Are you sure you want to activate the alarm system?', { active: true });
 		}
@@ -80,6 +99,7 @@ $(document).ready(function() {
 		
 		// Force 1st refresh immediately
 		self.refresh();
+		self.errors.clear();
 	}
 
 	var statusViewModel = new StatusViewModel();
@@ -220,54 +240,6 @@ $(document).ready(function() {
 //	}
 //	
 //	// AJAX function that performs alerts filter submit
-//	function submitClearHistory()
-//	{
-//		if (window.confirm('Are you sure you want to clear all alerts?')) {
-//			// POST form
-//			var clearJson = {
-//				'history_clear_clear_until': $('#history_clear_clear_until').val(),
-//				'history_clear_csrf_token': $('#history_clear_csrf_token').val()
-//			};
-//			$.ajax({
-//				type: 'POST',
-//				url: '/monitor/pre_clear_history',
-//				data: clearJson,
-//				success: function(results) {
-//					// Check if form submission is valid
-//					if (results.result === 'OK') {
-//						// if OK, we can copy to filterJSON and request immediate refresh
-//						clearFormErrors('history_clear_');
-//						clearHistory();
-//					} else {
-//						// Get errors and display them in form
-//						handleErrors('history_clear_', results.fields, results.flash_messages);
-//					}
-//				}
-//			});
-//		}
-//		return false;
-//	}
-//	
-//	// AJAX function that performs alerts history clear submit
-//	function clearHistory()
-//	{
-//		// POST form
-//		var clearJson = {
-//			'history_clear_clear_until': $('#history_clear_clear_until').val(),
-//			'history_clear_csrf_token': $('#history_clear_csrf_token').val()
-//		};
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'POST',
-//			url: '/monitor/clear_history',
-//			data: clearJson,
-//			success: function(results) {
-//				//TODO do we have some cleanup to perform on the current DOM?
-//			}
-//		});
-//	}
-//	
-//	// AJAX function that performs alerts filter submit
 //	function submitAlertsFilter()
 //	{
 //		// Use temporary JSON structure for prior form validation through AJAX
@@ -306,16 +278,6 @@ $(document).ready(function() {
 //			}
 //		});
 //		return false;
-//	}
-//	
-//	function handleErrors(formPrefix, fields, messages)
-//	{
-//		// Remove previous errors
-//		clearFormErrors(formPrefix);
-//		// For each error field, mark the field
-//		handleFormErrorsInline(formPrefix, fields);
-//		// For each message, add a flash message
-//		handleFlashMessages(messages);
 //	}
 //	
 //	function resetAlertsFilter()

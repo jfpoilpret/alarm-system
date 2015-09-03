@@ -125,12 +125,12 @@ class MonitorAlertsResource(Resource):
 
     #TODO allow multiple alert levels and types
     ALERT_GET_ARGS = {
-        'since_id': Arg(int, required = False),
+        'since_id': Arg(int, required = False, allow_missing = True),
         'max_count': Arg(int, required = False, default = 100),
-        'period_from': Arg(date, required = False),
-        'period_to': Arg(date, required = False),
-        'alert_level': Arg(int, required = False, use = label_to_code(ALERT_LEVELS)),
-        'alert_type': Arg(int, required = False, use = label_to_code(ALERT_TYPES)),
+        'period_from': Arg(date, required = False, allow_missing = True),
+        'period_to': Arg(date, required = False, allow_missing = True),
+        'alert_level': Arg(int, required = False, use = label_to_code(ALERT_LEVELS), allow_missing = True),
+        'alert_type': Arg(int, required = False, use = label_to_code(ALERT_TYPES), allow_missing = True),
     }
     #TODO make since_id exclusive with all other fields with validate = xxx
     @use_args(ALERT_GET_ARGS, locations = ['query'])
@@ -140,19 +140,19 @@ class MonitorAlertsResource(Resource):
         current_config = Configuration.query.filter_by(current = True).first_or_404()
         # Build query based on passed arguments
         query = Alert.query.filter_by(config_id = current_config.id)
-        if args.has_key('since_id'):
+        if 'since_id' in args:
             query = query.filter(Alert.id > args['since_id'])
-        if args.has_key('period_from'):
+        if 'period_from' in args:
             query = query.filter(Alert.when >= args['period_from'])
-        if args.has_key('period_to'):
+        if 'period_to' in args:
             query = query.filter(Alert.when <= args['period_to'])
-        if args.has_key('alert_level'):
+        if 'alert_level' in args:
             query = query.filter_by(level = args['alert_level'])
-        if args.has_key('alert_type'):
+        if 'alert_type' in args:
             query = query.filter_by(alert_type = args['alert_type'])
         # Limit number of retrieved records
         query = query.order_by(Alert.when.desc())
-        if args.has_key('max_count') and args['max_count']:
+        if 'max_count' in args and args['max_count']:
             query = query.limit(args['max_count'])
         return query.all()
     
@@ -163,7 +163,6 @@ class MonitorAlertsResource(Resource):
 
     @use_kwargs(ALERT_DELETE_ARGS, locations = ['query'])
     def delete(self, clear_until):
-        #TODO
         # Find current configuration
         current_config = Configuration.query.filter_by(current = True).first_or_404()
         # Build query based on passed arguments
