@@ -35,25 +35,47 @@ $(document).ready(function() {
 			}
 		}
 		
-		//TODO FIRST click handlers: activate/deactivate/lock/unlock
+		// Click handlers
+		self.activate = function() {
+			return changeStatus('Are you sure you want to activate the alarm system?', { active: true });
+		}
+		self.deactivate = function() {
+			return changeStatus('Are you sure you want to deactivate the alarm system?', { active: false });
+		}
+		self.lock = function() {
+			return changeStatus('Are you sure you want to lock the alarm?', { locked: true });
+		}
+		self.unlock = function() {
+			return changeStatus('Are you sure you want to unlock the alarm?', { locked: false });
+		}
+		
+		var changeStatus = function(message, status) {
+			if (window.confirm(message)) {
+				ko.utils.ajax('/api/1.0/monitoring/status', 'PUT', status).
+					done(updateStatusDone).fail(updateStatusFail);
+			}
+			return false;
+		}
+		var updateStatusDone = function(status) {
+			self.name(status.name);
+			self.active(status.active);
+			self.locked(status.locked);
+		}
+		var updateStatusFail = function(xhr) {
+			var status = xhr.status;
+			var result = xhr.responseJSON.message;
+			if (status === 404) {
+				self.name(null);
+				self.active(null);
+				self.locked(null);
+			} else if (status >= 500) {
+				alert(sprintf(
+					'A server error %d has occurred:\n%s', status, result));
+			}
+		}
 		
 		self.refresh = function() {
-			$.getJSON('/api/1.0/monitoring/status').done(function(status) {
-				self.name(status.name);
-				self.active(status.active);
-				self.locked(status.locked);
-			}).fail(function(xhr) {
-				var status = xhr.status;
-				var result = xhr.responseJSON.message;
-				if (status === 404) {
-					self.name(null);
-					self.active(null);
-					self.locked(null);
-				} else if (status >= 500) {
-					alert(sprintf(
-						'A server error %d has occurred:\n%s', status, result));
-				}
-			});
+			$.getJSON('/api/1.0/monitoring/status').done(updateStatusDone).fail(updateStatusFail);
 		}
 		
 		// Force 1st refresh immediately
@@ -61,8 +83,10 @@ $(document).ready(function() {
 	}
 
 	var statusViewModel = new StatusViewModel();
-	ko.applyBindings(statusViewModel, $('#status').get(0));
+	//FIXME find out if/why we need to bind #control first and not second????
 	ko.applyBindings(statusViewModel, $('#control').get(0));
+	ko.applyBindings(statusViewModel, $('#status').get(0));
+//	ko.applyBindings(statusViewModel, $('#control').get(0));
 	statusViewModel.autoRefresh(true);
 	
 //	var hasActiveConfiguration = false;
@@ -82,57 +106,6 @@ $(document).ready(function() {
 //		'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
 //	};
 //	
-//	function changeConfig(url, message)
-//	{
-//		if (window.confirm(message)) {
-//			$.ajax({
-//				type: 'POST',
-//				url: url,
-//				success: updateStatus
-//			});
-//		}
-//		return false;
-//	}
-//	
-//	// AJAX function to activate current config
-//	function activateConfig()
-//	{
-//		return changeConfig('/monitor/activate_config', 
-//			'Are you sure you want to activate the alarm system?');
-//	}
-//	
-//	// AJAX function to deactivate current config
-//	function deactivateConfig()
-//	{
-//		return changeConfig('/monitor/deactivate_config', 
-//			'Are you sure you want to deactivate the alarm system?');
-//	}
-//	
-//	// AJAX function to lock current config
-//	function lockConfig()
-//	{
-//		return changeConfig('/monitor/lock_config', 
-//			'Are you sure you want to lock the alarm?');
-//	}
-//	
-//	// AJAX function to unlock current config
-//	function unlockConfig()
-//	{
-//		return changeConfig('/monitor/unlock_config', 
-//			'Are you sure you want to unlock the alarm?');
-//	}
-//	
-//	// AJAX function to update current configuration state
-//	function refreshStatus()
-//	{
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'POST',
-//			url: '/monitor/refresh_status',
-//			success: updateStatus
-//		});
-//	}
-//	
 //	var lastStatusHash = 0;
 //	var lastConfigNameHash = 0;
 //	
@@ -141,33 +114,6 @@ $(document).ready(function() {
 //		// Only update if changes sicne last call
 //		if (results.hashcode != lastStatusHash) {
 //			console.log('updateStatus()');
-//			lastStatusHash = results.hashcode;
-//			// Update title in menu bar
-//			$('#status').html(results.status);
-//			// Update buttons state
-//			if (results.active === null) {
-//				hasActiveConfiguration = false;
-//				$('.monitor').hide();
-//			} else if (results.active) {
-//				hasActiveConfiguration = true;
-//				$('.monitor').show();
-//				$('#activate_config').hide();
-//				$('#deactivate_config').show();
-//				if (results.locked) {
-//					$('#lock_config').hide();
-//					$('#unlock_config').show();
-//				} else {
-//					$('#lock_config').show();
-//					$('#unlock_config').hide();
-//				}
-//			} else {
-//				hasActiveConfiguration = false;
-//				$('.monitor').show();
-//				$('#deactivate_config').hide();
-//				$('#activate_config').show();
-//				$('#lock_config').hide();
-//				$('#unlock_config').hide();
-//			}
 //			
 //			if (results.namehash != lastConfigNameHash) {
 //				// Reload map if needed

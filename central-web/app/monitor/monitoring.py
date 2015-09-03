@@ -72,6 +72,9 @@ class MonitoringManager(object):
         # "time" has elapsed
         self.no_ping_time_thresholds = [(float(entry.alert_time), entry.alert_level) for entry in config.no_ping_time_alert_thresholds]
         self.no_ping_time_thresholds = sorted(self.no_ping_time_thresholds, key = lambda x: x[0], reverse = False)
+        # Ensure list is never empty
+        if len(self.no_ping_time_thresholds) == 0:
+            self.no_ping_time_thresholds = [(10.0, Alert.LEVEL_WARNING)]
         # Alerts when device voltage under some rate wrt device voltage threshold
         # Format is (ratio, level, period)
         # Whenever the ratio of voltage level over a device voltage threshold becomes under ratio,
@@ -79,6 +82,9 @@ class MonitoringManager(object):
         # under the same ratio, the same alert is emitted again.
         self.voltage_alert_thresholds = [(entry.voltage_rate/100.0, entry.alert_level, entry.alert_time * 60.0) for entry in config.voltage_rate_alert_thresholds]
         self.voltage_alert_thresholds = sorted(self.voltage_alert_thresholds, key = lambda x: x[0], reverse = True)
+        # Ensure list is never empty
+        if len(self.voltage_alert_thresholds) == 0:
+            self.voltage_alert_thresholds = [(0.99, Alert.LEVEL_INFO, 600.0)]
         # Create dictionary of LiveDevices from config
         self.devices = {id: LiveDevice(device) for id, device in config.devices.items()}
         # Start thread that reads queues and act upon received messages (DB, SMS...)
@@ -102,7 +108,7 @@ class MonitoringManager(object):
             level = Alert.LEVEL_INFO,
             alert_type = AlertType.SYSTEM_ACTIVATION,
             message = 'System activated',
-            device = None))
+            device = None), need_context = False)
         print('activate() thread started')
     
     def deactivate(self):
@@ -134,7 +140,7 @@ class MonitoringManager(object):
                 level = Alert.LEVEL_INFO,
                 alert_type = AlertType.SYSTEM_DEACTIVATION,
                 message = 'System deactivated',
-                device = None))
+                device = None), need_context = False)
             print('deactivate() thread stopped')
     
     def lock(self):
@@ -142,14 +148,14 @@ class MonitoringManager(object):
             AlarmStatus.LOCKED, AlertType.LOCK, 'Lock through monitoring application')
         alert.when = datetime.fromtimestamp(time())
         alert.config_id = self.config_id
-        self.store_alert(alert)
+        self.store_alert(alert, need_context = False)
     
     def unlock(self):
         alert = self.create_lock_event(
             AlarmStatus.UNLOCKED, AlertType.UNLOCK, 'Unlock through monitoring application')
         alert.when = datetime.fromtimestamp(time())
         alert.config_id = self.config_id
-        self.store_alert(alert)
+        self.store_alert(alert, need_context =  False)
     
     def get_status(self):
         return self.status
@@ -158,8 +164,12 @@ class MonitoringManager(object):
     def get_devices(self):
         return self.devices
 
-    def store_alert(self, alert):
-        with self.app.app_context():
+    def store_alert(self, alert, need_context = True):
+        if need_context:
+            with self.app.app_context():
+                db.session.add(alert)
+                db.session.commit()
+        else:
             db.session.add(alert)
             db.session.commit()
     

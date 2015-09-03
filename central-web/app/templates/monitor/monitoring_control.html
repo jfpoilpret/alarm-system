@@ -1,13 +1,13 @@
 <div role="tabpanel" class="tab-pane" id="control">
 	{% if current_user.is_alarm_setter() %}
 	<button	type="button" role="button" class="btn btn-primary"
-			data-bind="visible: name() && active()">Deactivate</button>
+			data-bind="click: deactivate, visible: name() && active()">Deactivate</button>
 	<button	type="button" role="button" class="btn btn-primary"
-			data-bind="visible: name() && !active()">Activate</button>
+			data-bind="click: activate, visible: name() && !active()">Activate</button>
 	<button	type="button" role="button" class="btn btn-primary"
-			data-bind="visible: name() && active() && !locked()">Lock</button>
+			data-bind="click: lock, visible: name() && active() && !locked()">Lock</button>
 	<button	type="button" role="button" class="btn btn-primary"
-			data-bind="visible: name() && active() && locked()">Unlock</button>
+			data-bind="click: unlock, visible: name() && active() && locked()">Unlock</button>
 	<div class="form-history-clear">
 		<form	id="history_clear_form" 
 				class="form form-inline" 
