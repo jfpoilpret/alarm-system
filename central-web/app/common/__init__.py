@@ -7,6 +7,7 @@ from unittest.test.testmock.support import is_instance
 from wtforms.fields.core import IntegerField
 from wtforms.widgets.core import HiddenInput
 from flask_restful.fields import Raw
+from datetime import datetime
 
 # Common constants
 #------------------
@@ -34,6 +35,13 @@ def label_to_code(code_label_pairs):
             if input_label == label:
                 return code
         return None
+    return convert
+
+DEFAULT_DATE_FORMAT = '%d-%m-%Y'
+
+def string_to_date(format = DEFAULT_DATE_FORMAT):
+    def convert(input):
+        return datetime.strptime(input, format)
     return convert
 
 # 'validate' functions

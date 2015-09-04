@@ -44,10 +44,10 @@ $(document).ready(function() {
 		// Click handlers
 		self.clearHistory = function() {
 			if (window.confirm('Are you sure you want to clear all alerts?')) {
+				var url = '/api/1.0/monitoring/alerts?' + $.param({ clear_until: self.clear_until() });
 				$.ajax({
-					url: '/api/1.0/monitoring/alerts',
+					url: url,
 					method: 'DELETE',
-					data: { clear_until: self.clear_until() }
 				}).fail(self.errors.errorHandler).done(function() {
 					// Clear history form
 					self.clear_until(null);
@@ -103,10 +103,8 @@ $(document).ready(function() {
 	}
 
 	var statusViewModel = new StatusViewModel();
-	//FIXME find out if/why we need to bind #control first and not second????
-	ko.applyBindings(statusViewModel, $('#control').get(0));
 	ko.applyBindings(statusViewModel, $('#status').get(0));
-//	ko.applyBindings(statusViewModel, $('#control').get(0));
+	ko.applyBindings(statusViewModel, $('#control').get(0));
 	statusViewModel.autoRefresh(true);
 	
 //	var hasActiveConfiguration = false;

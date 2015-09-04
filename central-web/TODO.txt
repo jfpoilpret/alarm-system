@@ -7,14 +7,12 @@
 x			- System status GET/PUT (map?, locked, active)
 x			- Alerts GET (history/live)
 x			- Alerts DELETE (history)
+1h			- Alerts GET marshal devices as nested fields
 2h			- Devices status GET
 
 		- monitoring UI
-x			- html changes: one template per tab?
 			- JS changes ViewModels
-1h				- tab "controls"
-x					- implement clear history
-					- why handler binding fails depending on applyBindings calls order?
+x				- tab "controls"
 2h				- tab "alerts"
 2h				- tab "map"
 2h				- tab "history"

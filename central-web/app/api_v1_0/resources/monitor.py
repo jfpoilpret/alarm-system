@@ -2,16 +2,14 @@
 
 from ... import db
 
-from flask_restful import abort, fields, marshal_with, Resource
+from flask_restful import fields, marshal_with, Resource
 from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
-from sqlalchemy import update
 
 from app.models import Configuration, Alert, AlertType
-from app.common import trim, choices, CodeToLabelField, label_to_code
+from app.common import CodeToLabelField, label_to_code, string_to_date
 from app.monitor.monitoring import AlarmStatus, MonitoringManager
 from flask_restful.fields import Raw
-from datetime import date
 
 #TODO resources to GET:
 # - status: GET/PUT (active/lock)
@@ -127,8 +125,8 @@ class MonitorAlertsResource(Resource):
     ALERT_GET_ARGS = {
         'since_id': Arg(int, required = False, allow_missing = True),
         'max_count': Arg(int, required = False, default = 100),
-        'period_from': Arg(date, required = False, allow_missing = True),
-        'period_to': Arg(date, required = False, allow_missing = True),
+        'period_from': Arg(required = False, use = string_to_date(), allow_missing = True),
+        'period_to': Arg(required = False, use = string_to_date(), allow_missing = True),
         'alert_level': Arg(int, required = False, use = label_to_code(ALERT_LEVELS), allow_missing = True),
         'alert_type': Arg(int, required = False, use = label_to_code(ALERT_TYPES), allow_missing = True),
     }
@@ -158,7 +156,7 @@ class MonitorAlertsResource(Resource):
     
     #TODO allow more filters: levels/types of alerts
     ALERT_DELETE_ARGS = {
-        'clear_until': Arg(date, required = False),
+        'clear_until': Arg(required = False, use = string_to_date()),
     }
 
     @use_kwargs(ALERT_DELETE_ARGS, locations = ['query'])
@@ -168,6 +166,7 @@ class MonitorAlertsResource(Resource):
         # Build query based on passed arguments
         query = Alert.query.filter_by(config_id = current_config.id)
         if clear_until:
+            print('delete clear_until = %s' % str(clear_until))
             query = query.filter(Alert.when <= clear_until)
         query.delete(synchronize_session = False)
         db.session.commit()
