@@ -5,8 +5,8 @@
 			{{ forms.global_errors() }}
 			{{ forms.inline_input('period_from', 'From', prefix = 'alert_filter_', placeholder = 'DD-MM-YYYY') }}
 			{{ forms.inline_input('period_to', 'To', prefix = 'alert_filter_', placeholder = 'DD-MM-YYYY') }}
-			{{ forms.inline_select('alert_level', 'Level', 'allAlertLevels', prefix = 'alert_filter_') }}
-			{{ forms.inline_select('alert_type', 'Type', 'allAlertTypes', prefix = 'alert_filter_') }}
+			{{ forms.inline_select('alert_level', 'Level', 'allAlertLevels', optionsText="'label'", optionsValue="'code'", prefix = 'alert_filter_') }}
+			{{ forms.inline_select('alert_type', 'Type', 'allAlertTypes', optionsText="'label'", optionsValue="'code'", prefix = 'alert_filter_') }}
 			<button	type="button" role="button" class="btn btn-primary" id="alert_filter_submit" 
 					data-bind="click: filterAlerts">Filter</button>
 			<button	type="button" role="button" class="btn btn-default" 

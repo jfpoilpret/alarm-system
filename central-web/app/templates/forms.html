@@ -21,15 +21,17 @@
 	</div>
 {%- endmacro %}
 
-{% macro select(name, label, options, prefix = '', view_model = 'errors', classes = '') -%}
+{% macro select(name, label, options, optionsText = '', optionsValue = '', prefix = '', view_model = 'errors', classes = '') -%}
 	{% set id = prefix + name %}
 	{% set error = view_model + '.' + name %}
+	{% set bindOptionsText = ', optionsText: ' + optionsText if optionsText else '' %}
+	{% set bindOptionsValue = ', optionsValue: ' + optionsValue if optionsValue else '' %}
 	<div class="form-group" data-bind="css: {'has-error': {{ error }} }">
 		<label class="control-label" for="{{ id }}">{{ label }}</label>
 		<select	class="form-control {{ classes }}" 
 				id="{{ id }}" name="{{ id }}" 
 				{{ kwargs|xmlattr }}
-				data-bind="options: {{ options }}, value: {{ name }}"></select>
+				data-bind="options: {{ options }}, value: {{ name }} {{ bindOptionsText }} {{ bindOptionsValue }}"></select>
 		<!-- ko if: {{ error }} -->
 		<p class="help-block" data-bind="text: {{ error }}"></p>
 		<!-- /ko -->
@@ -49,15 +51,17 @@
 	</div>
 {%- endmacro %}
 
-{% macro inline_select(name, label , options, hide_label = False, prefix = '', view_model = 'errors', classes = '') -%}
+{% macro inline_select(name, label , options, optionsText = '', optionsValue = '', hide_label = False, prefix = '', view_model = 'errors', classes = '') -%}
 	{% set id = prefix + name %}
 	{% set error = view_model + '.' + name %}
 	{% set label_class = 'sr-only' if hide_label else '' %}
+	{% set bindOptionsText = ', optionsText: ' + optionsText if optionsText else '' %}
+	{% set bindOptionsValue = ', optionsValue: ' + optionsValue if optionsValue else '' %}
 	<div class="form-group" data-bind="css: {'has-error': {{ error }} }">
 		<label class="control-label {{ label_class }}" for="{{ id }}">{{ label }}</label>
 		<select	class="form-control {{ classes }}" 
 				id="{{ id }}" name="{{ id }}" 
 				{{ kwargs|xmlattr }}
-				data-bind="options: {{ options }}, value: {{ name }}"></select>
+				data-bind="options: {{ options }}, value: {{ name }} {{ bindOptionsText }} {{ bindOptionsValue }}"></select>
 	</div>
 {%- endmacro %}

@@ -114,11 +114,20 @@ $(document).ready(function() {
 		self.alert_level = ko.observable();
 		self.alert_type = ko.observable();
 		// select options
-		//TODO use struct with level code and label (different)
-		//TODO support 'all' (-> None)
-		self.allAlertLevels = ['all', 'info', 'warning', 'alarm'];
-		//TODO use struct with type code and label (different)
-		self.allAlertTypes = ['all', 'no-ping', 'voltage-level', 'lock', 'unlock', 'activation', 'deactivation', 'wrong-code'];
+		self.allAlertLevels = [
+   			{ code: undefined, label: 'All Levels'},
+			{ code: 'info', label: 'Info'},
+			{ code: 'warning', label: 'Warning'},
+			{ code: 'alarm', label: 'Alarm'}];
+		self.allAlertTypes = [
+			{ code: undefined, label: 'All Alerts'}, 
+			{ code: 'no-ping', label: 'Missing Pings'}, 
+			{ code: 'voltage-level', label: 'Voltage Level'}, 
+			{ code: 'lock', label: 'Alarm Lock'}, 
+			{ code: 'unlock', label: 'Alarm Unlock'}, 
+			{ code: 'activation', label: 'Alarm Activation'}, 
+			{ code: 'deactivation', label: 'Alarm Deactivation'}, 
+			{ code: 'wrong-code', label: 'Wrong Code'}];
 
 		// Errors
 		var PROPERTIES = ['period_from', 'period_to', 'alert_level', 'alert_type'];
