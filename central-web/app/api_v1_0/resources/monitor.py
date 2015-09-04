@@ -6,7 +6,7 @@ from flask_restful import fields, marshal_with, Resource
 from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
 
-from app.models import Configuration, Alert, AlertType
+from app.models import Configuration, Alert, AlertType, Device
 from app.common import CodeToLabelField, label_to_code, string_to_date
 from app.monitor.monitoring import AlarmStatus, MonitoringManager
 from flask_restful.fields import Raw
@@ -79,18 +79,17 @@ class MonitorStatusResource(Resource):
             'locked': locked
         }
 
+DEVICE_KINDS = [
+    (Device.KIND_KEYPAD, 'entry keypad'),
+    (Device.KIND_MOTION, 'motion detector'),
+    (Device.KIND_CAMERA, 'camera'),
+]
+
 ALERT_LEVELS = [
     (Alert.LEVEL_INFO, 'info'),
     (Alert.LEVEL_WARNING, 'warning'),
     (Alert.LEVEL_ALARM, 'alarm'),
 ]
-
-class AlertLevelField(Raw):
-    def format(self, value):
-        for (code, label) in ALERT_LEVELS:
-            if value == code:
-                return label
-        return None
 
 ALERT_TYPES = [
     (AlertType.DEVICE_NO_PING_FOR_TOO_LONG, 'no-ping'),
@@ -102,23 +101,22 @@ ALERT_TYPES = [
     (AlertType.WRONG_LOCK_CODE, 'wrong-code'),
 ]
 
-class AlertTypeField(Raw):
-    def format(self, value):
-        for (code, label) in ALERT_TYPES:
-            if value == code:
-                return label
-        return None
-
 class MonitorAlertsResource(Resource):
     #TODO nested field for device
+    DEVICE_FIELDS = {
+        'id': fields.Integer,
+        'name': fields.String,
+        'kind': CodeToLabelField(DEVICE_KINDS),
+        'device_id': fields.Integer
+    }
+    
     ALERT_FIELDS = {
         'id': fields.Integer,
         'when': fields.DateTime(),
-#         'level': AlertLevelField,
-#         'alert_type': AlertTypeField,
         'level': CodeToLabelField(ALERT_LEVELS),
         'alert_type': CodeToLabelField(ALERT_TYPES),
         'message': fields.String,
+        'device': fields.Nested(DEVICE_FIELDS)
     }
 
     #TODO allow multiple alert levels and types
@@ -138,18 +136,19 @@ class MonitorAlertsResource(Resource):
         current_config = Configuration.query.filter_by(current = True).first_or_404()
         # Build query based on passed arguments
         query = Alert.query.filter_by(config_id = current_config.id)
-        if 'since_id' in args:
+        if 'since_id' in args and args['since_id']:
             query = query.filter(Alert.id > args['since_id'])
-        if 'period_from' in args:
+        if 'period_from' in args and args['period_from']:
             query = query.filter(Alert.when >= args['period_from'])
-        if 'period_to' in args:
+        if 'period_to' in args and args['period_to']:
             query = query.filter(Alert.when <= args['period_to'])
-        if 'alert_level' in args:
+        if 'alert_level' in args and args['alert_level']:
             query = query.filter_by(level = args['alert_level'])
-        if 'alert_type' in args:
+        if 'alert_type' in args and args['alert_type']:
             query = query.filter_by(alert_type = args['alert_type'])
+#         query = query.order_by(Alert.when.desc())
+        query = query.order_by(Alert.id.desc())
         # Limit number of retrieved records
-        query = query.order_by(Alert.when.desc())
         if 'max_count' in args and args['max_count']:
             query = query.limit(args['max_count'])
         return query.all()

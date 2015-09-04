@@ -7,13 +7,13 @@
 x			- System status GET/PUT (map?, locked, active)
 x			- Alerts GET (history/live)
 x			- Alerts DELETE (history)
-1h			- Alerts GET marshal devices as nested fields
+x			- Alerts GET marshal devices as nested fields
 2h			- Devices status GET
 
 		- monitoring UI
 			- JS changes ViewModels
 x				- tab "controls"
-2h				- tab "alerts"
+x				- tab "alerts"
 2h				- tab "map"
 2h				- tab "history"
 		

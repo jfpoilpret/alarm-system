@@ -1,18 +1,16 @@
+{% import "forms.html" as forms %}
 <div role="tabpanel" class="tab-pane" id="alerts">
 	<div class="form-alert-filter">
 		<form id="alert_filter_form" class="form form-inline" method="post" role="form">
-		{#
-			{{ filter_form.hidden_tag() }}
-			{{ wtf.form_errors(filter_form, hiddens = "only") }}
-			{{ wtf.form_field(filter_form.period_from, 'inline', placeholder = 'From') }}
-			{{ wtf.form_field(filter_form.period_to, 'inline', placeholder = 'To') }}
-			{{ wtf.form_field(filter_form.alert_level, 'inline') }}
-			{{ wtf.form_field(filter_form.alert_type, 'inline') }}
-			{{ wtf.form_field(filter_form.submit, 'inline', button_map = {'alert_filter_submit': 'primary'}) }}
-			<a	class="btn btn-default" role="button" 
-				id="reset_filter"
-				href="#">Reset</a>
-		#}
+			{{ forms.global_errors() }}
+			{{ forms.inline_input('period_from', 'From', prefix = 'alert_filter_', placeholder = 'DD-MM-YYYY') }}
+			{{ forms.inline_input('period_to', 'To', prefix = 'alert_filter_', placeholder = 'DD-MM-YYYY') }}
+			{{ forms.inline_select('alert_level', 'Level', 'allAlertLevels', prefix = 'alert_filter_') }}
+			{{ forms.inline_select('alert_type', 'Type', 'allAlertTypes', prefix = 'alert_filter_') }}
+			<button	type="button" role="button" class="btn btn-primary" id="alert_filter_submit" 
+					data-bind="click: filterAlerts">Filter</button>
+			<button	type="button" role="button" class="btn btn-default" 
+					data-bind="click: resetAlerts">Reset</button>
 		</form>
 	</div>
 
@@ -26,7 +24,14 @@
 				<th>Message</th>
 			</tr>
 		</thead>
-		<tbody>
+		<tbody data-bind="foreach: alerts">
+			<tr>
+				<td><span data-bind="css: $parent.alertLevelClass(level)"></span></td>
+				<td data-bind="text: when"></td>
+				<td data-bind="text: alert_type"></td>
+				<td data-bind="text: device ? device.name : ''"></td>
+				<td data-bind="text: message"></td>
+			</tr>
 		</tbody>
 	</table>
 </div>

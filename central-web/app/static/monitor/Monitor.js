@@ -1,9 +1,7 @@
 $(document).ready(function() {
 	//TODO Refactoring step by step
-	// 1. VM for title and for controls
-	// 2. VM for alerts
-	// 3. VM for history
-	// 4. VM for map
+	// 3. VM for map
+	// 4. VM for history
 	
 	// ViewModel in charge of status update (auto-refresh) for title bar and control tab
 	function StatusViewModel() {
@@ -107,26 +105,106 @@ $(document).ready(function() {
 	ko.applyBindings(statusViewModel, $('#control').get(0));
 	statusViewModel.autoRefresh(true);
 	
-//	var hasActiveConfiguration = false;
-//	
-//	var filterJson = {
-//		'alert_filter_period_from': $('#alert_filter_period_from').val(),
-//		'alert_filter_period_to': $('#alert_filter_period_to').val(),
-//		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
-//		'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
-//		'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
-//	};
-//	var defaultFilter = {
-//		'alert_filter_period_from': $('#alert_filter_period_from').val(),
-//		'alert_filter_period_to': $('#alert_filter_period_to').val(),
-//		'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
-//		'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
-//		'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
-//	};
-//	
-//	var lastStatusHash = 0;
-//	var lastConfigNameHash = 0;
-//	
+	function AlertsViewModel() {
+		var self = this;
+		
+		// filter form
+		self.period_from = ko.observable();
+		self.period_to = ko.observable();
+		self.alert_level = ko.observable();
+		self.alert_type = ko.observable();
+		// select options
+		//TODO use struct with level code and label (different)
+		//TODO support 'all' (-> None)
+		self.allAlertLevels = ['all', 'info', 'warning', 'alarm'];
+		//TODO use struct with type code and label (different)
+		self.allAlertTypes = ['all', 'no-ping', 'voltage-level', 'lock', 'unlock', 'activation', 'deactivation', 'wrong-code'];
+
+		// Errors
+		var PROPERTIES = ['period_from', 'period_to', 'alert_level', 'alert_type'];
+		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
+
+		// alerts table
+		var ALERT_LEVEL_CLASS = {
+			'info': 'info-sign',	
+			'warning': 'exclamation-sign',	
+			'alarm': 'exclamation-sign',	
+		};
+		self.alerts = ko.observableArray();
+		self.alertLevelClass = function(level) {
+			return 'alert-level-' + level + ' glyphicon glyphicon-' + ALERT_LEVEL_CLASS[level];
+		}
+		
+		var filter = {
+			since_id: undefined,
+			period_from: undefined,
+			period_to: undefined,
+			alert_level: undefined,
+			alert_type: undefined
+		};
+		
+		self.filterAlerts = function() {
+			var newFilter = {
+				since_id: undefined,
+				period_from: self.period_from(),
+				period_to: self.period_to(),
+				alert_level: self.alert_level(),
+				alert_type: self.alert_type()
+			};
+			// Refresh with new filter
+			self.refresh(newFilter, function(alerts) {
+				filter = newFilter;
+				updateAlertsDone(alerts);
+			});
+		}
+		self.resetAlerts = function() {
+			self.period_from(undefined);
+			self.period_to(undefined);
+			self.alert_level(undefined);
+			self.alert_type(undefined);
+			// Submit filter again
+			self.filterAlerts();
+		}
+		
+		var timer = null;
+
+		self.autoRefresh = function(refresh) {
+			if (refresh && timer === null) {
+				// Start timer
+				timer = window.setInterval(self.refresh, 5000);
+			} else if (timer !== null && !refresh) {
+				// Stop timer
+				window.clearInterval(timer);
+				timer = null;
+			}
+		}
+		
+		var updateAlertsDone = function(alerts) {
+			var alert;
+			var len = alerts.length;
+			for (var i = 0; i < len; i++) {
+				alert = alerts[len - i - 1];
+				self.alerts.unshift(alert);
+			}
+			if (alert)
+				filter.since_id = alert.id;
+		}
+		
+		self.refresh = function(newFilter, done) {
+			newFilter = newFilter || filter;
+			done = done || updateAlertsDone;
+			$.getJSON('/api/1.0/monitoring/alerts', newFilter).done(done).fail(self.errors.errorHandler);
+		}
+		
+		// Force 1st refresh immediately
+		self.errors.clear();
+		self.refresh();
+	}
+
+	var alertsViewModel = new AlertsViewModel();
+	ko.applyBindings(alertsViewModel, $('#alerts').get(0));
+	alertsViewModel.autoRefresh(true);
+
 //	function updateStatus(results)
 //	{
 //		// Only update if changes sicne last call
@@ -139,29 +217,6 @@ $(document).ready(function() {
 //				reloadMap();
 //			}
 //		}
-//	}
-//	
-//	// AJAX function to update list with latest (new) alerts
-//	function refreshAlerts()
-//	{
-//		var $tbody = $('.alerts-list > tbody');
-//		var $latest_id = $('#alert_filter_latest_id');
-//		// Find the latest alert ID
-//		filterJson.alert_filter_latest_id = $latest_id.val();
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'POST',
-//			url: '/monitor/refresh_alerts',
-//			data: filterJson,
-//			success: function(results) {
-//				// Update table on response
-//				$tbody.prepend(results.alerts);
-//				// Update latest alert id retrieved also
-//				$latest_id.val(results.latest_id);
-//				// Align column headers width if needed
-//				alignAlertsListColumns();
-//			}
-//		});
 //	}
 //	
 //	// AJAX function to completely replace map
@@ -237,56 +292,6 @@ $(document).ready(function() {
 //		return false;
 //	}
 //	
-//	// AJAX function that performs alerts filter submit
-//	function submitAlertsFilter()
-//	{
-//		// Use temporary JSON structure for prior form validation through AJAX
-//		var formJson = {
-//			'alert_filter_period_from': $('#alert_filter_period_from').val(),
-//			'alert_filter_period_to': $('#alert_filter_period_to').val(),
-//			'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
-//			'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
-//			'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
-//		};
-//		// Send AJAX request to validate form input first
-//		$.ajax({
-//			type: 'POST',
-//			url: '/monitor/pre_refresh_alerts',
-//			data: formJson,
-//			success: function(results) {
-//				// Check if form submission is valid
-//				if (results.result === 'OK') {
-//					// if OK, we can copy to filterJSON and request immediate refresh
-//					filterJson = {
-//						'alert_filter_period_from': $('#alert_filter_period_from').val(),
-//						'alert_filter_period_to': $('#alert_filter_period_to').val(),
-//						'alert_filter_alert_level': $('#alert_filter_alert_level').val(),
-//						'alert_filter_alert_type': $('#alert_filter_alert_type').val(),
-//						'alert_filter_csrf_token': $('#alert_filter_csrf_token').val()
-//					};
-//					// Ensure we clear current alerts list first and reload everything that matches filter
-//					$('.alerts-list > tbody').html('');
-//					$('#alert_filter_latest_id').val('-1');
-//					clearFormErrors('alert_filter_');
-//					refreshAlerts();
-//				} else {
-//					// Get errors and display them in form
-//					handleErrors('alert_filter_', results.fields, results.flash_messages);
-//				}
-//			}
-//		});
-//		return false;
-//	}
-//	
-//	function resetAlertsFilter()
-//	{
-//		$('#alert_filter_period_from').val(defaultFilter['alert_filter_period_from']);
-//		$('#alert_filter_period_to').val(defaultFilter['alert_filter_period_to']);
-//		$('#alert_filter_alert_level').val(defaultFilter['alert_filter_alert_level']);
-//		$('#alert_filter_alert_type').val(defaultFilter['alert_filter_alert_type']);
-//		submitAlertsFilter();
-//	}
-//
 //	var $popovers = null;
 //	
 //	function clearMapPopups()
@@ -307,31 +312,31 @@ $(document).ready(function() {
 //		}
 //	}
 //	
-//	var alertsListColumnsAligned = false;
-//	
-//	function alignAlertsListColumns()
-//	{
-//		if (!alertsListColumnsAligned) {
-//			var	$table = $('.alerts-list'),
-//				$bodyCells = $table.find('tbody tr:first').children();
-//			// Resize only if there is at least one row
-//			if ($bodyCells.length > 0) {
-//				// Get width of tbody columns
-//				var colWidth = $bodyCells.map(function() {
-//					return $(this).width();
-//				}).get();
-//				// Force width of first column to hard-code value because the one got from tbdoy/tr does not
-//				// match reality
-//				colWidth[0] = 14;
-//				// Set width of thead columns from tbody columns widths
-//				$table.find('thead tr').children().each(function(i, v) {
-//					$(v).width(colWidth[i]);
-//				});
-//				alertsListColumnsAligned = true;
-//			}
-//		}
-//	}
-//
+	var alertsListColumnsAligned = false;
+	
+	function alignAlertsListColumns()
+	{
+		if (!alertsListColumnsAligned) {
+			var	$table = $('.alerts-list'),
+				$bodyCells = $table.find('tbody tr:first').children();
+			// Resize only if there is at least one row
+			if ($bodyCells.length > 0) {
+				// Get width of tbody columns
+				var colWidth = $bodyCells.map(function() {
+					return $(this).width();
+				}).get();
+				// Force width of first column to hard-code value because the one got from tbdoy/tr does not
+				// match reality
+				colWidth[0] = 14;
+				// Set width of thead columns from tbody columns widths
+				$table.find('thead tr').children().each(function(i, v) {
+					$(v).width(colWidth[i]);
+				});
+				alertsListColumnsAligned = true;
+			}
+		}
+	}
+
 //	// Automatically refresh map on timer every 5 seconds
 //	var map_timer = null;
 //	var alerts_timer = null;
@@ -395,12 +400,12 @@ $(document).ready(function() {
 //	$('#history_clear_form').on('submit', submitClearHistory);
 //	$('#alert_filter_form').on('submit', submitAlertsFilter);
 //	$('#reset_filter').on('click', resetAlertsFilter);
-//	// Ensure alerts list header columns widths match content columns after resizing window
-//	$(window).resize(function() {
-//		alertsListColumnsAligned = false;
-//		alignAlertsListColumns();
-//	});
-//	
+	// Ensure alerts list header columns widths match content columns after resizing window
+	$(window).resize(function() {
+		alertsListColumnsAligned = false;
+		alignAlertsListColumns();
+	});
+	
 //	// Force update of current configuration activation state display
 //	refreshStatus();
 //	status_timer = window.setInterval(refreshStatus, 5000);

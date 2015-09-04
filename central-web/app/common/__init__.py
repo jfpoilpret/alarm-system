@@ -41,7 +41,7 @@ DEFAULT_DATE_FORMAT = '%d-%m-%Y'
 
 def string_to_date(format = DEFAULT_DATE_FORMAT):
     def convert(input):
-        return datetime.strptime(input, format)
+        return datetime.strptime(input, format) if input else None
     return convert
 
 # 'validate' functions
@@ -51,7 +51,8 @@ def choices(*args):
 # Flask-RestFul marshalling utilities
 #-------------------------------------
 class CodeToLabelField(Raw):
-    def __init__(self, code_label_pairs):
+    def __init__(self, code_label_pairs, default = None, attribute = None):
+        Raw.__init__(self, default, attribute)
         self.code_label_pairs = code_label_pairs
 
     def format(self, value):
