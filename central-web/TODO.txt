@@ -4,16 +4,10 @@
 	- Major refactoring: AJAX+RESTful webapp 
 
 		- monitoring REST
-x			- System status GET/PUT (map?, locked, active)
-x			- Alerts GET (history/live)
-x			- Alerts DELETE (history)
-x			- Alerts GET marshal devices as nested fields
 2h			- Devices status GET
 
 		- monitoring UI
 			- JS changes ViewModels
-x				- tab "controls"
-x				- tab "alerts"
 2h				- tab "map"
 2h				- tab "history"
 		
@@ -29,9 +23,11 @@ x				- tab "alerts"
 		- remove flask-restful in the end?
 		
 8h		- javascript: make it more modular?
+			- refactor ViewModel and JS files: 
+				have one parent VM (defined empty in viewmodel-utils.js) with 
+				dynamically attached children, and "with" in html templates here needed
+				(http://www.knockmeout.net/2012/05/quick-tip-skip-binding.html)
 			- investigate requirejs
-			- refactor ViewModel and JS files: try to have one parent VM with children
-			(avoid more than one global var per page)
 			- how to deal with SVGHandlers (currently in global namespace...)
 			
 		- ensure flash messages are cleared whenever needed, in particular when canceling dialog

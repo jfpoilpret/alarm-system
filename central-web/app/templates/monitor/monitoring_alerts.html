@@ -27,7 +27,7 @@
 		<tbody data-bind="foreach: alerts">
 			<tr>
 				<td><span data-bind="css: $parent.alertLevelClass(level)"></span></td>
-				<td data-bind="text: when"></td>
+				<td data-bind="text: $parent.alertTime(when)"></td>
 				<td data-bind="text: alert_type"></td>
 				<td data-bind="text: device ? device.name : ''"></td>
 				<td data-bind="text: message"></td>

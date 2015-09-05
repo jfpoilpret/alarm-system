@@ -9,22 +9,6 @@ from webargs.flaskparser import use_args, use_kwargs
 from app.models import Configuration, Alert, AlertType, Device
 from app.common import CodeToLabelField, label_to_code, string_to_date
 from app.monitor.monitoring import AlarmStatus, MonitoringManager
-from flask_restful.fields import Raw
-
-#TODO resources to GET:
-# - status: GET/PUT (active/lock)
-#     return jsonify(
-#         active = active, 
-#         locked = locked, 
-#         status = status_display, 
-#         hashcode = status_hash_code,
-#         namehash = config_name_hash_code)
-#
-# - alerts GET/DELETE
-#    with query args (history search or update realtime alerts)
-#
-# - devices status GET
-#    
 
 class MonitorStatusResource(Resource):
     CONFIG_FIELDS = {
@@ -112,7 +96,7 @@ class MonitorAlertsResource(Resource):
     
     ALERT_FIELDS = {
         'id': fields.Integer,
-        'when': fields.DateTime(),
+        'when': fields.DateTime(dt_format = 'iso8601'),
         'level': CodeToLabelField(ALERT_LEVELS),
         'alert_type': CodeToLabelField(ALERT_TYPES),
         'message': fields.String,

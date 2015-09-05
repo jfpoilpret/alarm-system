@@ -143,6 +143,9 @@ $(document).ready(function() {
 		self.alertLevelClass = function(level) {
 			return 'alert-level-' + level + ' glyphicon glyphicon-' + ALERT_LEVEL_CLASS[level];
 		}
+		self.alertTime = function(when) {
+			return moment(when).format('DD-MM-YYYY HH:mm:ss');
+		}
 		
 		var filter = {
 			since_id: undefined,
@@ -163,6 +166,7 @@ $(document).ready(function() {
 			// Refresh with new filter
 			self.refresh(newFilter, function(alerts) {
 				filter = newFilter;
+				self.alerts([]);
 				updateAlertsDone(alerts);
 			});
 		}
