@@ -3,15 +3,8 @@
 	
 	- Major refactoring: AJAX+RESTful webapp 
 
-		- debug configuration module locations?
-		
 		- monitoring UI
-			- JS changes ViewModels
-1h				- tab "map"
-					- handle popover through VM?
 2h				- tab "history"
-		
-2h		- debug step by step (tab per tab)
 		
 4h+		- cleanup wep site part:
 			- remove all forms (except login)

@@ -1,6 +1,19 @@
 $(document).ready(function() {
 	//TODO Refactoring step by step
 	// 4. VM for history
+
+	// Utility function used in most ViewModel
+	function autoRefresh(timer, refresh, callback, period) {
+		if (refresh && timer === null) {
+			// Start timer
+			return window.setInterval(callback, period);
+		} else if (timer !== null && !refresh) {
+			// Stop timer
+			window.clearInterval(timer);
+			return null;
+		}
+		return timer;
+	}
 	
 	// ViewModel in charge of status update (auto-refresh) for title bar and control tab
 	function StatusViewModel() {
@@ -26,16 +39,8 @@ $(document).ready(function() {
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
 		
 		var timer = null;
-
 		self.autoRefresh = function(refresh) {
-			if (refresh && timer === null) {
-				// Start timer
-				timer = window.setInterval(self.refresh, 5000);
-			} else if (timer !== null && !refresh) {
-				// Stop timer
-				window.clearInterval(timer);
-				timer = null;
-			}
+			timer = autoRefresh(timer, refresh, self.refresh, 5000);
 		}
 		
 		// Click handlers
@@ -53,16 +58,16 @@ $(document).ready(function() {
 			}
 		}
 		self.activate = function() {
-			return changeStatus('Are you sure you want to activate the alarm system?', { active: true });
+			changeStatus('Are you sure you want to activate the alarm system?', { active: true });
 		}
 		self.deactivate = function() {
-			return changeStatus('Are you sure you want to deactivate the alarm system?', { active: false });
+			changeStatus('Are you sure you want to deactivate the alarm system?', { active: false });
 		}
 		self.lock = function() {
-			return changeStatus('Are you sure you want to lock the alarm?', { locked: true });
+			changeStatus('Are you sure you want to lock the alarm?', { locked: true });
 		}
 		self.unlock = function() {
-			return changeStatus('Are you sure you want to unlock the alarm?', { locked: false });
+			changeStatus('Are you sure you want to unlock the alarm?', { locked: false });
 		}
 		
 		var changeStatus = function(message, status) {
@@ -70,7 +75,6 @@ $(document).ready(function() {
 				ko.utils.ajax('/api/1.0/monitoring/status', 'PUT', status).
 					done(updateStatusDone).fail(updateStatusFail);
 			}
-			return false;
 		}
 		var updateStatusDone = function(status) {
 			self.name(status.name);
@@ -179,16 +183,8 @@ $(document).ready(function() {
 		}
 		
 		var timer = null;
-
 		self.autoRefresh = function(refresh) {
-			if (refresh && timer === null) {
-				// Start timer
-				timer = window.setInterval(self.refresh, 5000);
-			} else if (timer !== null && !refresh) {
-				// Stop timer
-				window.clearInterval(timer);
-				timer = null;
-			}
+			timer = autoRefresh(timer, refresh, self.refresh, 5000);
 		}
 		
 		var updateAlertsDone = function(alerts) {
@@ -215,9 +211,7 @@ $(document).ready(function() {
 
 	var alertsViewModel = new AlertsViewModel();
 	ko.applyBindings(alertsViewModel, $('#alerts').get(0));
-//	alertsViewModel.autoRefresh(true);
 
-	//TODO handle popover here?
 	function DeviceViewModel(device, r) {
 		var self = this;
 
@@ -229,16 +223,16 @@ $(document).ready(function() {
 		self.title = sprintf('Module %s (ID %d)', device.name, device.id);
 		self.alertClasses = ko.observable('ping-alert-ok voltage-alert-ok');
 
-		self.update = function(device) {
+		self.update = function(dev) {
 			// Update content and alertClasses
 			var message = sprintf('Voltage: %0.2f V (min.: %0.2f V)\nLatest Ping: %s\n (%d seconds ago)', 
-				device.latest_voltage,
-				device.voltage_threshold,
-				device.latest_ping,
-				device.time_since_latest_ping);
+				dev.latest_voltage,
+				dev.voltage_threshold,
+				moment(dev.latest_ping).format('DD-MM-YYYY HH:mm:ss'),
+				dev.time_since_latest_ping);
 			self.content(message);
-			var css = 'ping-alert-' + (device.ping_alert || 'ok');
-			css = css + ' voltage-alert-' + (device.voltage_alert || 'ok');
+			var css = 'ping-alert-' + (dev.ping_alert || 'ok');
+			css = css + ' voltage-alert-' + (dev.voltage_alert || 'ok');
 			self.alertClasses(css);
 		}
 	}
@@ -270,23 +264,16 @@ $(document).ready(function() {
 		}
 		
 		var timer = null;
-
 		self.autoRefresh = function(refresh) {
-			if (refresh && timer === null) {
-				// Start timer
-				timer = window.setInterval(self.refresh, 5000);
-			} else if (timer !== null && !refresh) {
-				// Stop timer
-				window.clearInterval(timer);
-				timer = null;
-			}
+			timer = autoRefresh(timer, refresh, self.refresh, 5000);
 		}
 		
 		var updateDevice = function(index, source) {
 			var targets = $.grep(self.devices(), function(device) { return source.id === device.id; });
 			if (targets.length > 0)
 				targets[0].update(source);
-			
+			// Ensure popover are refreshed if currently shown
+			$('[data-toggle="popover"][aria-describedby*="popover"]').popover('show');
 		}
 		var updateDevicesDone = function(devices) {
 			$.each(devices, updateDevice);
@@ -301,7 +288,6 @@ $(document).ready(function() {
 	var mapViewModel = new MapViewModel();
 	ko.applyBindings(mapViewModel, $('#map').get(0));
 	mapViewModel.init();
-//	mapViewModel.autoRefresh(true);
 	
 //	function updateStatus(results)
 //	{
@@ -315,38 +301,6 @@ $(document).ready(function() {
 //				reloadMap();
 //			}
 //		}
-//	}
-//	
-//	// AJAX function to update device state on monitoring map
-//	function refreshMap()
-//	{
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'POST',
-//			url: '/monitor/refresh_devices',
-//			success: function(results) {
-//				// Update map (SVG) on response
-//				for (var i = 0; i < results.devices.length; i++) {
-//					var device = results.devices[i];
-//					var selector = sprintf('#device-%d circle', device.id);
-//					// Add other information to data content popup?
-//					var message = sprintf('Voltage: %0.2f V (min.: %0.2f V)\nLatest Ping: %s\n (%d seconds ago)', 
-//						device.latest_voltage,
-//						device.voltage_threshold,
-//						device.latest_ping,
-//						device.time_since_latest_ping);
-//					$(selector).attr('data-content', message);
-//					// Ensure correct refresh of popover if currently displayed
-//					var idPopover = $(selector).attr('aria-describedby');
-//					if (idPopover !== undefined) {
-//						$(selector).popover('show');
-//					}
-//					// Change colors based on alerts
-//					var classes = sprintf('ping-alert-%d voltage-alert-%d', device.ping_alert, device.voltage_alert);
-//					$(selector).attr('class', classes);
-//				}
-//			}
-//		});
 //	}
 //	
 //	// AJAX function to get requested page of history
@@ -376,17 +330,13 @@ $(document).ready(function() {
 	
 	var $popovers = null;
 	
-	function clearMapPopups()
-	{
+	function clearMapPopups() {
 		// Before hiding everything first get the list of popovers that are currently displayed!
-		$popovers = $('[data-toggle="popover"]').filter(function(index) {
-			return $(this).attr('aria-describedby') !== undefined;
-		})
+		$popovers = $('[data-toggle="popover"][aria-describedby*="popover"]');
 	    $popovers.popover('hide');
 	}
 
-	function restoreMapPopups()
-	{
+	function restoreMapPopups() {
 		// Restore popover that were shown before tab changing
 		if ($popovers !== null) {
 			$popovers.popover('show');
@@ -395,9 +345,7 @@ $(document).ready(function() {
 	}
 	
 	var alertsListColumnsAligned = false;
-	
-	function alignAlertsListColumns()
-	{
+	function alignAlertsListColumns() {
 		if (!alertsListColumnsAligned) {
 			var	$table = $('.alerts-list'),
 				$bodyCells = $table.find('tbody tr:first').children();
@@ -420,8 +368,7 @@ $(document).ready(function() {
 	}
 
 	// We enable only one refresh timer, based on current active tab
-	function disableTab(e)
-	{
+	function disableTab(e) {
 		if (statusViewModel.active()) {
 			if ($(e.target).attr('id') === 'tab_map') {
 				mapViewModel.autoRefresh(false);
@@ -435,8 +382,7 @@ $(document).ready(function() {
 		}
 	}
 	
-	function enableTab(e)
-	{
+	function enableTab(e) {
 		targetTab = $(e.target).attr('id');
 		if (targetTab === 'tab_alerts') {
 			// Always refresh alert once immediately, even if no config is active
@@ -473,4 +419,5 @@ $(document).ready(function() {
 //	// Force active tab based on current active_tab
 //	activeTab = $('#active_tab').val();
 //	$('#' + activeTab).tab('show');
+	$('#tab_control').tab('show');
 });

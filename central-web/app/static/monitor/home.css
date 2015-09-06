@@ -74,37 +74,37 @@
 }
 
 circle.ping-alert-ok {
-	fill: green;
+	fill: #5cb85c;
 }
 
 circle.ping-alert-info {
-	fill: yellow;
+	fill: #5bc0de;
 }
 
 circle.ping-alert-warning {
-	fill: orange;
+	fill: #f0ad4e;
 }
 
 circle.ping-alert-alarm {
-	fill: red;
+	fill: #d9534f;
 }
 
 circle.voltage-alert-ok {
-	stroke: green;
+	stroke: #5cb85c;
 	stroke-width: 2;
 }
 
 circle.voltage-alert-info {
-	stroke: yellow;
+	stroke: #5bc0de;
 	stroke-width: 4;
 }
 
 circle.voltage-alert-warning {
-	stroke: orange;
+	stroke: #f0ad4e;
 	stroke-width: 6;
 }
 
 circle.voltage-alert-alarm {
-	stroke: red;
+	stroke: #d9534f;
 	stroke-width: 8;
 }

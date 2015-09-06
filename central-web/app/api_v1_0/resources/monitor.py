@@ -68,7 +68,7 @@ class MonitorStatusResource(Resource):
 
 class MonitorMapResource(Resource):
     DEVICE_FIELDS = {
-        'id': fields.Integer(attribute = 'device_id'),
+        'id': fields.Integer,
         'name': fields.String,
         'x': fields.Float,
         'y': fields.Float,

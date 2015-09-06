@@ -1,13 +1,13 @@
 # encoding: utf-8
 
 from ... import db
-from app.models import Device
+from app.models import Device, Configuration
 
-from flask_restful import abort, fields, marshal_with, reqparse, Resource
+from flask_restful import abort, fields, marshal_with, Resource
 from flask_restful.fields import Raw
 from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
-from app.common import trim
+from app.common import trim, extract_viewbox_from_config
 
 KINDS = [
     (Device.KIND_KEYPAD, 'Keypad'),
@@ -93,8 +93,20 @@ class DeviceResource(Resource):
     @marshal_with(DEVICE_FIELDS)
     def put(self, args, id):
         device = Device.query.get_or_404(id)
+        config = Configuration.query.get_or_404(device.config_id)
+        x = args.get('location_x', None)
+        y = args.get('location_y', None)
+        if x is not None or y is not None:
+            # Normalize locations if needed
+            dimensions = extract_viewbox_from_config(config)
+            # interpret all devices locations (as ratios)
+            if x is not None:
+                args['location_x'] = (x - dimensions[0]) / dimensions[2]
+            if y is not None:
+                args['location_y'] = (y - dimensions[1]) / dimensions[3]
         for key, value in args.items():
             setattr(device, key, value)
+        db.session.add(device)
         db.session.add(device)
         db.session.commit()
         db.session.refresh(device)

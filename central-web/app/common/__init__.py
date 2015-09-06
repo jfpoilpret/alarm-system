@@ -119,6 +119,7 @@ def get_return_url():
 
 # SGV utilities
 #---------------
+#TODO refactor what's not really common and put where it belongs!
 VIEWBOX_REGEX = compile(r"\-?[0-9]+")
 def extract_viewbox(root):
     view_box = root['@viewBox']
@@ -201,11 +202,6 @@ def prepare_device(device, dimensions):
 # This function reads an SVG string (XML) containing the monitoring zone map,
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
 def prepare_map_for_monitoring(config):
-#     def update_image(device_image):
-#         device_image['@class'] = 'ping-alert-0 voltage-alert-0'
-#     def update_group(device_group):
-#         device_group['@class'] = 'monitor-device-image'
-#     svg = prepare_map(config, update_image, update_group)
     svg_xml = parse(config.map_area, process_namespaces = False)
     dimensions = prepare_map(svg_xml)
     # Get width/height/viewBox
