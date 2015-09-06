@@ -131,8 +131,7 @@ def extract_viewbox_from_config(config):
 
 # This function reads an SVG string (XML) containing the monitoring zone map,
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
-def prepare_map(config, update_device_image, update_device_group):
-    svg_xml = parse(config.map_area, process_namespaces = False)
+def prepare_map(svg_xml):
     root = svg_xml['svg']
     root['@id'] = 'svgMap'
     # parse viewBox to find out coordinates to use for additional layer
@@ -146,10 +145,12 @@ def prepare_map(config, update_device_image, update_device_group):
             layers = [layers]
             root['g'] = layers
     else:
+        #FIXME if no <g> then shall put everything within <svg> into a new <g>!
         layers = []
         root['g'] = layers
-        
-    devices = config.devices
+    return dimensions
+
+def prepare_devices(devices, layers, dimensions, update_device_image, update_device_group):
     if len(devices) > 0:
         for id, device in devices.items():
             x = (device.location_x or 0.5) * dimensions[2] + dimensions[0]
@@ -174,7 +175,6 @@ def prepare_map(config, update_device_image, update_device_group):
             }
             update_device_group(device_group)
             layers.append(device_group)
-    return unparse(svg_xml, full_document = False)
 
 # This function reads an SVG string (XML) containing the monitoring zone map,
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
@@ -185,13 +185,38 @@ def prepare_map_for_config(config):
         device_image['@onmouseup'] = 'endDrag(evt)'
     def update_group(device_group):
         device_group['@class'] = 'device-image'
-    return prepare_map(config, update_image, update_group)
+    svg_xml = parse(config.map_area, process_namespaces = False)
+    dimensions = prepare_map(svg_xml)
+    prepare_devices(config.devices, svg_xml['svg']['g'], dimensions, update_image, update_group)
+    return unparse(svg_xml, full_document = False)
+
+def prepare_device(device, dimensions):
+    return {
+        'id': device.device_id,
+        'name': device.name,
+        'x': (device.location_x or 0.5) * dimensions[2] + dimensions[0],
+        'y': (device.location_y or 0.5) * dimensions[3] + dimensions[1]
+    }
 
 # This function reads an SVG string (XML) containing the monitoring zone map,
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
 def prepare_map_for_monitoring(config):
-    def update_image(device_image):
-        device_image['@class'] = 'ping-alert-0 voltage-alert-0'
-    def update_group(device_group):
-        device_group['@class'] = 'monitor-device-image'
-    return prepare_map(config, update_image, update_group)
+#     def update_image(device_image):
+#         device_image['@class'] = 'ping-alert-0 voltage-alert-0'
+#     def update_group(device_group):
+#         device_group['@class'] = 'monitor-device-image'
+#     svg = prepare_map(config, update_image, update_group)
+    svg_xml = parse(config.map_area, process_namespaces = False)
+    dimensions = prepare_map(svg_xml)
+    # Get width/height/viewBox
+    svg = svg_xml['svg']
+    # Prepare all devices for client rendering
+    devices = [prepare_device(device, dimensions) for device in config.devices.values()]
+    return { 
+        'map': unparse(svg_xml['svg']['g'][0], full_document = False),
+        'width': svg['@width'],
+        'height': svg['@height'],
+        'viewBox': svg['@viewBox'],
+        'r': 0.02 * dimensions[2],
+        'devices': devices
+    }

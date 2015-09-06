@@ -7,8 +7,11 @@ from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
 
 from app.models import Configuration, Alert, AlertType, Device
-from app.common import CodeToLabelField, label_to_code, string_to_date
+from app.common import CodeToLabelField, label_to_code, string_to_date,\
+    prepare_map_for_monitoring
 from app.monitor.monitoring import AlarmStatus, MonitoringManager
+from time import time
+from datetime import datetime
 
 class MonitorStatusResource(Resource):
     CONFIG_FIELDS = {
@@ -63,6 +66,27 @@ class MonitorStatusResource(Resource):
             'locked': locked
         }
 
+class MonitorMapResource(Resource):
+    DEVICE_FIELDS = {
+        'id': fields.Integer(attribute = 'device_id'),
+        'name': fields.String,
+        'x': fields.Float,
+        'y': fields.Float,
+    }
+    MAP_FIELDS = {
+        'map': fields.String,
+        'width': fields.String,
+        'height': fields.String,
+        'viewBox': fields.String,
+        'r': fields.Integer,
+        'devices': fields.List(fields.Nested(DEVICE_FIELDS))
+    }
+
+    @marshal_with(MAP_FIELDS)
+    def get(self):
+        config = Configuration.query.filter_by(current = True).first_or_404()
+        return prepare_map_for_monitoring(config)
+
 DEVICE_KINDS = [
     (Device.KIND_KEYPAD, 'entry keypad'),
     (Device.KIND_MOTION, 'motion detector'),
@@ -86,7 +110,6 @@ ALERT_TYPES = [
 ]
 
 class MonitorAlertsResource(Resource):
-    #TODO nested field for device
     DEVICE_FIELDS = {
         'id': fields.Integer,
         'name': fields.String,
@@ -156,4 +179,57 @@ class MonitorAlertsResource(Resource):
         return {}, 204
 
 class MonitorDevicesResource(Resource):
-    pass
+    DEVICE_FIELDS = {
+        'id': fields.Integer,
+        'voltage_threshold': fields.Float,
+        'latest_voltage': fields.Float,
+        'latest_ping': fields.DateTime(dt_format = 'iso8601'),
+        'time_since_latest_ping': fields.Integer,
+        'voltage_alert': CodeToLabelField(ALERT_LEVELS),
+        'ping_alert': CodeToLabelField(ALERT_LEVELS),
+    }
+    
+    @marshal_with(DEVICE_FIELDS)
+    def get(self):
+        # Get list of all devices in current configuration and prepare for return to UI
+        now = time()
+        return [self.create_device_for_refresh(device, now) for device in MonitoringManager.instance.get_devices().values()]
+
+    def create_device_for_refresh(self, device, now):
+        return {
+            'id': device.source.device_id,
+            'voltage_threshold': device.source.voltage_threshold,
+            'latest_voltage': device.latest_voltage_level,
+            'latest_ping': datetime.fromtimestamp(device.latest_ping),
+            'time_since_latest_ping': now - device.latest_ping,
+            'voltage_alert': self.voltage_alert(device),
+            'ping_alert': self.ping_alert(now, device.latest_ping)
+        }
+
+    def voltage_alert(self, device):
+        #TODO use config thresholds!
+        if device.latest_voltage_level and device.source.voltage_threshold:
+            voltage_rate = device.latest_voltage_level / device.source.voltage_threshold
+            if voltage_rate >= 1.05:
+                return None
+            elif voltage_rate >= 1.0:
+                return Alert.LEVEL_INFO
+            elif voltage_rate >= 0.9:
+                return Alert.LEVEL_WARNING
+            else:
+                return Alert.LEVEL_ALARM
+        return None
+        
+    def ping_alert(self, now, latest_ping):
+        #TODO use config thresholds!
+        if latest_ping:
+            if latest_ping > now - 5.0:
+                return None
+            elif latest_ping > now - 10.0:
+                return Alert.LEVEL_INFO
+            elif latest_ping > now - 30.0:
+                return Alert.LEVEL_WARNING
+            else:
+                return Alert.LEVEL_ALARM
+        return None
+    

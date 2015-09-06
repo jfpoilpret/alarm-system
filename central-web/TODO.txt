@@ -3,15 +3,15 @@
 	
 	- Major refactoring: AJAX+RESTful webapp 
 
-		- monitoring REST
-2h			- Devices status GET
-
+		- debug configuration module locations?
+		
 		- monitoring UI
 			- JS changes ViewModels
-2h				- tab "map"
+1h				- tab "map"
+					- handle popover through VM?
 2h				- tab "history"
 		
-4h		- debug step by step (tab per tab)
+2h		- debug step by step (tab per tab)
 		
 4h+		- cleanup wep site part:
 			- remove all forms (except login)

@@ -76,6 +76,7 @@ class ConfigurationResource(Resource):
         db.session.refresh(config)
         return config, 200
 
+#TODO remove prepare_for=monitoring
 class ConfigurationMapResource(Resource):
     @use_kwargs({ 'prepare_for': Arg(str, required = False, location = 'query', 
                     validate = choices('configuration', 'monitoring')) })

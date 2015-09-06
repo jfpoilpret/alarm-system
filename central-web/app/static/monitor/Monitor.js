@@ -1,6 +1,5 @@
 $(document).ready(function() {
 	//TODO Refactoring step by step
-	// 3. VM for map
 	// 4. VM for history
 	
 	// ViewModel in charge of status update (auto-refresh) for title bar and control tab
@@ -216,8 +215,94 @@ $(document).ready(function() {
 
 	var alertsViewModel = new AlertsViewModel();
 	ko.applyBindings(alertsViewModel, $('#alerts').get(0));
-	alertsViewModel.autoRefresh(true);
+//	alertsViewModel.autoRefresh(true);
 
+	//TODO handle popover here?
+	function DeviceViewModel(device, r) {
+		var self = this;
+
+		self.id = device.id;
+		self.x = device.x;
+		self.y = device.y;
+		self.r = r;
+		self.content = ko.observable();
+		self.title = sprintf('Module %s (ID %d)', device.name, device.id);
+		self.alertClasses = ko.observable('ping-alert-ok voltage-alert-ok');
+
+		self.update = function(device) {
+			// Update content and alertClasses
+			var message = sprintf('Voltage: %0.2f V (min.: %0.2f V)\nLatest Ping: %s\n (%d seconds ago)', 
+				device.latest_voltage,
+				device.voltage_threshold,
+				device.latest_ping,
+				device.time_since_latest_ping);
+			self.content(message);
+			var css = 'ping-alert-' + (device.ping_alert || 'ok');
+			css = css + ' voltage-alert-' + (device.voltage_alert || 'ok');
+			self.alertClasses(css);
+		}
+	}
+	
+	function MapViewModel() {
+		var self = this;
+		
+		self.backgroundMap = ko.observable();
+		self.width = ko.observable();
+		self.height = ko.observable();
+		self.viewBox = ko.observable();
+		self.devices = ko.observableArray();
+		
+		self.init = function() {
+			// Get map + devices info from server
+			//TODO errors handling
+			$.getJSON('/api/1.0/monitoring/map', function(result) {
+				self.devices([]);
+				self.backgroundMap(result.map);
+				self.width(result.width);
+				self.height(result.height);
+				self.viewBox(result.viewBox);
+				var devices = $.map(result.devices, function(device) {
+					return new DeviceViewModel(device, result.r)
+				})
+				self.devices(devices);
+			    $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
+			});
+		}
+		
+		var timer = null;
+
+		self.autoRefresh = function(refresh) {
+			if (refresh && timer === null) {
+				// Start timer
+				timer = window.setInterval(self.refresh, 5000);
+			} else if (timer !== null && !refresh) {
+				// Stop timer
+				window.clearInterval(timer);
+				timer = null;
+			}
+		}
+		
+		var updateDevice = function(index, source) {
+			var targets = $.grep(self.devices(), function(device) { return source.id === device.id; });
+			if (targets.length > 0)
+				targets[0].update(source);
+			
+		}
+		var updateDevicesDone = function(devices) {
+			$.each(devices, updateDevice);
+		}
+		
+		self.refresh = function() {
+			$.getJSON('/api/1.0/monitoring/devices', updateDevicesDone);
+		}
+		
+	}
+
+	var mapViewModel = new MapViewModel();
+	ko.applyBindings(mapViewModel, $('#map').get(0));
+	mapViewModel.init();
+//	mapViewModel.autoRefresh(true);
+	
 //	function updateStatus(results)
 //	{
 //		// Only update if changes sicne last call
@@ -230,22 +315,6 @@ $(document).ready(function() {
 //				reloadMap();
 //			}
 //		}
-//	}
-//	
-//	// AJAX function to completely replace map
-//	function reloadMap()
-//	{
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'POST',
-//			url: '/monitor/get_map',
-//			success: function(results) {
-//				// Replace map SVG in DOM
-//				$('.monitor-map-area').html(results);
-//			    $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
-//			}
-//		});
-//		return false;
 //	}
 //	
 //	// AJAX function to update device state on monitoring map
@@ -304,27 +373,27 @@ $(document).ready(function() {
 //		});
 //		return false;
 //	}
-//	
-//	var $popovers = null;
-//	
-//	function clearMapPopups()
-//	{
-//		// Before hiding everything first get the list of popovers that are currently displayed!
-//		$popovers = $('[data-toggle="popover"]').filter(function(index) {
-//			return $(this).attr('aria-describedby') !== undefined;
-//		})
-//	    $popovers.popover('hide');
-//	}
-//
-//	function restoreMapPopups()
-//	{
-//		// Restore popover that were shown before tab changing
-//		if ($popovers !== null) {
-//			$popovers.popover('show');
-//			$popovers = null;
-//		}
-//	}
-//	
+	
+	var $popovers = null;
+	
+	function clearMapPopups()
+	{
+		// Before hiding everything first get the list of popovers that are currently displayed!
+		$popovers = $('[data-toggle="popover"]').filter(function(index) {
+			return $(this).attr('aria-describedby') !== undefined;
+		})
+	    $popovers.popover('hide');
+	}
+
+	function restoreMapPopups()
+	{
+		// Restore popover that were shown before tab changing
+		if ($popovers !== null) {
+			$popovers.popover('show');
+			$popovers = null;
+		}
+	}
+	
 	var alertsListColumnsAligned = false;
 	
 	function alignAlertsListColumns()
@@ -350,53 +419,43 @@ $(document).ready(function() {
 		}
 	}
 
-//	// Automatically refresh map on timer every 5 seconds
-//	var map_timer = null;
-//	var alerts_timer = null;
-	
 	// We enable only one refresh timer, based on current active tab
 	function disableTab(e)
 	{
-//		if (hasActiveConfiguration) {
-//			if ($(e.target).attr('id') === 'tab_map') {
-//				if (map_timer !== null) {
-//					window.clearInterval(map_timer);
-//					map_timer = null;
-//				}
-//			} else if ($(e.target).attr('id') === 'tab_alerts') {
-//				if (alerts_timer !== null) {
-//					window.clearInterval(alerts_timer);
-//					alerts_timer = null;
-//				}
-//			}
-//		}
-//		// Hide all popovers
-//		if ($(e.target).attr('id') === 'tab_map') {
-//			clearMapPopups();
-//		}
+		if (statusViewModel.active()) {
+			if ($(e.target).attr('id') === 'tab_map') {
+				mapViewModel.autoRefresh(false);
+			} else if ($(e.target).attr('id') === 'tab_alerts') {
+				alertsViewModel.autoRefresh(false);
+			}
+		}
+		// Hide all popovers
+		if ($(e.target).attr('id') === 'tab_map') {
+			clearMapPopups();
+		}
 	}
 	
 	function enableTab(e)
 	{
-//		targetTab = $(e.target).attr('id');
-//		if (targetTab === 'tab_alerts') {
-//			// Always refresh alert once immediately, even if no config is active
-//			refreshAlerts();
-//		} else if (targetTab === 'tab_map') {
-//			// Restore all popovers that were previously shown in the map
-//			restoreMapPopups();
+		targetTab = $(e.target).attr('id');
+		if (targetTab === 'tab_alerts') {
+			// Always refresh alert once immediately, even if no config is active
+			alertsViewModel.refresh();
+		} else if (targetTab === 'tab_map') {
+			// Restore all popovers that were previously shown in the map
+			restoreMapPopups();
 //		} else if (targetTab === 'tab_history') {
 //			// Refresh history with pagination
 //			pageHistory(1);
-//		}
-//		if (hasActiveConfiguration) {
-//			if (targetTab === 'tab_map') {
-//				refreshMap();
-//				map_timer = window.setInterval(refreshMap, 5000);
-//			} else if (targetTab === 'tab_alerts') {
-//				alerts_timer = window.setInterval(refreshAlerts, 5000);
-//			}
-//		}
+		}
+		if (statusViewModel.active()) {
+			if (targetTab === 'tab_map') {
+				mapViewModel.refresh();
+				mapViewModel.autoRefresh(true);
+			} else if (targetTab === 'tab_alerts') {
+				alertsViewModel.autoRefresh(true);
+			}
+		}
 //		// Keep track of latest tab in current URL so that refresh will go to the last visible tab
 //		window.history.replaceState(targetTab, targetTab, '/monitor/home?tab=' + targetTab);
 	}
@@ -405,24 +464,12 @@ $(document).ready(function() {
 	$('a[data-toggle="tab"]').on('hide.bs.tab', disableTab);
 	$('a[data-toggle="tab"]').on('shown.bs.tab', enableTab);
 	
-//	// Register other handlers
-//	$('#activate_config').on('click', activateConfig);
-//	$('#deactivate_config').on('click', deactivateConfig);
-//	$('#lock_config').on('click', lockConfig);
-//	$('#unlock_config').on('click', unlockConfig);
-//	$('#history_clear_form').on('submit', submitClearHistory);
-//	$('#alert_filter_form').on('submit', submitAlertsFilter);
-//	$('#reset_filter').on('click', resetAlertsFilter);
 	// Ensure alerts list header columns widths match content columns after resizing window
 	$(window).resize(function() {
 		alertsListColumnsAligned = false;
 		alignAlertsListColumns();
 	});
 	
-//	// Force update of current configuration activation state display
-//	refreshStatus();
-//	status_timer = window.setInterval(refreshStatus, 5000);
-//
 //	// Force active tab based on current active_tab
 //	activeTab = $('#active_tab').val();
 //	$('#' + activeTab).tab('show');

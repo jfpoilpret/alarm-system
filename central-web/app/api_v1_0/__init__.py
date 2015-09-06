@@ -1,6 +1,7 @@
 from flask import Blueprint, request, g
 from flask_restful import abort, Api
 from webargs.flaskparser import parser
+from app.api_v1_0.resources.monitor import MonitorMapResource
 
 # Create blueprint for Web Services
 api = Blueprint('api', __name__)
@@ -50,5 +51,6 @@ restApi.add_resource(VoltageAlertThresholdsResource,
 
 from .resources import MonitorAlertsResource, MonitorDevicesResource, MonitorStatusResource
 restApi.add_resource(MonitorStatusResource, '/monitoring/status')
+restApi.add_resource(MonitorMapResource, '/monitoring/map')
 restApi.add_resource(MonitorAlertsResource, '/monitoring/alerts')
 restApi.add_resource(MonitorDevicesResource, '/monitoring/devices')

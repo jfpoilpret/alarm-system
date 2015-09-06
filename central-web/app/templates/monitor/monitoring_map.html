@@ -1,4 +1,16 @@
 <div role="tabpanel" class="tab-pane" id="map">
 	<div class="monitor-map-area">
+		<svg	data-bind="attr: {width: width, height: height, viewBox: viewBox}"
+				xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+			<g data-bind="html: backgroundMap">
+			</g>
+			<!-- ko foreach: devices -->
+			{# TODO remove id attribute if useless! #}
+			<g class="monitor-device-image" data-bind="attr: {id: 'device-' + id}">
+				<circle	data-bind="attr: {'data-content': content, title: title, cx: x, cy: y, r: r}, css: alertClasses"
+						stroke="3" stroke-width="red" fill="red" data-toggle="popover" />
+			</g>
+			<!-- /ko -->
+		</svg>
 	</div>
 </div>
