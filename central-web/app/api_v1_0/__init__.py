@@ -54,3 +54,6 @@ restApi.add_resource(MonitorStatusResource, '/monitoring/status')
 restApi.add_resource(MonitorMapResource, '/monitoring/map')
 restApi.add_resource(MonitorAlertsResource, '/monitoring/alerts')
 restApi.add_resource(MonitorDevicesResource, '/monitoring/devices')
+
+from .resources import AlertsHistoryResource
+restApi.add_resource(AlertsHistoryResource, '/history/<int:id>/alerts')

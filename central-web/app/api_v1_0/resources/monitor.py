@@ -135,7 +135,7 @@ class MonitorAlertsResource(Resource):
         'alert_level': Arg(int, required = False, use = label_to_code(ALERT_LEVELS), allow_missing = True),
         'alert_type': Arg(int, required = False, use = label_to_code(ALERT_TYPES), allow_missing = True),
     }
-    #TODO make since_id exclusive with all other fields with validate = xxx
+
     @use_args(ALERT_GET_ARGS, locations = ['query'])
     @marshal_with(ALERT_FIELDS)
     def get(self, args):

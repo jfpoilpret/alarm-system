@@ -1,5 +1,32 @@
 <div role="tabpanel" class="tab-pane" id="history">
 	<nav id="history-pagination">
+		<ul class="pagination">
+			<li>
+				<a href="#" data-bind="click: firstPage, css: has_prev() ? '' : 'disabled'" aria-label="Previous">
+					<span aria-hidden="true">&laquo;</span>
+				</a>
+			</li>
+			
+		<!-- ko foreach: iter_pages -->
+			<!-- ko if: page() ===  $data -->
+			<li class="active">
+				<a href="#"><!-- ko text: $data--><!-- /ko --><span class="sr-only">(current)</span></a>
+			</li>
+			<!-- /ko -->
+			<!-- ko if: $data === null -->
+			<li class="disabled"><a href="#">&hellip;</a></li>
+			<!-- /ko -->			
+			<!-- ko if: $data !== null && $data !== page() -->
+			<li><a href="#" data-bind="click: gotoPage, text: $data"></a></li>
+			<!-- /ko -->			
+		<!-- /ko -->			
+			
+			<li>
+				<a href="#" data-bind="click: lastPage, css: has_next() ? '' : 'disabled'" aria-label="Next">
+					<span aria-hidden="true">&raquo;</span>
+				</a>
+			</li>
+		</ul>
 	</nav>
 	<table class="history-list table table-striped table-condensed table-hover">
 		<thead>
@@ -11,7 +38,14 @@
 				<th>Message</th>
 			</tr>
 		</thead>
-		<tbody>
+		<tbody data-bind="foreach: alerts">
+			<tr>
+				<td><span data-bind="css: $parent.alertLevelClass(level)"></span></td>
+				<td data-bind="text: $parent.alertTime(when)"></td>
+				<td data-bind="text: alert_type"></td>
+				<td data-bind="text: device ? device.name : ''"></td>
+				<td data-bind="text: message"></td>
+			</tr>
 		</tbody>
 	</table>
 </div>

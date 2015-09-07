@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//app/api_v1_0/resources/__init__.py=utf-8
+encoding//app/api_v1_0/resources/alerts_history.py=utf-8
 encoding//app/api_v1_0/resources/configurations.py=utf-8
 encoding//app/api_v1_0/resources/devices.py=utf-8
 encoding//app/api_v1_0/resources/monitor.py=utf-8

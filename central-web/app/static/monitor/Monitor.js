@@ -19,6 +19,7 @@ $(document).ready(function() {
 	function StatusViewModel() {
 		var self = this;
 		
+		self.id = ko.observable();
 		self.name = ko.observable();
 		self.active = ko.observable();
 		self.locked = ko.observable();
@@ -77,6 +78,7 @@ $(document).ready(function() {
 			}
 		}
 		var updateStatusDone = function(status) {
+			self.id(status.id);
 			self.name(status.name);
 			self.active(status.active);
 			self.locked(status.locked);
@@ -289,6 +291,58 @@ $(document).ready(function() {
 	ko.applyBindings(mapViewModel, $('#map').get(0));
 	mapViewModel.init();
 	
+	function AlertsHistoryViewModel() {
+		var self = this;
+		
+		// Pagination
+		self.has_prev = ko.observable();
+		self.has_next = ko.observable();
+		self.iter_pages = ko.observable();
+		self.page = ko.observable();
+		self.pages = ko.observable();
+		// Alerts list
+		self.url = ko.computed(function() {
+			return '/api/1.0/history/' + statusViewModel.id() + '/alerts'
+		});
+		self.alerts = ko.observable();
+		//TODO refactor (common with AlertsViewModel)
+		var ALERT_LEVEL_CLASS = {
+			'info': 'info-sign',	
+			'warning': 'exclamation-sign',	
+			'alarm': 'exclamation-sign',	
+		};
+		self.alertLevelClass = function(level) {
+			return 'alert-level-' + level + ' glyphicon glyphicon-' + ALERT_LEVEL_CLASS[level];
+		}
+		self.alertTime = function(when) {
+			return moment(when).format('DD-MM-YYYY HH:mm:ss');
+		}
+		
+		// Pagination handlers
+		var historyLoadDone = function(result) {
+			self.has_prev(result.has_prev);
+			self.has_next(result.has_next);
+			self.page(result.page);
+			self.pages(result.pages);
+			self.iter_pages(result.iter_pages);
+			self.alerts(result.alerts);
+		}
+		
+		self.firstPage = function() { self.gotoPage(1); }
+		self.lastPage = function() { self.gotoPage(self.pages()); }
+		self.gotoPage = function(page) {
+			$.getJSON(self.url(), { page: page }).done(historyLoadDone);
+		}
+		
+		self.refresh = function() {
+			self.gotoPage(1);
+		}
+	}
+	
+	var alertsHistoryViewModel = new AlertsHistoryViewModel();
+	ko.applyBindings(alertsHistoryViewModel, $('#history').get(0));
+//	alertsHistoryViewModel.refresh();
+	
 //	function updateStatus(results)
 //	{
 //		// Only update if changes sicne last call
@@ -301,31 +355,6 @@ $(document).ready(function() {
 //				reloadMap();
 //			}
 //		}
-//	}
-//	
-//	// AJAX function to get requested page of history
-//	function pageHistory(page)
-//	{
-//		var $tbody = $('.history-list > tbody');
-//		var $pagination = $('#history-pagination');
-//		var url = sprintf('/monitor/load_history_page/%d', page);
-//		// Send AJAX request
-//		$.ajax({
-//			type: 'GET',
-//			url: url,
-//			success: function(results) {
-//				// Clear previous table body rows
-//				$tbody.html('');
-//				// Add paged rows to table body
-//				$tbody.prepend(results.alerts);
-//				// Set pagination stuff
-//				$pagination.html(results.pagination);
-//				$('[data-page]').on('click', function(e) {
-//					pageHistory($(this).attr('data-page'));
-//				});
-//			}
-//		});
-//		return false;
 //	}
 	
 	var $popovers = null;
@@ -390,9 +419,10 @@ $(document).ready(function() {
 		} else if (targetTab === 'tab_map') {
 			// Restore all popovers that were previously shown in the map
 			restoreMapPopups();
-//		} else if (targetTab === 'tab_history') {
-//			// Refresh history with pagination
-//			pageHistory(1);
+		} else if (targetTab === 'tab_history') {
+			// Refresh history with pagination
+			//FIXME this loses latest page visited everytime we switch tabs!
+			alertsHistoryViewModel.refresh();
 		}
 		if (statusViewModel.active()) {
 			if (targetTab === 'tab_map') {

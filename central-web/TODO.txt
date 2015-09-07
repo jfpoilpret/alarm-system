@@ -4,8 +4,9 @@
 	- Major refactoring: AJAX+RESTful webapp 
 
 		- monitoring UI
-2h				- tab "history"
-		
+2h			- tab "history"
+			DEBUG why 404???
+
 4h+		- cleanup wep site part:
 			- remove all forms (except login)
 			- remove all routes that are superseded by API

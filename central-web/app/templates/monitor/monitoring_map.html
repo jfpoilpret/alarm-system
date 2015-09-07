@@ -5,8 +5,7 @@
 			<g data-bind="html: backgroundMap">
 			</g>
 			<!-- ko foreach: devices -->
-			{# TODO remove id attribute if useless! #}
-			<g class="monitor-device-image" data-bind="attr: {id: 'device-' + id}">
+			<g class="monitor-device-image">
 				<circle	data-bind="attr: {'data-content': content, title: title, cx: x, cy: y, r: r}, css: alertClasses"
 						stroke="3" stroke-width="red" fill="red" data-toggle="popover" />
 			</g>
