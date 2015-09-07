@@ -33,7 +33,7 @@ ALERT_TYPES = [
 
 class IterPage(fields.Raw):
     def output(self, key, obj):
-        return list(obj.iter_pages(left_edge = 1, right_edge = 1))
+        return list(obj.iter_pages(left_edge = 1, right_edge = 1, left_current = 2, right_current = 3))
 
 class AlertsHistoryResource(Resource):
     DEVICE_FIELDS = {
@@ -53,7 +53,7 @@ class AlertsHistoryResource(Resource):
     }
     
     PAGE_FIELDS = {
-        'alerts': fields.List(attribute = 'items', fields.Nested(ALERT_FIELDS)),
+        'alerts': fields.List(fields.Nested(ALERT_FIELDS), attribute = 'items'),
         'total': fields.Integer,
         'page': fields.Integer,
         'pages': fields.Integer,
@@ -71,9 +71,7 @@ class AlertsHistoryResource(Resource):
 
     @use_args(ALERT_GET_ARGS, locations = ['query'])
     @marshal_with(PAGE_FIELDS)
-#     def get(self, id, args):
     def get(self, args, id):
-        print('AlertsHistoryResource.get(%d' % id)
         # Check requested configuration exists
         Configuration.query.get_or_404(id)
         # Build query based on passed arguments

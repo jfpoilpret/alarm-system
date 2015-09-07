@@ -8,7 +8,7 @@
 			</li>
 			
 		<!-- ko foreach: iter_pages -->
-			<!-- ko if: page() ===  $data -->
+			<!-- ko if: $parent.page() ===  $data -->
 			<li class="active">
 				<a href="#"><!-- ko text: $data--><!-- /ko --><span class="sr-only">(current)</span></a>
 			</li>
@@ -16,10 +16,10 @@
 			<!-- ko if: $data === null -->
 			<li class="disabled"><a href="#">&hellip;</a></li>
 			<!-- /ko -->			
-			<!-- ko if: $data !== null && $data !== page() -->
-			<li><a href="#" data-bind="click: gotoPage, text: $data"></a></li>
-			<!-- /ko -->			
-		<!-- /ko -->			
+			<!-- ko if: $data !== null && $data !== $parent.page() -->
+			<li><a href="#" data-bind="click: $parent.gotoPage, text: $data"></a></li>
+			<!-- /ko -->
+		<!-- /ko -->
 			
 			<li>
 				<a href="#" data-bind="click: lastPage, css: has_next() ? '' : 'disabled'" aria-label="Next">
