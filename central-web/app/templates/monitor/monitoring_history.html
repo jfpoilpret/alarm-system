@@ -1,8 +1,8 @@
 <div role="tabpanel" class="tab-pane" id="history">
 	<nav id="history-pagination">
 		<ul class="pagination">
-			<li>
-				<a href="#" data-bind="click: firstPage, css: has_prev() ? '' : 'disabled'" aria-label="Previous">
+			<li data-bind="css: has_prev() ? '' : 'disabled'">
+				<a href="#" data-bind="click: firstPage" aria-label="Previous">
 					<span aria-hidden="true">&laquo;</span>
 				</a>
 			</li>
@@ -21,8 +21,8 @@
 			<!-- /ko -->
 		<!-- /ko -->
 			
-			<li>
-				<a href="#" data-bind="click: lastPage, css: has_next() ? '' : 'disabled'" aria-label="Next">
+			<li data-bind="css: has_next() ? '' : 'disabled'">
+				<a href="#" data-bind="click: lastPage" aria-label="Next">
 					<span aria-hidden="true">&raquo;</span>
 				</a>
 			</li>

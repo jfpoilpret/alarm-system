@@ -432,8 +432,6 @@ $(document).ready(function() {
 				alertsViewModel.autoRefresh(true);
 			}
 		}
-//		// Keep track of latest tab in current URL so that refresh will go to the last visible tab
-//		window.history.replaceState(targetTab, targetTab, '/monitor/home?tab=' + targetTab);
 	}
 
 	// Register tab event handlers
@@ -446,8 +444,6 @@ $(document).ready(function() {
 		alignAlertsListColumns();
 	});
 	
-//	// Force active tab based on current active_tab
-//	activeTab = $('#active_tab').val();
-//	$('#' + activeTab).tab('show');
+	// Force control tab active
 	$('#tab_control').tab('show');
 });

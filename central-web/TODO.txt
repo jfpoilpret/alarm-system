@@ -3,15 +3,16 @@
 	
 	- Major refactoring: AJAX+RESTful webapp 
 
-		- monitoring UI
-2h			- tab "history"
-			DEBUG why 404???
+30'		- monitoring UI
+			- handle config change => refresh map
 
 4h+		- cleanup wep site part:
 			- remove all forms (except login)
 			- remove all routes that are superseded by API
 			- only 2 blueprints: API Vs. Web
 			=> rename all html and css to be more meaningful (rather than "home"...)
+
+3h		- improve webargs to support bundle_errors
 
 		- consider using marshmallow instead of flask restful marshalling?
 		- remove flask-restful in the end?
@@ -23,6 +24,7 @@
 				(http://www.knockmeout.net/2012/05/quick-tip-skip-binding.html)
 			- investigate requirejs
 			- how to deal with SVGHandlers (currently in global namespace...)
+			- how to create "subclasses"?
 			
 		- ensure flash messages are cleared whenever needed, in particular when canceling dialog
 
