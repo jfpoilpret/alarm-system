@@ -67,6 +67,7 @@ class ConfigServer(Server):
         # Initialize MonitoringManager and activate it if needed
         from app.monitor.monitoring import MonitoringManager
         from app.models import Configuration
+        Account.init(app)
         monitoring_manager = MonitoringManager.create(app)
         with app.app_context():
             active = Configuration.query.filter_by(active = True).first()

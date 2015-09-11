@@ -2,7 +2,8 @@ import os
 from flask import Flask, redirect, request, session, url_for
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+#from flask_login import LoginManager
+from flask_httpauth import HTTPBasicAuth
 from config import config
 
 bootstrap = Bootstrap()
@@ -10,19 +11,14 @@ db = SQLAlchemy()
 
 monitoring_manager = None
 
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
-login_manager.login_message_category = 'info'
-login_manager.needs_refresh_message_category = 'info'
+# login_manager = LoginManager()
+# login_manager.login_view = 'auth.login'
+# login_manager.login_message_category = 'info'
+# login_manager.needs_refresh_message_category = 'info'
 
-def after_request(response):
-    # Store the current called URL for later use as return URL on cancel button
-    if request.method == 'GET':
-        session['return_url'] = request.url
-    return response
-
-def root():
-    return redirect(url_for('auth.login'))
+#TODO replace with a URL that will work... or add login in all templates?
+# def root():
+#     return redirect(url_for('auth.login'))
 
 def create_app(config_name = None):
     app = Flask(__name__)
@@ -39,12 +35,9 @@ def create_app(config_name = None):
         syslog_handler.setLevel(logging.WARNING)
         app.logger.addHandler(syslog_handler)
 
-    # Add hook to remind the latest route (or URL) called so that we cancel button can return to it
-    app.after_request(after_request)
-    
     bootstrap.init_app(app)
     db.init_app(app)
-    login_manager.init_app(app)
+#     login_manager.init_app(app)
 
     from .monitor import monitor as monitor_blueprint
     app.register_blueprint(monitor_blueprint, url_prefix='/monitor')
@@ -55,14 +48,14 @@ def create_app(config_name = None):
     from .admin import admin as admin_blueprint
     app.register_blueprint(admin_blueprint, url_prefix='/admin')
 
-    from .auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+#     from .auth import auth as auth_blueprint
+#     app.register_blueprint(auth_blueprint, url_prefix='/auth')
     
     from .api_v1_0 import api as api_blueprint
     app.register_blueprint(api_blueprint, url_prefix = '/api/1.0')
     
     # Register the main route (redirect to login)
-    app.add_url_rule('/', view_func = root)
-
+#     app.add_url_rule('/', view_func = root)
+    
     return app
 

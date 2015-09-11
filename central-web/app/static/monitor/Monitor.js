@@ -79,7 +79,12 @@ $(document).ready(function() {
 		}
 		var updateStatusDone = function(status) {
 			self.id(status.id);
-			self.name(status.name);
+			if (status.name !== self.name()) {
+				self.name(status.name);
+				// Update map
+				mapViewModel.init();
+				//TODO update other models?
+			}
 			self.active(status.active);
 			self.locked(status.locked);
 		}

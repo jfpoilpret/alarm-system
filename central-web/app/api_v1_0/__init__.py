@@ -2,13 +2,12 @@ from flask import Blueprint, request, g
 from flask_restful import abort, Api
 from webargs.flaskparser import parser
 from app.api_v1_0.resources.monitor import MonitorMapResource
+from app.auth import auth
 
 # Create blueprint for Web Services
 api = Blueprint('api', __name__)
 
-restApi = Api(api)
-
-#TODO ensure authentication (with token)
+restApi = Api(api, decorators = [auth.login_required])
 
 # Register error handler for webargs
 @parser.error_handler
@@ -57,3 +56,6 @@ restApi.add_resource(MonitorDevicesResource, '/monitoring/devices')
 
 from .resources import AlertsHistoryResource
 restApi.add_resource(AlertsHistoryResource, '/history/<int:id>/alerts')
+
+from .resources import TokenResource
+restApi.add_resource(TokenResource, '/security/token')

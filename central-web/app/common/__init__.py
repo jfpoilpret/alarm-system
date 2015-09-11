@@ -1,6 +1,5 @@
 from re import compile
-from flask import abort, jsonify, render_template, session, url_for
-from flask_login import current_user
+from flask import abort, g, jsonify, session, url_for
 from app.models import Device
 from xmltodict import parse, unparse
 from unittest.test.testmock.support import is_instance
@@ -48,6 +47,9 @@ def string_to_date(format = DEFAULT_DATE_FORMAT):
 def choices(*args):
     return lambda v: v in args
 
+def boolean():
+    return label_to_code([(True, 'true'), (False, 'false')])
+
 # Flask-RestFul marshalling utilities
 #-------------------------------------
 class CodeToLabelField(Raw):
@@ -61,31 +63,6 @@ class CodeToLabelField(Raw):
                 return label
         return None
 
-# WTF Form Utilities
-#--------------------
-class HiddenInteger(IntegerField):
-    widget = HiddenInput()
-
-# AJAX form validation
-#----------------------
-def pre_check(form, return_none_if_ok = False, use_flash_for_errors = True):
-    # Check form is valid
-    if not form.validate():
-        if use_flash_for_errors:
-            # Get list of fields in error
-            fields = list(form.errors.keys())
-            # Get all error messages and remove duplicates
-            messages = {error for errors in form.errors.values() for error in errors}
-            # Format all error messages as flash messages
-            flash_messages = '\n'.join([render_template(
-                'flash_messages.html', message = message, category = 'warning') for message in messages])
-            return jsonify(result = 'ERROR', fields = fields, flash_messages = flash_messages)
-        else:
-            #TODO
-            fields = {field: render_template('field_errors.html', errors = list(errors)) for field, errors in form.errors.items()}
-            return jsonify(result = 'ERROR', fields = fields, flash_messages = [])
-    return None if return_none_if_ok else jsonify(result = 'OK')
-
 # Authentication for REST services
 #----------------------------------
 
@@ -93,29 +70,18 @@ def pre_check(form, return_none_if_ok = False, use_flash_for_errors = True):
 # Authorization checks
 #----------------------
 def check_admin():
-    if not current_user.is_admin():
+    if not g.user or not g.user.is_admin():
         abort(401, message = 'You are not allowed to perform this action, only an administrator can!')
 
 def check_configurator():
-    if not current_user.is_configurator():
+    if not g.user or g.user.is_configurator():
         abort(401, 
             message = 'You are not allowed to perform this action; you must be an administrator or configurator!')
 
 def check_alarm_setter():
-    if not current_user.is_alarm_setter():
+    if not g.user or g.user.is_alarm_setter():
         abort(401, 
             message = 'You are not allowed to perform this action; you must be at least an alarm setter!')
-
-# URL utilities
-#---------------
-def get_return_url():
-    url = session.get('return_url', None)
-    if url:
-        return url
-    elif current_user.is_configurator():
-        return url_for('configure.home')
-    else:
-        return url_for('monitor.home')
 
 # SGV utilities
 #---------------

@@ -3,12 +3,25 @@
 	
 	- Major refactoring: AJAX+RESTful webapp 
 
-30'		- monitoring UI
-			- handle config change => refresh map
+4h		- security (login, token)
+x			- REST resource for token generation
+x			- adapt model for token generation and verification
+x			- pass current_user to all templates (temporary)
+x			- replace common code to use g.user
+x			- adapt auth config to check token when login needed
 
-4h+		- cleanup wep site part:
-			- remove all forms (except login)
-			- remove all routes that are superseded by API
+			- remove flask login from all source code
+			- add auth_login_required everywhere
+			- rework login form to make it full JS (KnockoutJS)
+
+			- replace template current_user by pure JavaScript
+				- from now on we cannot afford to download complete html only parts,
+				otherwise JS variables will be overridden at every HTML load!
+
+			- ensure login form appears in case token is expired
+			- remove login form WTF and remove flask login dependency
+	
+2h+		- cleanup wep site part:
 			- only 2 blueprints: API Vs. Web
 			=> rename all html and css to be more meaningful (rather than "home"...)
 
@@ -28,11 +41,6 @@
 			
 		- ensure flash messages are cleared whenever needed, in particular when canceling dialog
 
-8h		- security (login, token)
-			- login must enable both REST services and Web pages serving!
-			- use time-limited tokens (is it enough for CSRF protection?)
-			- check if login can be done with knockout also (remove WTF altogether)
-	
 		- open points/bugs:
 			- link profile ViewModel to UsersViewModel somehow
 			- bind navbar to profile ViewModel

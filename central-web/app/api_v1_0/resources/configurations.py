@@ -7,7 +7,7 @@ from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
 from sqlalchemy import update
 
-from app.models import Configuration
+from app.models import Alert, Configuration, NoPingTimeAlertThreshold, VoltageRateAlertThreshold
 from app.common import prepare_map_for_config, prepare_map_for_monitoring, trim, choices
 
 CONFIG_FIELDS = {
@@ -43,11 +43,25 @@ class ConfigurationsResource(Resource):
         configuration = Configuration(**args)
         configuration.active = False
         configuration.current = False
+        # Add default alert thresholds
+        self.init_new_config(configuration)
         db.session.add(configuration)
         db.session.commit()
-        #TODO Add default alert thresholds
         db.session.refresh(configuration)
         return configuration, 201
+
+    def init_new_config(self, config):
+        config.no_ping_time_alert_thresholds = [
+            NoPingTimeAlertThreshold(alert_time = 10, alert_level = Alert.LEVEL_INFO),
+            NoPingTimeAlertThreshold(alert_time = 20, alert_level = Alert.LEVEL_WARNING),
+            NoPingTimeAlertThreshold(alert_time = 60, alert_level = Alert.LEVEL_ALARM),
+        ]
+        config.voltage_rate_alert_thresholds = [
+            VoltageRateAlertThreshold(voltage_rate = 100.0, alert_level = Alert.LEVEL_INFO, alert_time = 60),
+            VoltageRateAlertThreshold(voltage_rate = 90.0, alert_level = Alert.LEVEL_WARNING, alert_time = 30),
+            VoltageRateAlertThreshold(voltage_rate = 80.0, alert_level = Alert.LEVEL_ALARM, alert_time = 10),
+        ]
+
 
 class ConfigurationResource(Resource):
     CONFIG_ARGS = {

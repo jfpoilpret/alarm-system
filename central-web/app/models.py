@@ -1,17 +1,18 @@
 # encoding: utf-8
 
+from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
 from sqlalchemy.orm import deferred
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from . import db, login_manager
+from . import db
 
 # Domain Model (DB Mapping)
 #===========================
 
 # ACCOUNT
 #--------
-class Account(UserMixin, db.Model):
+class Account(db.Model):
+    secret = None
     ROLE_ADMINISTRATOR = 1
     ROLE_CONFIGURATOR = 2
     ROLE_ALARM_SETTER = 3
@@ -36,6 +37,26 @@ class Account(UserMixin, db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    @staticmethod
+    def init(app):
+        Account.secret = app.config['SECRET_KEY']
+    
+    def generate_auth_token(self, expiration = 600):
+        s = Serializer(Account.secret, expires_in = expiration)
+        return s.dumps({ 'id': self.id })
+    
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(Account.secret)
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None # valid token, but expired
+        except BadSignature:
+            return None # invalid token
+        user = Account.query.get(data['id'])
+        return user
+    
     def is_admin(self):
         return self.role == Account.ROLE_ADMINISTRATOR
     
@@ -49,9 +70,9 @@ class Account(UserMixin, db.Model):
         return 'Account(id = %d, username = %s, role = %d)' % (self.id, self.username, self.role)
 
 # LoginManager hook to get Account object from userid
-@login_manager.user_loader
-def load_user(userid):
-    return Account.query.get(int(userid))
+# @login_manager.user_loader
+# def load_user(userid):
+#     return Account.query.get(int(userid))
 
 # CONFIGURATION
 #--------------
