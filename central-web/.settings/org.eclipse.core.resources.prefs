@@ -20,7 +20,6 @@ encoding//venv/Lib/site-packages/flask/json.py=utf-8
 encoding//venv/Lib/site-packages/flask/templating.py=utf-8
 encoding//venv/Lib/site-packages/flask/wrappers.py=utf-8
 encoding//venv/Lib/site-packages/flask_bootstrap/__init__.py=utf8
-encoding//venv/Lib/site-packages/flask_login.py=utf-8
 encoding//venv/Lib/site-packages/flask_script/__init__.py=utf-8
 encoding//venv/Lib/site-packages/flask_script/commands.py=utf-8
 encoding//venv/Lib/site-packages/flask_sqlalchemy/__init__.py=utf-8

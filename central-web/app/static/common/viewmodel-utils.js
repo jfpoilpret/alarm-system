@@ -221,7 +221,8 @@
 			_initiallyDirty(initiallyDirty || false);
 		};
 	}
-	
+
+	//TODO remove! Their should be no global variable in this file!
 	function getFlashMessages(element) {
 		if (!flashMessages) {
 			flashMessages = new FlashMessagesViewModel();
@@ -242,6 +243,7 @@
 	ko.utils.compareByString = compareByString;
 	ko.utils.compareByNumber = compareByNumber;
 	ko.utils.getFlashMessages = getFlashMessages;
+	ko.utils.FlashMessagesViewModel = FlashMessagesViewModel;
 	ko.utils.DirtyFlag = DirtyFlag;
 	ko.utils.VMDirtyFlag = VMDirtyFlag;
 	ko.errors.ErrorsViewModel = ErrorsViewModel;

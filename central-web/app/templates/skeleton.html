@@ -1,0 +1,86 @@
+{% extends "bootstrap/base.html" %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+{% endblock %}
+
+{# TODO How to bind window title too? #}
+{% block title %}Boulemix{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='common/knockout-3.3.0.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='common/moment.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='common/viewmodel-utils.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='common/sprintf.js') }}"></script>
+{#<script type="text/javascript" src="{{ url_for('static', filename='common/errors.js') }}"></script>#}
+<script type="text/javascript" src="{{ url_for('static', filename='common/main.js') }}"></script>
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation" data-bind="with: navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <span id="nav_agenda" class="navbar-brand" data-bind="text: title"></span>
+        </div>
+        <div class="navbar-collapse collapse" id="main-navbar">
+			<ul class="nav navbar-nav navbar-left" data-bind="if: $root.currentUser().isConnected">
+				<li data-bind="visible: $root.currentUser().isConfigurator">
+					<a id="nav_configure" data-bind="click: gotoConfigure">Configure</a>
+				</li>
+				<li><a id="nav_monitor" data-bind="click: gotoMonitor"">Monitor</a></li>
+			</ul>
+			
+			{# TODO add new binding or dynamic div #}
+			{% block navbar_left_supplement %}{% endblock %}
+			
+			<ul class="nav navbar-nav navbar-right">
+				<!-- ko if: $root.currentUser().isConnected -->
+				<li class="dropdown">
+				    <a id="nav_username" href="#" class="dropdown-toggle" data-toggle="dropdown">
+				    	<span data-bind="text: $root.currentUser().username"></span> <b class="caret"></b>
+				    </a>
+				    <ul class="dropdown-menu">
+				        <li><a id="nav_allusers" data-bind="visible: $root.currentUser().isAdmin, click: gotoAllUsers">All users</a></li>
+				        <li><a id="nav_myprofile" data-bind="click: openProfile">My Profile</a></li>
+				        <li><a id="nav_mypassword" data-bind="click: openPassword">Modify My Password</a></li>
+				        {# TODO #}
+				        {#
+				        <li><a id="nav_logout" href="{{ url_for('auth.logout') }}">Logout</a></li>
+				        #}
+				    </ul>
+				</li>
+				<!-- /ko -->
+				<!-- ko ifnot: $root.currentUser().isConnected -->
+	            <li><a id="nav_username" class="not-connected" href="#">Not connected</a></li>
+				<!-- /ko -->
+			</ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="modal-content" data-bind="component: dialog"></div>
+
+<div class="container">
+	<div id="flash-messages" data-bind="with: flashMessages">
+		<!-- ko foreach: messages -->
+		<div class="alert" role="alert" data-bind="css: alertClass">
+			<button type="button" class="close" data-bind="click: $parent.clear">&times;</button>
+			<span class="glyphicon" aria-hidden="true" data-bind="css: iconClass"></span>
+			<!-- ko text: message --><!-- /ko -->
+		</div>
+		<!-- /ko -->
+	</div>
+
+	<div id="content" data-bind="component: content"></div>	
+</div>
+{% endblock %}
