@@ -6,6 +6,15 @@ $(document).ready(function() {
 	    var now = new Date().getTime();
 	    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
 	}
+	// Necessary for debugging scripts loaded by $.getScript()
+	// http://onwebdev.blogspot.com/2011/08/jquery-getscript-method.html
+	$(document).ajaxError(function(e, xhr, settings, exception) {
+		console.log('ajaxError #1');
+		console.log(e);
+		console.log(xhr);
+		console.log(exception);
+		console.log('ajaxError #2');
+	});
 	
 	// Custom component loader
 	var dynamicComponentLoader = {
@@ -39,12 +48,20 @@ $(document).ready(function() {
 			self[name] = ko.observable(vm);
 		});
 
-		self.loadFeature = function(dialog, content, script) {
+		//TODO Improve: use conventions to calculate complete URL...
+		self.loadFeature = function(dialog, content, scripts) {
 			self.dialog.name(dialog || 'empty');
 			self.content.name(content || 'empty');
 			//TODO load script (why not use component?)
-			if (script)
-				$.getScript(script);
+			if (scripts) {
+				if ($.isArray(scripts)) {
+					$.each(scripts, function(index, script) {
+						$.getScript(script);
+					});
+				} else {
+					$.getScript(scripts);
+				}
+			}
 		}
 		
 		self.unload = function() {
@@ -116,8 +133,10 @@ $(document).ready(function() {
 		}
 		
 		self.gotoConfigure = function() {
-			//TODO
-			console.log('gotoConfigure');
+			console.log('gotoConfigure#1');
+			globalViewModel.loadFeature('/configure/configure_dialogs.html', '/configure/configure_content.html', 
+				['/static/configure/configure-main.js', '/static/configure/configure-svg.js']);
+			console.log('gotoConfigure#2');
 		}
 		
 		self.gotoMonitor = function() {
@@ -130,8 +149,9 @@ $(document).ready(function() {
 	globalViewModel = new GlobalViewModel({
 		navigation: new NavigationViewModel(),
 		currentUser: new CurrentUserViewModel(),
-		signin: null
-		//TODO other VM for every feature: Signin, Users, Configure, Monitor, Profile, Password...
+		signin: null,
+		config: null
+		//TODO other VM for every feature: Configure, Users, Monitor, Profile, Password...
 	});
 	ko.applyBindings(globalViewModel);
 	
@@ -147,14 +167,4 @@ $(document).ready(function() {
 	//TODO Open login dialog the first time
 //	sleepFor(2000);
 	globalViewModel.loadFeature('/signin/signin_dialogs.html', null, '/static/signin/signin-main.js');
-	// 1. Load signin dialog HTML
-//	$('#modal-content').load('/webapp/page', 'name=/signin/signin_dialogs.html', function() {
-//		// 2. Load and execute signin JS
-//		$.getScript('/static/signin/signin-main.js');
-//	});
-
-	//TODO generic method to load a "feature":
-	// - unload previous feature (from DOM and from GlobalViewModel)
-	// - load new feature (DOM content and dialogs, JS file, load & execute, link new VMs to GlobalVM)
-
 });

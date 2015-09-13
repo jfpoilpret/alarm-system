@@ -1,0 +1,55 @@
+<div class="configurations" data-bind="with: $root.config">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="form-heading">Configurations</h3>
+		</div>
+		<div class="panel-body">
+			<table class="table table-hover configs-list" data-bind="visible: !emptyList()">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Name</th>
+						<th>Current</th>
+						<th>Active</th>
+					</tr>
+				</thead>
+				<tbody data-bind="foreach: configurations">
+					<tr>
+						<td>
+						{# TODO prevent modification of config when active #}
+						{# Enable link only if not already current #}
+							<a  class="btn btn-xs btn-default config-set-current" href="#"
+								data-bind="css: { disabled: current }, click: $parent.setCurrent">
+								<span class="glyphicon glyphicon-star"></span>
+							</a>
+							<a  class="btn btn-xs btn-default config-edit" href="#"
+								data-bind="click: $parent.editConfig">
+								<span class="glyphicon glyphicon-pencil"></span>
+							</a>
+							<a  class="btn btn-xs btn-default config-map" href="#"
+								data-bind="css: { disabled: !map_area_filename }, click: $parent.editConfigMap">
+								<span class="glyphicon glyphicon-home"></span>
+							</a>
+							<a  class="btn btn-xs btn-default config-delete" href="#" 
+								data-bind="click: $parent.deleteConfig">
+								<span class="glyphicon glyphicon-remove"></span>
+							</a>
+						</td>
+						<td class="config_name" data-bind="text: name"></td>
+						<td class="config_current">
+							<span	class="glyphicon"
+									data-bind="css: { 'glyphicon-ok': current, 'glyphicon-remove': !current }"></span>
+						</td>
+						<td class="config_active">
+							<span	class="glyphicon"
+									data-bind="css: { 'glyphicon-ok': active, 'glyphicon-remove': !active}"></span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<h3 id="empty-configs-list" data-bind="visible: emptyList">No configuration created yet!</h3>
+			<a	class="btn btn-primary config-new" href="#"
+				data-bind="click: editNewConfig">Create Configuration</a>
+		</div>
+	</div>
+</div>

@@ -1,5 +1,6 @@
 {% import "forms.html" as forms %}
-<div id="config-dialog" class="modal" data-backdrop="static">
+<div id="config-dialog" class="modal" data-backdrop="static" data-bind="with: $root.config">
+	<!-- ko with: configEditor -->
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -73,4 +74,5 @@
 			</div>
 		</div>
 	</div>
+	<!-- /ko -->
 </div>

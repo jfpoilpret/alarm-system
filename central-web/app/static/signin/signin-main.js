@@ -48,9 +48,13 @@ $(document).ready(function() {
 				globalViewModel.flashMessages.clear();
 				// Get token and set as basic authentication header
 				setToken(result.token, result.renew_before);
-				//TODO Update VM of current user (navigation)
+				// Update current user VM
 				globalViewModel.currentUser().update(result.user);
-				//TODO Load next feature based on current user role
+				// Load next feature based on current user role
+				if (globalViewModel.currentUser().isConfigurator())
+					globalViewModel.navigation().gotoConfigure();
+				else
+					globalViewModel.navigation().gotoMonitor();
 			});
 		}
 
@@ -58,12 +62,7 @@ $(document).ready(function() {
 		self.reset();
 	}
 	
-	console.log('signin-main.js #1a');
-	console.log('signin-main.js #1b');
-	// Declare all VM
-	console.log(globalViewModel);
+	// Set login VM into Global VM and show login dialog
 	globalViewModel.signin(new LoginViewModel());
-	console.log('signin-main.js #2');
 	$('#signin-dialog').modal('show');
-	console.log('signin-main.js #3');
 });

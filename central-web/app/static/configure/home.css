@@ -3,44 +3,12 @@
 	margin: 0 auto;
 }
 
-.form-config {
-	padding: 5px;
-	margin: 0 auto;
-}
-
-.form-config .form-control {
-	position: relative;
-	font-size: 16px;
-	height: auto;
-	padding: 5px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-}
-
 #device_form {
 	padding-top: 5px;
+	padding-bottom: 0;
+	padding-left: 0;
+	padding-right: 0;
 	margin: 0 auto;
-}
-
-.form-device {
-	padding: 5px;
-	margin: 0 auto;
-}
-
-.form-device .form-control {
-	position: relative;
-	font-size: 16px;
-	height: auto;
-	padding: 5px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-}
-
-.form-heading  {
-	margin-top: 0;
-	margin-bottom: 0;
 }
 
 .config-map-area {
@@ -51,83 +19,3 @@
 	height: 75vh;
 }
 
-.modal-header {
-	background-color: #337ab7;
-  	border-color: #2e6da4;
-  	color: #fff;
-	padding: 9px 15px;
-	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-}
-
-.modal-header .close:hover,
-.modal-header .close:focus {
-	color: #fff;
-	filter: alpha(opacity=40);
-	opacity: .4;
-}
-
-.modal-header .close {
-	margin-top: 2px;
-	text-shadow: 2px 2px 0 #000;
-	color: #fff;
-	filter: alpha(opacity=70);
-	opacity: 0.7;
-}
-
-.device-image:hover {
-	cursor: pointer;
-}
-
-.device-image circle:hover {
-	fill: blue;
-}
-
-.ping-alert {
-	border: 1px solid;
-	border-color: black;
-	border-radius: 5px;
-}
-
-.ping-alert-remove {
-	color: #fff;
-	filter: alpha(opacity=80);
-	opacity: .8;
-}
-
-.ping-alert-remove:hover,
-.ping-alert-remove:focus {
-	color: #000;
-	text-decoration: none;
-	filter: alpha(opacity=50);
-	opacity: .5;
-}
-
-#config_ping_alerts > ul > li > span.glyphicon-info-sign,
-#config_ping_alerts > ul > li > span.glyphicon-exclamation-sign,
-#config_ping_alerts > ul > li > span.glyphicon-warning-sign,
-#config_voltage_alerts > ul > li > span.glyphicon-info-sign,
-#config_voltage_alerts > ul > li > span.glyphicon-exclamation-sign,
-#config_voltage_alerts > ul > li > span.glyphicon-warning-sign {
-	font-size: 20px;
-	vertical-align: -4px;
-}
-
-.badge {
-	margin-top: 5px;
-}
-
-#config_ping_alerts input,
-#config_voltage_alerts input {
-	width: 6em;
-}
-
-div.ping-alert-type, 
-div.voltage-alert-type {
-	display: inline-block;
-	width: 5em;
-}

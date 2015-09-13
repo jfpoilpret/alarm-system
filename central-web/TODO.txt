@@ -16,9 +16,15 @@ x			- add auth_login_required everywhere
 x				- generic code
 x				- put currentUser as a first-level VM below GlobalVM
 x				- signin
-				- configuration
-				- admin
+x				- configuration content & dialogs
+					- debug
+				- admin content
+				- admin dialogs
 				- monitoring
+			
+			- combine all css into one!
+			- remove all extra stuff (js, css, html)
+			- profile + passord dialogs: issue as they mst not remove current feature!!
 				
 			- ensure login form appears in case token is expired
 			

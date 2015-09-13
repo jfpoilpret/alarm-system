@@ -1,4 +1,5 @@
-<div id="config-map-dialog" class="modal" data-backdrop="static">
+<div id="config-map-dialog" class="modal" data-backdrop="static" data-bind="with: $root.config">
+	<!-- ko with: configMapEditor -->
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -15,4 +16,5 @@
 			</div>
 		</div>
 	</div>
+	<!-- /ko -->
 </div>
