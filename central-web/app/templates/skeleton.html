@@ -33,9 +33,9 @@
         <div class="navbar-collapse collapse" id="main-navbar">
 			<ul class="nav navbar-nav navbar-left" data-bind="if: $root.currentUser().isConnected">
 				<li data-bind="visible: $root.currentUser().isConfigurator">
-					<a id="nav_configure" data-bind="click: gotoConfigure">Configure</a>
+					<a id="nav_configure" href="#" data-bind="click: gotoConfigure">Configure</a>
 				</li>
-				<li><a id="nav_monitor" data-bind="click: gotoMonitor"">Monitor</a></li>
+				<li><a id="nav_monitor" href="#" data-bind="click: gotoMonitor">Monitor</a></li>
 			</ul>
 			
 			<!-- ko component: $root.navbar -->
@@ -48,9 +48,9 @@
 				    	<span data-bind="text: $root.currentUser().username"></span> <b class="caret"></b>
 				    </a>
 				    <ul class="dropdown-menu">
-				        <li><a id="nav_allusers" data-bind="visible: $root.currentUser().isAdmin, click: gotoAllUsers">All users</a></li>
-				        <li><a id="nav_myprofile" data-bind="click: openProfile">My Profile</a></li>
-				        <li><a id="nav_mypassword" data-bind="click: openPassword">Modify My Password</a></li>
+				        <li><a id="nav_allusers" href="#" data-bind="visible: $root.currentUser().isAdmin, click: gotoAllUsers">All users</a></li>
+				        <li><a id="nav_myprofile" href="#" data-bind="click: openProfile">My Profile</a></li>
+				        <li><a id="nav_mypassword" href="#" data-bind="click: openPassword">Modify My Password</a></li>
 				        {# TODO #}
 				        {#
 				        <li><a id="nav_logout" href="{{ url_for('auth.logout') }}">Logout</a></li>

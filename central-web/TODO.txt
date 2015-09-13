@@ -4,7 +4,6 @@
 	- Major refactoring: AJAX+RESTful webapp 
 
 4h		- security (login, token)
-			- cursor on navbar functions? (css)
 			- GlobalVM improvements:
 				- conventions for loadFeature()
 				- how to properly unload a "feature" 
