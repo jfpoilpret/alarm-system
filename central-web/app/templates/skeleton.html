@@ -38,8 +38,8 @@
 				<li><a id="nav_monitor" data-bind="click: gotoMonitor"">Monitor</a></li>
 			</ul>
 			
-			{# TODO add new binding or dynamic div #}
-			{% block navbar_left_supplement %}{% endblock %}
+			<!-- ko component: $root.navbar -->
+			<!-- /ko -->
 			
 			<ul class="nav navbar-nav navbar-right">
 				<!-- ko if: $root.currentUser().isConnected -->

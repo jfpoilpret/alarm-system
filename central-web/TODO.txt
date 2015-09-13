@@ -4,27 +4,14 @@
 	- Major refactoring: AJAX+RESTful webapp 
 
 4h		- security (login, token)
-x			- REST resource for token generation
-x			- adapt model for token generation and verification
-x			- pass current_user to all templates (temporary)
-x			- replace common code to use g.user
-x			- adapt auth config to check token when login needed
-x			- remove flask login from all source code
-x			- remove login form WTF and remove flask login dependency
-x			- add auth_login_required everywhere
-			- use KO components for dynamically loading a "feature" 
-x				- generic code
-x				- put currentUser as a first-level VM below GlobalVM
-x				- signin
-x				- configuration content & dialogs
-x				- admin content & dialogs
-				- monitoring
-					- navbar update missing
-				- cursor on navbar functions? (css)
+			- cursor on navbar functions? (css)
+			- GlobalVM improvements:
+				- conventions for loadFeature()
+				- how to properly unload a "feature" 
 			
 			- combine all css into one!
 			- remove all extra stuff (js, css, html)
-			- profile + passord dialogs: issue as they mst not remove current feature!!
+			- profile + passord dialogs: issue as they must not remove current feature!!
 			- global tests/debug
 			
 			- ensure login form appears in case token is expired

@@ -19,11 +19,9 @@ $(document).ready(function() {
 	// Custom component loader
 	var dynamicComponentLoader = {
 		getConfig: function(name, callback) {
-//			console.log('getConfig -> ' + name);
 			callback({ template: name });
 		},
 		loadTemplate: function(name, config, callback) {
-//			console.log('loadTemplate -> ' + name);
 			if (name === 'empty')
 				callback([]);
 			else
@@ -43,16 +41,19 @@ $(document).ready(function() {
 		
 		self.dialog = { name: ko.observable('empty') };
 		self.content = { name: ko.observable('empty') };
+		self.navbar = { name: ko.observable('empty') };
 		self.flashMessages = new ko.utils.FlashMessagesViewModel();
 		$.each(children, function(name, vm) {
 			self[name] = ko.observable(vm);
 		});
 
 		//TODO Improve: use conventions to calculate complete URL...
-		self.loadFeature = function(dialog, content, scripts) {
+		//FIXME need to remove VM that were previously associated with the feature... but how?
+		self.loadFeature = function(dialog, content, navbar, scripts) {
 			self.dialog.name(dialog || 'empty');
 			self.content.name(content || 'empty');
-			//TODO load script (why not use component?)
+			self.navbar.name(navbar || 'empty');
+			// Load script (why not use component?)
 			if (scripts) {
 				if ($.isArray(scripts)) {
 					$.each(scripts, function(index, script) {
@@ -128,20 +129,17 @@ $(document).ready(function() {
 		}
 		
 		self.gotoAllUsers = function() {
-			console.log('gotoAllUsers');
-			globalViewModel.loadFeature('/admin/admin_dialogs.html', '/admin/admin_content.html', 
+			globalViewModel.loadFeature('/admin/admin_dialogs.html', '/admin/admin_content.html', null, 
 					'/static/admin/admin-main.js');
 		}
 		
 		self.gotoConfigure = function() {
-			globalViewModel.loadFeature('/configure/configure_dialogs.html', '/configure/configure_content.html', 
+			globalViewModel.loadFeature('/configure/configure_dialogs.html', '/configure/configure_content.html', null, 
 				['/static/configure/configure-main.js', '/static/configure/configure-svg.js']);
 		}
 		
 		self.gotoMonitor = function() {
-			//TODO
-			console.log('gotoMonitor');
-			globalViewModel.loadFeature(null, '/monitor/monitor_content.html', 
+			globalViewModel.loadFeature(null, '/monitor/monitor_content.html', '/monitor/monitor_navbar.html',
 					'/static/monitor/monitor-main.js');
 		}
 	}
@@ -154,7 +152,7 @@ $(document).ready(function() {
 		config: null,
 		admin: null,
 		monitor: null
-		//TODO other VM for every feature: Monitor, Profile, Password...
+		//TODO other VM for every feature: Profile, Password...
 	});
 	ko.applyBindings(globalViewModel);
 	
@@ -167,7 +165,6 @@ $(document).ready(function() {
 		$('.modal').modal('hide');
 	});
 	
-	//TODO Open login dialog the first time
-//	sleepFor(2000);
-	globalViewModel.loadFeature('/signin/signin_dialogs.html', null, '/static/signin/signin-main.js');
+	// Open login dialog the first time
+	globalViewModel.loadFeature('/signin/signin_dialogs.html', null, null, '/static/signin/signin-main.js');
 });

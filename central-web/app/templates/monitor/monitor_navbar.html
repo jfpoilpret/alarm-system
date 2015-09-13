@@ -1,0 +1,15 @@
+<p id="status" class="navbar-text" data-bind="with: $root.monitor">
+	<!-- ko with: statusMonitor -->
+	<!-- ko if: !name() -->
+	[No current configuration]
+	<!-- /ko -->
+	<!-- ko if: name -->
+	[ Current configuration '
+	<span id="config_name" data-bind="text: name"></span>
+	'
+	&nbsp;-&nbsp;
+	<span id="config_active" data-bind="text: activeText"></span>
+	<span id="config_locked" data-bind="text: lockedText"></span>]
+	<!-- /ko -->
+	<!-- /ko -->
+</p>
