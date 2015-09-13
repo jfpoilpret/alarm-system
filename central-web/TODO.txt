@@ -17,15 +17,14 @@ x				- generic code
 x				- put currentUser as a first-level VM below GlobalVM
 x				- signin
 x				- configuration content & dialogs
-					- debug
-				- admin content
-				- admin dialogs
+x				- admin content & dialogs
 				- monitoring
 			
 			- combine all css into one!
 			- remove all extra stuff (js, css, html)
 			- profile + passord dialogs: issue as they mst not remove current feature!!
-				
+			- global tests/debug
+			
 			- ensure login form appears in case token is expired
 			
 			- add authorization (role) checks to all REST resources

@@ -128,15 +128,14 @@ $(document).ready(function() {
 		}
 		
 		self.gotoAllUsers = function() {
-			//TODO
 			console.log('gotoAllUsers');
+			globalViewModel.loadFeature('/admin/admin_dialogs.html', '/admin/admin_content.html', 
+					'/static/admin/admin-main.js');
 		}
 		
 		self.gotoConfigure = function() {
-			console.log('gotoConfigure#1');
 			globalViewModel.loadFeature('/configure/configure_dialogs.html', '/configure/configure_content.html', 
 				['/static/configure/configure-main.js', '/static/configure/configure-svg.js']);
-			console.log('gotoConfigure#2');
 		}
 		
 		self.gotoMonitor = function() {
@@ -150,7 +149,8 @@ $(document).ready(function() {
 		navigation: new NavigationViewModel(),
 		currentUser: new CurrentUserViewModel(),
 		signin: null,
-		config: null
+		config: null,
+		admin: null
 		//TODO other VM for every feature: Configure, Users, Monitor, Profile, Password...
 	});
 	ko.applyBindings(globalViewModel);
