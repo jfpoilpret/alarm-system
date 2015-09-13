@@ -138,3 +138,91 @@ div.voltage-alert-type {
 	display: inline-block;
 	width: 5em;
 }
+
+/* Special styles for monitoring pages */
+#control {
+	padding: 15px;
+}
+
+.monitor-tabs {
+	margin-top: 10px;
+}
+
+.monitor-map-area {
+	margin-top: 10px;
+	margin-bottom: 0px;
+	margin-left: 10px;
+	margin-right: 10px;
+	height: 70vh;
+}
+
+.monitor-device-image:hover {
+	cursor: pointer;
+}
+
+.alert-level-info {
+	color: #31708f;
+}
+
+.alert-level-warning {
+	color: #8a6d3b;
+}
+
+.alert-level-alarm {
+	color: #a94442;
+}
+
+.alerts-list {
+	width: 100%;	
+}
+
+.alerts-list thead, .alerts-list tbody {
+	display: block;
+}
+
+.alerts-list tbody {
+	height: 65vh;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+/* TODO reduce selector to monitoring page only! */
+.popover-content {
+	white-space:pre-wrap;
+}
+
+circle.ping-alert-ok {
+	fill: #5cb85c;
+}
+
+circle.ping-alert-info {
+	fill: #5bc0de;
+}
+
+circle.ping-alert-warning {
+	fill: #f0ad4e;
+}
+
+circle.ping-alert-alarm {
+	fill: #d9534f;
+}
+
+circle.voltage-alert-ok {
+	stroke: #5cb85c;
+	stroke-width: 2;
+}
+
+circle.voltage-alert-info {
+	stroke: #5bc0de;
+	stroke-width: 4;
+}
+
+circle.voltage-alert-warning {
+	stroke: #f0ad4e;
+	stroke-width: 6;
+}
+
+circle.voltage-alert-alarm {
+	stroke: #d9534f;
+	stroke-width: 8;
+}

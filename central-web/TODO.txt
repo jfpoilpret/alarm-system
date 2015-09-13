@@ -19,6 +19,8 @@ x				- signin
 x				- configuration content & dialogs
 x				- admin content & dialogs
 				- monitoring
+					- navbar update missing
+				- cursor on navbar functions? (css)
 			
 			- combine all css into one!
 			- remove all extra stuff (js, css, html)

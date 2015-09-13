@@ -1,5 +1,5 @@
 {% import "forms.html" as forms %}
-<div role="tabpanel" class="tab-pane" id="alerts">
+<div role="tabpanel" class="tab-pane" id="alerts" data-bind="with: alertsMonitor">
 	<div class="form-alert-filter">
 		<form id="alert_filter_form" class="form form-inline" method="post" role="form">
 			{{ forms.global_errors() }}

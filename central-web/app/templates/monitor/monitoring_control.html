@@ -1,6 +1,6 @@
 {% import "forms.html" as forms %}
-<div role="tabpanel" class="tab-pane" id="control">
-	{% if current_user.is_alarm_setter() %}
+<div role="tabpanel" class="tab-pane" id="control" data-bind="with: statusMonitor">
+	<!-- ko if: $root.currentUser().isAlarmSetter -->
 	<button	type="button" role="button" class="btn btn-primary"
 			data-bind="click: deactivate, visible: name() && active()">Deactivate</button>
 	<button	type="button" role="button" class="btn btn-primary"
@@ -19,5 +19,5 @@
 					data-bind="click: clearHistory">Clear History</button>
 		</form>
 	</div>
-	{% endif %}
+	<!-- /ko -->
 </div>

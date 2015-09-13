@@ -141,6 +141,8 @@ $(document).ready(function() {
 		self.gotoMonitor = function() {
 			//TODO
 			console.log('gotoMonitor');
+			globalViewModel.loadFeature(null, '/monitor/monitor_content.html', 
+					'/static/monitor/monitor-main.js');
 		}
 	}
 	
@@ -150,8 +152,9 @@ $(document).ready(function() {
 		currentUser: new CurrentUserViewModel(),
 		signin: null,
 		config: null,
-		admin: null
-		//TODO other VM for every feature: Configure, Users, Monitor, Profile, Password...
+		admin: null,
+		monitor: null
+		//TODO other VM for every feature: Monitor, Profile, Password...
 	});
 	ko.applyBindings(globalViewModel);
 	

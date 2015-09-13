@@ -1,0 +1,24 @@
+<div class="monitor" data-bind="with: $root.monitor">
+	<div class="monitor-tabs" role="tablist">
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation">
+				<a id="tab_control" href="#control" aria-controls="control" role="tab" data-toggle="tab">Control</a>
+			</li>
+			<li role="presentation">
+				<a id="tab_map" href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a>
+			</li>
+			<li role="presentation">
+				<a id = "tab_alerts" href="#alerts" aria-controls="alerts" role="tab" data-toggle="tab">Alerts</a>
+			</li>
+			<li role="presentation">
+				<a id = "tab_history" href="#history" aria-controls="history" role="tab" data-toggle="tab">History</a>
+			</li>
+		</ul>
+		<div class="tab-content">
+			{% include "monitor/monitoring_control.html" %}
+			{% include "monitor/monitoring_map.html" %}
+			{% include "monitor/monitoring_alerts.html" %}
+			{% include "monitor/monitoring_history.html" %}
+		</div>
+	</div>
+</div>
