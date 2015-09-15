@@ -3,27 +3,23 @@
 	
 	- Major refactoring: AJAX+RESTful webapp 
 
-4h		- security (login, token)
-			- GlobalVM improvements:
-				- conventions for loadFeature()
-				- how to properly unload a "feature" 
+		- security (login, token)
+1h			- profile + passord dialogs: issue as they must not remove current feature!!
 			
-			- combine all css into one!
-			- remove all extra stuff (js, css, html)
-			- profile + passord dialogs: issue as they must not remove current feature!!
-			- global tests/debug
+30'			- combine all css into one!
+30'			- remove all extra stuff (js, css, html)
+1h			- global tests/debug
 			
-			- ensure login form appears in case token is expired
+30'			- add authorization (role) checks to all REST resources
+30'			- implement logout
+15'			- error messages on login
+30'			- ensure login form appears in case token is expired
 			
-			- add authorization (role) checks to all REST resources
-			- implement logout
-			- error messages on login
-			
-		- root route
-		- remove flask WTF dependency
-		- review all computed and replace with pureComputed when possible
+15'		- root route
+15'		- remove flask WTF dependency
+15'		- review all computed and replace with pureComputed when possible
 	
-2h+		- cleanup wep site part:
+2h		- cleanup wep site part:
 			- only 2 blueprints: API Vs. Web
 			=> rename all html and css to be more meaningful (rather than "home"...)
 
@@ -32,16 +28,13 @@
 		- consider using marshmallow instead of flask restful marshalling?
 		- remove flask-restful in the end?
 		
-8h		- javascript: make it more modular?
-			- refactor ViewModel and JS files: 
-				have one parent VM (defined empty in viewmodel-utils.js) with 
-				dynamically attached children, and "with" in html templates here needed
-				(http://www.knockmeout.net/2012/05/quick-tip-skip-binding.html)
+2h		- javascript: make it more modular?
 			- investigate requirejs
 			- how to deal with SVGHandlers (currently in global namespace...)
 			- how to create "subclasses"?
 			
-		- ensure flash messages are cleared whenever needed, in particular when canceling dialog
+1h		- ensure flash messages are cleared whenever needed, in particular when 
+		canceling dialog
 
 		- open points/bugs:
 			- link profile ViewModel to UsersViewModel somehow

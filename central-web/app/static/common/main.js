@@ -36,37 +36,58 @@ $(document).ready(function() {
 	// Global ViewModel (should be declared in viewmodel-utils.js and just instantiated here normally)
 	// but only if it made more generic, ie more observable components and dict arg for loadFeature
 	// children is a dict name -> VM, eventually with undefined or null VM
-	function GlobalViewModel(children) {
+	// - components: array of KO components that can be replaced when loading a feature
+	// - features: list of all available features (each feature has one VM assigned with its name)
+	//		those VM get reset whenever loadPersistentFeature() is called
+	// - viewModels: additional dict of viewModels that do not belong to features and never get reset automatically
+	function GlobalViewModel(components, features, viewModels) {
 		var self = this;
-		
-		self.dialog = { name: ko.observable('empty') };
-		self.content = { name: ko.observable('empty') };
-		self.navbar = { name: ko.observable('empty') };
-		self.flashMessages = new ko.utils.FlashMessagesViewModel();
-		$.each(children, function(name, vm) {
+
+		// Handle components
+		$.each(components, function(index, name) {
+			self[name] = { name: ko.observable('empty') };
+		});
+		$.each(features, function(index, name) {
+			self[name] = ko.observable(null);
+		});
+		$.each(viewModels, function(name, vm) {
 			self[name] = ko.observable(vm);
 		});
+		self.flashMessages = new ko.utils.FlashMessagesViewModel();
 
-		//TODO Improve: use conventions to calculate complete URL...
-		//FIXME need to remove VM that were previously associated with the feature... but how?
-		self.loadFeature = function(dialog, content, navbar, scripts) {
-			self.dialog.name(dialog || 'empty');
-			self.content.name(content || 'empty');
-			self.navbar.name(navbar || 'empty');
-			// Load script (why not use component?)
-			if (scripts) {
-				if ($.isArray(scripts)) {
-					$.each(scripts, function(index, script) {
-						$.getScript(script);
-					});
-				} else {
-					$.getScript(scripts);
-				}
-			}
+		self.clearFeatures = function() {
+			$.each(features, function(index, feature) {
+				self[feature](null);
+			});
+		}
+
+		// Load a feature after clearing previously loaded feature
+		self.loadPersistentFeature = function(componentsContent, feature, scripts) {
+			// Clear all previous features, transient or persistent
+			self.clearFeatures();
+			self.loadTransientFeature(componentsContent, feature, scripts)
 		}
 		
-		self.unload = function() {
-			self.loadFeature();
+		// Load a feature without clearing previously loaded feature, this allows e.g. to show a transient
+		// dialog above the current feature without needing to reload current feature once dialog is finished using.
+		self.loadTransientFeature = function(componentsContent, feature, scripts) {
+			console.log('loadFeature() -> ' + feature);
+			// Set all required components
+			var prefix = '/' + feature + '/' + feature;
+			$.each(componentsContent, function(name, content) {
+				if (content)
+					content = prefix + '_' + content + '.html';
+				console.log('    ' + name + ' -> ' + content);
+				self[name].name(content || 'empty');
+			});
+			if (scripts && !$.isArray(scripts))
+				scripts = [scripts];
+			prefix = '/static' + prefix + '-';
+			$.each(scripts, function(index, script) {
+				script = prefix + script + '.js';
+				console.log('    script -> ' + script);
+				$.getScript(script);
+			});
 		}
 	}
 	
@@ -129,31 +150,27 @@ $(document).ready(function() {
 		}
 		
 		self.gotoAllUsers = function() {
-			globalViewModel.loadFeature('/admin/admin_dialogs.html', '/admin/admin_content.html', null, 
-					'/static/admin/admin-main.js');
+			globalViewModel.loadPersistentFeature(persistentComponents(true, true), 'admin', 'main');
 		}
 		
 		self.gotoConfigure = function() {
-			globalViewModel.loadFeature('/configure/configure_dialogs.html', '/configure/configure_content.html', null, 
-				['/static/configure/configure-main.js', '/static/configure/configure-svg.js']);
+			globalViewModel.loadPersistentFeature(persistentComponents(true, true), 'configure', ['main', 'svg']);
 		}
 		
 		self.gotoMonitor = function() {
-			globalViewModel.loadFeature(null, '/monitor/monitor_content.html', '/monitor/monitor_navbar.html',
-					'/static/monitor/monitor-main.js');
+			globalViewModel.loadPersistentFeature(persistentComponents(false, true, true), 'monitor', 'main');
 		}
 	}
 	
 	// Declare VM
-	globalViewModel = new GlobalViewModel({
-		navigation: new NavigationViewModel(),
-		currentUser: new CurrentUserViewModel(),
-		signin: null,
-		config: null,
-		admin: null,
-		monitor: null
-		//TODO other VM for every feature: Profile, Password...
-	});
+	globalViewModel = new GlobalViewModel(
+		['navbar', 'content', 'dialog1', 'dialog2'], 
+		['signin', 'config', 'admin', 'monitor'], 
+		{
+			navigation: new NavigationViewModel(),
+			currentUser: new CurrentUserViewModel()
+			//TODO other VM for every feature: Profile, Password...
+		});
 	ko.applyBindings(globalViewModel);
 	
 	// Register event handlers
@@ -164,7 +181,22 @@ $(document).ready(function() {
 	$('#modal-content').on('click', '.cancel', function() {
 		$('.modal').modal('hide');
 	});
+
+	// Utility functions to help create arguments for loadPersistentFeature/loadTransientFeature
+	function persistentComponents(dialog, content, navbar) {
+		return {
+			dialog1: (dialog ? 'dialogs' : null),
+			dialog2: null,
+			content: (content ? 'content' : null),
+			navbar: (navbar ? 'navbar' : null)
+		};
+	}
+	function transientComponents() {
+		return {
+			dialog2: (dialog ? 'dialogs' : null)
+		};
+	}
 	
 	// Open login dialog the first time
-	globalViewModel.loadFeature('/signin/signin_dialogs.html', null, null, '/static/signin/signin-main.js');
+	globalViewModel.loadPersistentFeature(persistentComponents(true), 'signin', 'main');
 });

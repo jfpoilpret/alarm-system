@@ -68,10 +68,15 @@
 {% endblock %}
 
 {% block content %}
-<div id="modal-content" data-bind="component: dialog"></div>
+<div id="modal-content">
+	<!-- ko component: $root.dialog1 -->
+	<!-- /ko -->
+	<!-- ko component: $root.dialog2 -->
+	<!-- /ko -->
+</div>
 
 <div class="container">
-	<div id="flash-messages" data-bind="with: flashMessages">
+	<div id="flash-messages" data-bind="with: $root.flashMessages">
 		<!-- ko foreach: messages -->
 		<div class="alert" role="alert" data-bind="css: alertClass">
 			<button type="button" class="close" data-bind="click: $parent.clear">&times;</button>
@@ -81,6 +86,6 @@
 		<!-- /ko -->
 	</div>
 
-	<div id="content" data-bind="component: content"></div>	
+	<div id="content" data-bind="component: $root.content"></div>	
 </div>
 {% endblock %}
