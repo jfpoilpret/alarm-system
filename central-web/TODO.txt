@@ -4,8 +4,6 @@
 	- Major refactoring: AJAX+RESTful webapp 
 
 		- security (login, token)
-1h			- profile + passord dialogs: issue as they must not remove current feature!!
-			
 30'			- combine all css into one!
 30'			- remove all extra stuff (js, css, html)
 1h			- global tests/debug
@@ -21,7 +19,6 @@
 	
 2h		- cleanup wep site part:
 			- only 2 blueprints: API Vs. Web
-			=> rename all html and css to be more meaningful (rather than "home"...)
 
 3h		- improve webargs to support bundle_errors
 

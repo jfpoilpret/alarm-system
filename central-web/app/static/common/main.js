@@ -94,6 +94,7 @@ $(document).ready(function() {
 	function CurrentUserViewModel() {
 		var self = this;
 		
+		self.uri = null;
 		self.id = ko.observable(null);
 		self.username = ko.observable();
 		self.fullname = ko.observable();
@@ -121,11 +122,13 @@ $(document).ready(function() {
 		
 		self.update = function(user) {
 			if (user) {
+				self.uri = user.uri;
 				self.id(user.id);
 				self.username(user.username);
 				self.fullname(user.fullname);
 				self.role(user.role);
 			} else {
+				self.uri = null;
 				self.id(null);
 				self.username(null);
 				self.fullname(null);
@@ -140,13 +143,11 @@ $(document).ready(function() {
 		self.title = ko.observable('Boulemix');
 		
 		self.openProfile = function() {
-			//TODO
-			console.log('openProfile');
+			globalViewModel.loadTransientFeature(transientComponents(), 'profile', 'main');
 		}
 		
 		self.openPassword = function() {
-			//TODO
-			console.log('openPassword');
+			globalViewModel.loadTransientFeature(transientComponents(), 'password', 'main');
 		}
 		
 		self.gotoAllUsers = function() {
@@ -165,19 +166,14 @@ $(document).ready(function() {
 	// Declare VM
 	globalViewModel = new GlobalViewModel(
 		['navbar', 'content', 'dialog1', 'dialog2'], 
-		['signin', 'config', 'admin', 'monitor'], 
+		['signin', 'config', 'admin', 'monitor', 'profile', 'password'], 
 		{
 			navigation: new NavigationViewModel(),
 			currentUser: new CurrentUserViewModel()
-			//TODO other VM for every feature: Profile, Password...
 		});
 	ko.applyBindings(globalViewModel);
 	
-	// Register event handlers
-	// - for list of configurations
-//	$('#nav_myprofile').on('click', openProfileDialog);
-//	$('#nav_mypassword').on('click', userPasswordViewModel.editPassword);
-	// - for modal dialog
+	// Register general event handler for modal dialog
 	$('#modal-content').on('click', '.cancel', function() {
 		$('.modal').modal('hide');
 	});
@@ -193,7 +189,7 @@ $(document).ready(function() {
 	}
 	function transientComponents() {
 		return {
-			dialog2: (dialog ? 'dialogs' : null)
+			dialog2: 'dialogs'
 		};
 	}
 	
