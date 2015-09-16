@@ -72,6 +72,8 @@ $(document).ready(function() {
 		// dialog above the current feature without needing to reload current feature once dialog is finished using.
 		self.loadTransientFeature = function(componentsContent, feature, scripts) {
 			console.log('loadFeature() -> ' + feature);
+			// First clear flash messages
+			self.flashMessages.clear();
 			// Set all required components
 			var prefix = '/' + feature + '/' + feature;
 			$.each(componentsContent, function(name, content) {

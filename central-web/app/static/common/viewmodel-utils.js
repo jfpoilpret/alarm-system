@@ -105,8 +105,8 @@
 			var status = xhr.status;
 			var result = xhr.responseJSON.message;
 			if (status >= 500) {
-				alert(sprintf(
-					'A server error %d has occurred:\n%s', status, result));
+//				alert(sprintf('A server error %d has occurred:\n%s', status, result));
+				alert('A server error ' + status + ' has occurred:\n' + result);
 			} else {
 				var errors = [];
 				var keyErrors = {};

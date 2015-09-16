@@ -4,21 +4,22 @@
 	- Major refactoring: AJAX+RESTful webapp 
 
 		- security (login, token)
-30'			- combine all css into one!
-30'			- remove all extra stuff (js, css, html)
-1h			- global tests/debug
-			
+15'			- factor GlobalViewModel and COmponentLoader into viewmodel-utils.js
+15'			- remove all useless blueprints
+				- keep only 2 blueprints: API Vs. Web
+15'			- root route
+		- push
+		
 30'			- add authorization (role) checks to all REST resources
 30'			- implement logout
 15'			- error messages on login
 30'			- ensure login form appears in case token is expired
 			
-15'		- root route
+
 15'		- remove flask WTF dependency
 15'		- review all computed and replace with pureComputed when possible
 	
-2h		- cleanup wep site part:
-			- only 2 blueprints: API Vs. Web
+1h		- global tests/debug
 
 3h		- improve webargs to support bundle_errors
 
@@ -30,15 +31,13 @@
 			- how to deal with SVGHandlers (currently in global namespace...)
 			- how to create "subclasses"?
 			
-1h		- ensure flash messages are cleared whenever needed, in particular when 
+x		- ensure flash messages are cleared whenever needed, in particular when 
 		canceling dialog
 
 		- open points/bugs:
-			- link profile ViewModel to UsersViewModel somehow
-			- bind navbar to profile ViewModel
 			- bugs on "required" on server side: it is currently possible to create a user with empty name/fullname/password!
 				-> this is due to not submitting the form!
-			- all REST resources: improve reqparse args checks by providing dedicated checks
+			- all REST resources: improve webargs checks by providing dedicated checks
 		
 	- open questions:
 		- validation? suggested to use jQuery validation: what's that?

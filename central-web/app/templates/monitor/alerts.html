@@ -1,8 +1,0 @@
-{% import "utils.html" as utils %}
-<tr>
-	<td>{{ utils.render_alert_level(alert) }}</td>
-	<td>{{ alert.when.strftime('%d.%m.%Y %H:%M:%S') }}</td>
-	<td>{{ utils.map_alert_type(alert) }}</td>
-	<td>{{ alert.device.name }}</td>
-	<td>{{ alert.message }}</td>
-</tr>
