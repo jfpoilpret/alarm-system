@@ -34,13 +34,13 @@ $(document).ready(function() {
 		self.editProfile = function() {
 			$('#profile-dialog').modal('show');
 		}
+		
+		self.install = self.editProfile;
 	}
 	
 	// Declare VM
 	var uri = globalViewModel.currentUser().uri;
 	$.getJSON(uri, function(user) {
-		profileViewModel = new UserProfileViewModel(user);
-		globalViewModel.profile(profileViewModel);
-		profileViewModel.editProfile();
+		globalViewModel.profile(new UserProfileViewModel(user));
 	});
 });

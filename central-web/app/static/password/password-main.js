@@ -28,9 +28,9 @@ $(document).ready(function() {
 		self.editPassword = function() {
 			$('#password-dialog').modal('show');
 		}
+		
+		self.install = self.editPassword;
 	}
 	
-	var passwordViewModel = new UserPasswordViewModel();
-	globalViewModel.password(passwordViewModel);
-	passwordViewModel.editPassword();
+	globalViewModel.password(new UserPasswordViewModel());
 });

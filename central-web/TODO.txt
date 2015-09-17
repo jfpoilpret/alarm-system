@@ -2,20 +2,13 @@
 	including the fix for bug: https://github.com/mbr/flask-bootstrap/issues/90
 	
 	- Major refactoring: AJAX+RESTful webapp
-		- security (login, token)
-15'			- remove all useless blueprints
-				- keep only 2 blueprints: API Vs. Web
-15'			- root route
-		- push
+30'		- add authorization (role) checks to all REST resources
+30'		- implement logout
+15'		- error messages on login
+30'		- ensure login form appears in case token is expired
+			
+15'		- remove auth package, and integrate somewhere else...
 		
-1h		- bug when monitor VM is removed: auto refresh timer still works!
-			- need some lifecycle for VM (start/stop or better names API)
-			
-30'			- add authorization (role) checks to all REST resources
-30'			- implement logout
-15'			- error messages on login
-30'			- ensure login form appears in case token is expired
-			
 2h		- improve component loading:
 			- factor GlobalViewModel and ComponentLoader into viewmodel-utils.js
 			- VM should just specify the feature name
@@ -37,9 +30,6 @@
 			- how to deal with SVGHandlers (currently in global namespace...)
 			- how to create "subclasses"?
 			
-x		- ensure flash messages are cleared whenever needed, in particular when 
-		canceling dialog
-
 		- open points/bugs:
 			- bugs on "required" on server side: it is currently possible to create a user with empty name/fullname/password!
 				-> this is due to not submitting the form!

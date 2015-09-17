@@ -57,12 +57,15 @@ $(document).ready(function() {
 					globalViewModel.navigation().gotoMonitor();
 			});
 		}
+		
+		self.install = function() {
+			$('#signin-dialog').modal('show');
+		}
 
 		console.log('LoginViewModel');
 		self.reset();
 	}
 	
-	// Set login VM into Global VM and show login dialog
+	// Set login VM into Global VM and (automatically) show login dialog
 	globalViewModel.signin(new LoginViewModel());
-	$('#signin-dialog').modal('show');
 });

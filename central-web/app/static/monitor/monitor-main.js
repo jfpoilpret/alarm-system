@@ -333,8 +333,13 @@ $(document).ready(function() {
 		self.alertsMonitor = new AlertsViewModel();
 		self.mapMonitor = new MapViewModel();
 		self.alertsHistory = new AlertsHistoryViewModel(self.statusMonitor);
-		
-		self.init = function() {
+
+		self.uninstall = function() {
+			self.statusMonitor.autoRefresh(false);
+			self.alertsMonitor.autoRefresh(false);
+			self.mapMonitor.autoRefresh(false);
+		}
+		self.install = function() {
 			self.statusMonitor.refresh();
 			self.statusMonitor.autoRefresh(true);
 			self.alertsMonitor.refresh();
@@ -344,8 +349,6 @@ $(document).ready(function() {
 	
 	var monitor = new MonitoringViewModel();
 	globalViewModel.monitor(monitor);
-	// Initialize the model only after it has been added to Global VM
-	monitor.init();
 	
 	var $popovers = null;
 	function clearMapPopups() {

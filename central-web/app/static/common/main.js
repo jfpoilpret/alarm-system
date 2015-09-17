@@ -43,8 +43,22 @@ $(document).ready(function() {
 		$.each(components, function(index, name) {
 			self[name] = { name: ko.observable('empty') };
 		});
+		
+		// Handlers to handle lifecycle of children ViewModels
+		var beforeChange = function(vm) {
+			// Check vm is not null and includes a uninstall() function
+			if (vm && vm.uninstall) vm.uninstall();
+		};
+		var afterChange = function(vm) {
+			// Check vm is not null and includes a install() function
+			if (vm && vm.install) vm.install();
+		};
 		$.each(features, function(index, name) {
-			self[name] = ko.observable(null);
+			var obs = ko.observable(null);
+			self[name] = obs;
+			// Add subscribers to change in order to manage lifecycle of old/new VM
+			obs.subscribe(beforeChange, null, 'beforeChange');
+			obs.subscribe(afterChange, null, 'change');
 		});
 		$.each(viewModels, function(name, vm) {
 			self[name] = ko.observable(vm);
