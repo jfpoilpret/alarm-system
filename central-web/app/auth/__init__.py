@@ -1,3 +1,4 @@
+#TODO remove package and integrate somewhere else...
 from flask import g
 from flask_httpauth import HTTPBasicAuth
 

@@ -11,7 +11,7 @@ db = SQLAlchemy()
 monitoring_manager = None
 
 def root():
-    return redirect(url_for('monitor.signin'))
+    return redirect(url_for('webapp.signin'))
 
 def create_app(config_name = None):
     app = Flask(__name__)
@@ -30,15 +30,6 @@ def create_app(config_name = None):
 
     bootstrap.init_app(app)
     db.init_app(app)
-
-    from .monitor import monitor as monitor_blueprint
-    app.register_blueprint(monitor_blueprint, url_prefix='/monitor')
-
-    from .configure import configure as configure_blueprint
-    app.register_blueprint(configure_blueprint, url_prefix='/configure')
-
-    from .admin import admin as admin_blueprint
-    app.register_blueprint(admin_blueprint, url_prefix='/admin')
 
     from .api_v1_0 import api as api_blueprint
     app.register_blueprint(api_blueprint, url_prefix = '/api/1.0')

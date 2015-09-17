@@ -20,10 +20,10 @@ $(document).ready(function() {
 		self.name = ko.observable();
 		self.active = ko.observable();
 		self.locked = ko.observable();
-		self.activeText = ko.computed(function() {
+		self.activeText = ko.pureComputed(function() {
 			return self.active() ? 'Active' : 'Not Active';
 		});
-		self.lockedText = ko.computed(function() {
+		self.lockedText = ko.pureComputed(function() {
 			if (self.active())
 				return self.locked() ? ' - Locked' : ' - Unlocked';
 			else
@@ -106,6 +106,16 @@ $(document).ready(function() {
 		self.errors.clear();
 	}
 
+	// Utility function to convert alert level to CSS class
+	function alertLevelClass(level) {
+		var ALERT_LEVEL_CLASS = {
+				'info': 'info-sign',	
+				'warning': 'exclamation-sign',	
+				'alarm': 'exclamation-sign',	
+			};
+		return 'alert-level-' + level + ' glyphicon glyphicon-' + ALERT_LEVEL_CLASS[level];
+	}
+		
 	function AlertsViewModel() {
 		var self = this;
 		
@@ -135,15 +145,8 @@ $(document).ready(function() {
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
 
 		// alerts table
-		var ALERT_LEVEL_CLASS = {
-			'info': 'info-sign',	
-			'warning': 'exclamation-sign',	
-			'alarm': 'exclamation-sign',	
-		};
 		self.alerts = ko.observableArray();
-		self.alertLevelClass = function(level) {
-			return 'alert-level-' + level + ' glyphicon glyphicon-' + ALERT_LEVEL_CLASS[level];
-		}
+		self.alertLevelClass = alertLevelClass;
 		self.alertTime = function(when) {
 			return moment(when).format('DD-MM-YYYY HH:mm:ss');
 		}
@@ -292,20 +295,12 @@ $(document).ready(function() {
 		self.page = ko.observable();
 		self.pages = ko.observable();
 		// Alerts list
-		self.url = ko.computed(function() {
+		self.url = ko.pureComputed(function() {
 			//FIXME monitor() is null at construction time!
 			return '/api/1.0/history/' + statusMonitor.id() + '/alerts'
 		});
 		self.alerts = ko.observable();
-		//TODO refactor (common with AlertsViewModel)
-		var ALERT_LEVEL_CLASS = {
-			'info': 'info-sign',	
-			'warning': 'exclamation-sign',	
-			'alarm': 'exclamation-sign',	
-		};
-		self.alertLevelClass = function(level) {
-			return 'alert-level-' + level + ' glyphicon glyphicon-' + ALERT_LEVEL_CLASS[level];
-		}
+		self.alertLevelClass = alertLevelClass;
 		self.alertTime = function(when) {
 			return moment(when).format('DD-MM-YYYY HH:mm:ss');
 		}

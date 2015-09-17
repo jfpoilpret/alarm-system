@@ -1,22 +1,28 @@
 	- update flask-bootstrap dependency whenever a new release is rolled out,
 	including the fix for bug: https://github.com/mbr/flask-bootstrap/issues/90
 	
-	- Major refactoring: AJAX+RESTful webapp 
-
+	- Major refactoring: AJAX+RESTful webapp
 		- security (login, token)
-15'			- factor GlobalViewModel and COmponentLoader into viewmodel-utils.js
 15'			- remove all useless blueprints
 				- keep only 2 blueprints: API Vs. Web
 15'			- root route
 		- push
 		
+1h		- bug when monitor VM is removed: auto refresh timer still works!
+			- need some lifecycle for VM (start/stop or better names API)
+			
 30'			- add authorization (role) checks to all REST resources
 30'			- implement logout
 15'			- error messages on login
 30'			- ensure login form appears in case token is expired
 			
+2h		- improve component loading:
+			- factor GlobalViewModel and ComponentLoader into viewmodel-utils.js
+			- VM should just specify the feature name
+			- component binding should use feature name + type (dialog, content...)
+			- make GlobalVM automatically find out all component elements in DOM
+				- use class for real DOM elements, but how to deal with <!-- ko ... -->
 
-15'		- remove flask WTF dependency
 15'		- review all computed and replace with pureComputed when possible
 	
 1h		- global tests/debug

@@ -2,10 +2,6 @@ $(document).ready(function() {
 	console.log('main.js #1');
 	
 	//DEBUG ONLY
-	function sleepFor( sleepDuration ){
-	    var now = new Date().getTime();
-	    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
-	}
 	// Necessary for debugging scripts loaded by $.getScript()
 	// http://onwebdev.blogspot.com/2011/08/jquery-getscript-method.html
 	$(document).ajaxError(function(e, xhr, settings, exception) {
@@ -141,25 +137,20 @@ $(document).ready(function() {
 	
 	function NavigationViewModel() {
 		var self = this;
-		
 		self.title = ko.observable('Boulemix');
 		
 		self.openProfile = function() {
 			globalViewModel.loadTransientFeature(transientComponents(), 'profile', 'main');
 		}
-		
 		self.openPassword = function() {
 			globalViewModel.loadTransientFeature(transientComponents(), 'password', 'main');
 		}
-		
 		self.gotoAllUsers = function() {
 			globalViewModel.loadPersistentFeature(persistentComponents(true, true), 'admin', 'main');
 		}
-		
 		self.gotoConfigure = function() {
 			globalViewModel.loadPersistentFeature(persistentComponents(true, true), 'configure', ['main', 'svg']);
 		}
-		
 		self.gotoMonitor = function() {
 			globalViewModel.loadPersistentFeature(persistentComponents(false, true, true), 'monitor', 'main');
 		}

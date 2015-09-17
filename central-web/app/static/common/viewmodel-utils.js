@@ -187,7 +187,7 @@
 
 		_initiallyDirty.extend({ notify: 'always' });
 		
-		self.isDirty = ko.computed(function() {
+		self.isDirty = ko.pureComputed(function() {
 			var changes = 0,
 				len = observables.length;
 			for (var i = 0; i < len; i++) {

@@ -3,8 +3,6 @@ from flask import abort, g, jsonify, session, url_for
 from app.models import Device
 from xmltodict import parse, unparse
 from unittest.test.testmock.support import is_instance
-from wtforms.fields.core import IntegerField
-from wtforms.widgets.core import HiddenInput
 from flask_restful.fields import Raw
 from datetime import datetime
 
