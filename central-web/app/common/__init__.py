@@ -1,6 +1,7 @@
 from re import compile
-from flask import abort, g, jsonify, session, url_for
-from app.models import Device
+from flask import g, jsonify, session, url_for
+from flask_restful import abort
+from app.models import Device, Account
 from xmltodict import parse, unparse
 from unittest.test.testmock.support import is_instance
 from flask_restful.fields import Raw
@@ -19,6 +20,14 @@ device_kinds = {
     Device.KIND_CAMERA: DeviceKind(list(range(0x30, 0x38))),
     #TODO later add new modules such as: laser beam, door open detection, smoke detector...
 }
+
+ROLES = [
+    (Account.ROLE_ADMINISTRATOR, 'Administrator'),
+    (Account.ROLE_CONFIGURATOR, 'Configurator'),
+    (Account.ROLE_ALARM_SETTER, 'Alarm Setter'),
+    (Account.ROLE_ALARM_VIEWER, 'Alarm Viewer'),
+]
+
 
 # Webargs utilities
 #-------------------
@@ -63,21 +72,21 @@ class CodeToLabelField(Raw):
 
 # Authentication for REST services
 #----------------------------------
-
+#TODO remove if not used...
 
 # Authorization checks
 #----------------------
 def check_admin():
-    if not g.user or not g.user.is_admin():
+    if not g.user.is_admin():
         abort(401, message = 'You are not allowed to perform this action, only an administrator can!')
 
 def check_configurator():
-    if not g.user or g.user.is_configurator():
+    if not g.user.is_configurator():
         abort(401, 
             message = 'You are not allowed to perform this action; you must be an administrator or configurator!')
 
 def check_alarm_setter():
-    if not g.user or g.user.is_alarm_setter():
+    if not g.user.is_alarm_setter():
         abort(401, 
             message = 'You are not allowed to perform this action; you must be at least an alarm setter!')
 

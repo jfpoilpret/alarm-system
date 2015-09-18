@@ -8,6 +8,7 @@ from webargs import Arg
 from webargs.flaskparser import use_args
 
 from app.models import Alert, Configuration, NoPingTimeAlertThreshold, VoltageRateAlertThreshold
+from app.common import check_configurator
 
 ALERT_LEVELS = [
     (Alert.LEVEL_INFO, 'info'),
@@ -24,12 +25,14 @@ for _, level in ALERT_LEVELS:
 class NoPingAlertThresholdsResource(Resource):
     @marshal_with(NO_PING_ALERT_THRESHOLD_FIELDS)
     def get(self, id):
+        check_configurator()
         config = Configuration.query.get_or_404(id)
         return self.convert_thresholds(config), 200
 
     @use_args(NO_PING_ALERT_THRESHOLD_ARGS, locations = ['json'])
     @marshal_with(NO_PING_ALERT_THRESHOLD_FIELDS)
     def put(self, args, id):
+        check_configurator()
         config = Configuration.query.get_or_404(id)
         config.no_ping_time_alert_thresholds = []
         for level, label in ALERT_LEVELS:
@@ -69,12 +72,14 @@ for _, level in ALERT_LEVELS:
 class VoltageAlertThresholdsResource(Resource):
     @marshal_with(VOLTAGE_ALERT_THRESHOLD_FIELDS)
     def get(self, id):
+        check_configurator()
         config = Configuration.query.get_or_404(id)
         return self.convert_thresholds(config), 200
 
     @use_args(VOLTAGE_ALERT_THRESHOLD_ARGS, locations = ['json'])
     @marshal_with(VOLTAGE_ALERT_THRESHOLD_FIELDS)
     def put(self, args, id):
+        check_configurator()
         config = Configuration.query.get_or_404(id)
         config.voltage_rate_alert_thresholds = []
         for level, label in ALERT_LEVELS:

@@ -5,16 +5,8 @@ from flask_restful import fields, marshal_with, Resource
 from webargs import Arg
 from webargs.flaskparser import use_kwargs
 
-from app.models import Account
-from app.common import boolean, CodeToLabelField
+from app.common import boolean, CodeToLabelField, ROLES
 
-ROLES = [
-    (Account.ROLE_ADMINISTRATOR, 'Administrator'),
-    (Account.ROLE_CONFIGURATOR, 'Configurator'),
-    (Account.ROLE_ALARM_SETTER, 'Alarm Setter'),
-    (Account.ROLE_ALARM_VIEWER, 'Alarm Viewer'),
-]
-    
 class TokenResource(Resource):
     USER_FIELDS = {
         'id': fields.Integer,

@@ -8,7 +8,8 @@ from webargs.flaskparser import use_args, use_kwargs
 from sqlalchemy import update
 
 from app.models import Alert, Configuration, NoPingTimeAlertThreshold, VoltageRateAlertThreshold
-from app.common import prepare_map_for_config, prepare_map_for_monitoring, trim, choices
+from app.common import prepare_map_for_config, prepare_map_for_monitoring, trim, choices,\
+    check_configurator
 
 CONFIG_FIELDS = {
     'id': fields.Integer,
@@ -32,11 +33,13 @@ class ConfigurationsResource(Resource):
     
     @marshal_with(CONFIG_FIELDS)
     def get(self):
+        check_configurator()
         return Configuration.query.all()
 
     @use_kwargs(CONFIG_ARGS, locations = ['json'])
     @marshal_with(CONFIG_FIELDS)
     def post(self, **args):
+        check_configurator()
         #TODO optimize and avoid creating the object; checking it exists is enough!
         if Configuration.query.filter_by(name = args['name']).first():
             abort(409, message = {'name': 'A configuration already exists with that name!'})
@@ -71,9 +74,11 @@ class ConfigurationResource(Resource):
     
     @marshal_with(CONFIG_FIELDS)
     def get(self, id):
+        check_configurator()
         return Configuration.query.get_or_404(id)
 
     def delete(self, id):
+        check_configurator()
         config = Configuration.query.get_or_404(id)
         db.session.delete(config)
         db.session.commit()
@@ -82,6 +87,7 @@ class ConfigurationResource(Resource):
     @use_args(CONFIG_ARGS, locations = ['json'])
     @marshal_with(CONFIG_FIELDS)
     def put(self, args, id):
+        check_configurator()
         config = Configuration.query.get_or_404(id)
         for key, value in args.items():
             setattr(config, key, value)
@@ -95,6 +101,7 @@ class ConfigurationMapResource(Resource):
     @use_kwargs({ 'prepare_for': Arg(str, required = False, location = 'query', 
                     validate = choices('configuration', 'monitoring')) })
     def get(self, id, prepare_for):
+        check_configurator()
         config = Configuration.query.get_or_404(id)
         if prepare_for == 'configuration':
             return prepare_map_for_config(config)
@@ -105,6 +112,7 @@ class ConfigurationMapResource(Resource):
 
     @marshal_with(CONFIG_FIELDS)
     def delete(self, id):
+        check_configurator()
         config = Configuration.query.get_or_404(id)
         config.map_area = None
         config.map_area_filename = None
@@ -115,6 +123,7 @@ class ConfigurationMapResource(Resource):
     @use_kwargs({ 'map_area': Arg(required = True, location = 'files') })
     @marshal_with(CONFIG_FIELDS)
     def post(self, id, map_area):
+        check_configurator()
         config = Configuration.query.get_or_404(id)
         data = map_area.read().decode('utf-8')
         config.map_area = data
@@ -127,6 +136,7 @@ class ConfigurationMapResource(Resource):
 class CurrentConfigurationResource(Resource):
     @marshal_with(CONFIG_FIELDS)
     def get(self):
+        check_configurator()
         config = Configuration.query.filter_by(current = True).first()
         if config:
             return config, 200
@@ -136,6 +146,7 @@ class CurrentConfigurationResource(Resource):
     @use_kwargs({ 'id': Arg(int, required = True, location = 'query') })
     @marshal_with(CONFIG_FIELDS)
     def post(self, id):
+        check_configurator()
         config = Configuration.query.get_or_404(id)
         if not config.current:
             db.session.execute(update(Configuration.__table__).values(current = False))

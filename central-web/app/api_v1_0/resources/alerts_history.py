@@ -7,7 +7,7 @@ from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
 
 from app.models import Configuration, Alert, AlertType, Device
-from app.common import CodeToLabelField, string_to_date
+from app.common import CodeToLabelField, string_to_date, check_alarm_setter
 
 DEVICE_KINDS = [
     (Device.KIND_KEYPAD, 'entry keypad'),
@@ -85,6 +85,7 @@ class AlertsHistoryResource(Resource):
 
     @use_kwargs(ALERT_DELETE_ARGS, locations = ['query'])
     def delete(self, id, clear_until):
+        check_alarm_setter()
         # Check requested configuration exists
         Configuration.query.get_or_404(id)
         # Build query based on passed arguments

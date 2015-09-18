@@ -2,12 +2,15 @@
 	including the fix for bug: https://github.com/mbr/flask-bootstrap/issues/90
 	
 	- Major refactoring: AJAX+RESTful webapp
-30'		- add authorization (role) checks to all REST resources
+x		- add authorization (role) checks to all REST resources
+
 30'		- implement logout
 15'		- error messages on login
 30'		- ensure login form appears in case token is expired
 			
 15'		- remove auth package, and integrate somewhere else...
+		- review FIXME
+		- review TODO
 		
 2h		- improve component loading:
 			- factor GlobalViewModel and ComponentLoader into viewmodel-utils.js
@@ -16,8 +19,6 @@
 			- make GlobalVM automatically find out all component elements in DOM
 				- use class for real DOM elements, but how to deal with <!-- ko ... -->
 
-15'		- review all computed and replace with pureComputed when possible
-	
 1h		- global tests/debug
 
 3h		- improve webargs to support bundle_errors

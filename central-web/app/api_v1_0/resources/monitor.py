@@ -8,7 +8,7 @@ from webargs.flaskparser import use_args, use_kwargs
 
 from app.models import Configuration, Alert, AlertType, Device
 from app.common import CodeToLabelField, label_to_code, string_to_date,\
-    prepare_map_for_monitoring
+    prepare_map_for_monitoring, check_alarm_setter
 from app.monitor.monitoring import AlarmStatus, MonitoringManager
 from time import time
 from datetime import datetime
@@ -36,6 +36,7 @@ class MonitorStatusResource(Resource):
     @use_kwargs(CONFIG_ARGS, locations = ['json'])
     @marshal_with(CONFIG_FIELDS)
     def put(self, active, locked):
+        check_alarm_setter()
         config = Configuration.query.filter_by(current = True).first_or_404()
         if active is not None and active != config.active:
             config.active = active
@@ -167,6 +168,7 @@ class MonitorAlertsResource(Resource):
 
     @use_kwargs(ALERT_DELETE_ARGS, locations = ['query'])
     def delete(self, clear_until):
+        check_alarm_setter()
         # Find current configuration
         current_config = Configuration.query.filter_by(current = True).first_or_404()
         # Build query based on passed arguments
