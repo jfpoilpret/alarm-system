@@ -49,10 +49,7 @@
 				        <li><a id="nav_allusers" href="#" data-bind="visible: $root.currentUser().isAdmin, click: gotoAllUsers">All users</a></li>
 				        <li><a id="nav_myprofile" href="#" data-bind="click: openProfile">My Profile</a></li>
 				        <li><a id="nav_mypassword" href="#" data-bind="click: openPassword">Modify My Password</a></li>
-				        {# TODO #}
-				        {#
-				        <li><a id="nav_logout" href="{{ url_for('auth.logout') }}">Logout</a></li>
-				        #}
+				        <li><a id="nav_logout" href="#" data-bind="click: logout">Logout</a></li>
 				    </ul>
 				</li>
 				<!-- /ko -->

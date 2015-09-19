@@ -4,11 +4,18 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 from config import config
+from flask.sessions import SessionInterface
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 
 monitoring_manager = None
+
+# Special SessionManager to ensure no session is created (and no cookie)
+#TODO check if this is really useful (maybe observed cookie was cached?)
+class NoSessionManager(SessionInterface):
+    def open_session(self, app, request):
+        return None
 
 def root():
     return redirect(url_for('webapp.signin'))
@@ -39,6 +46,9 @@ def create_app(config_name = None):
     
     # Register the main route (redirect to login)
     app.add_url_rule('/', view_func = root)
+    
+    # Remove sessions
+    Flask.session_interface = NoSessionManager()
     
     return app
 

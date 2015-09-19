@@ -1,16 +1,8 @@
-	- update flask-bootstrap dependency whenever a new release is rolled out,
-	including the fix for bug: https://github.com/mbr/flask-bootstrap/issues/90
-	
 	- Major refactoring: AJAX+RESTful webapp
-x		- add authorization (role) checks to all REST resources
-
-30'		- implement logout
-15'		- error messages on login
-30'		- ensure login form appears in case token is expired
-			
 15'		- remove auth package, and integrate somewhere else...
-		- review FIXME
-		- review TODO
+
+??		- review FIXME
+??		- review TODO
 		
 2h		- improve component loading:
 			- factor GlobalViewModel and ComponentLoader into viewmodel-utils.js
@@ -22,7 +14,6 @@ x		- add authorization (role) checks to all REST resources
 1h		- global tests/debug
 
 3h		- improve webargs to support bundle_errors
-
 		- consider using marshmallow instead of flask restful marshalling?
 		- remove flask-restful in the end?
 		
@@ -48,8 +39,7 @@ x		- add authorization (role) checks to all REST resources
 		- or there should be mechanisms to propagate change to MonitoringManager
 		(because devices are deep copies of config devices, hence are not up-to-date)
 		
-30'	- review all .js files: lowercase filename only!
-		- VM ensure private methods are defined as var instead of self.
+30'	- review all .js files: VM ensure private methods are defined as var instead of self
 15'	- review all .py headers (encoding!)
 15'	- ensure all classes use new-style classes (subclass object)
 1h	- rename "private" methods with leading underscore (convention)

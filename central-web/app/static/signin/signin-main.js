@@ -21,8 +21,6 @@ $(document).ready(function() {
 			});
 			// Set timer for refreshing token
 			window.setTimeout(refreshToken, renew * 1000);
-			// Use the following line instead when debugging security
-//			window.setTimeout(refreshToken, 60 * 1000);
 		}
 		
 		var refreshToken = function() {

@@ -71,10 +71,11 @@
 	}
 	
 	// ViewModel for form errors
-	function ErrorsViewModel(keys) {
+	function ErrorsViewModel(keys, reloadOn401) {
 		var self = this;
 
 		keys = keys || [];
+		reloadOn401 = (reloadOn401 === undefined ? true : reloadOn401);
 		self.global = ko.observable('');
 		$.each(keys, function(index, key) {
 			self[key] = ko.observable('');
@@ -105,8 +106,9 @@
 			var status = xhr.status;
 			var result = xhr.responseJSON.message;
 			if (status >= 500) {
-//				alert(sprintf('A server error %d has occurred:\n%s', status, result));
 				alert('A server error ' + status + ' has occurred:\n' + result);
+			} else if (reloadOn401) {
+				location.reload(true);
 			} else {
 				var errors = [];
 				var keyErrors = {};

@@ -168,6 +168,14 @@ $(document).ready(function() {
 		self.gotoMonitor = function() {
 			globalViewModel.loadPersistentFeature(persistentComponents(false, true, true), 'monitor', 'main');
 		}
+		self.logout = function() {
+			$.ajax('/api/1.0/security/token', {
+				method: 'DELETE'
+			}).always(function() {
+				globalViewModel.currentUser().update(null);
+				location.reload(true);
+			});
+		}
 	}
 	
 	// Declare VM

@@ -13,6 +13,8 @@ from . import db
 #--------
 class Account(db.Model):
     secret = None
+    revoked_tokens = []
+    
     ROLE_ADMINISTRATOR = 1
     ROLE_CONFIGURATOR = 2
     ROLE_ALARM_SETTER = 3
@@ -51,11 +53,30 @@ class Account(db.Model):
         try:
             data = s.loads(token)
         except SignatureExpired:
+            if token in Account.revoked_tokens:
+                Account.revoked_tokens.remove(token)
             return None # valid token, but expired
         except BadSignature:
             return None # invalid token
+        # Extra check that token is not currently revoked
+        if token in Account.revoked_tokens:
+            return None
         user = Account.query.get(data['id'])
         return user
+    
+    @staticmethod
+    def revoke_token(token):
+        Account.revoked_tokens.append(token)
+    
+    #TODO need to ensure this method is called often enough, to remove expired tokens from list
+    @staticmethod
+    def clear_expired_revoked_tokens():
+        s = Serializer(Account.secret)
+        for token in Account.revoked_tokens:
+            try:
+                s.loads(token)
+            except SignatureExpired:
+                Account.revoked_tokens.remove(token)
     
     def is_admin(self):
         return self.role == Account.ROLE_ADMINISTRATOR
@@ -68,11 +89,6 @@ class Account(db.Model):
     
     def __repr__(self):
         return 'Account(id = %d, username = %s, role = %d)' % (self.id, self.username, self.role)
-
-# LoginManager hook to get Account object from userid
-# @login_manager.user_loader
-# def load_user(userid):
-#     return Account.query.get(int(userid))
 
 # CONFIGURATION
 #--------------

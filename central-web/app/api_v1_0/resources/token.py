@@ -6,6 +6,7 @@ from webargs import Arg
 from webargs.flaskparser import use_kwargs
 
 from app.common import boolean, CodeToLabelField, ROLES
+from app.models import Account
 
 class TokenResource(Resource):
     USER_FIELDS = {
@@ -32,3 +33,8 @@ class TokenResource(Resource):
         print('token get(%s)' % token_only)
         token = g.user.generate_auth_token()
         return { 'token': token.decode('ascii'), 'renew_before': 550, 'user': None if token_only else g.user }
+
+    # Revoke the current token (logout user)    
+    def delete(self):
+        Account.revoke_token(g.token)
+        return {}, 204
