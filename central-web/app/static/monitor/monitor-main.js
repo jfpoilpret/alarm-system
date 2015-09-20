@@ -296,7 +296,6 @@ $(document).ready(function() {
 		self.pages = ko.observable();
 		// Alerts list
 		self.url = ko.pureComputed(function() {
-			//FIXME monitor() is null at construction time!
 			return '/api/1.0/history/' + statusMonitor.id() + '/alerts'
 		});
 		self.alerts = ko.observable();
