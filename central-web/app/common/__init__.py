@@ -70,10 +70,6 @@ class CodeToLabelField(Raw):
                 return label
         return None
 
-# Authentication for REST services
-#----------------------------------
-#TODO remove if not used...
-
 # Authorization checks
 #----------------------
 def check_admin():

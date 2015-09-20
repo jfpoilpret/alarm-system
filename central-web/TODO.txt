@@ -1,8 +1,4 @@
 	- Major refactoring: AJAX+RESTful webapp
-15'		- remove print() in python source
-??		- review FIXME
-??		- review TODO
-		
 2h		- improve component loading:
 			- factor GlobalViewModel and ComponentLoader into viewmodel-utils.js
 			- VM should just specify the feature name
@@ -17,6 +13,9 @@
 
 		- consider using marshmallow instead of flask restful marshalling?
 		- remove flask-restful in the end?
+		
+??		- review FIXME
+??		- review TODO
 		
 2h		- javascript: make it more modular?
 			- investigate requirejs

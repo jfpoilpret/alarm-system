@@ -8,8 +8,7 @@ from webargs.flaskparser import use_args, use_kwargs
 from sqlalchemy import update
 
 from app.models import Alert, Configuration, NoPingTimeAlertThreshold, VoltageRateAlertThreshold
-from app.common import prepare_map_for_config, prepare_map_for_monitoring, trim, choices,\
-    check_configurator
+from app.common import prepare_map_for_config, trim, choices, check_configurator
 
 CONFIG_FIELDS = {
     'id': fields.Integer,
@@ -40,7 +39,6 @@ class ConfigurationsResource(Resource):
     @marshal_with(CONFIG_FIELDS)
     def post(self, **args):
         check_configurator()
-        #TODO optimize and avoid creating the object; checking it exists is enough!
         if Configuration.query.filter_by(name = args['name']).first():
             abort(409, message = {'name': 'A configuration already exists with that name!'})
         configuration = Configuration(**args)
@@ -96,17 +94,14 @@ class ConfigurationResource(Resource):
         db.session.refresh(config)
         return config, 200
 
-#TODO remove prepare_for=monitoring
 class ConfigurationMapResource(Resource):
     @use_kwargs({ 'prepare_for': Arg(str, required = False, location = 'query', 
-                    validate = choices('configuration', 'monitoring')) })
+                    validate = choices('configuration')) })
     def get(self, id, prepare_for):
         check_configurator()
         config = Configuration.query.get_or_404(id)
         if prepare_for == 'configuration':
             return prepare_map_for_config(config)
-        elif prepare_for == 'monitoring':
-            return prepare_map_for_monitoring(config)
         else:
             return config.map_area
 

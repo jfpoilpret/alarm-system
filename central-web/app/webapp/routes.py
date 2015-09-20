@@ -7,5 +7,4 @@ def signin():
 
 @webapp.route('/page')
 def page():
-    print('page(%s)' % request.args['name'])
     return render_template(request.args['name'])

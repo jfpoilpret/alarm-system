@@ -35,7 +35,6 @@ class UsersResource(Resource):
     @marshal_with(USER_FIELDS)
     def post(self, **args):
         check_admin()
-        #TODO optimize and avoid creating the object; checking it exists is enough!
         if Account.query.filter_by(username = args['username']).first():
             abort(409, message = {'username': 'A user already exists with that name!'})
         account = Account(**args)
