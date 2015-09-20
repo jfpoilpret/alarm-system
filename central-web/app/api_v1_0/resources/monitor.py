@@ -203,34 +203,6 @@ class MonitorDevicesResource(Resource):
             'latest_voltage': device.latest_voltage_level,
             'latest_ping': datetime.fromtimestamp(device.latest_ping),
             'time_since_latest_ping': now - device.latest_ping,
-            'voltage_alert': self.voltage_alert(device),
-            'ping_alert': self.ping_alert(now, device.latest_ping)
+            'voltage_alert': device.latest_voltage_alert_level,
+            'ping_alert': device.latest_ping_alert_level
         }
-
-    def voltage_alert(self, device):
-        #TODO use config thresholds!
-        if device.latest_voltage_level and device.source.voltage_threshold:
-            voltage_rate = device.latest_voltage_level / device.source.voltage_threshold
-            if voltage_rate >= 1.05:
-                return None
-            elif voltage_rate >= 1.0:
-                return Alert.LEVEL_INFO
-            elif voltage_rate >= 0.9:
-                return Alert.LEVEL_WARNING
-            else:
-                return Alert.LEVEL_ALARM
-        return None
-        
-    def ping_alert(self, now, latest_ping):
-        #TODO use config thresholds!
-        if latest_ping:
-            if latest_ping > now - 5.0:
-                return None
-            elif latest_ping > now - 10.0:
-                return Alert.LEVEL_INFO
-            elif latest_ping > now - 30.0:
-                return Alert.LEVEL_WARNING
-            else:
-                return Alert.LEVEL_ALARM
-        return None
-    

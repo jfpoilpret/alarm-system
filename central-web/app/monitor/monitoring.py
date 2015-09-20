@@ -22,9 +22,11 @@ class LiveDevice(object):
         self.source = device.detached()
         self.latest_ping = time() - 0.5
         self.latest_ping_alert_threshold = -1
+        self.latest_ping_alert_level = None
         self.latest_voltage_level = None
         self.latest_voltage_alert_threshold = -1
         self.latest_voltage_alert_time = None
+        self.latest_voltage_alert_level = None
 
 class MonitoringManager(object):
     instance = None
@@ -181,6 +183,8 @@ class MonitoringManager(object):
                 if dev.latest_ping < time_limit:
                     # Push event for all those devices
                     self.event_queue.put(Event(EventType.NO_PING_FOR_LONG, id))
+                else:
+                    dev.latest_ping_alert_level = None
 
     def get_no_ping_time_threshold(self, no_ping_time):
         for i, (threshold, _) in enumerate(self.no_ping_time_thresholds):
@@ -191,6 +195,8 @@ class MonitoringManager(object):
         return i + int(no_ping_time / threshold) - 1 
     
     def get_no_ping_time_threshold_alert_level(self, index):
+        if index < 0:
+            return None
         if index < len(self.no_ping_time_thresholds):
             return self.no_ping_time_thresholds[index][1]
         return self.no_ping_time_thresholds[-1][1]
@@ -210,14 +216,16 @@ class MonitoringManager(object):
         rate = device.latest_voltage_level / device.source.voltage_threshold
         new_threshold = self.get_voltage_alert_threshold(rate)
         device.latest_voltage_alert_threshold = new_threshold
-        alert_threshold = self.voltage_alert_thresholds[new_threshold]
-        level = alert_threshold[1]
-        now = time()
         if new_threshold == -1:
             # Reset last alert time
             device.latest_voltage_alert_time = None
+            device.latest_voltage_alert_level = None
             return None
         
+        alert_threshold = self.voltage_alert_thresholds[new_threshold]
+        level = alert_threshold[1]
+        now = time()
+        device.latest_voltage_alert_level = level
         if new_threshold <= old_threshold:
             # Check if we need to re-send the alarm (based on last time)
             delay = now - device.latest_voltage_alert_time if device.latest_voltage_alert_time else 0.0
@@ -258,15 +266,16 @@ class MonitoringManager(object):
             self.create_lock_event(AlarmStatus.UNLOCKED, AlertType.UNLOCK))
     
     def handle_no_ping_for_long(self, event_type, device, event_detail):
-        threshold = device.latest_ping_alert_threshold
+        old_threshold = device.latest_ping_alert_threshold
         no_ping_time = time() - device.latest_ping
         new_threshold = self.get_no_ping_time_threshold(no_ping_time)
         device.latest_ping_alert_threshold = new_threshold
+        level = self.get_no_ping_time_threshold_alert_level(new_threshold)
+        device.latest_ping_alert_level = level
         # First check if alert condition has disappeared or has not changed
-        if new_threshold <= threshold:
+        if new_threshold <= old_threshold:
             return None
         # We have passed a new threshold, we must generate an alert of appropriate level
-        level = self.get_no_ping_time_threshold_alert_level(new_threshold)
         message = 'Module %s has provided no presence signal for %.0f seconds' % (
             device.source.name, no_ping_time)
         return Alert(

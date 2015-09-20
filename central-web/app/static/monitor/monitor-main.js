@@ -93,8 +93,6 @@ $(document).ready(function() {
 				self.active(null);
 				self.locked(null);
 			} else if (status >= 500) {
-//				alert(sprintf(
-//					'A server error %d has occurred:\n%s', status, result));
 				alert('A server error ' + status + ' has occurred:\n' + result);
 			}
 		}
@@ -216,17 +214,11 @@ $(document).ready(function() {
 		self.y = device.y;
 		self.r = r;
 		self.content = ko.observable();
-//		self.title = sprintf('Module %s (ID %d)', device.name, device.id);
 		self.title = 'Module ' + device.name + ' (ID ' + device.id + ')';
 		self.alertClasses = ko.observable('ping-alert-ok voltage-alert-ok');
 
 		self.update = function(dev) {
 			// Update content and alertClasses
-//			var message = sprintf('Voltage: %0.2f V (min.: %0.2f V)\nLatest Ping: %s\n (%d seconds ago)', 
-//					dev.latest_voltage,
-//					dev.voltage_threshold,
-//					moment(dev.latest_ping).format('DD-MM-YYYY HH:mm:ss'),
-//					dev.time_since_latest_ping);
 			var message =	'Voltage: ' + dev.latest_voltage.toFixed(2) + ' V (min.: ' + dev.voltage_threshold.toFixed(2) + 
 							' V)\nLatest Ping: ' + moment(dev.latest_ping).format('DD-MM-YYYY HH:mm:ss') + '\n (' +
 							dev.time_since_latest_ping + ' seconds ago)';

@@ -9,23 +9,25 @@
 
 1h		- global tests/debug
 
-3h		- improve webargs to support bundle_errors
+		- merge restful branch to trunk
 
-		- consider using marshmallow instead of flask restful marshalling?
-		- remove flask-restful in the end?
+3h	- improve webargs to support bundle_errors
+
+	- consider using marshmallow instead of flask restful marshalling?
+	- remove flask-restful in the end?
 		
-??		- review FIXME
-??		- review TODO
+??	- review FIXME
+??	- review TODO
 		
-2h		- javascript: make it more modular?
-			- investigate requirejs
-			- how to deal with SVGHandlers (currently in global namespace...)
-			- how to create "subclasses"?
-			
-		- open points/bugs:
-			- bugs on "required" on server side: it is currently possible to create a user with empty name/fullname/password!
-				-> this is due to not submitting the form!
-			- all REST resources: improve webargs checks by providing dedicated checks
+2h	- javascript: make it more modular?
+		- investigate requirejs
+		- how to deal with SVGHandlers (currently in global namespace...)
+		- how to create "subclasses"?
+		
+	- open points/bugs:
+		- bugs on "required" on server side: it is currently possible to create a user with empty name/fullname/password!
+			-> this is due to not submitting the form!
+		- all REST resources: improve webargs checks by providing dedicated checks
 		
 	- open questions:
 		- validation? suggested to use jQuery validation: what's that?
