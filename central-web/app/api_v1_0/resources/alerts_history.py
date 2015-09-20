@@ -91,7 +91,6 @@ class AlertsHistoryResource(Resource):
         # Build query based on passed arguments
         query = Alert.query.filter_by(config_id = id)
         if clear_until:
-            print('delete clear_until = %s' % str(clear_until))
             query = query.filter(Alert.when <= clear_until)
         query.delete(synchronize_session = False)
         db.session.commit()

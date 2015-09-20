@@ -1,5 +1,4 @@
 	- Major refactoring: AJAX+RESTful webapp
-15'		- remove auth package, and integrate somewhere else...
 15'		- remove print() in python source
 ??		- review FIXME
 ??		- review TODO

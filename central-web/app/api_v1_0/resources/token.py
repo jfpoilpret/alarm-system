@@ -30,7 +30,6 @@ class TokenResource(Resource):
     @use_kwargs(TOKEN_ARGS, locations = ['query'])
     @marshal_with(AUTH_FIELDS)
     def get(self, token_only):
-        print('token get(%s)' % token_only)
         token = g.user.generate_auth_token()
         return { 'token': token.decode('ascii'), 'renew_before': 550, 'user': None if token_only else g.user }
 

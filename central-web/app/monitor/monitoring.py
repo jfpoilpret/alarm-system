@@ -56,7 +56,6 @@ class MonitoringManager(object):
             self.devices_manager_class = DevicesManager
     
     def activate(self, config):
-        print('activate(%s)' % config.name)
         # Deactivate if already active
         self.deactivate()
         self.status = AlarmStatus.UNLOCKED
@@ -109,10 +108,8 @@ class MonitoringManager(object):
             alert_type = AlertType.SYSTEM_ACTIVATION,
             message = 'System activated',
             device = None), need_context = False)
-        print('activate() thread started')
     
     def deactivate(self):
-        print('deactivate()')
         if self.event_checker:
             # Stop DevicesManager
             self.devices_manager.deactivate()
@@ -141,7 +138,6 @@ class MonitoringManager(object):
                 alert_type = AlertType.SYSTEM_DEACTIVATION,
                 message = 'System deactivated',
                 device = None), need_context = False)
-            print('deactivate() thread stopped')
     
     def lock(self):
         alert = self.create_lock_event(

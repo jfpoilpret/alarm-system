@@ -1,18 +1,43 @@
 import os
-from flask import Flask, redirect, url_for
+from flask import Flask, g, jsonify, redirect, url_for
 from flask_bootstrap import Bootstrap
-from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
+from flask_sqlalchemy import SQLAlchemy
 from config import config
-from flask.sessions import SessionInterface
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
+
+# Authentication Management
+# Note: we use a "Dummy" scheme to avoid browser popping up its own dialog when receiving 401
+auth = HTTPBasicAuth(scheme = 'Dummy', realm = 'None')
+
+@auth.error_handler
+def auth_error_handler():
+    res = jsonify(message = 'Invalid credentials')
+    res.status_code = 401
+    return res
+
+from .models import Account
+
+@auth.verify_password
+def verify_token(user_or_token, password):
+    user = Account.verify_auth_token(user_or_token)
+    if not user:
+        g.token = None
+        user = Account.query.filter_by(username = user_or_token).first()
+        if user and not user.verify_password(password):
+            user = None
+    else:
+        g.token = user_or_token
+    g.user = user
+    return (user is not None)
 
 monitoring_manager = None
 
 # Special SessionManager to ensure no session is created (and no cookie)
 #TODO check if this is really useful (maybe observed cookie was cached?)
+from flask.sessions import SessionInterface
 class NoSessionManager(SessionInterface):
     def open_session(self, app, request):
         return None

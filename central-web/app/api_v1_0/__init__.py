@@ -2,7 +2,7 @@ from flask import Blueprint, request, g
 from flask_restful import abort, Api
 from webargs.flaskparser import parser
 from app.api_v1_0.resources.monitor import MonitorMapResource
-from app.auth import auth
+from app import auth
 
 # Create blueprint for Web Services
 api = Blueprint('api', __name__)
