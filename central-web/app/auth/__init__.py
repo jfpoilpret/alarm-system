@@ -4,15 +4,14 @@ from flask_httpauth import HTTPBasicAuth
 
 from ..models import Account
 
-auth = HTTPBasicAuth()
+# Note: we use a "Dummy" scheme to avoid browser popping up its own dialog when receiving 401
+auth = HTTPBasicAuth(scheme = 'Dummy', realm = 'None')
 
-# Hack to ensure HTTPBasicAuth doesn't add 'WWW-Authenticate' header and thus avoids browser popups
+@auth.error_handler
 def auth_error_handler():
     res = jsonify(message = 'Invalid credentials')
     res.status_code = 401
     return res
-
-auth.auth_error_callback = auth_error_handler
 
 @auth.verify_password
 def verify_token(user_or_token, password):

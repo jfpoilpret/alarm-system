@@ -4,7 +4,7 @@ $(document).ready(function() {
 		var self = this;
 		self.username = ko.observable();
 		self.password = ko.observable();
-		self.errors = new ko.errors.ErrorsViewModel([]);
+		self.errors = new ko.errors.ErrorsViewModel([], false);
 		
 		self.reset = function() {
 			self.username(null);
@@ -25,7 +25,17 @@ $(document).ready(function() {
 		
 		var refreshToken = function() {
 			$.ajax('/api/1.0/security/token', {
-			}).fail(self.errors.errorHandler).done(function(result) {
+			}).fail(function(xhr) {
+				var status = xhr.status;
+				var result = xhr.responseJSON.message;
+				console.log('refreshToken() fail (' + status + ', ' + result + ')');
+				if (status === 401) {
+					// Automatically show signin
+					location.reload(true);
+				} else {
+					alert('A server error ' + status + ' has occurred:\n' + result);
+				}
+			}).done(function(result) {
 				console.log(result);
 				// Get token and set as basic authentication header
 				setToken(result.token, result.renew_before);

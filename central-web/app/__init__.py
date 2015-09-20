@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, request, session, url_for
+from flask import Flask, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth

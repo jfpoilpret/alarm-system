@@ -107,7 +107,7 @@
 			var result = xhr.responseJSON.message;
 			if (status >= 500) {
 				alert('A server error ' + status + ' has occurred:\n' + result);
-			} else if (reloadOn401) {
+			} else if (status === 401 && reloadOn401) {
 				location.reload(true);
 			} else {
 				var errors = [];

@@ -1,6 +1,6 @@
 	- Major refactoring: AJAX+RESTful webapp
 15'		- remove auth package, and integrate somewhere else...
-
+15'		- remove print() in python source
 ??		- review FIXME
 ??		- review TODO
 		
@@ -10,10 +10,12 @@
 			- component binding should use feature name + type (dialog, content...)
 			- make GlobalVM automatically find out all component elements in DOM
 				- use class for real DOM elements, but how to deal with <!-- ko ... -->
+			- remove console.log()
 
 1h		- global tests/debug
 
 3h		- improve webargs to support bundle_errors
+
 		- consider using marshmallow instead of flask restful marshalling?
 		- remove flask-restful in the end?
 		
