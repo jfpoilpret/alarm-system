@@ -35,13 +35,6 @@ def verify_token(user_or_token, password):
 
 monitoring_manager = None
 
-# Special SessionManager to ensure no session is created (and no cookie)
-#TODO check if this is really useful (maybe observed cookie was cached?)
-from flask.sessions import SessionInterface
-class NoSessionManager(SessionInterface):
-    def open_session(self, app, request):
-        return None
-
 def root():
     return redirect(url_for('webapp.signin'))
 
@@ -72,8 +65,4 @@ def create_app(config_name = None):
     # Register the main route (redirect to login)
     app.add_url_rule('/', view_func = root)
     
-    # Remove sessions
-    Flask.session_interface = NoSessionManager()
-    
     return app
-

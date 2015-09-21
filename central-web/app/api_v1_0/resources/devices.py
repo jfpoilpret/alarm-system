@@ -4,11 +4,10 @@ from ... import db
 from app.models import Device, Configuration
 
 from flask_restful import abort, fields, marshal_with, Resource
-from flask_restful.fields import Raw
 from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
-from app.common import trim, extract_viewbox_from_config, check_configurator,\
-    CodeToLabelField, label_to_code
+from app.common import trim, check_configurator, CodeToLabelField, label_to_code, extract_viewbox
+from xmltodict import parse
 
 KINDS = [
     (Device.KIND_KEYPAD, 'Keypad'),
@@ -90,7 +89,7 @@ class DeviceResource(Resource):
         y = args.get('location_y', None)
         if x is not None or y is not None:
             # Normalize locations if needed
-            dimensions = extract_viewbox_from_config(config)
+            dimensions = self.extract_viewbox_from_config(config)
             # interpret all devices locations (as ratios)
             if x is not None:
                 args['location_x'] = (x - dimensions[0]) / dimensions[2]
@@ -103,3 +102,9 @@ class DeviceResource(Resource):
         db.session.commit()
         db.session.refresh(device)
         return device, 200
+
+    def extract_viewbox_from_config(self, config):
+        svg_xml = parse(config.map_area, process_namespaces = False)
+        root = svg_xml['svg']
+        return extract_viewbox(root)
+

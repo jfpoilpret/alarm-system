@@ -53,7 +53,6 @@ def replace_port_option(o):
         o.kwargs['default'] = '999.999.999.999'
     return o
 
-#TODO Add command option to automatically start monitoring for active config (or not)
 class ConfigServer(Server):
     def get_options(self):
         options = super(ConfigServer, self).get_options()

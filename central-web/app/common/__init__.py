@@ -1,9 +1,7 @@
 from re import compile
-from flask import g, jsonify, session, url_for
+from flask import g
 from flask_restful import abort
 from app.models import Device, Account
-from xmltodict import parse, unparse
-from unittest.test.testmock.support import is_instance
 from flask_restful.fields import Raw
 from datetime import datetime
 
@@ -27,7 +25,6 @@ ROLES = [
     (Account.ROLE_ALARM_SETTER, 'Alarm Setter'),
     (Account.ROLE_ALARM_VIEWER, 'Alarm Viewer'),
 ]
-
 
 # Webargs utilities
 #-------------------
@@ -88,16 +85,10 @@ def check_alarm_setter():
 
 # SGV utilities
 #---------------
-#TODO refactor what's not really common and put where it belongs!
 VIEWBOX_REGEX = compile(r"\-?[0-9]+")
 def extract_viewbox(root):
     view_box = root['@viewBox']
     return [int(x) for x in VIEWBOX_REGEX.findall(view_box)]
-
-def extract_viewbox_from_config(config):
-    svg_xml = parse(config.map_area, process_namespaces = False)
-    root = svg_xml['svg']
-    return extract_viewbox(root)
 
 # This function reads an SVG string (XML) containing the monitoring zone map,
 # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
@@ -111,7 +102,7 @@ def prepare_map(svg_xml):
     # Ensure we have SVG groups present so that we can add to them
     if 'g' in root:
         layers = root['g']
-        if not is_instance(layers, list):
+        if not isinstance(layers, list):
             layers = [layers]
             root['g'] = layers
     else:
@@ -119,69 +110,3 @@ def prepare_map(svg_xml):
         layers = []
         root['g'] = layers
     return dimensions
-
-def prepare_devices(devices, layers, dimensions, update_device_image, update_device_group):
-    if len(devices) > 0:
-        for id, device in devices.items():
-            x = (device.location_x or 0.5) * dimensions[2] + dimensions[0]
-            y = (device.location_y or 0.5) * dimensions[3] + dimensions[1]
-            r = 0.02 * dimensions[2]
-            device_image = {
-                '@cx': str(x),
-                '@cy': str(y),
-                '@r': str(r),
-                '@stroke': 'red',
-                '@stroke-width': '3',
-                '@fill': 'red',
-                '@data-uri': url_for('.device', id = device.id),
-                '@data-toggle': 'popover',
-                '@title': 'Module %s (ID %d)' % (device.name, id),
-                '@data-content': ''
-            }
-            update_device_image(device_image)
-            device_group = {
-                '@id': 'device-%d' % id,
-                'circle': device_image
-            }
-            update_device_group(device_group)
-            layers.append(device_group)
-
-# This function reads an SVG string (XML) containing the monitoring zone map,
-# adds a layer for devices, and prepares the result for direct SVG embedding to HTML
-def prepare_map_for_config(config):
-    def update_image(device_image):
-        device_image['@onmousedown'] = 'startDrag(evt)'
-        device_image['@onmousemove'] = 'drag(evt)'
-        device_image['@onmouseup'] = 'endDrag(evt)'
-    def update_group(device_group):
-        device_group['@class'] = 'device-image'
-    svg_xml = parse(config.map_area, process_namespaces = False)
-    dimensions = prepare_map(svg_xml)
-    prepare_devices(config.devices, svg_xml['svg']['g'], dimensions, update_image, update_group)
-    return unparse(svg_xml, full_document = False)
-
-def prepare_device(device, dimensions):
-    return {
-        'id': device.device_id,
-        'name': device.name,
-        'x': (device.location_x or 0.5) * dimensions[2] + dimensions[0],
-        'y': (device.location_y or 0.5) * dimensions[3] + dimensions[1]
-    }
-
-# This function reads an SVG string (XML) containing the monitoring zone map,
-# adds a layer for devices, and prepares the result for direct SVG embedding to HTML
-def prepare_map_for_monitoring(config):
-    svg_xml = parse(config.map_area, process_namespaces = False)
-    dimensions = prepare_map(svg_xml)
-    # Get width/height/viewBox
-    svg = svg_xml['svg']
-    # Prepare all devices for client rendering
-    devices = [prepare_device(device, dimensions) for device in config.devices.values()]
-    return { 
-        'map': unparse(svg_xml['svg']['g'][0], full_document = False),
-        'width': svg['@width'],
-        'height': svg['@height'],
-        'viewBox': svg['@viewBox'],
-        'r': 0.02 * dimensions[2],
-        'devices': devices
-    }

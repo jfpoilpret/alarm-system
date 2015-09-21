@@ -7,11 +7,11 @@ from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
 
 from app.models import Configuration, Alert, AlertType, Device
-from app.common import CodeToLabelField, label_to_code, string_to_date,\
-    prepare_map_for_monitoring, check_alarm_setter
+from app.common import CodeToLabelField, label_to_code, string_to_date, check_alarm_setter, prepare_map
 from app.monitor.monitoring import AlarmStatus, MonitoringManager
 from time import time
 from datetime import datetime
+from xmltodict import parse, unparse
 
 class MonitorStatusResource(Resource):
     CONFIG_FIELDS = {
@@ -86,7 +86,34 @@ class MonitorMapResource(Resource):
     @marshal_with(MAP_FIELDS)
     def get(self):
         config = Configuration.query.filter_by(current = True).first_or_404()
-        return prepare_map_for_monitoring(config)
+        return self.prepare_map_for_monitoring(config)
+
+    # This function reads an SVG string (XML) containing the monitoring zone map,
+    # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
+    def prepare_map_for_monitoring(self, config):
+        svg_xml = parse(config.map_area, process_namespaces = False)
+        dimensions = prepare_map(svg_xml)
+        # Get width/height/viewBox
+        svg = svg_xml['svg']
+        # Prepare all devices for client rendering
+        devices = [self.prepare_device(device, dimensions) for device in config.devices.values()]
+        return { 
+            'map': unparse(svg_xml['svg']['g'][0], full_document = False),
+            'width': svg['@width'],
+            'height': svg['@height'],
+            'viewBox': svg['@viewBox'],
+            'r': 0.02 * dimensions[2],
+            'devices': devices
+        }
+
+    def prepare_device(self, device, dimensions):
+        return {
+            'id': device.device_id,
+            'name': device.name,
+            'x': (device.location_x or 0.5) * dimensions[2] + dimensions[0],
+            'y': (device.location_y or 0.5) * dimensions[3] + dimensions[1]
+        }
+    
 
 DEVICE_KINDS = [
     (Device.KIND_KEYPAD, 'entry keypad'),

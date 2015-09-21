@@ -2,13 +2,15 @@
 
 from ... import db
 
+from flask import url_for
 from flask_restful import abort, fields, marshal_with, Resource
 from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
 from sqlalchemy import update
 
 from app.models import Alert, Configuration, NoPingTimeAlertThreshold, VoltageRateAlertThreshold
-from app.common import prepare_map_for_config, trim, choices, check_configurator
+from app.common import trim, choices, check_configurator, prepare_map
+from xmltodict import parse, unparse
 
 CONFIG_FIELDS = {
     'id': fields.Integer,
@@ -101,7 +103,7 @@ class ConfigurationMapResource(Resource):
         check_configurator()
         config = Configuration.query.get_or_404(id)
         if prepare_for == 'configuration':
-            return prepare_map_for_config(config)
+            return self.prepare_map_for_config(config)
         else:
             return config.map_area
 
@@ -128,6 +130,46 @@ class ConfigurationMapResource(Resource):
         db.session.refresh(config)
         return config, 200
 
+    # This function reads an SVG string (XML) containing the monitoring zone map,
+    # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
+    def prepare_map_for_config(self, config):
+        def update_image(device_image):
+            device_image['@onmousedown'] = 'startDrag(evt)'
+            device_image['@onmousemove'] = 'drag(evt)'
+            device_image['@onmouseup'] = 'endDrag(evt)'
+        def update_group(device_group):
+            device_group['@class'] = 'device-image'
+        svg_xml = parse(config.map_area, process_namespaces = False)
+        dimensions = prepare_map(svg_xml)
+        self.prepare_devices(config.devices, svg_xml['svg']['g'], dimensions, update_image, update_group)
+        return unparse(svg_xml, full_document = False)
+    
+    def prepare_devices(self, devices, layers, dimensions, update_device_image, update_device_group):
+        if len(devices) > 0:
+            for id, device in devices.items():
+                x = (device.location_x or 0.5) * dimensions[2] + dimensions[0]
+                y = (device.location_y or 0.5) * dimensions[3] + dimensions[1]
+                r = 0.02 * dimensions[2]
+                device_image = {
+                    '@cx': str(x),
+                    '@cy': str(y),
+                    '@r': str(r),
+                    '@stroke': 'red',
+                    '@stroke-width': '3',
+                    '@fill': 'red',
+                    '@data-uri': url_for('.device', id = device.id),
+                    '@data-toggle': 'popover',
+                    '@title': 'Module %s (ID %d)' % (device.name, id),
+                    '@data-content': ''
+                }
+                update_device_image(device_image)
+                device_group = {
+                    '@id': 'device-%d' % id,
+                    'circle': device_image
+                }
+                update_device_group(device_group)
+                layers.append(device_group)
+    
 class CurrentConfigurationResource(Resource):
     @marshal_with(CONFIG_FIELDS)
     def get(self):
