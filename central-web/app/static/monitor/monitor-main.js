@@ -219,7 +219,8 @@ $(document).ready(function() {
 
 		self.update = function(dev) {
 			// Update content and alertClasses
-			var message =	'Voltage: ' + dev.latest_voltage.toFixed(2) + ' V (min.: ' + dev.voltage_threshold.toFixed(2) + 
+			var voltage = (dev.latest_voltage ? dev.latest_voltage.toFixed(2) : '??');
+			var message =	'Voltage: ' + voltage + ' V (min.: ' + dev.voltage_threshold.toFixed(2) + 
 							' V)\nLatest Ping: ' + moment(dev.latest_ping).format('DD-MM-YYYY HH:mm:ss') + '\n (' +
 							dev.time_since_latest_ping + ' seconds ago)';
 			self.content(message);
@@ -329,6 +330,8 @@ $(document).ready(function() {
 			self.statusMonitor.autoRefresh(false);
 			self.alertsMonitor.autoRefresh(false);
 			self.mapMonitor.autoRefresh(false);
+			// Hide all popovers 
+			$('[data-toggle="popover"]').popover('hide');
 		}
 		self.install = function() {
 			self.statusMonitor.refresh();
