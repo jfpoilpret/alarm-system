@@ -195,6 +195,8 @@ $(document).ready(function() {
 			}
 			if (alert)
 				filter.since_id = alert.id;
+			if (alert || self.alerts().length)
+				alignAlertsListColumns();
 		}
 		
 		self.refresh = function(newFilter, done) {
@@ -326,108 +328,96 @@ $(document).ready(function() {
 		self.mapMonitor = new MapViewModel();
 		self.alertsHistory = new AlertsHistoryViewModel(self.statusMonitor);
 
+		// Internal utility functions, used by event handlers
+		var $popovers = null;
+		var clearMapPopups = function() {
+			// Before hiding everything first get the list of popovers that are currently displayed!
+			$popovers = $('[data-toggle="popover"][aria-describedby*="popover"]');
+		    $popovers.popover('hide');
+		};
+		var restoreMapPopups = function() {
+			// Restore popover that were shown before tab changing
+			if ($popovers !== null) {
+				$popovers.popover('show');
+				$popovers = null;
+			}
+		}
+
+		// Event handlers
+		//================
+		// We enable only one refresh timer, based on current active tab
+		var disableTab = function(e) {
+			if (self.statusMonitor.active()) {
+				if ($(e.target).attr('id') === 'tab_map') {
+					self.mapMonitor.autoRefresh(false);
+				} else if ($(e.target).attr('id') === 'tab_alerts') {
+					self.alertsMonitor.autoRefresh(false);
+				}
+			}
+			// Hide all popovers
+			if ($(e.target).attr('id') === 'tab_map') {
+				clearMapPopups();
+			}
+		}
+		var enableTab = function(e) {
+			targetTab = $(e.target).attr('id');
+			if (targetTab === 'tab_alerts') {
+				// Always refresh alert once immediately, even if no config is active
+				self.alertsMonitor.refresh();
+			} else if (targetTab === 'tab_map') {
+				// Restore all popovers that were previously shown in the map
+				restoreMapPopups();
+			} else if (targetTab === 'tab_history') {
+				// Refresh history with pagination
+				//FIXME this loses latest page visited everytime we switch tabs!
+				self.alertsHistory.refresh();
+			}
+			if (self.statusMonitor.active()) {
+				if (targetTab === 'tab_map') {
+					self.mapMonitor.refresh();
+					self.mapMonitor.autoRefresh(true);
+				} else if (targetTab === 'tab_alerts') {
+					self.alertsMonitor.autoRefresh(true);
+				}
+			}
+		}
+
+		// Lifecycle
+		//===========
 		self.uninstall = function() {
+			// Stop all refresh timers
 			self.statusMonitor.autoRefresh(false);
 			self.alertsMonitor.autoRefresh(false);
 			self.mapMonitor.autoRefresh(false);
+			// Unregister all event handlers
+			$('a[data-toggle="tab"]').off('hide.bs.tab', disableTab);
+			$('a[data-toggle="tab"]').off('shown.bs.tab', enableTab);
+			$(window).off('resize', alignAlertsListColumns);
 			// Hide all popovers 
 			$('[data-toggle="popover"]').popover('hide');
 		}
 		self.install = function() {
+			// Force first refresh and start refresh timer
 			self.statusMonitor.refresh();
 			self.statusMonitor.autoRefresh(true);
 			self.alertsMonitor.refresh();
 			self.mapMonitor.init();
+			// NOTE: we have to defer the following because DOM is asynchronously updated by mapMonitor.init()
+			$(document).ready(function() {
+				// Register all event handlers
+				$('a[data-toggle="tab"]').on('hide.bs.tab', disableTab);
+				$('a[data-toggle="tab"]').on('shown.bs.tab', enableTab);
+				$(window).on('resize', alignAlertsListColumns);
+				// Force control tab active
+				$('#tab_control').tab('show');
+			});
 		}
 	}
 	
 	var monitor = new MonitoringViewModel();
 	globalViewModel.monitor(monitor);
 	
-	var $popovers = null;
-	function clearMapPopups() {
-		// Before hiding everything first get the list of popovers that are currently displayed!
-		$popovers = $('[data-toggle="popover"][aria-describedby*="popover"]');
-	    $popovers.popover('hide');
-	}
-	function restoreMapPopups() {
-		// Restore popover that were shown before tab changing
-		if ($popovers !== null) {
-			$popovers.popover('show');
-			$popovers = null;
-		}
-	}
-	
-	var alertsListColumnsAligned = false;
 	function alignAlertsListColumns() {
-		if (!alertsListColumnsAligned) {
-			var	$table = $('.alerts-list'),
-				$bodyCells = $table.find('tbody tr:first').children();
-			// Resize only if there is at least one row
-			if ($bodyCells.length > 0) {
-				// Get width of tbody columns
-				var colWidth = $bodyCells.map(function() {
-					return $(this).width();
-				}).get();
-				// Force width of first column to hard-code value because the one got from tbdoy/tr does not
-				// match reality
-				colWidth[0] = 14;
-				// Set width of thead columns from tbody columns widths
-				$table.find('thead tr').children().each(function(i, v) {
-					$(v).width(colWidth[i]);
-				});
-				alertsListColumnsAligned = true;
-			}
-		}
+		ko.utils.alignTableColumns('.alerts-list');
 	}
-
-	// We enable only one refresh timer, based on current active tab
-	function disableTab(e) {
-		if (monitor.statusMonitor.active()) {
-			if ($(e.target).attr('id') === 'tab_map') {
-				monitor.mapMonitor.autoRefresh(false);
-			} else if ($(e.target).attr('id') === 'tab_alerts') {
-				monitor.alertsMonitor.autoRefresh(false);
-			}
-		}
-		// Hide all popovers
-		if ($(e.target).attr('id') === 'tab_map') {
-			clearMapPopups();
-		}
-	}
-	function enableTab(e) {
-		targetTab = $(e.target).attr('id');
-		if (targetTab === 'tab_alerts') {
-			// Always refresh alert once immediately, even if no config is active
-			monitor.alertsMonitor.refresh();
-		} else if (targetTab === 'tab_map') {
-			// Restore all popovers that were previously shown in the map
-			restoreMapPopups();
-		} else if (targetTab === 'tab_history') {
-			// Refresh history with pagination
-			//FIXME this loses latest page visited everytime we switch tabs!
-			monitor.alertsHistory.refresh();
-		}
-		if (monitor.statusMonitor.active()) {
-			if (targetTab === 'tab_map') {
-				monitor.mapMonitor.refresh();
-				monitor.mapMonitor.autoRefresh(true);
-			} else if (targetTab === 'tab_alerts') {
-				monitor.alertsMonitor.autoRefresh(true);
-			}
-		}
-	}
-
-	// Register tab event handlers
-	$('a[data-toggle="tab"]').on('hide.bs.tab', disableTab);
-	$('a[data-toggle="tab"]').on('shown.bs.tab', enableTab);
-	
-	// Ensure alerts list header columns widths match content columns after resizing window
-	$(window).resize(function() {
-		alertsListColumnsAligned = false;
-		alignAlertsListColumns();
-	});
-	
-	// Force control tab active
-	$('#tab_control').tab('show');
 });

@@ -166,8 +166,6 @@
 		}
 	}
 	
-	var flashMessages;
-	
 	// Function to create a dirty flag on a list of observables
 	function DirtyFlag(observables) {
 		var copy = function(value) {
@@ -224,13 +222,24 @@
 		};
 	}
 
-	//TODO remove! Their should be no global variable in this file!
-	function getFlashMessages(element) {
-		if (!flashMessages) {
-			flashMessages = new FlashMessagesViewModel();
-			ko.applyBindings(flashMessages, element);
+	// Utility function to align table header column widths with actual data widths
+	function alignTableColumns(selector) {
+		var	$table = $(selector),
+			$bodyCells = $table.find('tbody tr:first').children();
+		// Resize only if there is at least one row
+		if ($bodyCells.length > 0) {
+			// Get width of tbody columns
+			var colWidth = $bodyCells.map(function() {
+				return $(this).width();
+			}).get();
+			// Force width of first column to hard-code value because the one got from tbdoy/tr does not
+			// match reality
+			colWidth[0] = 14;
+			// Set width of thead columns from tbody columns widths
+			$table.find('thead tr').children().each(function(i, v) {
+				$(v).width(colWidth[i]);
+			});
 		}
-		return flashMessages;
 	}
 	
 	// Add those methods to ko namespaces
@@ -244,7 +253,7 @@
 	ko.utils.filterById = filterById;
 	ko.utils.compareByString = compareByString;
 	ko.utils.compareByNumber = compareByNumber;
-	ko.utils.getFlashMessages = getFlashMessages;
+	ko.utils.alignTableColumns = alignTableColumns;
 	ko.utils.FlashMessagesViewModel = FlashMessagesViewModel;
 	ko.utils.DirtyFlag = DirtyFlag;
 	ko.utils.VMDirtyFlag = VMDirtyFlag;
