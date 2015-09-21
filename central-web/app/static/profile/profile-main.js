@@ -1,5 +1,4 @@
 $(document).ready(function() {
-	//TODO Ensure currentUser VM is updated and users list VM if currently displayed
 	// ViewModel for profile dialog (only)
 	function UserProfileViewModel(user) {
 		var self = this;

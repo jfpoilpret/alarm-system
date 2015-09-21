@@ -1,7 +1,6 @@
 
-30'	- inline form errors management
-		- highlight field but put error in global error <p>
-		
+15'	- add refresh button in alerts history (monitoring UI)
+
 1h	- review FIXME
 1h	- review TODO
 		
