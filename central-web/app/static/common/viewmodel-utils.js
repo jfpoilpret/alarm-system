@@ -80,6 +80,14 @@
 		$.each(keys, function(index, key) {
 			self[key] = ko.observable('');
 		});
+		self.allErrors = ko.pureComputed(function() {
+			errors = (self.global() ? [self.global()] : []);
+			$.each(keys, function(index, key) {
+				if (self[key]())
+					errors.push(self[key]());
+			});
+			return errors.join('<br>');
+		});
 
 		self.clear = function() {
 			$.each(keys, function(index, key) {

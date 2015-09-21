@@ -6,6 +6,14 @@
 	<!-- /ko -->
 {%- endmacro %}
 
+{% macro all_errors(view_model = 'errors') -%}
+	<!-- ko if: {{ view_model }}.allErrors -->
+	<div class="has-error">
+		<p class="help-block" data-bind="text: {{ view_model }}.allErrors"></p>
+	</div>
+	<!-- /ko -->
+{%- endmacro %}
+
 {% macro input(name, label, type = 'text', prefix = '', view_model = 'errors', classes = '') -%}
 	{% set id = prefix + name %}
 	{% set error = view_model + '.' + name %}

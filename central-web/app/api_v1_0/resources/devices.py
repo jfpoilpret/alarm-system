@@ -48,7 +48,7 @@ class DevicesResource(Resource):
         if Device.query.filter_by(config_id = id, device_id = args['device_id']).first():
             abort(409, message = {'device_id': 'A device already exists with that device ID!'})
         if Device.query.filter_by(config_id = id, name = args['name']).first():
-            abort(409, message = {'device_name': 'A device already exists with that name!'})
+            abort(409, message = {'name': 'A device already exists with that name!'})
         device = Device(**args)
         device.config_id = id
         db.session.add(device)

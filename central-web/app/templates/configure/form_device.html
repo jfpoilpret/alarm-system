@@ -1,6 +1,7 @@
 {% import "forms.html" as forms %}
 <!-- ko with: editDeviceModel -->
 <form class="form form-inline" id="device_form" role="form" data-bind="visible: showDeviceForm">
+	{{ forms.all_errors() }}
 	{{ forms.inline_input('name', 'Name', hide_label = True, prefix = 'device_', 
 		required = 'required', placeholder = 'Name') }}
 	{{ forms.inline_input('voltage_threshold', 'Voltage Threshold', hide_label = True, prefix = 'device_', 
