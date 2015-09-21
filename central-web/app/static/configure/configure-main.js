@@ -341,6 +341,8 @@ $(document).ready(function() {
 				globalViewModel.flashMessages.success('New configuration \'' + config.name + '\' has been created');
 				// Hide dialog
 				$('#config-dialog').modal('hide');
+				// Open Edit Config dialog
+				globalViewModel.config().editConfig(config);
 			});
 		}
 		

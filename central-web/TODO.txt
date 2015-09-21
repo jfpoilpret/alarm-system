@@ -1,10 +1,9 @@
 
-	- create config -> edit config
-	- inline form errors management
+30'	- inline form errors management
 		- highlight field but put error in global error <p>
 		
-??	- review FIXME
-??	- review TODO
+1h	- review FIXME
+1h	- review TODO
 		
 30'	- review all .js files: VM ensure private methods are defined as var instead of self
 15'	- review all .py headers (encoding!)
