@@ -1,17 +1,14 @@
-	- Major refactoring: AJAX+RESTful webapp
-2h		- improve component loading:
-			- factor GlobalViewModel and ComponentLoader into viewmodel-utils.js
-			- VM should just specify the feature name
-			- component binding should use feature name + type (dialog, content...)
-			- make GlobalVM automatically find out all component elements in DOM
-				- use class for real DOM elements, but how to deal with <!-- ko ... -->
-			- remove console.log()
-
-1h		- global tests/debug
-
-		- merge restful branch to trunk
+	- merge restful branch to trunk
 
 3h	- improve webargs to support bundle_errors
+
+2h	- improve component loading:
+		- factor GlobalViewModel and ComponentLoader into viewmodel-utils.js
+		- VM should just specify the feature name
+		- component binding should use feature name + type (dialog, content...)
+		- make GlobalVM automatically find out all component elements in DOM
+			- use class for real DOM elements, but how to deal with <!-- ko ... -->
+		- remove console.log()
 
 	- consider using marshmallow instead of flask restful marshalling?
 	- remove flask-restful in the end?
