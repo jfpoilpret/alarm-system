@@ -1,4 +1,15 @@
-	- merge restful branch to trunk
+
+	- create config -> edit config
+	- inline form errors management
+		- highlight field but put error in global error <p>
+		
+??	- review FIXME
+??	- review TODO
+		
+30'	- review all .js files: VM ensure private methods are defined as var instead of self
+15'	- review all .py headers (encoding!)
+15'	- ensure all classes use new-style classes (subclass object)
+1h	- rename "private" methods with leading underscore (convention)
 
 3h	- improve webargs to support bundle_errors
 
@@ -12,9 +23,6 @@
 
 	- consider using marshmallow instead of flask restful marshalling?
 	- remove flask-restful in the end?
-		
-??	- review FIXME
-??	- review TODO
 		
 2h	- javascript: make it more modular?
 		- investigate requirejs
@@ -38,10 +46,6 @@
 		- or there should be mechanisms to propagate change to MonitoringManager
 		(because devices are deep copies of config devices, hence are not up-to-date)
 		
-30'	- review all .js files: VM ensure private methods are defined as var instead of self
-15'	- review all .py headers (encoding!)
-15'	- ensure all classes use new-style classes (subclass object)
-1h	- rename "private" methods with leading underscore (convention)
 30'	- review all FIXME/TODO
 
 	- improve DB model to:

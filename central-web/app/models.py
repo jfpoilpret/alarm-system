@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import deferred
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from . import db
+from sqlalchemy.sql.schema import UniqueConstraint
 
 # Domain Model (DB Mapping)
 #===========================
@@ -99,9 +100,9 @@ class Configuration(db.Model):
     current = db.Column(db.Boolean, nullable = False, default = False)
     active = db.Column(db.Boolean, nullable = False, default = False)
     lockcode = db.Column(db.String(6), nullable = False)
-    #TODO ensure cascaded delete of devices
     devices = db.relationship('Device', 
-        collection_class = attribute_mapped_collection('device_id'), lazy = 'select')
+        collection_class = attribute_mapped_collection('device_id'), 
+        cascade = 'all, delete-orphan', lazy = 'select')
     map_area = deferred(db.Column(db.Text, nullable = True))
     map_area_filename = db.Column(db.String(256), nullable = True)
     no_ping_time_alert_thresholds = db.relationship('NoPingTimeAlertThreshold', 
@@ -122,17 +123,16 @@ class Device(db.Model):
     
     __tablename__ = 'device'
     id = db.Column(db.Integer, primary_key = True)
-    #FIXME name does not have to be unique only (config_id, name) must be unique
-    name = db.Column(db.String(64), nullable = False, unique = True, index = True)
+    name = db.Column(db.String(64), nullable = False, index = True)
     kind = db.Column(db.Integer, nullable = False)
     device_id = db.Column(db.Integer, nullable = False, index = True)
     voltage_threshold = db.Column(db.Float, nullable = True)
     config_id = db.Column(db.Integer, db.ForeignKey('configuration.id'))
     location_x = db.Column(db.Float, nullable = True)
     location_y = db.Column(db.Float, nullable = True)
-    #TODO missing unique index on config_id + device_id
-    #TODO missing unique index on config_id + name
-    #TODO name does not have to be unique all the way!
+    # Additional constraints
+    index1 = UniqueConstraint(config_id, device_id)
+    index2 = UniqueConstraint(config_id, name)
     
     def detached(self):
         class Copy(object):
@@ -190,6 +190,5 @@ class Alert(db.Model):
     alert_type = db.Column(db.Integer, nullable = False, index = True)
     message = db.Column(db.String(500))
     device_id = db.Column(db.Integer, db.ForeignKey('device.id'))
-    # TODO check device reference is properly configured (in particular the 'delete' cascade
     device = db.relationship(Device, cascade = 'delete', lazy = 'select')
     # TODO blob for pickled information?
