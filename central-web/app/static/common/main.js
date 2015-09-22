@@ -51,7 +51,9 @@ $(document).ready(function() {
 		};
 		var afterChange = function(vm) {
 			// Check vm is not null and includes a install() function
-			if (vm && vm.install) vm.install();
+			if (vm && vm.install) {
+				$(document).ready(vm.install);
+			}
 		};
 		$.each(features, function(index, name) {
 			var obs = ko.observable(null);

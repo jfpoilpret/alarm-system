@@ -364,13 +364,12 @@ $(document).ready(function() {
 			if (targetTab === 'tab_alerts') {
 				// Always refresh alert once immediately, even if no config is active
 				self.alertsMonitor.refresh();
+				$('#alert_filter_period_from').focus();
 			} else if (targetTab === 'tab_map') {
 				// Restore all popovers that were previously shown in the map
 				restoreMapPopups();
-			} else if (targetTab === 'tab_history') {
-				// Refresh history with pagination
-				//FIXME this loses latest page visited everytime we switch tabs!
-				self.alertsHistory.refresh();
+			} else if (targetTab === 'tab_control') {
+				$('#history_clear_clear_until').focus();
 			}
 			if (self.statusMonitor.active()) {
 				if (targetTab === 'tab_map') {
@@ -410,6 +409,7 @@ $(document).ready(function() {
 				$(window).on('resize', alignAlertsListColumns);
 				// Force control tab active
 				$('#tab_control').tab('show');
+				$('#history_clear_clear_until').focus();
 			});
 		}
 	}

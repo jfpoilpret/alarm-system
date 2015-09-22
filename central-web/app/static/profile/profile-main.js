@@ -2,7 +2,6 @@ $(document).ready(function() {
 	// ViewModel for profile dialog (only)
 	function UserProfileViewModel(user) {
 		var self = this;
-		self.uri = user.uri;
 		self.username = ko.observable(user.username);
 		self.fullname = ko.observable(user.fullname);
 		
@@ -15,7 +14,7 @@ $(document).ready(function() {
 
 		self.saveProfile = function() {
 			var	user = self.toJSON();
-			ko.utils.ajax(self.uri, 'PUT', user).fail(self.errors.errorHandler).done(function(user) {
+			ko.utils.ajax(user.uri, 'PUT', user).fail(self.errors.errorHandler).done(function(user) {
 				// Update current user data (used in menu bar)
 				globalViewModel.currentUser().update(user);
 				// Update users list if it is currently visible
@@ -32,14 +31,15 @@ $(document).ready(function() {
 
 		self.editProfile = function() {
 			$('#profile-dialog').modal('show');
+			//FIXME focus does not seem to work...
+			$('#profile_username').focus();
 		}
 		
 		self.install = self.editProfile;
 	}
 	
 	// Declare VM
-	var uri = globalViewModel.currentUser().uri;
-	$.getJSON(uri, function(user) {
+	$.getJSON(globalViewModel.currentUser().uri, function(user) {
 		globalViewModel.profile(new UserProfileViewModel(user));
 	});
 });

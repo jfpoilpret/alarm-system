@@ -32,6 +32,8 @@ $(document).ready(function() {
 			// (e.g. save button that have data-bind enable)
 			$('.disablable').attr('disabled', show);
 			self.showDeviceForm(show);
+			if (show)
+				$('#device_name').focus();
 		}
 		
 		self.cancelDeviceForm = function() {
@@ -488,6 +490,7 @@ $(document).ready(function() {
 			// Reset Configuration ViewModel and show dialog
 			self.configEditor.reset(config);
 			$('#config-dialog').modal('show');
+			$('#config_name').focus();
 		}
 
 		self.editConfigMap = function(config) {
@@ -500,6 +503,7 @@ $(document).ready(function() {
 			// Reset Configuration ViewModel and show dialog
 			self.configEditor.reset();
 			$('#config-dialog').modal('show');
+			$('#config_name').focus();
 		}
 
 		self.configUpdated = function(config) {

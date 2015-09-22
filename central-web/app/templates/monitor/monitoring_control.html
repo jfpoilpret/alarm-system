@@ -13,7 +13,7 @@
 		<form	id="history_clear_form" 
 				class="form form-inline" 
 				method="post" role="form">
-			{{ forms.global_errors() }}
+			{{ forms.all_errors() }}
 			{{ forms.inline_input('clear_until', 'Until', hide_label = True, prefix = 'history_clear_', placeholder = 'Until') }}
 			<button	type="button" role="button" class="btn btn-primary" id="history_clear_submit" 
 					data-bind="click: clearHistory">Clear History</button>

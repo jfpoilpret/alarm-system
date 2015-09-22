@@ -36,7 +36,6 @@ $(document).ready(function() {
 					alert('A server error ' + status + ' has occurred:\n' + result);
 				}
 			}).done(function(result) {
-				console.log(result);
 				// Get token and set as basic authentication header
 				setToken(result.token, result.renew_before);
 			});
@@ -49,7 +48,6 @@ $(document).ready(function() {
 						self.username() + ':' + self.password()));
 				} 
 			}).fail(self.errors.errorHandler).done(function(result) {
-				console.log(result);
 				// Hide dialog
 				$('#signin-dialog').modal('hide');
 				// Add message
@@ -67,11 +65,10 @@ $(document).ready(function() {
 		}
 		
 		self.install = function() {
+			self.reset();
 			$('#signin-dialog').modal('show');
+			$('#signin_username').focus();
 		}
-
-		console.log('LoginViewModel');
-		self.reset();
 	}
 	
 	// Set login VM into Global VM and (automatically) show login dialog

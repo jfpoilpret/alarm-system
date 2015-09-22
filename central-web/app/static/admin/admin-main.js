@@ -87,12 +87,14 @@ $(document).ready(function() {
 		self.editUser = function(user) {
 			self.userEditor.reset(user);
 			$('#user-dialog').modal('show');
+			$('#user_username').focus();
 		}
 		
 		self.editNewUser = function() {
 			// Reset User ViewModel and show dialog
 			self.userEditor.reset();
 			$('#user-dialog').modal('show');
+			$('#user_username').focus();
 		}
 		
 		self.deleteUser = function(user) {

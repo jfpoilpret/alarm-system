@@ -27,6 +27,7 @@ $(document).ready(function() {
 
 		self.editPassword = function() {
 			$('#password-dialog').modal('show');
+			$('#password_password').focus();
 		}
 		
 		self.install = self.editPassword;
