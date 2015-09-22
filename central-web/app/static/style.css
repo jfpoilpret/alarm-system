@@ -226,3 +226,11 @@ circle.voltage-alert-alarm {
 	stroke: #d9534f;
 	stroke-width: 8;
 }
+
+#history-pagination > a {
+	display: inline-block;
+	margin: 20px 5px;
+	position: relative;
+	float: left;
+	padding: 6px 12px;
+}

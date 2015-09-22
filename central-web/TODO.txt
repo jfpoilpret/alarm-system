@@ -1,16 +1,14 @@
 
-15'	- add refresh button in alerts history (monitoring UI)
+1h	- ensure focus is set on first field of dialog
 
-1h	- review FIXME
-1h	- review TODO
-		
 30'	- review all .js files: VM ensure private methods are defined as var instead of self
 15'	- review all .py headers (encoding!)
 15'	- ensure all classes use new-style classes (subclass object)
 1h	- rename "private" methods with leading underscore (convention)
 
-3h	- improve webargs to support bundle_errors
-
+1h	- review FIXME
+1h	- review TODO
+		
 2h	- improve component loading:
 		- factor GlobalViewModel and ComponentLoader into viewmodel-utils.js
 		- VM should just specify the feature name
@@ -19,13 +17,15 @@
 			- use class for real DOM elements, but how to deal with <!-- ko ... -->
 		- remove console.log()
 
-	- consider using marshmallow instead of flask restful marshalling?
-	- remove flask-restful in the end?
-		
 2h	- javascript: make it more modular?
 		- investigate requirejs
 		- how to deal with SVGHandlers (currently in global namespace...)
 		- how to create "subclasses"?
+		
+3h	- improve webargs to support bundle_errors
+
+	- consider using marshmallow instead of flask restful marshalling?
+	- remove flask-restful in the end?
 		
 	- open points/bugs:
 		- bugs on "required" on server side: it is currently possible to create a user with empty name/fullname/password!
@@ -49,19 +49,12 @@
 	- improve DB model to:
 		- have several codes for a config, each with an associated message
 		  (typically: owner)
-1h	- review models to ensure completeness of relationships and efficiency; in particular
-	  try to limit manual queries performed in code if not needed!
-		(search for .query.)
 2h	- add correct SQL exception handling in all REST calls POST/PUT
 		- unique key => special warning message
 		- reference key => other special warning
 	
-1h	- refactor CSS files
-		one css per module, with same name as module or one unique name, the same across all modules...)
-		remove obsolete styles (some selectors don't exist any more after refactoring...)
-30'	- improve CSS files for every screen; check padding/margins in particular
+30'	- improve CSS for every screen; check padding/margins in particular
 2h	- review labels/titles everywhere and review look overall
-1h	- ensure focus is set on first field of dialog
 
 1h+	- improve function to cleanup alert history:
 		- for a given config
