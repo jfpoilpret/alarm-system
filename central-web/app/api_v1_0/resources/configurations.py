@@ -134,9 +134,9 @@ class ConfigurationMapResource(Resource):
     # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
     def prepare_map_for_config(self, config):
         def update_image(device_image):
-            device_image['@onmousedown'] = 'startDrag(evt)'
-            device_image['@onmousemove'] = 'drag(evt)'
-            device_image['@onmouseup'] = 'endDrag(evt)'
+            device_image['@onmousedown'] = 'svg.startDrag(evt)'
+            device_image['@onmousemove'] = 'svg.drag(evt)'
+            device_image['@onmouseup'] = 'svg.endDrag(evt)'
         def update_group(device_group):
             device_group['@class'] = 'device-image'
         svg_xml = parse(config.map_area, process_namespaces = False)

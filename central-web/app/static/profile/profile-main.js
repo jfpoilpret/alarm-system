@@ -8,12 +8,12 @@ $(document).ready(function() {
 		var PROPERTIES = ['username', 'fullname'];
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
 		
-		self.toJSON = function() {
+		var toJSON = function() {
 			return ko.utils.extract(self, PROPERTIES);
 		}
 
 		self.saveProfile = function() {
-			var	user = self.toJSON();
+			var	user = toJSON();
 			ko.utils.ajax(user.uri, 'PUT', user).fail(self.errors.errorHandler).done(function(user) {
 				// Update current user data (used in menu bar)
 				globalViewModel.currentUser().update(user);

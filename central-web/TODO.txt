@@ -1,7 +1,4 @@
 
-1h	- ensure focus is set on first field of dialog
-
-30'	- review all .js files: VM ensure private methods are defined as var instead of self
 15'	- review all .py headers (encoding!)
 15'	- ensure all classes use new-style classes (subclass object)
 1h	- rename "private" methods with leading underscore (convention)
@@ -19,7 +16,6 @@
 
 2h	- javascript: make it more modular?
 		- investigate requirejs
-		- how to deal with SVGHandlers (currently in global namespace...)
 		- how to create "subclasses"?
 		
 3h	- improve webargs to support bundle_errors
@@ -44,6 +40,8 @@
 		- or there should be mechanisms to propagate change to MonitoringManager
 		(because devices are deep copies of config devices, hence are not up-to-date)
 		
+30'	- debug focus on profile dialog
+
 30'	- review all FIXME/TODO
 
 	- improve DB model to:

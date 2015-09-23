@@ -6,7 +6,7 @@ $(document).ready(function() {
 		self.password = ko.observable();
 		self.errors = new ko.errors.ErrorsViewModel([], false);
 		
-		self.reset = function() {
+		var reset = function() {
 			self.username(null);
 			self.password(null);
 			self.errors.clear();
@@ -65,7 +65,7 @@ $(document).ready(function() {
 		}
 		
 		self.install = function() {
-			self.reset();
+			reset();
 			$('#signin-dialog').modal('show');
 			$('#signin_username').focus();
 		}

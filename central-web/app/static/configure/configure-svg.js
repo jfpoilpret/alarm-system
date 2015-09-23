@@ -1,88 +1,80 @@
-//TODO rework in its own namespace
-//TODO use standard JS conventions for variables names
-//FIXME ensure device coordinares dictionary always reset first
+(function(window) {
+	svg = {};
+	var transformRequestObj;
+	var transList;
+	var dragTarget = null;
+	var dragging = false;
+	var offsetX = 0;
+	var offsetY = 0;
+	
+	svg.deviceCoordinates = {};
 
-var TransformRequestObj;
-var TransList;
-var DragTarget = null;
-var Dragging = false;
-var OffsetX = 0;
-var OffsetY = 0;
-
-var DeviceCoordinates = {};
-
-//---mouse down over element---
-function startDrag(evt)
-{
-	if(!Dragging) //---prevents dragging conflicts on other draggable elements---
-	{
-		DragTarget = evt.target;
-
-		//---reference point to its respective viewport--
-		var pnt = DragTarget.ownerSVGElement.createSVGPoint();
-		pnt.x = evt.clientX;
-		pnt.y = evt.clientY;
-
-		var sCTM = DragTarget.getScreenCTM();
-		var Pnt = pnt.matrixTransform(sCTM.inverse());
-
-		TransformRequestObj = DragTarget.ownerSVGElement.createSVGTransform();
-
-		//---attach new or existing transform to element, init its transform list---
-		var myTransListAnim = DragTarget.transform;
-		TransList = myTransListAnim.baseVal;
-
-		OffsetX = Pnt.x;
-		OffsetY = Pnt.y;
-
-		Dragging = true;
-	}
-}
-
-//---mouse move---
-function drag(evt)
-{
-	if(Dragging)
-	{
-		var pnt = DragTarget.ownerSVGElement.createSVGPoint();
+	function getPoint(evt) {
+		var pnt = dragTarget.ownerSVGElement.createSVGPoint();
 		pnt.x = evt.clientX;
 		pnt.y = evt.clientY;
 		//---elements in different(svg) viewports, and/or transformed ---
-		var sCTM = DragTarget.getScreenCTM();
-		var Pnt = pnt.matrixTransform(sCTM.inverse());
-		Pnt.x -= OffsetX;
-		Pnt.y -= OffsetY;
-
-		TransformRequestObj.setTranslate(Pnt.x,Pnt.y);
-		TransList.appendItem(TransformRequestObj);
-		TransList.consolidate();
+		var sCTM = dragTarget.getScreenCTM();
+		return pnt.matrixTransform(sCTM.inverse());
 	}
-}
-
-//--mouse up---
-function endDrag(evt)
-{
-	Dragging = false;
-
-	var pnt = DragTarget.ownerSVGElement.createSVGPoint();
-	pnt.x = evt.clientX;
-	pnt.y = evt.clientY;
-
-	var sCTM = DragTarget.getScreenCTM();
-	var Pnt = pnt.matrixTransform(sCTM.inverse());
-	Pnt.x -= OffsetX;
-	Pnt.y -= OffsetY;
-
-	TransformRequestObj.setTranslate(Pnt.x, Pnt.y);
-	TransList.appendItem(TransformRequestObj);
-	matrix = TransList.consolidate().matrix;
 	
-	// Apply transform matrix "manually" to circle center
-	x = DragTarget.cx.baseVal.value;
-	y = DragTarget.cy.baseVal.value;
-	xx = matrix.a * x + matrix.c * y + matrix.e;
-	yy = matrix.b * x + matrix.d * y + matrix.f;
+	function startDrag(evt) {
+		// Prevents dragging conflicts on other draggable elements
+		if (!dragging) {
+			dragTarget = evt.target;
 	
-	// Add this device to the list of devices changed
-	DeviceCoordinates[DragTarget.getAttribute('data-uri')] = { 'x': xx, 'y': yy };
-}
+			//---reference point to its respective viewport--
+			var point = getPoint(evt);
+			transformRequestObj = dragTarget.ownerSVGElement.createSVGTransform();
+	
+			//---attach new or existing transform to element, init its transform list---
+			var myTransListAnim = dragTarget.transform;
+			transList = myTransListAnim.baseVal;
+	
+			offsetX = point.x;
+			offsetY = point.y;
+	
+			dragging = true;
+		}
+	}
+	
+	//---mouse move---
+	function drag(evt) {
+		if (dragging) {
+			var point = getPoint(evt);
+			point.x -= offsetX;
+			point.y -= offsetY;
+	
+			transformRequestObj.setTranslate(point.x, point.y);
+			transList.appendItem(transformRequestObj);
+			transList.consolidate();
+		}
+	}
+	
+	//--mouse up---
+	function endDrag(evt) {
+		dragging = false;
+	
+		var point = getPoint(evt);
+		point.x -= offsetX;
+		point.y -= offsetY;
+	
+		transformRequestObj.setTranslate(point.x, point.y);
+		transList.appendItem(transformRequestObj);
+		matrix = transList.consolidate().matrix;
+		
+		// Apply transform matrix "manually" to circle center
+		x = dragTarget.cx.baseVal.value;
+		y = dragTarget.cy.baseVal.value;
+		xx = matrix.a * x + matrix.c * y + matrix.e;
+		yy = matrix.b * x + matrix.d * y + matrix.f;
+		
+		// Add this device to the list of devices changed
+		svg.deviceCoordinates[dragTarget.getAttribute('data-uri')] = { 'x': xx, 'y': yy };
+	}
+	
+	// Add those methods to svg namespace
+	svg.startDrag = startDrag;
+	svg.drag = drag;
+	svg.endDrag = endDrag;
+})(typeof window === "undefined" ? this : window);

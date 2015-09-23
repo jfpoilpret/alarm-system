@@ -13,7 +13,7 @@ $(document).ready(function() {
 		self.errors = new ko.errors.ErrorsViewModel(PROPERTIES);
 		self.dirtyFlag = new ko.utils.VMDirtyFlag(self);
 		
-		self.toJSON = function() {
+		var toJSON = function() {
 			return ko.utils.extract(self, PROPERTIES);
 		}
 
@@ -42,7 +42,7 @@ $(document).ready(function() {
 		}
 		
 		self.saveUser = function() {
-			ko.utils.ajax(self.uri, 'PUT', self.toJSON()).fail(self.errors.errorHandler).done(function(user) {
+			ko.utils.ajax(self.uri, 'PUT', toJSON()).fail(self.errors.errorHandler).done(function(user) {
 				// Signal VM of all users
 				globalViewModel.admin().userUpdated(user);
 				// Hide dialog
@@ -54,7 +54,7 @@ $(document).ready(function() {
 		}
 		
 		self.saveNewUser = function() {
-			ko.utils.ajax('/api/1.0/users', 'POST', self.toJSON()).fail(self.errors.errorHandler).done(function(user) {
+			ko.utils.ajax('/api/1.0/users', 'POST', toJSON()).fail(self.errors.errorHandler).done(function(user) {
 				// Signal VM of all users
 				globalViewModel.admin().userAdded(user);
 				// Hide dialog

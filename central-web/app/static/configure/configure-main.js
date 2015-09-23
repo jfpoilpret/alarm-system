@@ -411,7 +411,12 @@ $(document).ready(function() {
 		self.errors = new ko.errors.ErrorsViewModel();
 		
 		self.reset = function(name, uri) {
-			DeviceCoordinates = {};
+			// Cleanup SVG devices handling
+			svg.deviceCoordinates = {};
+		    // Remove transform matrix from all devices
+		    $('#svgMap > g[class="device-image"] > circle').removeAttr('transform');
+		    $('[data-toggle="popover"]').popover('destroy');
+		    
 			self.uri = uri;
 			self.name(name);
 			self.errors.clear();
@@ -428,16 +433,20 @@ $(document).ready(function() {
 		self.saveMapConfig = function() {
 			// Save new devices locations
 			var promise = null;
-			$.each(DeviceCoordinates, function(uri, location) {
+			$.each(svg.deviceCoordinates, function(uri, location) {
 				var next = ko.utils.ajax(uri, 'PUT', {location_x: location.x, location_y: location.y});
 				promise = (promise ? promise.then(next) : next);
 			});
-			promise.fail(self.errors.errorHandler).done(function() {
+			if (promise) {
+				promise.fail(self.errors.errorHandler).done(function() {
+					$('#config-map-dialog').modal('hide');
+					// Add message
+					globalViewModel.flashMessages.clear();
+					globalViewModel.flashMessages.success('Devices locations for configuration \'' + self.name() + '\' have been saved');
+				});
+			} else {
 				$('#config-map-dialog').modal('hide');
-				// Add message
-				globalViewModel.flashMessages.clear();
-				globalViewModel.flashMessages.success('Devices locations for configuration \'' + self.name() + '\' have been saved');
-			});
+			}
 		}
 		
 		self.reset();
