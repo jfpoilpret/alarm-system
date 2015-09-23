@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import os
 from flask import Flask, g, jsonify, redirect, url_for
 from flask_bootstrap import Bootstrap

@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from re import compile
 from flask import g
 from flask_restful import abort

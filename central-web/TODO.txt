@@ -1,6 +1,5 @@
 
-15'	- review all .py headers (encoding!)
-15'	- ensure all classes use new-style classes (subclass object)
+15'	- ensure all python classes use new-style classes (subclass object)
 1h	- rename "private" methods with leading underscore (convention)
 
 1h	- review FIXME

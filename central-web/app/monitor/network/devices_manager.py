@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from threading import Thread
 from threading import Event as ThreadEvent
 from random import Random

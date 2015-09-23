@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from time import time
 
 #TODO define standard Event types and structure, add factory methods to create events of each type

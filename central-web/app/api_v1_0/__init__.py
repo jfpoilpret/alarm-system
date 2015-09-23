@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from flask import Blueprint, request, g
 from flask_restful import abort, Api
 from webargs.flaskparser import parser
