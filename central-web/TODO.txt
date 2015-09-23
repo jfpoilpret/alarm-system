@@ -1,5 +1,4 @@
 
-15'	- ensure all python classes use new-style classes (subclass object)
 1h	- rename "private" methods with leading underscore (convention)
 
 1h	- review FIXME

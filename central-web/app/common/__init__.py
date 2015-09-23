@@ -9,7 +9,7 @@ from datetime import datetime
 
 # Common constants
 #------------------
-class DeviceKind:
+class DeviceKind(object):
     def __init__(self, allowed_ids, threshold = 2.7):
         self.allowed_ids = allowed_ids
         self.threshold = threshold

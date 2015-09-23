@@ -165,7 +165,7 @@ class VoltageRateAlertThreshold(db.Model):
 
 #TODO Define alert types somewhere
 #TODO Improve to include LEVEL with each KIND
-class AlertType:
+class AlertType(object):
     DEVICE_VOLTAGE_UNDER_THRESHOLD = 1
     DEVICE_NO_PING_FOR_TOO_LONG = 2
     LOCK = 3

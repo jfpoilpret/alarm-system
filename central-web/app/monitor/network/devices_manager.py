@@ -6,7 +6,7 @@ from random import Random
 from app.monitor.network.events import EventType, Event
 from app.models import Device
 
-class AbstractDevicesManager:
+class AbstractDevicesManager(object):
     def __init__(self, queue, devices, status = None):
         self.queue = queue
         self.devices = devices
