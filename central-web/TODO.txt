@@ -1,6 +1,4 @@
 
-1h	- rename "private" methods with leading underscore (convention)
-
 1h	- review FIXME
 1h	- review TODO
 		
@@ -43,7 +41,7 @@
 30'	- review all FIXME/TODO
 
 	- improve DB model to:
-		- have several codes for a config, each with an associated message
+		- have several lock codes for a config, each with an associated message
 		  (typically: owner)
 2h	- add correct SQL exception handling in all REST calls POST/PUT
 		- unique key => special warning message

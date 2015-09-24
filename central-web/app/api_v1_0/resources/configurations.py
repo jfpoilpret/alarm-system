@@ -47,13 +47,13 @@ class ConfigurationsResource(Resource):
         configuration.active = False
         configuration.current = False
         # Add default alert thresholds
-        self.init_new_config(configuration)
+        self._init_new_config(configuration)
         db.session.add(configuration)
         db.session.commit()
         db.session.refresh(configuration)
         return configuration, 201
 
-    def init_new_config(self, config):
+    def _init_new_config(self, config):
         config.no_ping_time_alert_thresholds = [
             NoPingTimeAlertThreshold(alert_time = 10, alert_level = Alert.LEVEL_INFO),
             NoPingTimeAlertThreshold(alert_time = 20, alert_level = Alert.LEVEL_WARNING),
@@ -103,7 +103,7 @@ class ConfigurationMapResource(Resource):
         check_configurator()
         config = Configuration.query.get_or_404(id)
         if prepare_for == 'configuration':
-            return self.prepare_map_for_config(config)
+            return self._prepare_map_for_config(config)
         else:
             return config.map_area
 
@@ -132,7 +132,7 @@ class ConfigurationMapResource(Resource):
 
     # This function reads an SVG string (XML) containing the monitoring zone map,
     # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
-    def prepare_map_for_config(self, config):
+    def _prepare_map_for_config(self, config):
         def update_image(device_image):
             device_image['@onmousedown'] = 'svg.startDrag(evt)'
             device_image['@onmousemove'] = 'svg.drag(evt)'
@@ -141,10 +141,10 @@ class ConfigurationMapResource(Resource):
             device_group['@class'] = 'device-image'
         svg_xml = parse(config.map_area, process_namespaces = False)
         dimensions = prepare_map(svg_xml)
-        self.prepare_devices(config.devices, svg_xml['svg']['g'], dimensions, update_image, update_group)
+        self._prepare_devices(config.devices, svg_xml['svg']['g'], dimensions, update_image, update_group)
         return unparse(svg_xml, full_document = False)
     
-    def prepare_devices(self, devices, layers, dimensions, update_device_image, update_device_group):
+    def _prepare_devices(self, devices, layers, dimensions, update_device_image, update_device_group):
         if len(devices) > 0:
             for id, device in devices.items():
                 x = (device.location_x or 0.5) * dimensions[2] + dimensions[0]

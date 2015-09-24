@@ -38,10 +38,10 @@ class MonitoringManager(object):
     
     def __init__(self, app):
         self.handlers = {
-            EventType.VOLTAGE: self.handle_voltage_event,
-            EventType.LOCK_CODE: self.handle_lock_event,
-            EventType.UNLOCK_CODE: self.handle_unlock_event,
-            EventType.NO_PING_FOR_LONG: self.handle_no_ping_for_long
+            EventType.VOLTAGE: self._handle_voltage_event,
+            EventType.LOCK_CODE: self._handle_lock_event,
+            EventType.UNLOCK_CODE: self._handle_unlock_event,
+            EventType.NO_PING_FOR_LONG: self._handle_no_ping_for_long
         }
         self.app = app
         self.status = None
@@ -91,19 +91,19 @@ class MonitoringManager(object):
         # Start thread that reads queues and act upon received messages (DB, SMS...)
         # Create the event queue that will be used by DevicesManager
         self.event_queue = Queue()
-        self.event_checker = Thread(target = self.check_events)
+        self.event_checker = Thread(target = self._check_events)
         self.event_checker.start()
         self.active = True
-        # Start check_pings thread
+        # Start _check_pings thread
         self.ping_checker_stop.clear()
-        self.ping_checker = Thread(target = self.check_pings)
+        self.ping_checker = Thread(target = self._check_pings)
         self.ping_checker.start()
 
         # Instantiate DevicesManager (based on app.config)
         self.devices_manager = self.devices_manager_class(self.event_queue, self.devices)
         
         # Create info alert
-        self.store_alert(Alert(
+        self._store_alert(Alert(
             config_id = self.config_id,
             when = datetime.fromtimestamp(time()),
             level = Alert.LEVEL_INFO,
@@ -121,7 +121,7 @@ class MonitoringManager(object):
             # Wait until thread is finished
             self.event_checker.join()
             self.event_checker = None
-            # Wait for check_pings() thread to stop
+            # Wait for _check_pings() thread to stop
             self.active = False
             self.ping_checker_stop.set()
             self.ping_checker.join()
@@ -133,7 +133,7 @@ class MonitoringManager(object):
             self.status = None
             self.devices = {}
             # Create info alert
-            self.store_alert(Alert(
+            self._store_alert(Alert(
                 config_id = config_id,
                 when = datetime.fromtimestamp(time()),
                 level = Alert.LEVEL_INFO,
@@ -142,18 +142,18 @@ class MonitoringManager(object):
                 device = None), need_context = False)
     
     def lock(self):
-        alert = self.create_lock_event(
+        alert = self._create_lock_event(
             AlarmStatus.LOCKED, AlertType.LOCK, 'Lock through monitoring application')
         alert.when = datetime.fromtimestamp(time())
         alert.config_id = self.config_id
-        self.store_alert(alert, need_context = False)
+        self._store_alert(alert, need_context = False)
     
     def unlock(self):
-        alert = self.create_lock_event(
+        alert = self._create_lock_event(
             AlarmStatus.UNLOCKED, AlertType.UNLOCK, 'Unlock through monitoring application')
         alert.when = datetime.fromtimestamp(time())
         alert.config_id = self.config_id
-        self.store_alert(alert, need_context =  False)
+        self._store_alert(alert, need_context =  False)
     
     def get_status(self):
         return self.status
@@ -162,7 +162,7 @@ class MonitoringManager(object):
     def get_devices(self):
         return self.devices
 
-    def store_alert(self, alert, need_context = True):
+    def _store_alert(self, alert, need_context = True):
         if need_context:
             with self.app.app_context():
                 db.session.add(alert)
@@ -171,7 +171,7 @@ class MonitoringManager(object):
             db.session.add(alert)
             db.session.commit()
     
-    def check_pings(self):
+    def _check_pings(self):
         while not self.ping_checker_stop.is_set():
             # Perform check every 1 second
             self.ping_checker_stop.wait(1.0)
@@ -186,7 +186,7 @@ class MonitoringManager(object):
                 else:
                     dev.latest_ping_alert_level = None
 
-    def get_no_ping_time_threshold(self, no_ping_time):
+    def _get_no_ping_time_threshold(self, no_ping_time):
         for i, (threshold, _) in enumerate(self.no_ping_time_thresholds):
             if no_ping_time <= threshold:
                 return i - 1
@@ -194,14 +194,14 @@ class MonitoringManager(object):
         # This is a special case where we use multiples of the last threshold repeatedly
         return i + int(no_ping_time / threshold) - 1 
     
-    def get_no_ping_time_threshold_alert_level(self, index):
+    def _get_no_ping_time_threshold_alert_level(self, index):
         if index < 0:
             return None
         if index < len(self.no_ping_time_thresholds):
             return self.no_ping_time_thresholds[index][1]
         return self.no_ping_time_thresholds[-1][1]
         
-    def get_voltage_alert_threshold(self, ratio):
+    def _get_voltage_alert_threshold(self, ratio):
         for i, (rate, _, _) in enumerate(self.voltage_alert_thresholds):
             if ratio >= rate:
                 return i - 1
@@ -210,11 +210,11 @@ class MonitoringManager(object):
     
     # EVENT HANDLERS
     #----------------
-    def handle_voltage_event(self, event_type, device, event_detail):
+    def _handle_voltage_event(self, event_type, device, event_detail):
         device.latest_voltage_level = event_detail
         old_threshold = device.latest_voltage_alert_threshold
         rate = device.latest_voltage_level / device.source.voltage_threshold
-        new_threshold = self.get_voltage_alert_threshold(rate)
+        new_threshold = self._get_voltage_alert_threshold(rate)
         device.latest_voltage_alert_threshold = new_threshold
         if new_threshold == -1:
             # Reset last alert time
@@ -239,7 +239,7 @@ class MonitoringManager(object):
             alert_type = AlertType.DEVICE_VOLTAGE_UNDER_THRESHOLD,
             message = message)
 
-    def check_code(self, device, event_detail):
+    def _check_code(self, device, event_detail):
         if self.lock_code != event_detail:
             message = 'Bad code typed on module %s' % device.source.name
             return Alert(
@@ -249,7 +249,7 @@ class MonitoringManager(object):
         else:
             return None
 
-    def create_lock_event(self, status, alert_type, message = None):
+    def _create_lock_event(self, status, alert_type, message = None):
         self.status = status
         self.devices_manager.set_status(self.status)
         return Alert(
@@ -257,20 +257,20 @@ class MonitoringManager(object):
             alert_type = alert_type,
             message = message)
         
-    def handle_lock_event(self, event_type, device, event_detail):
-        return (self.check_code(device, event_detail) or 
-            self.create_lock_event(AlarmStatus.LOCKED, AlertType.LOCK))
+    def _handle_lock_event(self, event_type, device, event_detail):
+        return (self._check_code(device, event_detail) or 
+            self._create_lock_event(AlarmStatus.LOCKED, AlertType.LOCK))
     
-    def handle_unlock_event(self, event_type, device, event_detail):
-        return (self.check_code(device, event_detail) or
-            self.create_lock_event(AlarmStatus.UNLOCKED, AlertType.UNLOCK))
+    def _handle_unlock_event(self, event_type, device, event_detail):
+        return (self._check_code(device, event_detail) or
+            self._create_lock_event(AlarmStatus.UNLOCKED, AlertType.UNLOCK))
     
-    def handle_no_ping_for_long(self, event_type, device, event_detail):
+    def _handle_no_ping_for_long(self, event_type, device, event_detail):
         old_threshold = device.latest_ping_alert_threshold
         no_ping_time = time() - device.latest_ping
-        new_threshold = self.get_no_ping_time_threshold(no_ping_time)
+        new_threshold = self._get_no_ping_time_threshold(no_ping_time)
         device.latest_ping_alert_threshold = new_threshold
-        level = self.get_no_ping_time_threshold_alert_level(new_threshold)
+        level = self._get_no_ping_time_threshold_alert_level(new_threshold)
         device.latest_ping_alert_level = level
         # First check if alert condition has disappeared or has not changed
         if new_threshold <= old_threshold:
@@ -283,7 +283,7 @@ class MonitoringManager(object):
             alert_type = AlertType.DEVICE_NO_PING_FOR_TOO_LONG,
             message = message)
     
-    def check_events(self):
+    def _check_events(self):
         while True:
             event = self.event_queue.get()
             # Detect stop condition
@@ -302,4 +302,4 @@ class MonitoringManager(object):
                     alert.config_id = self.config_id
                     if device:
                         alert.device_id = device.source.id
-                    self.store_alert(alert)
+                    self._store_alert(alert)

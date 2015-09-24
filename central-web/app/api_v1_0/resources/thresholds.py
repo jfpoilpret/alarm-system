@@ -27,7 +27,7 @@ class NoPingAlertThresholdsResource(Resource):
     def get(self, id):
         check_configurator()
         config = Configuration.query.get_or_404(id)
-        return self.convert_thresholds(config), 200
+        return self._convert_thresholds(config), 200
 
     @use_args(NO_PING_ALERT_THRESHOLD_ARGS, locations = ['json'])
     @marshal_with(NO_PING_ALERT_THRESHOLD_FIELDS)
@@ -44,9 +44,9 @@ class NoPingAlertThresholdsResource(Resource):
         db.session.add(config)
         db.session.commit()
         db.session.refresh(config)
-        return self.convert_thresholds(config), 200
+        return self._convert_thresholds(config), 200
 
-    def convert_thresholds(self, config):
+    def _convert_thresholds(self, config):
         all_thresholds = config.no_ping_time_alert_thresholds
         thresholds = {}
         for level, label in ALERT_LEVELS:
@@ -74,7 +74,7 @@ class VoltageAlertThresholdsResource(Resource):
     def get(self, id):
         check_configurator()
         config = Configuration.query.get_or_404(id)
-        return self.convert_thresholds(config), 200
+        return self._convert_thresholds(config), 200
 
     @use_args(VOLTAGE_ALERT_THRESHOLD_ARGS, locations = ['json'])
     @marshal_with(VOLTAGE_ALERT_THRESHOLD_FIELDS)
@@ -92,9 +92,9 @@ class VoltageAlertThresholdsResource(Resource):
         db.session.add(config)
         db.session.commit()
         db.session.refresh(config)
-        return self.convert_thresholds(config), 200
+        return self._convert_thresholds(config), 200
 
-    def convert_thresholds(self, config):
+    def _convert_thresholds(self, config):
         all_thresholds = config.voltage_rate_alert_thresholds
         thresholds = {}
         for level, label in ALERT_LEVELS:

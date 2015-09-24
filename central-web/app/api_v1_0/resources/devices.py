@@ -89,7 +89,7 @@ class DeviceResource(Resource):
         y = args.get('location_y', None)
         if x is not None or y is not None:
             # Normalize locations if needed
-            dimensions = self.extract_viewbox_from_config(config)
+            dimensions = self._extract_viewbox_from_config(config)
             # interpret all devices locations (as ratios)
             if x is not None:
                 args['location_x'] = (x - dimensions[0]) / dimensions[2]
@@ -103,7 +103,7 @@ class DeviceResource(Resource):
         db.session.refresh(device)
         return device, 200
 
-    def extract_viewbox_from_config(self, config):
+    def _extract_viewbox_from_config(self, config):
         svg_xml = parse(config.map_area, process_namespaces = False)
         root = svg_xml['svg']
         return extract_viewbox(root)

@@ -31,7 +31,7 @@ class MonitorStatusResource(Resource):
     @marshal_with(CONFIG_FIELDS)
     def get(self):
         config = Configuration.query.filter_by(current = True).first_or_404()
-        return self.get_status(config)
+        return self._get_status(config)
 
     @use_kwargs(CONFIG_ARGS, locations = ['json'])
     @marshal_with(CONFIG_FIELDS)
@@ -50,15 +50,15 @@ class MonitorStatusResource(Resource):
                 MonitoringManager.instance.deactivate()
         # For lock change, first verify that config is active
         if config.active:
-            currently_locked = (MonitoringManager.instance.get_status() == AlarmStatus.LOCKED)
+            currently_locked = (MonitoringManager.instance._get_status() == AlarmStatus.LOCKED)
             if locked is not None and locked != currently_locked:
                 if locked:
                     MonitoringManager.instance.lock()
                 else:
                     MonitoringManager.instance.unlock()
-        return self.get_status(config)
+        return self._get_status(config)
 
-    def get_status(self, config):
+    def _get_status(self, config):
         locked = (MonitoringManager.instance.get_status() == AlarmStatus.LOCKED)
         return {
             'id': config.id,
@@ -86,17 +86,17 @@ class MonitorMapResource(Resource):
     @marshal_with(MAP_FIELDS)
     def get(self):
         config = Configuration.query.filter_by(current = True).first_or_404()
-        return self.prepare_map_for_monitoring(config)
+        return self._prepare_map_for_monitoring(config)
 
     # This function reads an SVG string (XML) containing the monitoring zone map,
     # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
-    def prepare_map_for_monitoring(self, config):
+    def _prepare_map_for_monitoring(self, config):
         svg_xml = parse(config.map_area, process_namespaces = False)
         dimensions = prepare_map(svg_xml)
         # Get width/height/viewBox
         svg = svg_xml['svg']
         # Prepare all devices for client rendering
-        devices = [self.prepare_device(device, dimensions) for device in config.devices.values()]
+        devices = [self._prepare_device(device, dimensions) for device in config.devices.values()]
         return { 
             'map': unparse(svg_xml['svg']['g'][0], full_document = False),
             'width': svg['@width'],
@@ -106,7 +106,7 @@ class MonitorMapResource(Resource):
             'devices': devices
         }
 
-    def prepare_device(self, device, dimensions):
+    def _prepare_device(self, device, dimensions):
         return {
             'id': device.device_id,
             'name': device.name,
@@ -221,9 +221,9 @@ class MonitorDevicesResource(Resource):
     def get(self):
         # Get list of all devices in current configuration and prepare for return to UI
         now = time()
-        return [self.create_device_for_refresh(device, now) for device in MonitoringManager.instance.get_devices().values()]
+        return [self._create_device_for_refresh(device, now) for device in MonitoringManager.instance.get_devices().values()]
 
-    def create_device_for_refresh(self, device, now):
+    def _create_device_for_refresh(self, device, now):
         return {
             'id': device.source.device_id,
             'voltage_threshold': device.source.voltage_threshold,

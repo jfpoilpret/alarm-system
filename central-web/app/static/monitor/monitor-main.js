@@ -327,6 +327,7 @@ $(document).ready(function() {
 		self.alertsMonitor = new AlertsViewModel();
 		self.mapMonitor = new MapViewModel();
 		self.alertsHistory = new AlertsHistoryViewModel(self.statusMonitor);
+		var historyRefreshedAlready = false;
 
 		// Internal utility functions, used by event handlers
 		var $popovers = null;
@@ -370,6 +371,11 @@ $(document).ready(function() {
 				restoreMapPopups();
 			} else if (targetTab === 'tab_control') {
 				$('#history_clear_clear_until').focus();
+			} else if (targetTab === 'tab_history') {
+				if (!historyRefreshedAlready) {
+					self.alertsHistory.refresh();
+					historyRefreshedAlready = true;
+				}
 			}
 			if (self.statusMonitor.active()) {
 				if (targetTab === 'tab_map') {
