@@ -43,12 +43,12 @@ $(document).ready(function() {
 		self.saveDevice = function() {
 			if (self.isNew()) {
 				postDevice(function(device) {
-					globalViewModel.config().configEditor.addDevice(device);
+					globalViewModel.configure().configEditor.addDevice(device);
 					showForm(false);
 				});
 			} else {
 				putDevice(function(device) {
-					globalViewModel.config().configEditor.updateDevice(self.id, device);
+					globalViewModel.configure().configEditor.updateDevice(self.id, device);
 					showForm(false);
 				});
 			}
@@ -306,11 +306,11 @@ $(document).ready(function() {
 		self.saveConfig = function() {
 			var chain = ko.utils.ajax(self.uri, 'PUT', toJSON()).
 				fail(self.errors.errorHandler).
-				done(globalViewModel.config().configUpdated);
+				done(globalViewModel.configure().configUpdated);
 			if (self.mustUploadMap) {
-				chain = chain.then(postMap).done(globalViewModel.config().configUpdated);
+				chain = chain.then(postMap).done(globalViewModel.configure().configUpdated);
 			} else if (self.mustDeleteMap) {
-				chain = chain.then(deleteMap).done(globalViewModel.config().configUpdated);
+				chain = chain.then(deleteMap).done(globalViewModel.configure().configUpdated);
 			}
 			// Add necessary PUT for no ping thresholds alerts
 			if ($.grep(self.noPingThresholds, function(item) { return item.dirty; }).length !== 0) {
@@ -333,9 +333,9 @@ $(document).ready(function() {
 		self.saveNewConfig = function() {
 			var chain = ko.utils.ajax('/api/1.0/configurations', 'POST', toJSON()).
 				fail(self.errors.errorHandler).
-				done(globalViewModel.config().configAdded);
+				done(globalViewModel.configure().configAdded);
 			if (self.mustUploadMap) {
-				chain = chain.then(postMap).done(globalViewModel.config().configUpdated);
+				chain = chain.then(postMap).done(globalViewModel.configure().configUpdated);
 			}
 			chain.done(function(config) {
 				// Add message
@@ -344,7 +344,7 @@ $(document).ready(function() {
 				// Hide dialog
 				$('#config-dialog').modal('hide');
 				// Open Edit Config dialog
-				globalViewModel.config().editConfig(config);
+				globalViewModel.configure().editConfig(config);
 			});
 		}
 		
@@ -531,7 +531,7 @@ $(document).ready(function() {
 
 	// Create main VM (and children hierarchy) for configuration
 	$.getJSON('/api/1.0/configurations', function(configs) {
-		globalViewModel.config(new ConfigurationsViewModel(configs));
+		globalViewModel.configure(new ConfigurationsViewModel(configs));
 	});
 	
 	// This handler is called when a detail part of the config dialog is collapsed

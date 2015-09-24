@@ -84,8 +84,9 @@ $(document).ready(function() {
 		// dialog above the current feature without needing to reload current feature once dialog is finished using.
 		self.loadTransientFeature = function(componentsContent, feature, scripts) {
 			console.log('loadFeature() -> ' + feature);
-			// First clear flash messages
+			// First clear flash messages and ensure demanded feature is removed if present already
 			self.flashMessages.clear();
+			self[feature](null);
 			// Set all required components
 			var prefix = '/' + feature + '/' + feature;
 			$.each(componentsContent, function(name, content) {
@@ -183,7 +184,7 @@ $(document).ready(function() {
 	// Declare VM
 	globalViewModel = new GlobalViewModel(
 		['navbar', 'content', 'dialog1', 'dialog2'], 
-		['signin', 'config', 'admin', 'monitor', 'profile', 'password'], 
+		['signin', 'configure', 'admin', 'monitor', 'profile', 'password'], 
 		{
 			navigation: new NavigationViewModel(),
 			currentUser: new CurrentUserViewModel()

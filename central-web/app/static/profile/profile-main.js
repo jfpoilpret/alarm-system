@@ -31,8 +31,10 @@ $(document).ready(function() {
 
 		self.editProfile = function() {
 			$('#profile-dialog').modal('show');
-			//FIXME focus does not seem to work...
-			$('#profile_username').focus();
+			//NOTE I don't understand why but the following trick is necessary for focus() to work properly
+			setTimeout(function() {
+				$('#profile_username').focus();
+			}, 0);
 		}
 		
 		self.install = self.editProfile;
