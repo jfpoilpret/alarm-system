@@ -27,29 +27,33 @@ $(document).ready(function() {
 		var putDevice = function(done) {
 			ko.utils.ajax(self.uri, 'PUT', toJSON()).fail(self.errors.errorHandler).done(done);
 		}
-		var showForm = function(show) {
-			//FIXME when show == true, this enables all components, even those that should not be
-			// (e.g. save button that have data-bind enable)
-			$('.disablable').attr('disabled', show);
-			self.showDeviceForm(show);
-			if (show)
-				$('#device_name').focus();
+		var $newlyDisabled;
+		var hideForm = function() {
+			$newlyDisabled.attr('disabled', false);
+			self.showDeviceForm(false);
+		}
+		var showForm = function() {
+			// Find and store list of currently enabled components, disable them immediately
+			$newlyDisabled = $('.disablable:not(:disabled)');
+			$newlyDisabled.attr('disabled', true);
+			self.showDeviceForm(true);
+			$('#device_name').focus();
 		}
 		
 		self.cancelDeviceForm = function() {
-			showForm(false);
+			hideForm();
 		}
 		
 		self.saveDevice = function() {
 			if (self.isNew()) {
 				postDevice(function(device) {
 					globalViewModel.configure().configEditor.addDevice(device);
-					showForm(false);
+					hideForm();
 				});
 			} else {
 				putDevice(function(device) {
 					globalViewModel.configure().configEditor.updateDevice(self.id, device);
-					showForm(false);
+					hideForm();
 				});
 			}
 		}
@@ -78,7 +82,7 @@ $(document).ready(function() {
 			self.errors.clear();
 			self.dirtyFlag.reset();
 			if (deviceCreator)
-				showForm(true);
+				showForm();
 		}
 		
 		self.reset();
