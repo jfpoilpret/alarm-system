@@ -1,4 +1,20 @@
 
+30'	- if "current" config is changed, previous config must be forced inactive if needed
+		- maybe need confirm message?
+30'	- configuration changes of an active config should be limited
+		- or there should be mechanisms to propagate change to MonitoringManager
+		(because devices are deep copies of config devices, hence are not up-to-date)
+		
+1h	- review FIXME
+1h	- review TODO
+		
+2h	- add NRF24 and scanning thread (for RaspberryPI exec)
+	
+	- consider using marshmallow instead of flask restful marshalling?
+	- consider replacing webargs with just marshmallow then?
+	- remove flask-restful in the end?
+	- improve webargs to support bundle_errors if keep webargs
+		
 2h	- improve component loading:
 		- factor GlobalViewModel and ComponentLoader into viewmodel-utils.js
 		- VM should just specify the feature name
@@ -6,16 +22,10 @@
 		- make GlobalVM automatically find out all component elements in DOM
 			- use class for real DOM elements, but how to deal with <!-- ko ... -->
 		- remove console.log()
-
 2h	- javascript: make it more modular?
 		- investigate requirejs
 		- how to create "subclasses"?
-		
-3h	- improve webargs to support bundle_errors
 
-	- consider using marshmallow instead of flask restful marshalling?
-	- remove flask-restful in the end?
-		
 	- bug: when token expired (401), login dialog does not always appear automatically...
 		- use case: signin, go to monitor, stop server for 10' (token duration), restart,
 		all monitor status request get 401 but nothing else happens...
@@ -30,15 +40,6 @@
 		
 	- security:
 		- check prevention against SVG exploits
-		
-30'	- if "current" config is changed, previous config must be forced inactive if needed
-		- maybe need confirm message?
-30'	- configuration changes of an active config should be limited
-		- or there should be mechanisms to propagate change to MonitoringManager
-		(because devices are deep copies of config devices, hence are not up-to-date)
-		
-1h	- review FIXME
-1h	- review TODO
 		
 	- improve DB model to:
 		- have several lock codes for a config, each with an associated message
@@ -65,6 +66,4 @@
 1h	- infer on i18n
 
 	- add email?
-	
-2h	- add NRF24 and scanning thread
 	

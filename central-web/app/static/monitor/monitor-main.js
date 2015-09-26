@@ -402,9 +402,16 @@ $(document).ready(function() {
 		
 		self.reset = function(alsoResetMap) {
 			// Enforce later refresh of Alert and History models
-			//TODO or immediate refresh depending on currently active tab!
-			needsHistoryRefresh = true;
-			needsAlertsReset = true;
+			// or immediate refresh depending on currently active tab
+			var currentTab =  $('div.tab-pane.active').attr('id');
+			if (currentTab === 'alerts')
+				self.alertsMonitor.resetAlerts();
+			else
+				needsAlertsReset = true;
+			if (currentTab === 'history')
+				self.alertsHistory.refresh();
+			else
+				needsHistoryRefresh = true;
 			if (alsoResetMap)
 				self.mapMonitor.init();
 		}
