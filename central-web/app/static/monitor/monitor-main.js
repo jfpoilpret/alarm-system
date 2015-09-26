@@ -51,7 +51,8 @@ $(document).ready(function() {
 				}).fail(self.errors.errorHandler).done(function() {
 					// Clear history form
 					self.clear_until(null);
-					//TODO LATER clear all alerts viewmodels
+					// Notify MonitoringViewModel that history has been cleared 
+					monitor.reset();
 				});
 			}
 		}
@@ -78,9 +79,8 @@ $(document).ready(function() {
 			self.id(status.id);
 			if (status.name !== self.name()) {
 				self.name(status.name);
-				// Update map
-				monitor.mapMonitor.init();
-				//TODO update other models?
+				// Update map and all models
+				monitor.reset(true);
 			}
 			self.active(status.active);
 			self.locked(status.locked);
@@ -243,7 +243,6 @@ $(document).ready(function() {
 		
 		self.init = function() {
 			// Get map + devices info from server
-			//TODO errors handling
 			$.getJSON('/api/1.0/monitoring/map', function(result) {
 				self.devices([]);
 				self.backgroundMap(result.map);
@@ -252,9 +251,19 @@ $(document).ready(function() {
 				self.viewBox(result.viewBox);
 				var devices = $.map(result.devices, function(device) {
 					return new DeviceViewModel(device, result.r)
-				})
+				});
 				self.devices(devices);
 			    $('[data-toggle="popover"]').popover({'container': 'body', 'trigger': 'click', 'placement': 'right'});
+			}).fail(function(xhr) {
+				self.devices([]);
+				self.backgroundMap('');
+				var status = xhr.status;
+				var result = xhr.responseJSON.message;
+				if (status === 404) {
+					globalViewModel.flashMessages.error(result);
+				} else if (status >= 500) {
+					alert('A server error ' + status + ' has occurred:\n' + result);
+				}
 			});
 		}
 		
@@ -277,7 +286,6 @@ $(document).ready(function() {
 		self.refresh = function() {
 			$.getJSON('/api/1.0/monitoring/devices', updateDevicesDone);
 		}
-		
 	}
 
 	function AlertsHistoryViewModel(statusMonitor) {
@@ -327,7 +335,8 @@ $(document).ready(function() {
 		self.alertsMonitor = new AlertsViewModel();
 		self.mapMonitor = new MapViewModel();
 		self.alertsHistory = new AlertsHistoryViewModel(self.statusMonitor);
-		var historyRefreshedAlready = false;
+		var needsHistoryRefresh = true;
+		var needsAlertsReset = false;
 
 		// Internal utility functions, used by event handlers
 		var $popovers = null;
@@ -363,8 +372,12 @@ $(document).ready(function() {
 		var enableTab = function(e) {
 			targetTab = $(e.target).attr('id');
 			if (targetTab === 'tab_alerts') {
-				// Always refresh alert once immediately, even if no config is active
-				self.alertsMonitor.refresh();
+				if (needsAlertsReset)
+					// Refresh alerts after resetting current state
+					self.alertsMonitor.resetAlerts();
+				else
+					// Refresh alert once immediately, even if no config is active
+					self.alertsMonitor.refresh();
 				$('#alert_filter_period_from').focus();
 			} else if (targetTab === 'tab_map') {
 				// Restore all popovers that were previously shown in the map
@@ -372,9 +385,9 @@ $(document).ready(function() {
 			} else if (targetTab === 'tab_control') {
 				$('#history_clear_clear_until').focus();
 			} else if (targetTab === 'tab_history') {
-				if (!historyRefreshedAlready) {
+				if (needsHistoryRefresh) {
 					self.alertsHistory.refresh();
-					historyRefreshedAlready = true;
+					needsHistoryRefresh = false;
 				}
 			}
 			if (self.statusMonitor.active()) {
@@ -385,6 +398,15 @@ $(document).ready(function() {
 					self.alertsMonitor.autoRefresh(true);
 				}
 			}
+		}
+		
+		self.reset = function(alsoResetMap) {
+			// Enforce later refresh of Alert and History models
+			//TODO or immediate refresh depending on currently active tab!
+			needsHistoryRefresh = true;
+			needsAlertsReset = true;
+			if (alsoResetMap)
+				self.mapMonitor.init();
 		}
 
 		// Lifecycle

@@ -91,20 +91,30 @@ class MonitorMapResource(Resource):
     # This function reads an SVG string (XML) containing the monitoring zone map,
     # adds a layer for devices, and prepares the result for direct SVG embedding to HTML
     def _prepare_map_for_monitoring(self, config):
-        svg_xml = parse(config.map_area, process_namespaces = False)
-        dimensions = prepare_map(svg_xml)
-        # Get width/height/viewBox
-        svg = svg_xml['svg']
-        # Prepare all devices for client rendering
-        devices = [self._prepare_device(device, dimensions) for device in config.devices.values()]
-        return { 
-            'map': unparse(svg_xml['svg']['g'][0], full_document = False),
-            'width': svg['@width'],
-            'height': svg['@height'],
-            'viewBox': svg['@viewBox'],
-            'r': 0.02 * dimensions[2],
-            'devices': devices
-        }
+        if config.map_area:
+            svg_xml = parse(config.map_area, process_namespaces = False)
+            dimensions = prepare_map(svg_xml)
+            # Get width/height/viewBox
+            svg = svg_xml['svg']
+            # Prepare all devices for client rendering
+            devices = [self._prepare_device(device, dimensions) for device in config.devices.values()]
+            return { 
+                'map': unparse(svg_xml['svg']['g'][0], full_document = False),
+                'width': svg['@width'],
+                'height': svg['@height'],
+                'viewBox': svg['@viewBox'],
+                'r': 0.02 * dimensions[2],
+                'devices': devices
+            }
+        else:
+            return { 
+                'map': '',
+                'width': '0',
+                'height': '0',
+                'viewBox': '0 0 10 10',
+                'r': 0.0,
+                'devices': []
+            }
 
     def _prepare_device(self, device, dimensions):
         return {

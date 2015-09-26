@@ -1,7 +1,4 @@
 
-1h	- review FIXME
-1h	- review TODO
-		
 2h	- improve component loading:
 		- factor GlobalViewModel and ComponentLoader into viewmodel-utils.js
 		- VM should just specify the feature name
@@ -19,6 +16,10 @@
 	- consider using marshmallow instead of flask restful marshalling?
 	- remove flask-restful in the end?
 		
+	- bug: when token expired (401), login dialog does not always appear automatically...
+		- use case: signin, go to monitor, stop server for 10' (token duration), restart,
+		all monitor status request get 401 but nothing else happens...
+	
 	- open points/bugs:
 		- bugs on "required" on server side: it is currently possible to create a user with empty name/fullname/password!
 			-> this is due to not submitting the form!
@@ -36,10 +37,9 @@
 		- or there should be mechanisms to propagate change to MonitoringManager
 		(because devices are deep copies of config devices, hence are not up-to-date)
 		
-30'	- debug focus on profile dialog
-
-30'	- review all FIXME/TODO
-
+1h	- review FIXME
+1h	- review TODO
+		
 	- improve DB model to:
 		- have several lock codes for a config, each with an associated message
 		  (typically: owner)
