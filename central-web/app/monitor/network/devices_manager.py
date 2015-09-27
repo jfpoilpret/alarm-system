@@ -2,56 +2,89 @@
 
 from threading import Thread
 from threading import Event as ThreadEvent
-from random import Random
-from app.monitor.network.events import EventType, Event
-from app.models import Device
+from app.monitor.network.message_handlers import PingHandler, VoltageHandler, LockUnlockHandler
+from app.monitor.network.message import MessageType
+from app.monitor.nrf24.nrf24 import NRF24
+from datetime import time
+from app.monitor.network.common_devices_manager import AbstractDevicesManager
+from app.monitor.cipher.cipher import XTEA
 
-class AbstractDevicesManager(object):
-    def __init__(self, queue, devices, status = None):
-        self.queue = queue
-        self.devices = devices
-        self.status = status
+class RF(NRF24):
+    def send(self, device, port, payload):
+        now = time.time()
+        count = super(RF, self).send(device, port, payload)
+        print("Send time = %.02f ms" % ((time.time() - now) * 1000.0))
+        return count
 
-    def deactivate(self):
-        pass
-    
-    def set_status(self, status):
-        self.status = status
+#TODO rework from scratch
+# - start NRF-based message handler which role is just to wait for NRF messages and dispatch to event handlers
+# - create event handlers that just:
+#    - queue events
+#    - return an NRF reply based on the received message
+# Remove MessageHandler file?
+class DevicesManager(AbstractDevicesManager, Thread):
+    # RF Communication constants
+    NETWORK = 0xC05A
+    SERVER_ID = 0x01
+    # Hardware constants
+    CE_PIN = 25
+    # Timing constants
+    PERIOD_REFRESH_KEY_SECS = 120.0
 
-class DevicesManagerSimulator(AbstractDevicesManager, Thread):
     def __init__(self, *args, **kwargs):
         AbstractDevicesManager.__init__(self, *args, **kwargs)
         Thread.__init__(self)
-        self.random = Random()
+        # Prepare devices for RF messages (create cipher)
+        for device in self.devices.values():
+            device.cipher = XTEA()
+            device.next_key_time = 0
+        # Initialize RF device
+        self.nrf = RF(DevicesManager.NETWORK, DevicesManager.SERVER_ID)
+        # TODO rework handlers to return an Event to be sent 
+        pingHandler = PingHandler(self, DevicesManager.PERIOD_REFRESH_KEY_SECS)
+        voltageHandler = VoltageHandler()
+        lockHandler = LockUnlockHandler(self)
+        self.handlers = {
+            MessageType.LOCK_CODE: lockHandler,
+            MessageType.UNLOCK_CODE: lockHandler,
+            MessageType.PING_SERVER: pingHandler,
+            MessageType.VOLTAGE_LEVEL: voltageHandler
+        }
         self.stop = ThreadEvent()
         self.stop.clear()
         self.start()
-        
+
     def deactivate(self):
         self.stop.set()
         self.join()
-    
+
     def run(self):
-        keypads = [device.source.device_id for device in self.devices.values() if device.source.kind == Device.KIND_KEYPAD]
+        self.nrf.begin(0, 0, DevicesManager.CE_PIN)
         while True:
-            self.stop.wait(10.0)
-            if self.stop.is_set():
-                return
-            # Simulate Device events randomly
-            device_id = self.random.choice(list(self.devices.keys()))
-            event_type = self.random.choice([EventType.PING, EventType.VOLTAGE])
-            voltage = self.random.uniform(2.3, 3.0)
-            event = Event(event_type, device_id, voltage)
-            self.queue.put(event)
-            # Less often (5% of the time), we can trigger lock/unlock events
-            if self.random.random() < 0.05:
-                device_id = self.random.choice(keypads)
-                event_type = self.random.choice([EventType.LOCK_CODE, EventType.UNLOCK_CODE])
-                code = '%06s' % self.random.randint(0, 999999)
-                event = Event(event_type, device_id, code)
-                self.queue.put(event)
-
-
-#TODO later 
-class DevicesManager(AbstractDevicesManager):
-    pass
+            # Rework NRF24 to use a ThreadEvent
+#             self.stop.wait(10.0)
+#             if self.stop.is_set():
+#                 return
+            #TODO 
+            # Print some RF status
+            print('NRF24 trans = %d, retrans = %d, drops = %d' % (
+                self.nrf.get_trans(), self.nrf.get_retrans(), self.nrf.get_drops()))
+            # Wait for remote modules calls
+            payload = self.nrf.recv()
+            if payload:
+                now = time.time()
+                event = self.handle_message(payload)
+                print("Total time = %.02f ms" % ((time.time() - now) * 1000.0))
+                if event:
+                    self.queue.put(event)
+    
+    def handle_message(self, payload):
+        device = self.devices[payload.device]
+        port = payload.port
+        handler = self.handlers.get(port)
+        if handler:
+            return handler(self.nrf, device, port, payload.content)
+        else:
+            print("Source %02x, unknown port %02x!" % (device.id, port))
+            return None
+    

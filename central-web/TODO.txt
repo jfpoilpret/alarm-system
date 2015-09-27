@@ -1,4 +1,7 @@
 
+2h	- add NRF24 and scanning thread (for RaspberryPI exec)
+		- ensure events are queued
+	
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
 30'	- configuration changes of an active config should be limited
@@ -8,8 +11,6 @@
 1h	- review FIXME
 1h	- review TODO
 		
-2h	- add NRF24 and scanning thread (for RaspberryPI exec)
-	
 	- consider using marshmallow instead of flask restful marshalling?
 	- consider replacing webargs with just marshmallow then?
 	- remove flask-restful in the end?
