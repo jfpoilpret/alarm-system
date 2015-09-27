@@ -50,7 +50,7 @@ class MonitorStatusResource(Resource):
                 MonitoringManager.instance.deactivate()
         # For lock change, first verify that config is active
         if config.active:
-            currently_locked = (MonitoringManager.instance._get_status() == AlarmStatus.LOCKED)
+            currently_locked = (MonitoringManager.instance.get_status() == AlarmStatus.LOCKED)
             if locked is not None and locked != currently_locked:
                 if locked:
                     MonitoringManager.instance.lock()
