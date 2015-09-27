@@ -290,7 +290,7 @@ class NRF24:
             self.spidev = None
 
     # Receive structured payload: device, port, content
-    def recv(self, timeout_secs = 0.0):
+    def recv(self, wait = time.sleep, timeout_secs = 0.0):
         # run in receiver mode
         self.set_receiver_mode()
         # wait for payload reception
@@ -298,7 +298,7 @@ class NRF24:
         while not self.available():
             if timeout_secs != 0.0 and time.time() - now > timeout_secs:
                 return None
-            time.sleep(0.001)
+            wait(0.001)
 
         status = self.get_status()
         if ((status & STATUS.RX_P_NO_MASK) >> STATUS.RX_P_NO) == 1:

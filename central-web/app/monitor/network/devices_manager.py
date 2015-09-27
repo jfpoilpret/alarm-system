@@ -16,12 +16,6 @@ class RF(NRF24):
         print("Send time = %.02f ms" % ((time.time() - now) * 1000.0))
         return count
 
-#TODO rework from scratch
-# - start NRF-based message handler which role is just to wait for NRF messages and dispatch to event handlers
-# - create event handlers that just:
-#    - queue events
-#    - return an NRF reply based on the received message
-# Remove MessageHandler file?
 class DevicesManager(AbstractDevicesManager, Thread):
     # RF Communication constants
     NETWORK = 0xC05A
@@ -61,16 +55,13 @@ class DevicesManager(AbstractDevicesManager, Thread):
     def run(self):
         self.nrf.begin(0, 0, DevicesManager.CE_PIN)
         while True:
-            # Rework NRF24 to use a ThreadEvent
-#             self.stop.wait(10.0)
-#             if self.stop.is_set():
-#                 return
-            #TODO 
             # Print some RF status
             print('NRF24 trans = %d, retrans = %d, drops = %d' % (
                 self.nrf.get_trans(), self.nrf.get_retrans(), self.nrf.get_drops()))
-            # Wait for remote modules calls
-            payload = self.nrf.recv()
+            # Wait for remote modules calls (or until config is deactivated)
+            payload = self.nrf.recv(self.stop.wait)
+            if self.stop.is_set():
+                return
             if payload:
                 now = time.time()
                 event = self.handle_message(payload)
@@ -85,6 +76,6 @@ class DevicesManager(AbstractDevicesManager, Thread):
         if handler:
             return handler(self.nrf, device, port, payload.content)
         else:
-            print("Source %02x, unknown port %02x!" % (device.id, port))
+            print("Source %02x, unknown port %02x!" % (device.source.device_id, port))
             return None
     
