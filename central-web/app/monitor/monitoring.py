@@ -4,19 +4,19 @@ from queue import Queue
 from threading import Thread
 from threading import Event as ThreadEvent
 from datetime import datetime
-
-from app import db
-from app.models import Alert, AlertType
-from app.monitor.network.events import Event, EventType
-from app.monitor.network.devices_manager import DevicesManager, DevicesManagerSimulator
 from time import time
-
-monitoring_manager = None
 
 class AlarmStatus(object):
     LOCKED = 1
     UNLOCKED = 2
     
+from app import db
+from app.models import Alert, AlertType
+from app.monitor.events import Event, EventType
+from app.monitor.network import DevicesManager, DevicesManagerSimulator
+
+monitoring_manager = None
+
 class LiveDevice(object):
     def __init__(self, device):
         self.source = device.detached()

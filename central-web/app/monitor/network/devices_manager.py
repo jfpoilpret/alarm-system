@@ -4,7 +4,13 @@ from threading import Thread
 from threading import Event as ThreadEvent
 from app.monitor.network.message_handlers import PingHandler, VoltageHandler, LockUnlockHandler
 from app.monitor.network.message import MessageType
-from app.monitor.nrf24.nrf24 import NRF24
+
+try:
+    from app.monitor.nrf24.nrf24 import NRF24
+except ImportError:
+    # Trick to allow loading the module on a PC
+    class NRF24: pass
+
 from datetime import time
 from app.monitor.network.common_devices_manager import AbstractDevicesManager
 from app.monitor.cipher.cipher import XTEA
@@ -34,7 +40,7 @@ class DevicesManager(AbstractDevicesManager, Thread):
             device.next_key_time = 0
         # Initialize RF device
         self.nrf = RF(DevicesManager.NETWORK, DevicesManager.SERVER_ID)
-        # TODO rework handlers to return an Event to be sent 
+        # Setup RF message handlers
         pingHandler = PingHandler(self, DevicesManager.PERIOD_REFRESH_KEY_SECS)
         voltageHandler = VoltageHandler()
         lockHandler = LockUnlockHandler(self)

@@ -6,7 +6,7 @@ from threading import Thread
 from ..cipher import XTEA
 from queue import Queue
 from app.monitor.monitoring import AlarmStatus
-from app.monitor.network.events import Event, EventType
+from app.monitor.events import Event, EventType
 from app.monitor.network.message import MessageType
 
 # Utility functions to pack/unpack payload
@@ -85,7 +85,6 @@ class LockUnlockHandler:
         # Send current lock status
         nrf.send(id, port, [self._status()])
         print("Source %02x, code = %s" % (id, code))
-        #TODO return the event to push to the events queue
         event_type = EventType.LOCK_CODE if port == MessageType.LOCK_CODE else EventType.UNLOCK_CODE
         return Event(event_type, id, code)
     

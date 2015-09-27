@@ -3,7 +3,7 @@
 from threading import Thread
 from threading import Event as ThreadEvent
 from random import Random
-from app.monitor.network.events import EventType, Event
+from app.monitor.events import EventType, Event
 from app.models import Device
 from app.monitor.network.common_devices_manager import AbstractDevicesManager
 

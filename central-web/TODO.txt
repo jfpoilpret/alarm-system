@@ -1,6 +1,9 @@
 
-2h	- add NRF24 and scanning thread (for RaspberryPI exec)
-		- ensure events are queued
+	- Raspberry Pi port
+x		- rewrite device manager for NRF24
+30'		- check everything still works on PC with simulated devices
+2h		- upload to raspberry pi and debug
+		- finally remove alarm-system/central dir? (or keep small app for debug?)
 	
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?

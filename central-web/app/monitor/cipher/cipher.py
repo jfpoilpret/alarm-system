@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import random
+import sys
 
+if sys.version_info > (3,):
+    long = int
 random.seed(None)
 
 class XTEA:
     DEFAULT_ROUNDS = 32
-    KEY_SCHEDULE = 0x9E3779B9L
+    KEY_SCHEDULE = long(0x9E3779B9)
 
     @staticmethod
     def generate_key():
@@ -21,7 +24,7 @@ class XTEA:
 
     def set_key(self, key):
         delta = XTEA.KEY_SCHEDULE
-        MASK = 0xFFFFFFFFL
+        MASK = long(0xFFFFFFFF)
         self.xor1 = []
         self.xor2 = []
         sumval = 0
@@ -33,7 +36,7 @@ class XTEA:
     def encipher(self, v):
         v0 = v[0]
         v1 = v[1]
-        MASK = 0xFFFFFFFFL
+        MASK = long(0xFFFFFFFF)
         for i in range(self.rounds):
             t = (((v1<<4) ^ (v1>>5)) + v1) ^ self.xor1[i]
             v0 = (v0 + t) & MASK
@@ -44,7 +47,7 @@ class XTEA:
     def decipher(self, v):
         v0 = v[0]
         v1 = v[1]
-        MASK = 0xFFFFFFFFL
+        MASK = long(0xFFFFFFFF)
         for i in range(self.rounds):
             t = (((v0<<4) ^ (v0>>5)) + v0) ^ self.xor2[self.rounds - 1 - i]
             v1 = (v1 - t) & MASK
