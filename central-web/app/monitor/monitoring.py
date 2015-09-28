@@ -1,6 +1,8 @@
 # encoding: utf-8
-
-from queue import Queue
+try:
+    from queue import Queue
+except ImportError:
+    from Queue import Queue
 from threading import Thread
 from threading import Event as ThreadEvent
 from datetime import datetime

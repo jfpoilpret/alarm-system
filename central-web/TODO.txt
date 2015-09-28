@@ -1,8 +1,10 @@
 
 	- Raspberry Pi port
 x		- rewrite device manager for NRF24
-30'		- check everything still works on PC with simulated devices
+x		- check everything still works on PC with simulated devices
 2h		- upload to raspberry pi and debug
+			- create venv and load all deps
+			- write how to launch (sudo python ...) in README
 		- finally remove alarm-system/central dir? (or keep small app for debug?)
 	
 30'	- if "current" config is changed, previous config must be forced inactive if needed

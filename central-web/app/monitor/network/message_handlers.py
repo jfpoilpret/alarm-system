@@ -2,9 +2,12 @@
 import struct
 import time
 
+try:
+    from queue import Queue
+except ImportError:
+    from Queue import Queue
 from threading import Thread
 from ..cipher import XTEA
-from queue import Queue
 from app.monitor.monitoring import AlarmStatus
 from app.monitor.events import Event, EventType
 from app.monitor.network.message import MessageType
