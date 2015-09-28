@@ -7,9 +7,12 @@ from app.monitor.network.message import MessageType
 
 try:
     from app.monitor.nrf24.nrf24 import NRF24
-except ImportError:
+except ImportError as e:
     # Trick to allow loading the module on a PC
-    class NRF24: pass
+    print(e)
+    class NRF24:
+        def __init__(self, network, device):
+            print('WRONG NRF24!!!!!!!!!!')
 
 from datetime import time
 from app.monitor.network.common_devices_manager import AbstractDevicesManager

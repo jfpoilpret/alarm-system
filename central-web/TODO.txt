@@ -3,9 +3,16 @@
 x		- rewrite device manager for NRF24
 x		- check everything still works on PC with simulated devices
 2h		- upload to raspberry pi and debug
-			- create venv and load all deps
-			- write how to launch (sudo python ...) in README
+x			- create venv and load all deps
+x			- write how to launch (sudo python ...) in README
+x			- create config
+x			- monitor config with SPI
+			- activate/deactivate -> 500?
+			- check kb id
+			- debug...
 		- finally remove alarm-system/central dir? (or keep small app for debug?)
+	
+	- bug: go to monitoring when there is no active configuration...
 	
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
