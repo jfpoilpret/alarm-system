@@ -31,6 +31,7 @@ class KeyGenerator(Thread):
     
     def run(self):
         while True:
+            #TODO Improve performance by calculating xor1/xor2 at that time instead of XTEA.set_key()
             key = XTEA.generate_key()
             self.queue.put(key)
     
@@ -50,6 +51,7 @@ class PingHandler:
         payload = [self._status()]
         # Check if need to generate and send new cipher key
         if now >= device.next_key_time:
+            #TODO improve performance by avoiding set_key() doing all calculation!
             key = self.key_gen.get_key()
             payload += ppack('<4L', key[0], key[1], key[2], key[3])
             if nrf.send(id, port, payload) > 0:
