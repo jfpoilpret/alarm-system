@@ -23,8 +23,8 @@ class KeyGenerator(Thread):
     QUEUE_SIZE = 64
     
     def __init__(self):
+        Thread.__init__(self)
         self.queue = Queue(KeyGenerator.QUEUE_SIZE)
-        pass
     
     def get_key(self):
         return self.queue.get()

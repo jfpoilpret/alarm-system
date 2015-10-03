@@ -14,15 +14,16 @@ except ImportError as e:
         def __init__(self, network, device):
             print('WRONG NRF24!!!!!!!!!!')
 
-from datetime import time
+from time import time
 from app.monitor.network.common_devices_manager import AbstractDevicesManager
 from app.monitor.cipher.cipher import XTEA
 
 class RF(NRF24):
     def send(self, device, port, payload):
-        now = time.time()
-        count = super(RF, self).send(device, port, payload)
-        print("Send time = %.02f ms" % ((time.time() - now) * 1000.0))
+        now = time()
+        #count = super(RF, self).send(device, port, payload)
+        count = NRF24.send(self, device, port, payload)
+        print("Send time = %.02f ms" % ((time() - now) * 1000.0))
         return count
 
 class DevicesManager(AbstractDevicesManager, Thread):
@@ -60,6 +61,7 @@ class DevicesManager(AbstractDevicesManager, Thread):
     def deactivate(self):
         self.stop.set()
         self.join()
+        self.nrf.end()
 
     def run(self):
         self.nrf.begin(0, 0, DevicesManager.CE_PIN)
@@ -68,13 +70,14 @@ class DevicesManager(AbstractDevicesManager, Thread):
             print('NRF24 trans = %d, retrans = %d, drops = %d' % (
                 self.nrf.get_trans(), self.nrf.get_retrans(), self.nrf.get_drops()))
             # Wait for remote modules calls (or until config is deactivated)
-            payload = self.nrf.recv(self.stop.wait)
+            payload = self.nrf.recv(stopper = self.stop)
+            print('NRF24 after recv, payload = %s' % str(payload))
             if self.stop.is_set():
                 return
             if payload:
-                now = time.time()
+                now = time()
                 event = self.handle_message(payload)
-                print("Total time = %.02f ms" % ((time.time() - now) * 1000.0))
+                print("Total time = %.02f ms" % ((time() - now) * 1000.0))
                 if event:
                     self.queue.put(event)
     

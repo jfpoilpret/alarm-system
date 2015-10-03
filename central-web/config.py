@@ -28,6 +28,7 @@ class DemoConfig(Config):
         'sqlite:///' + os.path.join(basedir, 'data-demo.sqlite')
 
 class TestingConfig(Config):
+    DEBUG = True
     SECRET_KEY = 'secret'
     HOST = '0.0.0.0'
     PORT = 80

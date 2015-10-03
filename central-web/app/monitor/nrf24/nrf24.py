@@ -204,6 +204,7 @@ class NRF24:
         self.power = PALevel.RF_PWR_0DBM
         self.set_address(network, device)
         self.spidev = None
+        GPIO.cleanup()
         GPIO.setmode(GPIO.BCM)
 
     def set_address(self, network, device):
@@ -232,6 +233,8 @@ class NRF24:
         return self.drops
             
     def begin(self, major, minor, ce_pin, autoAck = True):
+#        GPIO.cleanup()
+#        GPIO.setmode(GPIO.BCM)
         # Initialize SPI bus
         self.spidev = spidev.SpiDev()
         self.spidev.open(major, minor)
@@ -288,9 +291,10 @@ class NRF24:
             self.standby()
             self.spidev.close()
             self.spidev = None
+#            GPIO.cleanup()
 
     # Receive structured payload: device, port, content
-    def recv(self, wait = time.sleep, timeout_secs = 0.0):
+    def recv(self, timeout_secs = 0.0, stopper = None):
         # run in receiver mode
         self.set_receiver_mode()
         # wait for payload reception
@@ -298,7 +302,12 @@ class NRF24:
         while not self.available():
             if timeout_secs != 0.0 and time.time() - now > timeout_secs:
                 return None
-            wait(0.001)
+            if stopper:
+                stopper.wait(0.001)
+                if stopper.is_set():
+                    return None
+            else:
+                time.sleep(0.001)
 
         status = self.get_status()
         if ((status & STATUS.RX_P_NO_MASK) >> STATUS.RX_P_NO) == 1:

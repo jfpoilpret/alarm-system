@@ -58,3 +58,17 @@ Command line operations:
 
 Running the server on Raspberry Pi:
 TODO
+
+TODO create venv
+
+TODO activate venv
+$ cd central-web
+$ source venv/bin/activate
+$ python manage.py -c test resetdb
+$ sudo -i
+$ cd /home/pi/alarm-system/central-web
+$ source venv/bin/activate
+$ python manage.py -c test runserver
+
+
+
