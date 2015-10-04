@@ -196,6 +196,7 @@ class NRF24:
 
     def __init__(self, network, device):
         self.state = STATE.POWER_DOWN_STATE
+        self.status = 0
         self.dest = 0
         self.trans = 0
         self.retrans = 0
@@ -241,33 +242,32 @@ class NRF24:
 
         # Setup hardware features:
         # channel, bitrate, retransmission, dynamic payload
-        self.write_register(Register.FEATURE,
+        self._write_register(Register.FEATURE,
             _BV(FEATURE.EN_DPL) |
             _BV(FEATURE.EN_ACK_PAY) | _BV(FEATURE.EN_DYN_ACK))
-        self.write_register(Register.RF_CH, self.channel)
-        self.write_register(Register.RF_SETUP,
+        self._write_register(Register.RF_CH, self.channel)
+        self._write_register(Register.RF_SETUP,
             BitRate.RF_DR_2MBPS | self.power)
-        self.write_register(Register.SETUP_RETR,
+        self._write_register(Register.SETUP_RETR,
             (SETUP_RETR.DEFAULT_ARD << SETUP_RETR.ARD) |
             (SETUP_RETR.DEFAULT_ARC << SETUP_RETR.ARC))
-        self.write_register(Register.DYNPD, DYNPD.DPL_PA)
+        self._write_register(Register.DYNPD, DYNPD.DPL_PA)
 
         # Setup hardware receive pipes address: network (16b), device (8b)
-        #  P0: auto-acknowledge (see set_transmit_mode)
+        #  P0: auto-acknowledge (see _set_transmit_mode)
         #  P1: node address<network:device> with auto-acknowledge
         #  P2: broadcast<network:0>
-        self.write_register(Register.SETUP_AW, SETUP_AW.AW_3BYTES)
+        self._write_register(Register.SETUP_AW, SETUP_AW.AW_3BYTES)
         address = [(self.network >> 8) & 0xFF, self.network & 0xFF, self.device]
-        self.write_register(Register.RX_ADDR_P1, address)
-        self.write_register(Register.RX_ADDR_P2, NRF24.BROADCAST)
-        self.write_register(Register.EN_RXADDR,
+        self._write_register(Register.RX_ADDR_P1, address)
+        self._write_register(Register.RX_ADDR_P2, NRF24.BROADCAST)
+        self._write_register(Register.EN_RXADDR,
             _BV(EN_RXADDR.ERX_P2) | _BV(EN_RXADDR.ERX_P1))
         if autoAck:
-            self.write_register(Register.EN_AA,
+            self._write_register(Register.EN_AA,
                 _BV(EN_AA.ENAA_P1) | _BV(EN_AA.ENAA_P0))
         else:
-            self.write_register(Register.EN_AA, 0)
-
+            self._write_register(Register.EN_AA, 0)
         self.powerUp()
 
     def set_device_output_power(self, dBm):
@@ -280,7 +280,7 @@ class NRF24:
         else:
             self.power = PALevel.RF_PWR_0DBM
         if self.spidev:
-            self.write_register(Register.RF_SETUP,
+            self._write_register(Register.RF_SETUP,
                 BitRate.RF_DR_2MBPS | self.power)
         
     def end(self):
@@ -292,31 +292,33 @@ class NRF24:
     # Receive structured payload: device, port, content
     def recv(self, timeout_secs = 0.0):
         # run in receiver mode
-        self.set_receiver_mode()
+        self._set_receiver_mode()
         # wait for payload reception
         now = time.time()
-        while not self.available():
+        while not self._available():
             if timeout_secs != 0.0 and time.time() - now > timeout_secs:
                 return None
             time.sleep(0.001)
 
-        status = self.get_status()
-        if ((status & STATUS.RX_P_NO_MASK) >> STATUS.RX_P_NO) == 1:
+        if ((self.status & STATUS.RX_P_NO_MASK) >> STATUS.RX_P_NO) == 1:
             self.dest = self.device
         else:
             self.dest = NRF24.BROADCAST
-
-        self.write_register(Register.STATUS, _BV(STATUS.RX_DR))
+        self._write_register(Register.STATUS, _BV(STATUS.RX_DR))
+        
         # read payload size
-        count = self.get_payload_size()
+        count = self._get_payload_size()
         if count > NRF24.DEVICE_PAYLOAD_MAX:
-            self.flush_rx()
+            self._flush_rx()
             return None
         # read payload
-        txbuffer = [Command.NOP] * (count + 1)
-        txbuffer[0] = Command.R_RX_PAYLOAD
+#        txbuffer = [Command.NOP] * (count + 1)
+#        txbuffer[0] = Command.R_RX_PAYLOAD
+        txbuffer = [Command.R_RX_PAYLOAD, 0, 0]
+        txbuffer += [Command.NOP] * (count - 2)
         payload = self.spidev.xfer2(txbuffer)
-        self.flush_rx()
+        self.status = payload[0]
+#        self._flush_rx()
         return Payload(payload)
 
     def is_broadcast(self):
@@ -330,7 +332,7 @@ class NRF24:
         if (not content) or (len(content) > NRF24.PAYLOAD_MAX):
             return -1
         # setting transmit destination
-        self.set_transmit_mode(dest)
+        self._set_transmit_mode(dest)
 
         # Write command, device, port, content
         if dest == NRF24.BROADCAST:
@@ -339,167 +341,169 @@ class NRF24:
             command = Command.W_TX_PAYLOAD
         txbuffer = [command, self.device, port]
         txbuffer += content
-        self.spidev.xfer2(txbuffer)
+        self.status = self.spidev.xfer2(txbuffer)[0]
         self.trans += 1
 
         # Check auto acknowledge
         if dest != NRF24.BROADCAST:
             address = [(self.network >> 8) & 0xFF, self.network & 0xFF, dest]
-            self.write_register(Register.RX_ADDR_P0, address)
-            self.write_register(Register.EN_RXADDR,
+            self._write_register(Register.RX_ADDR_P0, address)
+            self._write_register(Register.EN_RXADDR,
                 _BV(EN_RXADDR.ERX_P2) | _BV(EN_RXADDR.ERX_P1) |
                 _BV(EN_RXADDR.ERX_P0))
 
         # Wait for transmission
         while True:
-            status = self.get_status()
-            if status & (_BV(STATUS.TX_DS) | _BV(STATUS.MAX_RT)):
+            self._get_status()
+            if self.status & (_BV(STATUS.TX_DS) | _BV(STATUS.MAX_RT)):
                 break
             time.sleep(0.001)
-        data_sent = self.get_status() & _BV(STATUS.TX_DS)
+        data_sent = self.status & _BV(STATUS.TX_DS)
 
         # Check for auto ack pipe disable
-        if dest == NRF24.BROADCAST:
-            self.write_register(Register.EN_RXADDR,
+        if dest != NRF24.BROADCAST:
+            self._write_register(Register.EN_RXADDR,
                 _BV(EN_RXADDR.ERX_P2) | _BV(EN_RXADDR.ERX_P1))
 
         # Reset status bits
-        self.write_register(Register.STATUS,
+        self._write_register(Register.STATUS,
             _BV(STATUS.MAX_RT) | _BV(STATUS.TX_DS))
         # Read retransmission counter
-        observe = self.read_register(Register.OBSERVE_TX)
+        observe = self._read_register(Register.OBSERVE_TX)
         self.retrans += observe & 0x0F
 
         if data_sent:
             return len(content)
-        self.flush_tx()
+        self._flush_tx()
         self.drops += 1
         return -2
 
     def standby(self):
-        self.ce(LOW)
+        self._ce(LOW)
         time.sleep(10 / 1000000.0)
         self.state = STATE.STANDBY_STATE
 
     def powerDown(self):
         time.sleep(32 / 1000.0)
-        self.ce(LOW)
-        self.write_register(Register.CONFIG,
+        self._ce(LOW)
+        self._write_register(Register.CONFIG,
             _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO))
         self.state = STATE.POWER_DOWN_STATE
 
     def powerUp(self):
         if self.state != STATE.POWER_DOWN_STATE:
             return
-        self.ce(LOW)
-        self.write_register(Register.CONFIG,
+        self._ce(LOW)
+        self._write_register(Register.CONFIG,
             _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) | _BV(CONFIG.PWR_UP))
         time.sleep(3 / 1000.0)
         self.state = STATE.STANDBY_STATE
 
-        self.write_register(Register.STATUS,
+        self._write_register(Register.STATUS,
             _BV(STATUS.RX_DR) | _BV(STATUS.TX_DS) | _BV(STATUS.MAX_RT))
-        self.flush_tx()
-        self.flush_rx()
+        self._flush_tx()
+        self._flush_rx()
 
     def testRPD(self):
-        return self.read_register(Register.RPD) & 1
+        return self._read_register(Register.RPD) & 1
     
     # Implementation methods
     #========================
-    def available(self):
-        if self.get_fifo_status() & _BV(FIFO_STATUS.RX_EMPTY):
+    def _read(self, command, blen = 1):
+        buf = [command]
+        buf += [Command.NOP] * max(1, blen)
+        resp = self.spidev.xfer2(buf)
+        self.status = resp[0]
+        if blen == 1:
+            return resp[1]
+        return resp[1:]
+
+    def _read_register(self, reg, blen = 1):
+        return self._read(Command.R_REGISTER | (Command.REGISTER_MASK & reg), blen)
+
+    def _write(self, command, value, length = -1):
+        buf = [command]
+        if isinstance(value, (int, long)):
+            if length < 0:
+                length = 1
+            else:
+                length = min(4, length)
+            i = length
+            while i > 0:
+                buf += [int(value & 0xff)]
+                value >>= 8
+                i -= 1
+        elif isinstance(value, list):
+            if length < 0:
+                length = len(value)
+            for i in xrange(min(len(value), length)):
+                buf.append(int(value[len(value) - i - 1] & 0xff))
+        else:
+            raise Exception("Value must be int or list")
+        self.status = self.spidev.xfer2(buf)[0]
+        return self.status
+
+    def _write_register(self, reg, value, length = -1):
+        return self._write(Command.W_REGISTER | (Command.REGISTER_MASK & reg), value, length)
+
+    def _available(self):
+        if self._get_fifo_status() & _BV(FIFO_STATUS.RX_EMPTY):
             return False
-        if self.get_payload_size() <= NRF24.DEVICE_PAYLOAD_MAX:
+        if self._get_payload_size() <= NRF24.DEVICE_PAYLOAD_MAX:
             return True
-        self.flush_rx()
+        self._flush_rx()
         return False
 
-    def set_receiver_mode(self):
+    def _set_receiver_mode(self):
         if self.state == STATE.RX_STATE:
             return
-        #self.ce(LOW)
-        self.write_register(Register.CONFIG,
+        #self._ce(LOW)
+        self._write_register(Register.CONFIG,
             _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) |
             _BV(CONFIG.PWR_UP) | _BV(CONFIG.PRIM_RX))
-        self.ce(HIGH)
+        self._ce(HIGH)
         if self.state == STATE.STANDBY_STATE:
             # wait for the radio to come up (130us actually only needed)
             time.sleep(130 / 1000000.0)
         self.state = STATE.RX_STATE
 
-    def set_transmit_mode(self, dest):
+    def _set_transmit_mode(self, dest):
         # setup primary transmit address
         address = [(self.network >> 8) & 0xFF, self.network & 0xFF, dest]
-        self.write_register(Register.TX_ADDR, address)
+        self._write_register(Register.TX_ADDR, address)
 
         # trigger the transmitter mode
         if self.state != STATE.TX_STATE:
-            self.ce(LOW)
-            self.write_register(Register.CONFIG,
+            self._ce(LOW)
+            self._write_register(Register.CONFIG,
                 _BV(CONFIG.EN_CRC) | _BV(CONFIG.CRCO) | _BV(CONFIG.PWR_UP))
-            self.ce(HIGH)
+            self._ce(HIGH)
 
         # wait for the transmitter to become active
         if self.state == STATE.STANDBY_STATE:
             time.sleep(130 / 1000000.0)
         self.state = STATE.TX_STATE
 
-    def ce(self, level):
+    def _ce(self, level):
         if level == HIGH:
             GPIO.output(self.ce_pin, GPIO.HIGH)
         else:
             GPIO.output(self.ce_pin, GPIO.LOW)
         return
 
-    def get_fifo_status(self):
-        return self.read_register(Register.FIFO_STATUS)
+    def _get_fifo_status(self):
+        return self._read_register(Register.FIFO_STATUS)
 
-    def get_payload_size(self):
-        return self.spidev.xfer2([Command.R_RX_PL_WID, 0])[1]
+    def _get_payload_size(self):
+        return self._read(Command.R_RX_PL_WID)
 
-    def read_register(self, reg, blen=1):
-        buf = [Command.R_REGISTER | (Command.REGISTER_MASK & reg)]
-        buf += [Command.NOP] * max(1, blen)
+    def _flush_rx(self):
+        return self._write(Command.FLUSH_RX)
 
-        resp = self.spidev.xfer2(buf)
-        if blen == 1:
-            return resp[1]
+    def _flush_tx(self):
+        return self._write(Command.FLUSH_TX)
 
-        return resp[1:]
-
-    def write_register(self, reg, value, length=-1):
-        buf = [Command.W_REGISTER | (Command.REGISTER_MASK & reg)]
-
-        if isinstance(value, (int, long)):
-            if length < 0:
-                length = 1
-            else:
-                length = min(4, length)
-
-            i = length
-            while i > 0:
-                buf += [int(value & 0xff)]
-                value >>= 8
-                i -= 1
-
-        elif isinstance(value, list):
-            if length < 0:
-                length = len(value)
-
-            for i in xrange(min(len(value), length)):
-                buf.append(int(value[len(value) - i - 1] & 0xff))
-        else:
-            raise Exception("Value must be int or list")
-
-        return self.spidev.xfer2(buf)[0]
-
-    def flush_rx(self):
-        return self.spidev.xfer2([Command.FLUSH_RX])[0]
-
-    def flush_tx(self):
-        return self.spidev.xfer2([Command.FLUSH_TX])[0]
-
-    def get_status(self):
-        return self.spidev.xfer2([Command.NOP])[0]
+    def _get_status(self):
+        self.status = self.spidev.xfer2([Command.NOP])[0]
+        return self.status
 
