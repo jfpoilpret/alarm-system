@@ -25,6 +25,10 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>Cipher.cpp</itemPath>
+    <itemPath>Cipher.h</itemPath>
+    <itemPath>NRF24L01P.cpp</itemPath>
+    <itemPath>NRF24L01P.h</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -36,6 +40,14 @@
       </toolsSet>
       <compileType>
       </compileType>
+      <item path="Cipher.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Cipher.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="NRF24L01P.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="NRF24L01P.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
@@ -59,6 +71,14 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="Cipher.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Cipher.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="NRF24L01P.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="NRF24L01P.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
