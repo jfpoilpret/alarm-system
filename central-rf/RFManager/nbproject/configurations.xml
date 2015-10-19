@@ -4,6 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>Cipher.h</itemPath>
+      <itemPath>NRF24L01P.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -12,6 +14,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>Cipher.cpp</itemPath>
+      <itemPath>NRF24L01P.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -25,10 +29,6 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <itemPath>Cipher.cpp</itemPath>
-    <itemPath>Cipher.h</itemPath>
-    <itemPath>NRF24L01P.cpp</itemPath>
-    <itemPath>NRF24L01P.h</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -39,6 +39,12 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerOptionItem>-lbcm2835</linkerOptionItem>
+            <linkerOptionItem>-lrt</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
       </compileType>
       <item path="Cipher.cpp" ex="false" tool="1" flavor2="0">
       </item>

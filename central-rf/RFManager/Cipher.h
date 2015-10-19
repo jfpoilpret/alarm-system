@@ -1,8 +1,5 @@
 /*
- * Cipher.hh
- *
- *  Created on: 25 janv. 2015
- *      Author: Jean-Fran�ois
+ * Cipher.h
  */
 
 #ifndef CIPHER_H_

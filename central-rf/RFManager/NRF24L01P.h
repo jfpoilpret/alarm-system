@@ -3,7 +3,7 @@
  * @version 1.0
  *
  * @section License
- * Copyright (C) 2013-2015, Mikael Patel
+ * Copyright (C) 2013-2015, Jean-François Poilprêt
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,7 +15,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * This file is a port from the Arduino Che Cosa project.
+ * This file is inspired from NRF 24L01 library of the Arduino Che Cosa project.
+ * It allows Raspberry Pi programs to "talk" to Arduino using Cosa with NRF24L01 
+ * device.
  */
 
 #ifndef NRF24L01P_H
