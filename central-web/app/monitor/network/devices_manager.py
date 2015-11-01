@@ -7,6 +7,7 @@ import zmq
 from app.monitor.network.message_handlers import PingHandler, VoltageHandler, LockUnlockHandler
 from app.monitor.network.common_devices_manager import AbstractDevicesManager
 from app.models import Device
+from app.monitor.monitoring import AlarmStatus
 
 class DevicesManager(AbstractDevicesManager, Thread):
     # RF Communication constants
@@ -46,7 +47,7 @@ class DevicesManager(AbstractDevicesManager, Thread):
 
     def set_status(self, status):
         AbstractDevicesManager.set_status(self, status)
-        self.send_command('LOCK' if status else 'UNLOCK')
+        self.send_command('LOCK' if status == AlarmStatus.LOCKED else 'UNLOCK')
         
     def send_command(self, command):
         print(command)
