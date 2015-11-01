@@ -54,12 +54,6 @@ x			- install pyzmq on RPi and Windows
 x			- small Python program to "talk" with C++ process
 OK			- check publish is not blocked by slow subscriber????
 
-x		- update RFManager (C++):
-			- improve XTEA performance by pre-computing coefficients when setting key
-			
-		- commit
-		- check make on RPi
-			
 8h		- update central-web (Python):
 			- use ZMQ
 			- remove NRF24 altogether
@@ -67,15 +61,16 @@ x		- update RFManager (C++):
 			- send commands (START/STOP/LOCKED/UNLOCKED...)
 			- receive data and post events asynchronously
 		
+		- RFManager: improve XTEA performance by pre-computing coefficients when setting key
+		- check make on RPi
+			
 4h		- DEBUG
+		- update requirements.txt and README
+		- use python 3.4 instead of 2.7?
 		
 		- potential improvements
 			- replace read IRQ pin with event on falling edge?
 			
-		- change NRF24 with enhanced one and compare statistics
-		
-		- check remote debugging
-		
 
 		- try arduino build on netbeans?
 		- try python build on netbeans?

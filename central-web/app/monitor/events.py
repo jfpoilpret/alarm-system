@@ -14,8 +14,8 @@ class EventType(object):
     TYPES_COUNT = NO_PING_FOR_LONG
 
 class Event(object):
-    def __init__(self, event_type, device_id = None, detail = None):
-        self.timestamp = time()
+    def __init__(self, event_type, device_id = None, detail = None, timestamp = None):
+        self.timestamp = timestamp if timestamp else time()
         self.event_type = event_type
         self.device_id = device_id
         self.detail = detail

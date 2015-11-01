@@ -2,92 +2,95 @@
 
 from threading import Thread
 from threading import Event as ThreadEvent
+import zmq
+
 from app.monitor.network.message_handlers import PingHandler, VoltageHandler, LockUnlockHandler
-from app.monitor.network.message import MessageType
-
-try:
-    from app.monitor.nrf24.nrf24 import NRF24
-except ImportError as e:
-    # Trick to allow loading the module on a PC
-    print(e)
-    class NRF24:
-        def __init__(self, network, device):
-            print('WRONG NRF24!!!!!!!!!!')
-
-from time import time
 from app.monitor.network.common_devices_manager import AbstractDevicesManager
-from app.monitor.cipher.cipher import XTEA
-
-class RF(NRF24):
-    def send(self, device, port, payload):
-        now = time()
-        #count = super(RF, self).send(device, port, payload)
-        count = NRF24.send(self, device, port, payload)
-        print("Send time = %.02f ms" % ((time() - now) * 1000.0))
-        return count
+from app.models import Device
 
 class DevicesManager(AbstractDevicesManager, Thread):
     # RF Communication constants
     NETWORK = 0xC05A
     SERVER_ID = 0x01
-    # Hardware constants
-    CE_PIN = 25
     # Timing constants
     PERIOD_REFRESH_KEY_SECS = 120.0
 
     def __init__(self, *args, **kwargs):
         AbstractDevicesManager.__init__(self, *args, **kwargs)
         Thread.__init__(self)
-        # Prepare devices for RF messages (create cipher)
-        for device in self.devices.values():
-            device.cipher = XTEA()
-            device.next_key_time = 0
-        # Initialize RF device
-        self.nrf = RF(DevicesManager.NETWORK, DevicesManager.SERVER_ID)
+        #TODO Launch process to handle devices communication through NRF24
+        # RFManager should be launched earlier (at web system init time)
+        
+        # Start ZMQ sockets to handle communication with Collector process
+        context = zmq.Context.instance()
+        self.command = context.socket(zmq.REQ)
+        self.command.connect("ipc:///tmp/alarm-system/command.ipc")
+        self.data = context.socket(zmq.SUB)
+        self.data.connect("ipc:///tmp/alarm-system/devices.ipc")
+        self.data.setsockopt(zmq.SUBSCRIBE, "")
+        
         # Setup RF message handlers
-        pingHandler = PingHandler(self, DevicesManager.PERIOD_REFRESH_KEY_SECS)
+        #TODO review handler design (as messages come from collector process now)
+        pingHandler = PingHandler()
         voltageHandler = VoltageHandler()
-        lockHandler = LockUnlockHandler(self)
+        lockHandler = LockUnlockHandler()
         self.handlers = {
-            MessageType.LOCK_CODE: lockHandler,
-            MessageType.UNLOCK_CODE: lockHandler,
-            MessageType.PING_SERVER: pingHandler,
-            MessageType.VOLTAGE_LEVEL: voltageHandler
+            'LOCK': lockHandler,
+            'UNLOCK': lockHandler,
+            'PING': pingHandler,
+            'VOLT': voltageHandler
         }
         self.stop = ThreadEvent()
         self.stop.clear()
         self.start()
 
+    def set_status(self, status):
+        AbstractDevicesManager.set_status(self, status)
+        self.send_command('LOCK' if status else 'UNLOCK')
+        
+    def send_command(self, command):
+        print(command)
+        self.command.send(command.encode('ascii'))
+        result = self.command.recv()
+        print(result)
+        return result == "OK"
+    
     def deactivate(self):
         self.stop.set()
         self.join()
-        self.nrf.end()
 
     def run(self):
-        self.nrf.begin(0, 0, DevicesManager.CE_PIN)
+        # Initialize and start RFManager
+        cmd = "INIT %x %x %f" % (
+            DevicesManager.NETWORK, DevicesManager.SERVER_ID, DevicesManager.PERIOD_REFRESH_KEY_SECS)
+        for device in self.devices:
+            if device.source.kind == Device.KIND_KEYPAD:
+                cmd += " %x" % device.source.device_id
+        self.send_command(cmd)
+        self.send_command("START")
         while True:
-            # Print some RF status
-            print('NRF24 trans = %d, retrans = %d, drops = %d' % (
-                self.nrf.get_trans(), self.nrf.get_retrans(), self.nrf.get_drops()))
-            # Wait for remote modules calls (or until config is deactivated)
-            payload = self.nrf.recv(stopper = self.stop)
-            print('NRF24 after recv, payload = %s' % str(payload))
-            if self.stop.is_set():
-                return
-            if payload:
-                now = time()
-                event = self.handle_message(payload)
-                print("Total time = %.02f ms" % ((time() - now) * 1000.0))
+            #FIXME try/except EAGAIN or use timeout?
+            message = self.data.recv(zmq.NOBLOCK)
+            if message:
+                event = self.handle_message(message)
                 if event:
                     self.queue.put(event)
+            if self.stop.is_set():
+                break
+        self.send_command("STOP")
     
-    def handle_message(self, payload):
-        device = self.devices[payload.device]
-        port = payload.port
-        handler = self.handlers.get(port)
+    def handle_message(self, message):
+        # Parse message: ID TS VERB [ARGS]
+        args = message.split(' ')
+        id = int(args[0])
+        ts = int(args[1])
+        verb = args[2]
+        args = args[3:] if len(args) > 2 else []
+        device = self.devices[id]
+        handler = self.handlers.get(verb)
         if handler:
-            return handler(self.nrf, device, port, payload.content)
+            return handler(verb, ts, id, device, args)
         else:
-            print("Source %02x, unknown port %02x!" % (device.source.device_id, port))
+            print("Source %02x, unknown verb %s!" % (id, verb))
             return None
     
