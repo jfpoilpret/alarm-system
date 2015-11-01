@@ -70,11 +70,14 @@ class DevicesManager(AbstractDevicesManager, Thread):
         self.send_command("START")
         while True:
             #FIXME try/except EAGAIN or use timeout?
-            message = self.data.recv(zmq.NOBLOCK)
-            if message:
-                event = self.handle_message(message)
-                if event:
-                    self.queue.put(event)
+            try:
+                message = self.data.recv(zmq.NOBLOCK)
+                if message:
+                    event = self.handle_message(message)
+                    if event:
+                        self.queue.put(event)
+            except zmq.Again:
+                pass
             if self.stop.is_set():
                 break
         self.send_command("STOP")
