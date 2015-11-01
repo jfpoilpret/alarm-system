@@ -2,7 +2,19 @@
  * File:   CommandManager.cpp
  */
 
+#include <time.h>
 #include "RFManager.h"
+
+static timespec current_time() {
+	timespec time;
+	clock_gettime(CLOCK_REALTIME, &time);
+	return time;
+}
+
+static uint64_t us_since(const timespec& since) {
+	timespec now = current_time();
+	return (now.tv_sec - since.tv_sec) * 1000000 + (now.tv_nsec - since.tv_nsec) / 1000;
+}
 
 const size_t MESSAGE_MAX_SIZE = NRF24L01P::PAYLOAD_MAX;
 
@@ -75,13 +87,14 @@ void DevicesHandler::run() {
 		if (count >= 0) {
 			time_t now;
 			time(&now);
+			//TODO measure time to complete handling (most of it is spent in nrf.send())
 			std::ostringstream output;
 			output << (uint16_t) device << ' ' << now << ' ';
 			//TODO handle message (redesign later to use a map<port, functor>)
 			switch (port) {
 				case PING_SERVER:
 					if (	ciphered_devices.count(device)
-						&&	difftime(ciphered_devices[device].creation_time, now) > cipher_duration) {
+						&&	difftime(now, ciphered_devices[device].creation_time) > cipher_duration) {
 						// Generate new cipher key and send back
 						uint8_t payload[XTEA::KEY_SIZE + 1];
 						payload[0] = status.locked;
@@ -90,6 +103,8 @@ void DevicesHandler::run() {
 						if (nrf.send(device, port, payload, sizeof payload) > 0) {
 							ciphered_devices[device].cipher.set_key(&payload[1]);
 							ciphered_devices[device].creation_time = now;
+						} else {
+							std::cerr << "Cipher update failed: " << std::endl; 
 						}
 					} else {
 						// Simply return lock
@@ -162,7 +177,6 @@ void CommandManager::run() {
 			input >> std::hex >> network >> server >> duration;
 			handler.set_address(network, server);
 			handler.set_cipher_duration(duration);
-			std::cout << "INIT " << std::hex << network << " " << server << " " << duration << std::endl;
 			std::vector<uint8_t> devices;
 			while (!input.eof()) {
 				uint16_t id;

@@ -57,9 +57,17 @@ Command line operations:
     runs web service according to <config> settings (different ports and DBs)
 
 Running the server on Raspberry Pi:
-TODO
+	- setup python
+		> sudo apt-get install python-pip
+		> sudo pip install virtualenv
+	NOT SURE IF THE NEXT INSTALLS ARE NEEDED...
+		> sudo apt-get install python-dev
+		> sudo apt-get install python-rpi.gpio
 
-TODO create venv
+	- create venv
+		> virtualenv venv
+		> source venv/bin/activate
+
 
 TODO activate venv
 $ cd central-web

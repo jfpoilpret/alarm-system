@@ -13,23 +13,23 @@
 class XTEA
 {
 public:
+	static const size_t KEY_SIZE = 4 * 4;
+
 	XTEA(const uint8_t rounds = DEFAULT_ROUNDS):_rounds(rounds),_key() {}
 	XTEA(const XTEA& rhs);
 	XTEA& operator = (const XTEA& rhs);
 
-	static void generate_key(uint8_t key[4 * 4]);
-	void set_key(uint8_t const key[4 * 4]);
-	// TODO replace with uint_8t[8]
+	static void generate_key(uint8_t key[KEY_SIZE]);
+	void set_key(uint8_t const key[KEY_SIZE]);
+
 	void encipher(uint32_t v[2]);
 	void decipher(uint32_t v[2]);
-
-	static const size_t KEY_SIZE = 4 * 4;
 
 private:
 	static const uint8_t DEFAULT_ROUNDS = 32;
 	static const uint32_t KEY_SCHEDULE = 0x9E3779B9;
 	uint8_t _rounds;
-	uint32_t const _key[4];
+	uint32_t const _key[KEY_SIZE / sizeof(uint32_t)];
 };
 
 #pragma pack()

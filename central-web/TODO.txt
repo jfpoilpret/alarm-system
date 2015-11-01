@@ -1,4 +1,103 @@
+	- develop in C++ for RPi:
+http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
+x		- install netbeans
+x		- setup RPi2 correctly (remove bluetooth, ensure dev packages installed, root login)
+x		- perform small sample project test
+x		- ensure bcm library is available
+			cd /home/pi
+			wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.46.tar.gz
+			gunzip bcm2835-1.46.tar.gz
+			tar xvf bcm2835-1.46.tar
+			cd bcm2835-1.46
+			./configure
+			make
+			sudo make check
+			sudo make install
+x		- statistic packets losses
+			2000 packets sent
+			201 dropped (117 missing IRQ) => 89.95% success
+			1830 retries
+			84 packets resent 15 times and failed = 1260 retries
+			1799 packets, 570 retries => 31.7% retries
 
+x		- install zero mq and build (as pi user)
+			sudo apt-get install automake
+			sudo apt-get install uuid-dev
+			
+			cd /home/pi
+			wget https://github.com/jedisct1/libsodium/releases/download/1.0.4/libsodium-1.0.4.tar.gz
+			gunzip libsodium-1.0.4.tar.gz
+			tar xvf libsodium-1.0.4.tar
+			cd libsodium-1.0.4
+			./configure
+			make
+			make check
+			sudo make install
+			
+			wget http://download.zeromq.org/zeromq-4.1.3.tar.gz
+			gunzip zeromq-4.1.3.tar.gz
+			tar xvf zeromq-4.1.3.tar
+			cd zeromq-4.1.3/
+			./configure
+			make
+			sudo make install
+			sudo ldconfig
+			make check
+		
+x		- create small sample in C++ to check ZMQ C-C
+			- PUB/SUB need absolute ipc path (ipc:///tmp/xxx.ipc) to work properly
+			- same for REQ/REP
+
+		- improve sample to check C-Python
+x			- install pyzmq on RPi and Windows
+				pip install pyzmq (in virtualenv)
+x			- small Python program to "talk" with C++ process
+OK			- check publish is not blocked by slow subscriber????
+
+x		- update RFManager (C++):
+			- improve XTEA performance by pre-computing coefficients when setting key
+			
+		- commit
+		- check make on RPi
+			
+8h		- update central-web (Python):
+			- use ZMQ
+			- remove NRF24 altogether
+			- launch collector process
+			- send commands (START/STOP/LOCKED/UNLOCKED...)
+			- receive data and post events asynchronously
+		
+4h		- DEBUG
+		
+		- potential improvements
+			- replace read IRQ pin with event on falling edge?
+			
+		- change NRF24 with enhanced one and compare statistics
+		
+		- check remote debugging
+		
+
+		- try arduino build on netbeans?
+		- try python build on netbeans?
+		
+		
+	- Raspberry Pi
+		- need NRF24 in C/C++ because Python is too slow here
+		http://www.airspayce.com/mikem/bcm2835/
+		- idea is to port Cosa NRF24 to RPi to work exactly the same (only SPI API is different)
+		- then develop small program to verify it works fine (no intelligence):
+			- wait for device message
+			- print message
+			- reply message as expected by device
+			- include XTEA in C++
+		- then develop a small process that:
+			- gets info from Web server (IPC TBD): devices ID, status...
+			- wait for device frames, reply immediately and queue msg to Web server (IPC TBD)
+		- IPC:
+			zeromq for queues?
+			protobuf for serialization?
+			
+			
 	- Raspberry Pi port
 x		- rewrite device manager for NRF24
 x		- check everything still works on PC with simulated devices

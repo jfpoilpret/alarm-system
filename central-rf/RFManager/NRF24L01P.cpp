@@ -69,7 +69,6 @@ NRF24L01P::NRF24L01P(uint16_t net, uint8_t dev, RPiGPIOPin csn, RPiGPIOPin ce, R
 }
 
 NRF24L01P::~NRF24L01P() {
-	std::cout << "NRF24L01P::~NRF24L01P()" << std::endl;
 	powerdown();
 	bcm2835_spi_end();
 	bcm2835_close();
@@ -220,7 +219,6 @@ int NRF24L01P::send(uint8_t dest, uint8_t port, const void* buf, size_t len, uin
 
 	// Clear IRQ
 	status_t status = read_status();
-//	bcm2835_gpio_clr(m_ce);
 	write(STATUS, (_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT)));
 	
 	// Check for auto-acknowledge pipe(0) disable

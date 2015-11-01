@@ -24,7 +24,6 @@
 #define NRF24L01P_H
 
 #include <cerrno>
-#include <iostream>
 #include <cstddef>
 #include <bcm2835.h>
 
@@ -631,8 +630,6 @@ protected:
 	 * @return status.
 	 */
 	void write(Register reg, uint8_t data) {
-		if (m_state != POWER_DOWN_STATE && m_state != STANDBY_STATE)
-			std::cout << "WWW" << std::hex << reg << std::flush;
 		write((Command) (W_REGISTER | (REG_MASK & reg)), data);
 	}
 
