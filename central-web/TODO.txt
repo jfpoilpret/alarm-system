@@ -55,11 +55,9 @@ x			- small Python program to "talk" with C++ process
 OK			- check publish is not blocked by slow subscriber????
 
 8h		- update central-web (Python):
-			- use ZMQ
-			- remove NRF24 altogether
+			- debug first attempt to integrate (manual RFManager launch)
 			- launch collector process
-			- send commands (START/STOP/LOCKED/UNLOCKED...)
-			- receive data and post events asynchronously
+			- improve C++ design
 		
 		- RFManager: improve XTEA performance by pre-computing coefficients when setting key
 		- check make on RPi
@@ -70,51 +68,10 @@ OK			- check publish is not blocked by slow subscriber????
 		
 		- potential improvements
 			- replace read IRQ pin with event on falling edge?
-			
 
 		- try arduino build on netbeans?
 		- try python build on netbeans?
 		
-		
-	- Raspberry Pi
-		- need NRF24 in C/C++ because Python is too slow here
-		http://www.airspayce.com/mikem/bcm2835/
-		- idea is to port Cosa NRF24 to RPi to work exactly the same (only SPI API is different)
-		- then develop small program to verify it works fine (no intelligence):
-			- wait for device message
-			- print message
-			- reply message as expected by device
-			- include XTEA in C++
-		- then develop a small process that:
-			- gets info from Web server (IPC TBD): devices ID, status...
-			- wait for device frames, reply immediately and queue msg to Web server (IPC TBD)
-		- IPC:
-			zeromq for queues?
-			protobuf for serialization?
-			
-			
-	- Raspberry Pi port
-x		- rewrite device manager for NRF24
-x		- check everything still works on PC with simulated devices
-2h		- upload to raspberry pi and debug
-x			- create venv and load all deps
-x			- write how to launch (sudo python ...) in README
-x			- create config
-x			- monitor config with SPI
-x			- add all pi requirements (new txt)
-x			- deactivate deadlocks?
-x			- check kb id => 0x10
-x				- check config keyboard 16
-x			- issue on killing app -> pins not freed -> next run will fail...
-30'		- commit/push from RPi!
-
-			- code issues (encryption?) investigate
-
-??			- issue with XTEA encryption?
-1h+			- debug...
-
-30'		- commit/push from RPi!
-
 1h		- finally remove alarm-system/central dir? (or keep small app for debug?)
 
 	- review PCB design of keypad module

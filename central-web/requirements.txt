@@ -12,6 +12,8 @@ aniso8601==1.0.0
 dominate==2.1.12
 itsdangerous==0.24
 pytz==2015.4
+pyzmq==14.7.0
 six==1.9.0
 webargs==0.15.0
+wheel==0.24.0
 xmltodict==0.9.2
