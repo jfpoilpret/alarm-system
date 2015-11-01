@@ -184,8 +184,8 @@ bool NRF24L01P::wait_for_irq(uint32_t max_ms, bool update_missing_irq) {
 }
 
 int NRF24L01P::send(uint8_t dest, uint8_t port, const void* buf, size_t len, uint32_t ms) {
-	if (buf == 0) return EINVAL;
-	if (len > PAYLOAD_MAX) return EMSGSIZE;
+	if (buf == 0) return -EINVAL;
+	if (len > PAYLOAD_MAX) return -EMSGSIZE;
 
 	// Setting transmit destination first (needs to ensure standby mode)
 	standby();
@@ -241,7 +241,7 @@ int NRF24L01P::send(uint8_t dest, uint8_t port, const void* buf, size_t len, uin
 	write(FLUSH_TX);
 	m_drops += 1;
 
-	return EIO;
+	return -EIO;
 }
 
 int NRF24L01P::recv(uint8_t& src, uint8_t& port, void* buf, size_t size, uint32_t ms) {
@@ -261,7 +261,7 @@ int NRF24L01P::recv(uint8_t& src, uint8_t& port, void* buf, size_t size, uint32_
 	}
 
 	// Check if there is data available on any pipe
-	if (!wait_for_irq(ms, false)) return ETIME;
+	if (!wait_for_irq(ms, false)) return -ETIME;
 	status_t status =  read_status();
 	
 	// Go to standby mode and clear IRQ
@@ -269,7 +269,7 @@ int NRF24L01P::recv(uint8_t& src, uint8_t& port, void* buf, size_t size, uint32_
 	write(STATUS, (_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT)));
 
 	// Check expected status (RX_DR)
-	if (!status.rx_dr) return EIO;
+	if (!status.rx_dr) return -EIO;
 
 	// Check the receiver fifo
 	if (read_fifo_status().rx_empty) {
@@ -286,7 +286,7 @@ int NRF24L01P::read_fifo_payload(uint8_t& src, uint8_t& port, void* buf, size_t 
 	uint8_t count = read(R_RX_PL_WID) - 2;
 	if ((count > PAYLOAD_MAX) || (count > size)) {
 		write(FLUSH_RX);
-		return EMSGSIZE;
+		return -EMSGSIZE;
 	}
 	
 	// Data is available, check if this a broadcast or not

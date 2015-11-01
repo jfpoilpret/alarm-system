@@ -14,6 +14,8 @@ class XTEA
 {
 public:
 	XTEA(const uint8_t rounds = DEFAULT_ROUNDS):_rounds(rounds),_key() {}
+	XTEA(const XTEA& rhs);
+	XTEA& operator = (const XTEA& rhs);
 
 	static void generate_key(uint8_t key[4 * 4]);
 	void set_key(uint8_t const key[4 * 4]);
@@ -26,7 +28,7 @@ public:
 private:
 	static const uint8_t DEFAULT_ROUNDS = 32;
 	static const uint32_t KEY_SCHEDULE = 0x9E3779B9;
-	const uint8_t _rounds;
+	uint8_t _rounds;
 	uint32_t const _key[4];
 };
 

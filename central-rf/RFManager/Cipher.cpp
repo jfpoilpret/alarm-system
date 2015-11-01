@@ -7,6 +7,16 @@
 
 #pragma pack(1)
 
+XTEA::XTEA(const XTEA& rhs):_rounds(rhs._rounds),_key() {
+	memcpy((void*) _key, rhs._key, KEY_SIZE);
+}
+
+XTEA& XTEA::operator = (const XTEA& rhs) {
+	_rounds = rhs._rounds;
+	memcpy((void*) _key, rhs._key, KEY_SIZE);
+	return *this;
+}
+
 void XTEA::generate_key(uint8_t key[KEY_SIZE])
 {
 	uint32_t* ukey = (uint32_t*) key;

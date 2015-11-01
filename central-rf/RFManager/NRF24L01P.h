@@ -23,18 +23,10 @@
 #ifndef NRF24L01P_H
 #define NRF24L01P_H
 
+#include <cerrno>
 #include <iostream>
 #include <cstddef>
 #include <bcm2835.h>
-
-#define	EIO			-5	/**< I/O error. */
-#define	EINVAL		-22	/**< Invalid argument. */
-#define	ETIME		-62	/**< Timer expired. */
-#define	EMSGSIZE	-90	/**< Message too long. */
-
-#ifndef UNUSED
-#define UNUSED(x) (void) (x)
-#endif
 
 #ifndef _BV
 #define _BV(x) (1 << x)
