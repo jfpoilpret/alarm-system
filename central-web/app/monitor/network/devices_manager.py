@@ -63,9 +63,9 @@ class DevicesManager(AbstractDevicesManager, Thread):
         # Initialize and start RFManager
         cmd = "INIT %x %x %f" % (
             DevicesManager.NETWORK, DevicesManager.SERVER_ID, DevicesManager.PERIOD_REFRESH_KEY_SECS)
-        for device in self.devices:
+        for id, device in self.devices.items():
             if device.source.kind == Device.KIND_KEYPAD:
-                cmd += " %x" % device.source.device_id
+                cmd += " %x" % id
         self.send_command(cmd)
         self.send_command("START")
         while True:
