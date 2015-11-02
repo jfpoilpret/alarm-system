@@ -1,4 +1,8 @@
 # encoding: utf-8
+from subprocess import Popen
+import sys
+import atexit
+import os
 try:
     from queue import Queue
 except ImportError:
@@ -58,6 +62,19 @@ class MonitoringManager(object):
             self.devices_manager_class = DevicesManagerSimulator
         else:
             self.devices_manager_class = DevicesManager
+        if app.config['RF_MANAGER_PATH']:
+            # Launch RFManager process here
+            self.rf_manager = Popen(app.config['RF_MANAGER_PATH'], close_fds = True)
+        else:
+            self.rf_manager = None
+        atexit.register(self.exit)
+    
+    def exit(self):
+        if self.devices_manager:
+            self.devices_manager.exit()
+        elif self.rf_manager:
+            self.rf_manager.terminate()
+            self.rf_manager = None
     
     def activate(self, config):
         # Deactivate if already active

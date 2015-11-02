@@ -6,6 +6,9 @@ class AbstractDevicesManager(object):
         self.devices = devices
         self.status = status
 
+    def exit(self):
+        pass
+    
     def deactivate(self):
         pass
     

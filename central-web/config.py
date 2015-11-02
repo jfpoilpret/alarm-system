@@ -3,6 +3,7 @@
 import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+rootdir = os.path.split(basedir)[0]
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -10,6 +11,7 @@ class Config(object):
     HOST = '127.0.0.1'
     BOOTSTRAP_SERVE_LOCAL = True
     SIMULATE_DEVICES = False
+    RF_MANAGER_PATH = os.path.join(rootdir, 'central-rf', 'RFManager', 'RFManager')
 
 # This configuration is used during development on Windows only
 class DevelopmentConfig(Config):
@@ -18,6 +20,7 @@ class DevelopmentConfig(Config):
     SIMULATE_DEVICES = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
+    RF_MANAGER_PATH = None
 
 # The following configurations are used on Raspberry Pi (linux) only
 class DemoConfig(Config):

@@ -45,6 +45,9 @@ class DevicesManager(AbstractDevicesManager, Thread):
         self.stop.clear()
         self.start()
 
+    def exit(self):
+        self.send_command('EXIT')
+    
     def set_status(self, status):
         AbstractDevicesManager.set_status(self, status)
         self.send_command('LOCK' if status == AlarmStatus.LOCKED else 'UNLOCK')
