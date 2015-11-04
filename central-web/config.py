@@ -11,7 +11,7 @@ class Config(object):
     HOST = '127.0.0.1'
     BOOTSTRAP_SERVE_LOCAL = True
     SIMULATE_DEVICES = False
-    RF_MANAGER_PATH = os.path.join(rootdir, 'central-rf', 'RFManager', 'RFManager')
+    RF_MANAGER_PATH = os.path.join(rootdir, 'central-rf', 'RFManager', 'dist', 'rfmanager')
 
 # This configuration is used during development on Windows only
 class DevelopmentConfig(Config):

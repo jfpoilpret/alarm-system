@@ -54,23 +54,25 @@ x			- install pyzmq on RPi and Windows
 x			- small Python program to "talk" with C++ process
 OK			- check publish is not blocked by slow subscriber????
 
-4h		- update central-web (Python):
-			- auto-launch collector process
-			- improve C++ design
+		- update central-web (Python):
+x			- auto-launch collector process
+x			- check make on RPi, ensure output location "RFManager"
+
+2h		- improve C++ design to make it more easily extensible
 		
-		- RFManager: improve XTEA performance by pre-computing coefficients when setting key
-		- check make on RPi
+1h		- RFManager: improve XTEA performance by pre-computing coefficients when setting key
+			- measure perfs before/after
 			
 		- update requirements.txt and README
 		- use python 3.4 instead of 2.7?
 		
-		- potential improvements
-			- replace read IRQ pin with event on falling edge?
+		- potential C++ improvements
+			- NRF24: replace read IRQ pin with event on falling edge?
 
-		- try arduino build on netbeans?
-		- try python build on netbeans?
+	- try arduino build on netbeans?
+	- try python build on netbeans?
 		
-1h		- finally remove alarm-system/central dir? (or keep small app for debug?)
+1h	- finally remove alarm-system/central dir? (or keep small app for debug?)
 
 	- review PCB design of keypad module
 		- no debug LED
