@@ -47,6 +47,7 @@
           <commandLine>-std=c++0x -pthread</commandLine>
         </ccTool>
         <linkerTool>
+          <output>${CND_DISTDIR}/rfmanager</output>
           <linkerLibItems>
             <linkerOptionItem>-lzmq</linkerOptionItem>
             <linkerOptionItem>-lrt</linkerOptionItem>
@@ -90,6 +91,9 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/rfmanager</output>
+        </linkerTool>
       </compileType>
       <item path="Cipher.cpp" ex="false" tool="1" flavor2="0">
       </item>
