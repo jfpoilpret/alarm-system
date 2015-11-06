@@ -55,6 +55,18 @@ x			- small Python program to "talk" with C++ process
 OK			- check publish is not blocked by slow subscriber????
 
 2h+		- debug global Python <-> C++ system
+			- why are there always 2 python processes launched, each with one 
+			rfmanager subprocess???
+				-> flask DEBUG mode issue (auto Werkzeug reloader first relaunches python process...)
+			
+			- try not use venv (global pip install)
+				sudo pip install -r requirements
+			==> problem still occurs...
+				
+			- if not OK, externalize rfmanager launch (shell script)
+				- imrove rfmanager to automatically restart if it did not exit properly
+					- use a command file (containing INIT/START commands)
+			
 			- how to ensure there is exactly one rfmanager running at all times?
 			- issue with initial creation of /tmp/alarm-system dir (after reboot)
 			- cipher updates are often failing: why?

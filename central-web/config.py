@@ -24,14 +24,12 @@ class DevelopmentConfig(Config):
 
 # The following configurations are used on Raspberry Pi (linux) only
 class DemoConfig(Config):
-    DEBUG = True
     HOST = '0.0.0.0'
     SECRET_KEY = os.environ.get('SECRET_KEY') or 't0p s3cr3t'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEMO_DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data-demo.sqlite')
 
 class TestingConfig(Config):
-    DEBUG = True
     SECRET_KEY = 'secret'
     HOST = '0.0.0.0'
     PORT = 80
