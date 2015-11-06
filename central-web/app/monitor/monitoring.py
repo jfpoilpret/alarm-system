@@ -18,7 +18,7 @@ class AlarmStatus(object):
     UNLOCKED = 2
     
 from app import db
-from app.models import Alert, AlertType
+from app.models import Alert, AlertType, Configuration
 from app.monitor.events import Event, EventType
 from app.monitor.network import DevicesManager, DevicesManagerSimulator
 
@@ -58,7 +58,6 @@ class MonitoringManager(object):
         self.app = app
         self.status = None
         self.active = False
-        self.config = None
         self.config_id = None
         self.lock_code = None
         self.devices = {}
@@ -82,7 +81,7 @@ class MonitoringManager(object):
         # Launch RFManager process here
         self.rf_manager = Popen(self.rf_manager_path, close_fds = True)
         if self.active:
-            self.activate(self.config, False)
+            self.activate(None, False)
     
     def exit(self):
         signal(17, signal.SIG_IGN)
@@ -93,39 +92,42 @@ class MonitoringManager(object):
             self.rf_manager = None
     
     def activate(self, config, store_alert = True):
-        self.config = config
         # Deactivate if already active
-        self.deactivate(store_alert)
-        self.status = AlarmStatus.UNLOCKED
-        self.config_id = config.id
-        # Store lock code from config
-        self.lock_code = config.lockcode
-        # Get alerts thresholds from config
-        # Alerts after some time without ping
-        # Format is (time, level)
-        # where time is the time (in seconds) during which the device has not pinged
-        # An alert of the given level is emitted each time a new time threshold is reached
-        # When the last threshold has been reached, the same alert is repeated once every 
-        # "time" has elapsed
-        self.no_ping_time_thresholds = [(float(entry.alert_time), entry.alert_level) for entry in config.no_ping_time_alert_thresholds]
-        self.no_ping_time_thresholds = sorted(self.no_ping_time_thresholds, key = lambda x: x[0], reverse = False)
-        # Ensure list is never empty
-        if len(self.no_ping_time_thresholds) == 0:
-            self.no_ping_time_thresholds = [(10.0, Alert.LEVEL_WARNING)]
-        # Alerts when device voltage under some rate wrt device voltage threshold
-        # Format is (ratio, level, period)
-        # Whenever the ratio of voltage level over a device voltage threshold becomes under ratio,
-        # an alert of the given level is emitted, if after period (minutes) the actual ratio is still
-        # under the same ratio, the same alert is emitted again.
-        self.voltage_alert_thresholds = [(entry.voltage_rate/100.0, entry.alert_level, entry.alert_time * 60.0) for entry in config.voltage_rate_alert_thresholds]
-        self.voltage_alert_thresholds = sorted(self.voltage_alert_thresholds, key = lambda x: x[0], reverse = True)
-        # Ensure list is never empty
-        if len(self.voltage_alert_thresholds) == 0:
-            self.voltage_alert_thresholds = [(0.99, Alert.LEVEL_INFO, 600.0)]
-        # Create dictionary of LiveDevices from config
-        self.devices = {id: LiveDevice(device) for id, device in config.devices.items()}
-        # Start thread that reads queues and act upon received messages (DB, SMS...)
-        # Create the event queue that will be used by DevicesManager
+        if config:
+            self.deactivate(True, store_alert)
+            self.status = AlarmStatus.UNLOCKED
+            self.config_id = config.id
+            # Store lock code from config
+            self.lock_code = config.lockcode
+            # Get alerts thresholds from config
+            # Alerts after some time without ping
+            # Format is (time, level)
+            # where time is the time (in seconds) during which the device has not pinged
+            # An alert of the given level is emitted each time a new time threshold is reached
+            # When the last threshold has been reached, the same alert is repeated once every 
+            # "time" has elapsed
+            self.no_ping_time_thresholds = [(float(entry.alert_time), entry.alert_level) for entry in config.no_ping_time_alert_thresholds]
+            self.no_ping_time_thresholds = sorted(self.no_ping_time_thresholds, key = lambda x: x[0], reverse = False)
+            # Ensure list is never empty
+            if len(self.no_ping_time_thresholds) == 0:
+                self.no_ping_time_thresholds = [(10.0, Alert.LEVEL_WARNING)]
+            # Alerts when device voltage under some rate wrt device voltage threshold
+            # Format is (ratio, level, period)
+            # Whenever the ratio of voltage level over a device voltage threshold becomes under ratio,
+            # an alert of the given level is emitted, if after period (minutes) the actual ratio is still
+            # under the same ratio, the same alert is emitted again.
+            self.voltage_alert_thresholds = [(entry.voltage_rate/100.0, entry.alert_level, entry.alert_time * 60.0) for entry in config.voltage_rate_alert_thresholds]
+            self.voltage_alert_thresholds = sorted(self.voltage_alert_thresholds, key = lambda x: x[0], reverse = True)
+            # Ensure list is never empty
+            if len(self.voltage_alert_thresholds) == 0:
+                self.voltage_alert_thresholds = [(0.99, Alert.LEVEL_INFO, 600.0)]
+            # Create dictionary of LiveDevices from config
+            self.devices = {id: LiveDevice(device) for id, device in config.devices.items()}
+            # Start thread that reads queues and act upon received messages (DB, SMS...)
+            # Create the event queue that will be used by DevicesManager
+        else:
+            self.deactivate(False, store_alert)
+            
         self.event_queue = Queue()
         self.event_checker = Thread(target = self._check_events)
         self.event_checker.start()
@@ -148,7 +150,7 @@ class MonitoringManager(object):
                 message = 'System activated',
                 device = None), need_context = False)
     
-    def deactivate(self, store_alert = True):
+    def deactivate(self, erase_config = True, store_alert = True):
         if self.event_checker:
             # Stop DevicesManager
             self.devices_manager.deactivate()
@@ -165,10 +167,11 @@ class MonitoringManager(object):
             self.ping_checker = None
             # Finally clear all configuration
             config_id = self.config_id
-            self.config_id = None
-            self.lock_code = None
-            self.status = None
-            self.devices = {}
+            if erase_config:
+                self.config_id = None
+                self.lock_code = None
+                self.status = None
+                self.devices = {}
             # Create info alert
             if store_alert:
                 self._store_alert(Alert(
