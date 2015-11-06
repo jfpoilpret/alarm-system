@@ -54,9 +54,10 @@ x			- install pyzmq on RPi and Windows
 x			- small Python program to "talk" with C++ process
 OK			- check publish is not blocked by slow subscriber????
 
-		- update central-web (Python):
-x			- auto-launch collector process
-x			- check make on RPi, ensure output location "RFManager"
+2h+		- debug global Python <-> C++ system
+			- how to ensure there is exactly one rfmanager running at all times?
+			- issue with initial creation of /tmp/alarm-system dir (after reboot)
+			- cipher updates are often failing: why?
 
 2h		- improve C++ design to make it more easily extensible
 		

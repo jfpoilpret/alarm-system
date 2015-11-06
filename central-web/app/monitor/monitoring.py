@@ -3,6 +3,7 @@ from subprocess import Popen
 import sys
 import atexit
 import os
+from signal import signal
 try:
     from queue import Queue
 except ImportError:
@@ -34,6 +35,11 @@ class LiveDevice(object):
         self.latest_voltage_alert_time = None
         self.latest_voltage_alert_level = None
 
+def dead_child_handler(signum, frame):
+    print('RFManager dead')
+    print('Frame = %s' % frame)
+    MonitoringManager.instance.child_terminate()
+
 class MonitoringManager(object):
     instance = None
     
@@ -52,6 +58,7 @@ class MonitoringManager(object):
         self.app = app
         self.status = None
         self.active = False
+        self.config = None
         self.config_id = None
         self.lock_code = None
         self.devices = {}
@@ -62,23 +69,33 @@ class MonitoringManager(object):
             self.devices_manager_class = DevicesManagerSimulator
         else:
             self.devices_manager_class = DevicesManager
-        if app.config['RF_MANAGER_PATH']:
+        self.rf_manager_path  = app.config['RF_MANAGER_PATH']
+        if self.rf_manager_path:
             # Launch RFManager process here
-            self.rf_manager = Popen(app.config['RF_MANAGER_PATH'], close_fds = True)
+            self.rf_manager = Popen(self.rf_manager_path, close_fds = True)
+            atexit.register(self.exit)
+            signal(signal.SIGCHLD, dead_child_handler)
         else:
             self.rf_manager = None
-        atexit.register(self.exit)
+    
+    def child_terminate(self):
+        # Launch RFManager process here
+        self.rf_manager = Popen(self.rf_manager_path, close_fds = True)
+        if self.active:
+            self.activate(self.config, False)
     
     def exit(self):
+        signal(signal.SIGCHLD, signal.SIG_IGN)
         if self.devices_manager:
             self.devices_manager.exit()
         elif self.rf_manager:
             self.rf_manager.terminate()
             self.rf_manager = None
     
-    def activate(self, config):
+    def activate(self, config, store_alert = True):
+        self.config = config
         # Deactivate if already active
-        self.deactivate()
+        self.deactivate(store_alert)
         self.status = AlarmStatus.UNLOCKED
         self.config_id = config.id
         # Store lock code from config
@@ -122,15 +139,16 @@ class MonitoringManager(object):
         self.devices_manager = self.devices_manager_class(self.event_queue, self.devices)
         
         # Create info alert
-        self._store_alert(Alert(
-            config_id = self.config_id,
-            when = datetime.fromtimestamp(time()),
-            level = Alert.LEVEL_INFO,
-            alert_type = AlertType.SYSTEM_ACTIVATION,
-            message = 'System activated',
-            device = None), need_context = False)
+        if store_alert:
+            self._store_alert(Alert(
+                config_id = self.config_id,
+                when = datetime.fromtimestamp(time()),
+                level = Alert.LEVEL_INFO,
+                alert_type = AlertType.SYSTEM_ACTIVATION,
+                message = 'System activated',
+                device = None), need_context = False)
     
-    def deactivate(self):
+    def deactivate(self, store_alert = True):
         if self.event_checker:
             # Stop DevicesManager
             self.devices_manager.deactivate()
@@ -152,13 +170,14 @@ class MonitoringManager(object):
             self.status = None
             self.devices = {}
             # Create info alert
-            self._store_alert(Alert(
-                config_id = config_id,
-                when = datetime.fromtimestamp(time()),
-                level = Alert.LEVEL_INFO,
-                alert_type = AlertType.SYSTEM_DEACTIVATION,
-                message = 'System deactivated',
-                device = None), need_context = False)
+            if store_alert:
+                self._store_alert(Alert(
+                    config_id = config_id,
+                    when = datetime.fromtimestamp(time()),
+                    level = Alert.LEVEL_INFO,
+                    alert_type = AlertType.SYSTEM_DEACTIVATION,
+                    message = 'System deactivated',
+                    device = None), need_context = False)
     
     def lock(self):
         alert = self._create_lock_event(
