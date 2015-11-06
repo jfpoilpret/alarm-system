@@ -74,7 +74,7 @@ class MonitoringManager(object):
             # Launch RFManager process here
             self.rf_manager = Popen(self.rf_manager_path, close_fds = True)
             atexit.register(self.exit)
-            signal(signal.SIGCHLD, dead_child_handler)
+            signal(17, dead_child_handler)
         else:
             self.rf_manager = None
     
@@ -85,7 +85,7 @@ class MonitoringManager(object):
             self.activate(self.config, False)
     
     def exit(self):
-        signal(signal.SIGCHLD, signal.SIG_IGN)
+        signal(17, signal.SIG_IGN)
         if self.devices_manager:
             self.devices_manager.exit()
         elif self.rf_manager:
