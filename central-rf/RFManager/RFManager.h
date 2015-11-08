@@ -67,10 +67,12 @@ public:
 	CommandManager(const CommandManager&) = delete;
 	~CommandManager();
 	
+	std::string send_command(const std::string& verb, std::istringstream& input, bool log);
 	void block_until_exit();
 
 private:
 	void run();
+	void log(const std::string& verb, const std::string& line);
 
 	zmq::socket_t command;
 	DevicesHandler handler;
