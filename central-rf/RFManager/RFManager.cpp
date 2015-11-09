@@ -140,7 +140,7 @@ CommandManager::CommandManager(zmq::context_t& context, AlarmStatus& status)
 	command.bind("ipc:///tmp/alarm-system/command.ipc");
 	// Initialize status from last saved log (only if previous run was abnormally terminated)
 	struct stat sb;
-	if (stat("rfmanager.ini", &sb)) {
+	if (!stat("rfmanager.ini", &sb)) {
 		std::string line;
 		std::ifstream init("rfmanager.ini");
 		while (std::getline(init, line)) {
@@ -166,9 +166,13 @@ void CommandManager::block_until_exit() {
 	thread.join();
 }
 
+//FIXME handle case of commands: INIT START STOP START
+// => need to record STOP also rather than remove rfmanager.ini altogether
+// => INIT should erase previous content first!
+// => on reload, need to check last of START or STOP
 void CommandManager::log(const std::string& verb, const std::string& line) {
 	if (verb == "INIT" or verb == "START") {
-		std::ofstream output("rfmanager.ini", std::ofstream::ate);
+		std::ofstream output("rfmanager.ini", std::ofstream::app);
 		output << line << std::endl;
 		output.close();
 	} else if (verb == "STOP" or verb == "EXIT") {
