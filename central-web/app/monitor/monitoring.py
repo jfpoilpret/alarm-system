@@ -35,11 +35,6 @@ class LiveDevice(object):
         self.latest_voltage_alert_time = None
         self.latest_voltage_alert_level = None
 
-def dead_child_handler(signum, frame):
-    print('RFManager dead')
-    print('Frame = %s' % frame)
-    MonitoringManager.instance.child_terminate()
-
 class MonitoringManager(object):
     instance = None
     
@@ -68,28 +63,11 @@ class MonitoringManager(object):
             self.devices_manager_class = DevicesManagerSimulator
         else:
             self.devices_manager_class = DevicesManager
-        self.rf_manager_path  = app.config['RF_MANAGER_PATH']
-        if self.rf_manager_path:
-            # Launch RFManager process here
-            self.rf_manager = Popen(self.rf_manager_path, close_fds = True)
-            atexit.register(self.exit)
-            signal(17, dead_child_handler)
-        else:
-            self.rf_manager = None
-    
-    def child_terminate(self):
-        # Launch RFManager process here
-        self.rf_manager = Popen(self.rf_manager_path, close_fds = True)
-        if self.active:
-            self.activate(None, False)
+        atexit.register(self.exit)
     
     def exit(self):
-        signal(17, signal.SIG_IGN)
         if self.devices_manager:
             self.devices_manager.exit()
-        elif self.rf_manager:
-            self.rf_manager.terminate()
-            self.rf_manager = None
     
     def activate(self, config, store_alert = True):
         # Deactivate if already active
