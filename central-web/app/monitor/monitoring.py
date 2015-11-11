@@ -1,9 +1,5 @@
 # encoding: utf-8
-from subprocess import Popen
-import sys
 import atexit
-import os
-from signal import signal
 try:
     from queue import Queue
 except ImportError:
@@ -18,7 +14,7 @@ class AlarmStatus(object):
     UNLOCKED = 2
     
 from app import db
-from app.models import Alert, AlertType, Configuration
+from app.models import Alert, AlertType
 from app.monitor.events import Event, EventType
 from app.monitor.network import DevicesManager, DevicesManagerSimulator
 
