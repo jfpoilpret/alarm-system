@@ -44,40 +44,25 @@ x		- install zero mq and build (as pi user)
 			sudo ldconfig
 			make check
 		
-x		- create small sample in C++ to check ZMQ C-C
-			- PUB/SUB need absolute ipc path (ipc:///tmp/xxx.ipc) to work properly
-			- same for REQ/REP
-
-		- improve sample to check C-Python
-x			- install pyzmq on RPi and Windows
-				pip install pyzmq (in virtualenv)
-x			- small Python program to "talk" with C++ process
-OK			- check publish is not blocked by slow subscriber????
-
-2h+		- debug global Python <-> C++ system
-x			- why are there always 2 python processes launched
-				-> flask DEBUG mode issue (auto Werkzeug reloader)
-				-> temporarily dosable DEBUG on all RPi configs
-x			- issue with initial creation of /tmp/alarm-system dir (after reboot)
-x			- improve rfmanager to automatically restart if it did not exit properly
-				- debug!
-					- why is file overwritten at every write?
-					- should we completely remove file if STOP executed?
-						eg it's possible to call INIT/START/STOP/START...
-						if process crashes after STOP and gets relaunched then it will 
-						never get INITed again...
-			- cipher updates are often failing: why?
-			- in the long run, externalize rfmanager launch (shell script)
-
-2h		- improve C++ design to make it more easily extensible
-1h		- RFManager: improve XTEA performance by pre-computing coefficients when setting key
-			- measure perfs before/after
+	- improve global system launch
+		- one shell to launch rfmanager first (and monitor forever) and then python
 			
-		- update requirements.txt and README
-		- use python 3.4 instead of 2.7?
-		
-		- potential C++ improvements
-			- NRF24: replace read IRQ pin with event on falling edge?
+	- debug global Python <-> C++ system
+		- should we completely remove file if STOP executed?
+			eg it's possible to call INIT/START/STOP/START...
+			if process crashes after STOP and gets relaunched then it will 
+			never get INITed again...
+		- cipher updates are often failing: why?
+
+	- improve C++ design to make it more easily extensible
+	- RFManager: improve XTEA performance by pre-computing coefficients when setting key
+		- measure perfs before/after
+			
+	- update requirements.txt and README
+	- use python 3.4 instead of 2.7?
+	
+	- potential C++ improvements
+		- NRF24: replace read IRQ pin with event on falling edge?
 
 	- try arduino build on netbeans?
 	- try python build on netbeans?
