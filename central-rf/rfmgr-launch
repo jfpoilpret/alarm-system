@@ -1,0 +1,13 @@
+#/bin/bash
+# Set paths
+RFMANAGER=/home/pi/alarm-system/central-rf/RFManager/dist/rfmanager
+
+while [ 1 -eq 1 ]; do
+	# Launch process
+	echo "rfmanager starting"
+	$RFMANAGER
+	# Wait for rfmanager to die
+	wait
+	echo "rfmanager terminated"
+done
+
