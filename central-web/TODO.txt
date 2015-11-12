@@ -3,6 +3,9 @@ http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbean
 x		- install netbeans
 x		- setup RPi2 correctly (remove bluetooth, ensure dev packages installed, root login)
 x		- perform small sample project test
+		- install cppunit if needed
+			sudo apt-get install libcppunit-1.12.1
+			sudo apt-get install libcppunit-dev
 x		- ensure bcm library is available
 			cd /home/pi
 			wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.46.tar.gz
@@ -43,27 +46,32 @@ x		- install zero mq and build (as pi user)
 			sudo make install
 			sudo ldconfig
 			make check
-		
-	- improve global system launch
+	
+	- RFManager improvements:
+1h		- improve cipher speed by pre-calculating all coefficients (use unit tests 
+		before/after and also measure perfs before/after for both cipher/decipher and key setup)
+1h		- directly manage code check and return status upon RF LOCK request
+			- careful about slow timing (deciphering)!
+			- need extra INIT verb to set new lock code
+			- question: remove check on Python or keep it (double check)?
+1h		- improve command archive file handling:
+			- STOP should not erase content (INIT is useful)
+			- but should not store all START/STOP only last state is useful
+			- maybe split into several files:
+				- one file for INIT command (only 1)
+				- one file for status START or STOP
+				- one file for lock code?
+1h		- improve zmq protocol design to make it more extensible
+1h		- improve RF messages handling design to make it more extensible
+30'		- NRF24: replace read IRQ pin with event on falling edge?
+			
+1h	- improve global system launch
 		- one shell to launch rfmanager first (and monitor forever) and then python
 			
-	- debug global Python <-> C++ system
-		- should we completely remove file if STOP executed?
-			eg it's possible to call INIT/START/STOP/START...
-			if process crashes after STOP and gets relaunched then it will 
-			never get INITed again...
-		- cipher updates are often failing: why?
-
-	- improve C++ design to make it more easily extensible
-	- RFManager: improve XTEA performance by pre-computing coefficients when setting key
-		- measure perfs before/after
-			
-	- update requirements.txt and README
-	- use python 3.4 instead of 2.7?
+1h	- update requirements.txt and README
+2h	- use python 3.4 instead of 2.7?
 	
-	- potential C++ improvements
-		- NRF24: replace read IRQ pin with event on falling edge?
-
+	- try SCANA+ logic analyzer
 	- try arduino build on netbeans?
 	- try python build on netbeans?
 		
