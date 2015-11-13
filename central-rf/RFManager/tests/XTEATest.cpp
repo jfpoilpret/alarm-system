@@ -24,6 +24,18 @@ static uint64_t us_since(const timespec& since) {
 
 CPPUNIT_TEST_SUITE_REGISTRATION(XTEATest);
 
+const char* CLEAR_CODE = "1234567";
+const uint8_t CRYPTED_CODE[] = {
+	0x9b,
+	0xef,
+	0x80,
+	0x5a,
+	0xbd,
+	0xec,
+	0x0f,
+	0xd1
+};
+
 union Message {
 	uint32_t code[2];
 	char content[8];
@@ -66,14 +78,26 @@ void XTEATest::tearDown() {
 
 void XTEATest::testCipher() {
 	Message msg;
-	strcpy(msg.content, "1234567");
+	strcpy(msg.content, CLEAR_CODE);
 	
+	timespec now = current_time();
 	cipher.encipher(msg.code);
-	CPPUNIT_ASSERT(strcmp(msg.content, "1234567") != 0);
+	uint64_t duration = us_since(now);
+	std::cout << "XTEA::encipher('" << CLEAR_CODE << "') = ";
+	for (uint8_t i = 0; i < 8; i++)
+		std::cout << std::hex << (uint16_t) msg.content[i] << ' ';
+	std::cout << " lasted " << std::dec << duration << "us" << std::endl;
+	
+	CPPUNIT_ASSERT(memcmp(msg.code, CRYPTED_CODE, sizeof CRYPTED_CODE) == 0);
+}
+
+void XTEATest::testDecipher() {
+	Message msg;
+	memcpy(msg.code, CRYPTED_CODE, sizeof CRYPTED_CODE);
 	
 	timespec now = current_time();
 	cipher.decipher(msg.code);
 	uint64_t duration = us_since(now);
 	std::cout << "XTEA::decipher() lasted " << std::dec << duration << "us" << std::endl;
-	CPPUNIT_ASSERT(strcmp(msg.content, "1234567") == 0);
+	CPPUNIT_ASSERT(strcmp(msg.content, CLEAR_CODE) == 0);
 }

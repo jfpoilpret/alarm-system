@@ -15,6 +15,7 @@ class XTEATest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST_SUITE(XTEATest);
 
 	CPPUNIT_TEST(testCipher);
+	CPPUNIT_TEST(testDecipher);
 
 	CPPUNIT_TEST_SUITE_END();
 
@@ -26,6 +27,7 @@ public:
 
 private:
 	void testCipher();
+	void testDecipher();
 	
 	XTEA cipher;
 };
