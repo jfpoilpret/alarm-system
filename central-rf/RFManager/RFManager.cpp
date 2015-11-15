@@ -205,8 +205,6 @@ void CommandManager::add_command(const std::string& verb, Command* command) {
 }
 
 std::string CommandManager::handle_command(const std::string& verb, std::istringstream& input, bool log) {
-//	std::string result = "OK";
-
 	if (log)
 		CommandManager::log(verb, input.str());
 	// Check command and dispatch where needed
@@ -215,38 +213,6 @@ std::string CommandManager::handle_command(const std::string& verb, std::istring
 	} catch (std::out_of_range e) {
 		return "INVALID COMMAND";
 	}
-//	if (verb == "START")
-//		handler.start();
-//	else if (verb == "STOP" or verb == "EXIT")
-//		handler.stop();
-//	else if (verb == "LOCK")
-//		status.locked = true;
-//	else if (verb == "UNLOCK")
-//		status.locked = false;
-//	else if (verb == "INIT") {
-//		// Parse INIT argumensts: network server_id cipher_delay cipher_dev_id1 cipher_dev_id2...
-//		// All integer ar expected in hexa format
-//		// cipher_delay is a double in seconds
-//		uint16_t network;
-//		uint16_t server;
-//		double duration;
-//		input >> std::hex >> network >> server >> duration;
-//		handler.set_address(network, server);
-//		handler.set_cipher_duration(duration);
-//		std::vector<uint8_t> devices;
-//		while (!input.eof()) {
-//			uint16_t id;
-//			input >> id;
-//			devices.push_back(id);
-//		}
-//		handler.set_ciphered_devices(devices.size(), devices.data());
-//	} else if (verb == "CODE") {
-//		std::string code;
-//		input >> code;
-//		handler.set_code(code);
-//	} else
-//		result = "INVALID COMMAND";
-//	return result;
 }
 
 void CommandManager::run() {
