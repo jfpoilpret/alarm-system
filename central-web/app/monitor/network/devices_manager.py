@@ -45,6 +45,10 @@ class DevicesManager(AbstractDevicesManager, Thread):
         self.stop.clear()
         self.start()
 
+    def set_code(self, code):
+        AbstractDevicesManager.set_code(self, code)
+        self.send_command('CODE %s' % code)
+    
     def exit(self):
         self.send_command('EXIT')
     
@@ -71,6 +75,7 @@ class DevicesManager(AbstractDevicesManager, Thread):
             if device.source.kind == Device.KIND_KEYPAD:
                 cmd += " %x" % id
         self.send_command(cmd)
+        self.send_command('CODE %s' % self.code)
         self.send_command("START")
         while True:
             #FIXME try/except EAGAIN or use timeout?

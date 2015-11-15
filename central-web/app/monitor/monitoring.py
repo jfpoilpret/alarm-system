@@ -112,7 +112,8 @@ class MonitoringManager(object):
         self.ping_checker.start()
 
         # Instantiate DevicesManager (based on app.config)
-        self.devices_manager = self.devices_manager_class(self.event_queue, self.devices)
+        self.devices_manager = self.devices_manager_class(
+            self.event_queue, self.devices, self.lock_code)
         
         # Create info alert
         if store_alert:
