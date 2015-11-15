@@ -80,7 +80,8 @@ public:
 
 private:
 	void run();
-	void log(const std::string& verb, const std::string& line);
+	// Executes previously run (and saved) verb from file
+	void execute(const std::string& verb);
 
 	zmq::socket_t command;
 	DevicesHandler handler;
@@ -106,9 +107,12 @@ protected:
 	void exit() {
 		manager->exit();
 	}
+	void write(const std::string& verb, std::istringstream& input);
+	void remove(const std::string& verb);
 
 private:
 	CommandManager* manager;
+	bool log;
 	friend class CommandManager;
 };
 

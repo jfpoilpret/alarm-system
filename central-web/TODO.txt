@@ -48,13 +48,11 @@ x		- install zero mq and build (as pi user)
 			make check
 	
 	- RFManager improvements:
-1h		- improve command archive file handling:
-			- STOP should not erase content (INIT is useful)
-			- but should not store all START/STOP only last state is useful
-			- maybe split into several files:
-				- one file for INIT command (only 1)
-				- one file for status START or STOP
-				- one file for lock code?
+30'		- improve command archive file handling:
+			- check and debug
+			
+30'		- refactor Commands.h to be included in RFManager.h
+		
 1h		- improve RF messages handling design to make it more extensible
 30'		- NRF24: replace read IRQ pin with event on falling edge?
 			
@@ -63,6 +61,7 @@ x		- install zero mq and build (as pi user)
 			
 1h	- update requirements.txt and README
 2h	- use python 3.4 instead of 2.7?
+
 	
 	- try SCANA+ logic analyzer
 	- try arduino build on netbeans?

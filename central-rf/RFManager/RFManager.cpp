@@ -149,18 +149,11 @@ CommandManager::CommandManager(zmq::context_t& context, AlarmStatus& status)
 	// Initialize socket
 	command.bind("ipc:///tmp/alarm-system/command.ipc");
 	// Initialize status from last saved log (only if previous run was abnormally terminated)
-	struct stat sb;
-	if (!stat("rfmanager.ini", &sb)) {
-		std::string line;
-		std::ifstream init("rfmanager.ini");
-		while (std::getline(init, line)) {
-			std::istringstream input(line);
-			std::string verb;
-			input >> verb;
-			handle_command(verb, input, false);
-		}
-		remove("rfmanager.ini");
-	}
+	//TODO should use Command::VERB here instead of constants
+	execute("INIT");
+	execute("CODE");
+	execute("LOCK");
+	execute("START");
 }
 
 CommandManager::~CommandManager() {
@@ -184,32 +177,17 @@ void CommandManager::block_until_exit() {
 	thread.join();
 }
 
-//FIXME handle case of commands: INIT START STOP START
-// => need to record STOP also rather than remove rfmanager.ini altogether
-// => INIT should erase previous content first!
-// => on reload, need to check last of START or STOP
-void CommandManager::log(const std::string& verb, const std::string& line) {
-	if (verb == "INIT" or verb == "START" or verb == "CODE") {
-		std::ofstream output("rfmanager.ini", std::ofstream::app);
-		output << line << std::endl;
-		output.close();
-	} else if (verb == "STOP" or verb == "EXIT") {
-		// Stopping RF should erase init data for next launch
-		remove("rfmanager.ini");
-	}
-}
-
 void CommandManager::add_command(const std::string& verb, Command* command) {
 	command->manager = this;
 	command_handlers[verb] = command;
 }
 
 std::string CommandManager::handle_command(const std::string& verb, std::istringstream& input, bool log) {
-	if (log)
-		CommandManager::log(verb, input.str());
 	// Check command and dispatch where needed
 	try {
-		return command_handlers[verb]->execute(verb, input);
+		Command* command = command_handlers[verb];
+		command->log = log;
+		return command->execute(verb, input);
 	} catch (std::out_of_range e) {
 		return "INVALID COMMAND";
 	}
@@ -225,4 +203,34 @@ void CommandManager::run() {
 		std::string result = handle_command(verb, input, true);
 		s_send(command, result);
 	}
+}
+
+void CommandManager::execute(const std::string& verb) {
+	std::string file = "rfmanager." + verb;
+	struct stat sb;
+	if (!stat(file.c_str(), &sb)) {
+		std::string line;
+		std::ifstream init(file);
+		while (std::getline(init, line)) {
+			std::istringstream input(line);
+			std::string verb;
+			input >> verb;
+			handle_command(verb, input, false);
+		}
+		init.close();
+	}
+}
+
+void Command::write(const std::string& verb, std::istringstream& input) {
+	if (log) {
+		std::string file = "rfmanager." + verb;
+		std::ofstream output(file, std::ofstream::trunc);
+		output << input.str() << std::endl;
+		output.close();
+	}
+}
+
+void Command::remove(const std::string& verb) {
+	std::string file = "rfmanager." + verb;
+	::remove(file.c_str());
 }
