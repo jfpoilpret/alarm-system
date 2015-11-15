@@ -48,8 +48,8 @@ x		- install zero mq and build (as pi user)
 			make check
 	
 	- RFManager improvements:
-1h		- improve cipher speed by pre-calculating all coefficients (use unit tests 
-		before/after and also measure perfs before/after for both cipher/decipher and key setup)
+		- improve zmq protocol design to make it more extensible
+			=> check and debug
 1h		- directly manage code check and return status upon RF LOCK request
 			- careful about slow timing (deciphering)!
 			- need extra INIT verb to set new lock code
@@ -61,7 +61,6 @@ x		- install zero mq and build (as pi user)
 				- one file for INIT command (only 1)
 				- one file for status START or STOP
 				- one file for lock code?
-1h		- improve zmq protocol design to make it more extensible
 1h		- improve RF messages handling design to make it more extensible
 30'		- NRF24: replace read IRQ pin with event on falling edge?
 			

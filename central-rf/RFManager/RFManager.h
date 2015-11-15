@@ -29,6 +29,7 @@ public:
 	void set_address(uint16_t network, uint8_t server);
 	void set_cipher_duration(double seconds);
 	void set_ciphered_devices(uint16_t count, const uint8_t* device_ids);
+	void set_code(const std::string& code);
 	void start();
 	void stop();
 	
@@ -55,10 +56,13 @@ private:
 	zmq::socket_t data;
 	AlarmStatus& status;
 	double cipher_duration;
+	std::string code;
 	std::map<uint8_t, Device> ciphered_devices;
 	std::thread thread;
 	NRF24L01P nrf;
 };
+
+class Command;
 
 // Command Manager: receives commands from Python Alarm System, interprets and dispatch them
 class CommandManager {
@@ -67,7 +71,11 @@ public:
 	CommandManager(const CommandManager&) = delete;
 	~CommandManager();
 	
-	std::string send_command(const std::string& verb, std::istringstream& input, bool log);
+	void add_command(const std::string& verb, Command* command);
+	void start();
+	void exit();
+	
+	std::string handle_command(const std::string& verb, std::istringstream& input, bool log);
 	void block_until_exit();
 
 private:
@@ -78,6 +86,30 @@ private:
 	DevicesHandler handler;
 	AlarmStatus& status;
 	std::thread thread;
+	bool running;
+	std::map<std::string, Command*> command_handlers;
+	
+	friend class Command;
+};
+
+class Command {
+public:
+	virtual std::string execute(const std::string& verb, std::istringstream& input) = 0;
+	
+protected:
+	DevicesHandler& handler() const {
+		return manager->handler;
+	}
+	AlarmStatus& status() const {
+		return manager->status;
+	}
+	void exit() {
+		manager->exit();
+	}
+
+private:
+	CommandManager* manager;
+	friend class CommandManager;
 };
 
 #endif	/* RFMANAGER_H */

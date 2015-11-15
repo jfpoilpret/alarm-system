@@ -5,6 +5,7 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <fstream>
+#include <stdexcept>
 #include "RFManager.h"
 
 static timespec current_time() {
@@ -35,6 +36,7 @@ DevicesHandler::DevicesHandler(zmq::context_t& context, AlarmStatus& status)
 :	data(context, ZMQ_PUB), 
 	status(status), 
 	cipher_duration(0.0),
+	code(),
 	nrf(0, 0) {
 	// Initialize socket
 	data.bind("ipc:///tmp/alarm-system/devices.ipc");
@@ -61,6 +63,10 @@ void DevicesHandler::set_ciphered_devices(uint16_t count, const uint8_t* device_
 		device.creation_time = 0;
 		ciphered_devices[device_ids[i]] = device;
 	}
+}
+
+void DevicesHandler::set_code(const std::string& code) {
+	this->code = code;
 }
 
 void DevicesHandler::start() {
@@ -135,7 +141,9 @@ void DevicesHandler::run() {
 CommandManager::CommandManager(zmq::context_t& context, AlarmStatus& status)
 :	command(context, ZMQ_REP), 
 	handler(context, status), 
-	status(status) {
+	status(status),
+	running(false),
+	command_handlers() {
 	// Initialize socket
 	command.bind("ipc:///tmp/alarm-system/command.ipc");
 	// Initialize status from last saved log (only if previous run was abnormally terminated)
@@ -147,18 +155,26 @@ CommandManager::CommandManager(zmq::context_t& context, AlarmStatus& status)
 			std::istringstream input(line);
 			std::string verb;
 			input >> verb;
-			send_command(verb, input, false);
+			handle_command(verb, input, false);
 		}
 		remove("rfmanager.ini");
 	}
-	// Initialize thread blocked on receiving commands
-	thread = std::thread(&CommandManager::run, this);
 }
 
 CommandManager::~CommandManager() {
 	command.close();
 	// Normal termination: remove INIT commands storage
 	remove("rfmanager.ini");
+}
+
+void CommandManager::start() {
+	// Initialize thread blocked on receiving commands
+	running = true;
+	thread = std::thread(&CommandManager::run, this);
+}
+
+void CommandManager::exit() {
+	running = false;
 }
 
 void CommandManager::block_until_exit() {
@@ -171,7 +187,7 @@ void CommandManager::block_until_exit() {
 // => INIT should erase previous content first!
 // => on reload, need to check last of START or STOP
 void CommandManager::log(const std::string& verb, const std::string& line) {
-	if (verb == "INIT" or verb == "START") {
+	if (verb == "INIT" or verb == "START" or verb == "CODE") {
 		std::ofstream output("rfmanager.ini", std::ofstream::app);
 		output << line << std::endl;
 		output.close();
@@ -181,52 +197,64 @@ void CommandManager::log(const std::string& verb, const std::string& line) {
 	}
 }
 
-std::string CommandManager::send_command(const std::string& verb, std::istringstream& input, bool log) {
-	std::string result = "OK";
+void CommandManager::add_command(const std::string& verb, Command* command) {
+	command->manager = this;
+	command_handlers[verb] = command;
+}
+
+std::string CommandManager::handle_command(const std::string& verb, std::istringstream& input, bool log) {
+//	std::string result = "OK";
 
 	if (log)
 		CommandManager::log(verb, input.str());
 	// Check command and dispatch where needed
-	if (verb == "START")
-		handler.start();
-	else if (verb == "STOP" or verb == "EXIT")
-		handler.stop();
-	else if (verb == "LOCK")
-		status.locked = true;
-	else if (verb == "UNLOCK")
-		status.locked = false;
-	else if (verb == "INIT") {
-		// Parse INIT argumensts: network server_id cipher_delay cipher_dev_id1 cipher_dev_id2...
-		// All integer ar expected in hexa format
-		// cipher_delay is a double in seconds
-		uint16_t network;
-		uint16_t server;
-		double duration;
-		input >> std::hex >> network >> server >> duration;
-		handler.set_address(network, server);
-		handler.set_cipher_duration(duration);
-		std::vector<uint8_t> devices;
-		while (!input.eof()) {
-			uint16_t id;
-			input >> id;
-			devices.push_back(id);
-		}
-		handler.set_ciphered_devices(devices.size(), devices.data());
-	} else
-		result = "INVALID COMMAND";
-	return result;
+	try {
+		return command_handlers[verb]->execute(verb, input);
+	} catch (std::out_of_range e) {
+		return "INVALID COMMAND";
+	}
+//	if (verb == "START")
+//		handler.start();
+//	else if (verb == "STOP" or verb == "EXIT")
+//		handler.stop();
+//	else if (verb == "LOCK")
+//		status.locked = true;
+//	else if (verb == "UNLOCK")
+//		status.locked = false;
+//	else if (verb == "INIT") {
+//		// Parse INIT argumensts: network server_id cipher_delay cipher_dev_id1 cipher_dev_id2...
+//		// All integer ar expected in hexa format
+//		// cipher_delay is a double in seconds
+//		uint16_t network;
+//		uint16_t server;
+//		double duration;
+//		input >> std::hex >> network >> server >> duration;
+//		handler.set_address(network, server);
+//		handler.set_cipher_duration(duration);
+//		std::vector<uint8_t> devices;
+//		while (!input.eof()) {
+//			uint16_t id;
+//			input >> id;
+//			devices.push_back(id);
+//		}
+//		handler.set_ciphered_devices(devices.size(), devices.data());
+//	} else if (verb == "CODE") {
+//		std::string code;
+//		input >> code;
+//		handler.set_code(code);
+//	} else
+//		result = "INVALID COMMAND";
+//	return result;
 }
 
 void CommandManager::run() {
 	// Infinite loop waiting for commands (threaded)
-	while (true) {
+	while (running) {
 		std::string cmd = s_recv(command);
 		std::istringstream input(cmd);
 		std::string verb;
 		input >> verb;
-		std::string result = send_command(verb, input, true);
+		std::string result = handle_command(verb, input, true);
 		s_send(command, result);
-		if (verb == "EXIT")
-			break;
 	}
 }
