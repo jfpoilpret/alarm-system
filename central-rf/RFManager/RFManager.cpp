@@ -127,8 +127,10 @@ void DevicesHandler::run() {
 					
 				case LOCK_CODE:
 				case UNLOCK_CODE:
-					nrf.send(device, port, &status.locked, sizeof status.locked);
 					ciphered_devices[device].cipher.decipher(msg.crypted_code);
+					if (code == msg.code)
+						status.locked = (port == LOCK_CODE);
+					nrf.send(device, port, &status.locked, sizeof status.locked);
 					output << (port == LOCK_CODE ? "LOCK " : "UNLOCK ") << msg.code;
 					break;
 			}
