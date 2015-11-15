@@ -48,12 +48,6 @@ x		- install zero mq and build (as pi user)
 			make check
 	
 	- RFManager improvements:
-		- improve zmq protocol design to make it more extensible
-			=> check and debug
-1h		- directly manage code check and return status upon RF LOCK request
-			- careful about slow timing (deciphering)!
-			- need extra INIT verb to set new lock code
-			- question: remove check on Python or keep it (double check)?
 1h		- improve command archive file handling:
 			- STOP should not erase content (INIT is useful)
 			- but should not store all START/STOP only last state is useful
