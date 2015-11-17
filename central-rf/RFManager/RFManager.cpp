@@ -148,12 +148,6 @@ CommandManager::CommandManager(zmq::context_t& context, AlarmStatus& status)
 	command_handlers() {
 	// Initialize socket
 	command.bind("ipc:///tmp/alarm-system/command.ipc");
-	// Initialize status from last saved log (only if previous run was abnormally terminated)
-	//TODO should use Command::VERB here instead of constants
-	execute("INIT");
-	execute("CODE");
-	execute("LOCK");
-	execute("START");
 }
 
 CommandManager::~CommandManager() {
@@ -163,6 +157,12 @@ CommandManager::~CommandManager() {
 }
 
 void CommandManager::start() {
+	// Initialize status from last saved log (only if previous run was abnormally terminated)
+	//TODO should use Command::VERB here instead of constants
+	execute("INIT");
+	execute("CODE");
+	execute("LOCK");
+	execute("START");
 	// Initialize thread blocked on receiving commands
 	running = true;
 	thread = std::thread(&CommandManager::run, this);
