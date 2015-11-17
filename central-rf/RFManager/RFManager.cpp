@@ -209,29 +209,21 @@ void CommandManager::execute(const std::string& verb) {
 	std::string file = "rfmanager." + verb;
 	struct stat sb;
 	if (!stat(file.c_str(), &sb)) {
-		std::cout << "execute(" << verb << ") #1" << std::endl;
 		std::ifstream init(file);
 		while (true) {
 			std::string line;
-			std::cout << "execute(" << verb << ") #2" << std::endl;
 			std::getline(init, line);
-			std::cout << "execute(" << verb << ") #3" << std::endl;
 			if (init.eof()) break;
 			if (init.fail() or init.bad()) {
 				std::cerr << "Error reading file `" << file << "`" << std::endl;
 				break;
 			}
-			std::cout << "execute(" << verb << ") #4" << std::endl;
 			std::istringstream input(line);
 			std::string verb2;
 			input >> verb2;
-			std::cout << "execute(" << verb << ") #5" << std::endl;
 			handle_command(verb2, input, false);
-			std::cout << "execute(" << verb << ") #6" << std::endl;
 		}
-		std::cout << "execute(" << verb << ") #7" << std::endl;
 		init.close();
-		std::cout << "execute(" << verb << ") #8" << std::endl;
 	}
 }
 
