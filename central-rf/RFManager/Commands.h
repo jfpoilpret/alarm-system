@@ -5,9 +5,29 @@
 #ifndef COMMANDS_H
 #define	COMMANDS_H
 
-#include "RFManager.h"
+#include <string>
+#include <istream>
 
-//TODO add logging here also and complete handling of config files
+class CommandManager;
+class DevicesHandler;
+class AlarmStatus;
+
+class Command {
+public:
+	virtual std::string execute(const std::string& verb, std::istringstream& input) = 0;
+	
+protected:
+	DevicesHandler& handler() const;
+	AlarmStatus& status() const;
+	void exit();
+	void write(const std::string& verb, std::istringstream& input);
+	void remove(const std::string& verb);
+
+private:
+	CommandManager* manager;
+	bool log;
+	friend class CommandManager;
+};
 
 class InitCommand: public Command {
 public:

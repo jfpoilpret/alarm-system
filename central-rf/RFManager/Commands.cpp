@@ -3,6 +3,17 @@
  */
 
 #include "Commands.h"
+#include "RFManager.h"
+
+DevicesHandler& Command::handler() const {
+	return manager->handler;
+}
+AlarmStatus& Command::status() const {
+	return manager->status;
+}
+void Command::exit() {
+	manager->exit();
+}
 
 const char* InitCommand::VERB = "INIT";
 std::string InitCommand::execute(const std::string& verb, std::istringstream& input) {

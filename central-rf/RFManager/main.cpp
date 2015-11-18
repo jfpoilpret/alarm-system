@@ -8,7 +8,6 @@
 
 #include <sys/stat.h>
 #include "RFManager.h"
-#include "Commands.h"
 
 static void create_temp_dir() {
 	struct stat sb;

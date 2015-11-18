@@ -158,11 +158,10 @@ CommandManager::~CommandManager() {
 
 void CommandManager::start() {
 	// Initialize status from last saved log (only if previous run was abnormally terminated)
-	//TODO should use Command::VERB here instead of constants
-	execute("INIT");
-	execute("CODE");
-	execute("LOCK");
-	execute("START");
+	execute(InitCommand::VERB);
+	execute(CodeCommand::VERB);
+	execute(LockCommand::VERB);
+	execute(StartCommand::VERB);
 	// Initialize thread blocked on receiving commands
 	running = true;
 	thread = std::thread(&CommandManager::run, this);

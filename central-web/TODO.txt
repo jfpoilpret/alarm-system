@@ -48,21 +48,19 @@ x		- install zero mq and build (as pi user)
 			make check
 	
 	- RFManager improvements:
-30'		- improve command archive file handling:
-			- check and debug
-			
-30'		- refactor Commands.h to be included in RFManager.h
-		
 1h		- improve RF messages handling design to make it more extensible
 30'		- NRF24: replace read IRQ pin with event on falling edge?
 			
 1h	- improve global system launch
 		- one shell to launch rfmanager first (and monitor forever) and then python
-			
+	
 1h	- update requirements.txt and README
 2h	- use python 3.4 instead of 2.7?
 
-	
+4h	- improve RFManager / Web to include monitoring of RF errors
+		- new REQ/REP STATUS > OK X Y Z
+		- new admin screen (dialog?) to show this status
+		
 	- try SCANA+ logic analyzer
 	- try arduino build on netbeans?
 	- try python build on netbeans?
@@ -74,8 +72,7 @@ x		- install zero mq and build (as pi user)
 		- more DIP switches?
 		- or consider using serial number (One Wire Interface, to be checked with Cosa)
 			- also need to buy some of these components (check available sensors also)
-		
-	
+			
 	- bug: go to monitoring when there is no active configuration...
 	
 30'	- if "current" config is changed, previous config must be forced inactive if needed

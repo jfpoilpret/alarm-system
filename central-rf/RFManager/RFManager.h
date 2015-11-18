@@ -11,6 +11,7 @@
 #include "Cipher.h"
 #include "NRF24L01P.h"
 #include "zhelpers.hpp"
+#include "Commands.h"
 
 struct AlarmStatus {
 	bool active;
@@ -62,8 +63,6 @@ private:
 	NRF24L01P nrf;
 };
 
-class Command;
-
 // Command Manager: receives commands from Python Alarm System, interprets and dispatch them
 class CommandManager {
 public:
@@ -91,29 +90,6 @@ private:
 	std::map<std::string, Command*> command_handlers;
 	
 	friend class Command;
-};
-
-class Command {
-public:
-	virtual std::string execute(const std::string& verb, std::istringstream& input) = 0;
-	
-protected:
-	DevicesHandler& handler() const {
-		return manager->handler;
-	}
-	AlarmStatus& status() const {
-		return manager->status;
-	}
-	void exit() {
-		manager->exit();
-	}
-	void write(const std::string& verb, std::istringstream& input);
-	void remove(const std::string& verb);
-
-private:
-	CommandManager* manager;
-	bool log;
-	friend class CommandManager;
 };
 
 #endif	/* RFMANAGER_H */
