@@ -12,6 +12,7 @@
 #include "NRF24L01P.h"
 #include "zhelpers.hpp"
 #include "Commands.h"
+#include "Handlers.h"
 
 struct AlarmStatus {
 	bool active;
@@ -27,32 +28,18 @@ public:
 	~DevicesHandler();
 	DevicesHandler(const DevicesHandler&) = delete;
 	
+	void add_handler(const MessageType port, Handler* handler);
+
 	void set_address(uint16_t network, uint8_t server);
 	void set_cipher_duration(double seconds);
 	void set_ciphered_devices(uint16_t count, const uint8_t* device_ids);
 	void set_code(const std::string& code);
+
 	void start();
 	void stop();
 	
 private:
 	void run();
-	
-	struct Device {
-		XTEA cipher;
-		time_t creation_time;
-	};
-	
-	enum MessageType {
-		// General messages, used by all sensors
-		PING_SERVER = 0x01,
-		VOLTAGE_LEVEL = 0x02,
-
-		// Messages specific to the activation module
-		LOCK_CODE = 0x10,
-		UNLOCK_CODE = 0x11,
-
-		// Other messages will go there
-	};
 	
 	zmq::socket_t data;
 	AlarmStatus& status;
@@ -61,12 +48,15 @@ private:
 	std::map<uint8_t, Device> ciphered_devices;
 	std::thread thread;
 	NRF24L01P nrf;
+	std::map<uint8_t, Handler*> port_handlers;
+	
+	friend class Handler;
 };
 
 // Command Manager: receives commands from Python Alarm System, interprets and dispatch them
 class CommandManager {
 public:
-	CommandManager(zmq::context_t& context, AlarmStatus& status);
+	CommandManager(zmq::context_t& context, DevicesHandler& handler, AlarmStatus& status);
 	CommandManager(const CommandManager&) = delete;
 	~CommandManager();
 	
@@ -83,7 +73,7 @@ private:
 	void execute(const std::string& verb);
 
 	zmq::socket_t command;
-	DevicesHandler handler;
+	DevicesHandler& handler;
 	AlarmStatus& status;
 	std::thread thread;
 	bool running;

@@ -6,6 +6,7 @@
                    projectFiles="true">
       <itemPath>Cipher.h</itemPath>
       <itemPath>Commands.h</itemPath>
+      <itemPath>Handlers.h</itemPath>
       <itemPath>NRF24L01P.h</itemPath>
       <itemPath>RFManager.h</itemPath>
       <itemPath>zhelpers.hpp</itemPath>
@@ -19,6 +20,7 @@
                    projectFiles="true">
       <itemPath>Cipher.cpp</itemPath>
       <itemPath>Commands.cpp</itemPath>
+      <itemPath>Handlers.cpp</itemPath>
       <itemPath>NRF24L01P.cpp</itemPath>
       <itemPath>RFManager.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
@@ -72,6 +74,10 @@
       <item path="Commands.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Commands.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Handlers.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Handlers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="NRF24L01P.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -136,6 +142,10 @@
       <item path="Commands.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Commands.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Handlers.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Handlers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="NRF24L01P.cpp" ex="false" tool="1" flavor2="0">
       </item>

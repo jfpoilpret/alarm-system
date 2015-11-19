@@ -25,13 +25,23 @@ static UnlockCommand cmd_unlock;
 static StopCommand cmd_stop;
 static ExitCommand cmd_exit;
 
+static PingHandler handler_ping;
+static LockHandler handler_lock;
+static VoltageHandler handler_voltage;
+
 int main(int argc, char** argv) {
 	// Ensure temp dir exists (used for ZMQ IPC file descriptors)
 	create_temp_dir();
-	// Initialize Manager
+	// Initialize Managers
 	AlarmStatus status;
 	zmq::context_t context(1);
-	CommandManager manager(context, status);
+	DevicesHandler handler(context, status);
+	// Setup all payload handlers
+	handler.add_handler(handler_ping.PORT, &handler_ping);
+	handler.add_handler(handler_voltage.PORT, &handler_voltage);
+	handler.add_handler(handler_lock.PORT1, &handler_lock);
+	handler.add_handler(handler_lock.PORT2, &handler_lock);
+	CommandManager manager(context, handler, status);
 	// Setup all handlers for commands received from Web system
 	manager.add_command(cmd_init.VERB, &cmd_init);
 	manager.add_command(cmd_code.VERB, &cmd_code);

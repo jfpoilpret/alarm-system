@@ -19,25 +19,13 @@ static uint64_t us_since(const timespec& since) {
 	return (now.tv_sec - since.tv_sec) * 1000000 + (now.tv_nsec - since.tv_nsec) / 1000;
 }
 
-const size_t MESSAGE_MAX_SIZE = NRF24L01P::PAYLOAD_MAX;
-
-#pragma pack(1)
-union ReceptionPayload {
-	uint8_t raw[MESSAGE_MAX_SIZE];
-	uint32_t crypted_code[2];
-	char code[8];
-	uint16_t voltage;
-};
-#pragma pack()
-
-//TODO Conversion map of port -> string (data pipe)
-
 DevicesHandler::DevicesHandler(zmq::context_t& context, AlarmStatus& status)
 :	data(context, ZMQ_PUB), 
 	status(status), 
 	cipher_duration(0.0),
 	code(),
-	nrf(0, 0) {
+	nrf(0, 0),
+	port_handlers() {
 	// Initialize socket
 	data.bind("ipc:///tmp/alarm-system/devices.ipc");
 }
@@ -46,6 +34,11 @@ DevicesHandler::~DevicesHandler() {
 	// Ensure thread is stopped first
 	stop();
 	data.close();
+}
+
+void DevicesHandler::add_handler(const MessageType port, Handler* handler) {
+	handler->handler_ = this;
+	port_handlers[static_cast<uint8_t>(port)] = handler;
 }
 
 void DevicesHandler::set_address(uint16_t network, uint8_t server) {
@@ -93,56 +86,20 @@ void DevicesHandler::run() {
 		ReceptionPayload msg;
 		int count = nrf.recv(device, port, msg.raw, sizeof msg, 1000L);
 		if (count >= 0) {
-			time_t now;
-			time(&now);
-			//TODO measure time to complete handling (most of it is spent in nrf.send())
-			std::ostringstream output;
-			output << (uint16_t) device << ' ' << now << ' ';
-			//TODO handle message (redesign later to use a map<port, functor>)
-			switch (port) {
-				case PING_SERVER:
-					if (	ciphered_devices.count(device)
-						&&	difftime(now, ciphered_devices[device].creation_time) > cipher_duration) {
-						// Generate new cipher key and send back
-						uint8_t payload[XTEA::KEY_SIZE + 1];
-						payload[0] = status.locked;
-						XTEA::generate_key(&payload[1]);
-						// Always ensure send is successful before updating cipher locally
-						if (nrf.send(device, port, payload, sizeof payload) > 0) {
-							ciphered_devices[device].cipher.set_key(&payload[1]);
-							ciphered_devices[device].creation_time = now;
-						} else {
-							std::cerr << "Cipher update failed: " << std::endl; 
-						}
-					} else {
-						// Simply return lock
-						nrf.send(device, port, &status.locked, sizeof status.locked);
-					}
-					output << "PING";
-					break;
-					
-				case VOLTAGE_LEVEL:
-					output << "VOLT " << msg.voltage;
-					break;
-					
-				case LOCK_CODE:
-				case UNLOCK_CODE:
-					ciphered_devices[device].cipher.decipher(msg.crypted_code);
-					if (code == msg.code)
-						status.locked = (port == LOCK_CODE);
-					nrf.send(device, port, &status.locked, sizeof status.locked);
-					output << (port == LOCK_CODE ? "LOCK " : "UNLOCK ") << msg.code;
-					break;
+			if (port_handlers.count(port) > 0) {
+				s_send(data, port_handlers[port]->execute(device, static_cast<MessageType>(port), msg));
+			} else {
+				// log error
+				std::cerr << "Received unknown port " << std::hex << port << " from device " << device << std::endl;
 			}
-			s_send(data, output.str());
 		}
 	}
 	nrf.end();
 }
 
-CommandManager::CommandManager(zmq::context_t& context, AlarmStatus& status)
+CommandManager::CommandManager(zmq::context_t& context, DevicesHandler& handler, AlarmStatus& status)
 :	command(context, ZMQ_REP), 
-	handler(context, status), 
+	handler(handler), 
 	status(status),
 	running(false),
 	command_handlers() {
@@ -153,6 +110,7 @@ CommandManager::CommandManager(zmq::context_t& context, AlarmStatus& status)
 CommandManager::~CommandManager() {
 	command.close();
 	// Normal termination: remove INIT commands storage
+	//FIXME where are all log files removed in case of normal termination?
 	remove("rfmanager.ini");
 }
 

@@ -37,6 +37,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/Cipher.o \
 	${OBJECTDIR}/Commands.o \
+	${OBJECTDIR}/Handlers.o \
 	${OBJECTDIR}/NRF24L01P.o \
 	${OBJECTDIR}/RFManager.o \
 	${OBJECTDIR}/main.o
@@ -81,6 +82,11 @@ ${OBJECTDIR}/Commands.o: Commands.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Commands.o Commands.cpp
+
+${OBJECTDIR}/Handlers.o: Handlers.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Handlers.o Handlers.cpp
 
 ${OBJECTDIR}/NRF24L01P.o: NRF24L01P.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -143,6 +149,19 @@ ${OBJECTDIR}/Commands_nomain.o: ${OBJECTDIR}/Commands.o Commands.cpp
 	    $(COMPILE.cc) -O2 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Commands_nomain.o Commands.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Commands.o ${OBJECTDIR}/Commands_nomain.o;\
+	fi
+
+${OBJECTDIR}/Handlers_nomain.o: ${OBJECTDIR}/Handlers.o Handlers.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/Handlers.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -O2 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Handlers_nomain.o Handlers.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/Handlers.o ${OBJECTDIR}/Handlers_nomain.o;\
 	fi
 
 ${OBJECTDIR}/NRF24L01P_nomain.o: ${OBJECTDIR}/NRF24L01P.o NRF24L01P.cpp 
