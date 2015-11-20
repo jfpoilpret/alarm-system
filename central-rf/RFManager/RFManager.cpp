@@ -110,8 +110,10 @@ CommandManager::CommandManager(zmq::context_t& context, DevicesHandler& handler,
 CommandManager::~CommandManager() {
 	command.close();
 	// Normal termination: remove INIT commands storage
-	//FIXME where are all log files removed in case of normal termination?
-	remove("rfmanager.ini");
+	Command::remove(InitCommand::VERB);
+	Command::remove(CodeCommand::VERB);
+	Command::remove(LockCommand::VERB);
+	Command::remove(StartCommand::VERB);
 }
 
 void CommandManager::start() {
@@ -184,16 +186,3 @@ void CommandManager::execute(const std::string& verb) {
 	}
 }
 
-void Command::write(const std::string& verb, std::istringstream& input) {
-	if (log) {
-		std::string file = "rfmanager." + verb;
-		std::ofstream output(file, std::ofstream::trunc);
-		output << input.str() << std::endl;
-		output.close();
-	}
-}
-
-void Command::remove(const std::string& verb) {
-	std::string file = "rfmanager." + verb;
-	::remove(file.c_str());
-}

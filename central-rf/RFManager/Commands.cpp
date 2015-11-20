@@ -2,6 +2,7 @@
  * File:   Commands.cpp
  */
 
+#include <fstream>
 #include "Commands.h"
 #include "RFManager.h"
 
@@ -13,6 +14,20 @@ AlarmStatus& Command::status() const {
 }
 void Command::exit() {
 	manager->exit();
+}
+
+void Command::write(const std::string& verb, std::istringstream& input) {
+	if (log) {
+		std::string file = "rfmanager." + verb;
+		std::ofstream output(file, std::ofstream::trunc);
+		output << input.str() << std::endl;
+		output.close();
+	}
+}
+
+void Command::remove(const std::string& verb) {
+	std::string file = "rfmanager." + verb;
+	::remove(file.c_str());
 }
 
 const char* InitCommand::VERB = "INIT";

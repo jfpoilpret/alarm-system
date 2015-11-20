@@ -15,13 +15,13 @@ class AlarmStatus;
 class Command {
 public:
 	virtual std::string execute(const std::string& verb, std::istringstream& input) = 0;
+	static void remove(const std::string& verb);
 	
 protected:
 	DevicesHandler& handler() const;
 	AlarmStatus& status() const;
 	void exit();
 	void write(const std::string& verb, std::istringstream& input);
-	void remove(const std::string& verb);
 
 private:
 	CommandManager* manager;

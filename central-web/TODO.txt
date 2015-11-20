@@ -48,7 +48,8 @@ x		- install zero mq and build (as pi user)
 			make check
 	
 	- RFManager improvements:
-1h		- improve RF messages handling design to make it more extensible
+x		- FIXME to properly remove all log files
+			- check that it works properly
 30'		- NRF24: replace read IRQ pin with event on falling edge?
 			
 1h	- improve global system launch
@@ -56,6 +57,8 @@ x		- install zero mq and build (as pi user)
 	
 1h	- update requirements.txt and README
 2h	- use python 3.4 instead of 2.7?
+
+	- abandon virtualenv?
 
 4h	- improve RFManager / Web to include monitoring of RF errors
 		- new REQ/REP STATUS > OK X Y Z
