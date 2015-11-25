@@ -11,7 +11,9 @@ if __name__ == '__main__':
     context = zmq.Context()
     command = context.socket(zmq.REQ)
     command.connect("ipc:///tmp/alarm-system/command.ipc")
-    command.send(sys.argv[1])
-    reply = command.recv()
+    #command.send(sys.argv[1])
+    command.send_string(sys.argv[1])
+    #reply = command.recv()
+    reply = command.recv_string()
     print("reply: " + reply)
 
