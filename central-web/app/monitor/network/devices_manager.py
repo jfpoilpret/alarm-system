@@ -28,7 +28,7 @@ class DevicesManager(AbstractDevicesManager, Thread):
         self.command.connect("ipc:///tmp/alarm-system/command.ipc")
         self.data = context.socket(zmq.SUB)
         self.data.connect("ipc:///tmp/alarm-system/devices.ipc")
-        self.data.setsockopt(zmq.SUBSCRIBE, "")
+        self.data.setsockopt_string(zmq.SUBSCRIBE, "")
         
         # Setup RF message handlers
         #TODO review handler design (as messages come from collector process now)
@@ -58,8 +58,9 @@ class DevicesManager(AbstractDevicesManager, Thread):
         
     def send_command(self, command):
         print(command)
-        self.command.send(command.encode('ascii'))
-        result = self.command.recv()
+        #self.command.send(command.encode('ascii'))
+        self.command.send_string(command)
+        result = self.command.recv_string()
         print(result)
         return result == "OK"
     
@@ -80,7 +81,7 @@ class DevicesManager(AbstractDevicesManager, Thread):
         while True:
             #FIXME try/except EAGAIN or use timeout?
             try:
-                message = self.data.recv(zmq.NOBLOCK)
+                message = self.data.recv_string(zmq.NOBLOCK)
                 if message:
                     event = self.handle_message(message)
                     if event:
@@ -98,7 +99,8 @@ class DevicesManager(AbstractDevicesManager, Thread):
         ts = int(args[1])
         verb = args[2]
         args = args[3:] if len(args) > 2 else []
-        if self.devices.has_key(id):
+        #if self.devices.has_key(id):
+        if id in self.devices:
             device = self.devices[id]
             handler = self.handlers.get(verb)
             if handler:
