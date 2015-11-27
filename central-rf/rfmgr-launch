@@ -5,9 +5,11 @@ RFMANAGER=/home/pi/alarm-system/central-rf/RFManager/dist/rfmanager
 while [ 1 -eq 1 ]; do
 	# Launch process
 	echo "rfmanager starting"
-	$RFMANAGER
-	# Wait for rfmanager to die
-	wait
+	if $RFMANAGER; then
+		echo "rfmanager exited normally"
+		exit 0
+	fi
+	# rfmanager unexpectedly died, relaunch immediately
 	echo "rfmanager terminated"
 done
 
