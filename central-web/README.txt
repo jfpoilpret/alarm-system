@@ -21,13 +21,15 @@ The last command should show the following output:
 	itsdangerous (0.24)
 	Jinja2 (2.7.3)
 	MarkupSafe (0.23)
-	pip (6.0.8)
+	pip (7.1.2)
 	pytz (2015.4)
-	setuptools (12.0.5)
+	pyzmq (14.7.0)
+	setuptools (18.2)
 	six (1.9.0)
 	SQLAlchemy (1.0.0)
 	webargs (0.15.0)
 	Werkzeug (0.10.4)
+	wheel (0.24.0)
 	xmltodict (0.9.2)
 	
 Creating project on Eclipse/PyDev
@@ -67,6 +69,7 @@ Running the server on Raspberry Pi:
 	- create venv
 		> virtualenv venv
 		> source venv/bin/activate
+		> pip install -r requirements.txt
 
 
 TODO activate venv

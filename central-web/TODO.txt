@@ -47,28 +47,29 @@ x		- install zero mq and build (as pi user)
 			sudo ldconfig
 			make check
 	
-	- RFManager improvements:
-x		- FIXME to properly remove all log files
-			- check that it works properly
-30'		- NRF24: replace read IRQ pin with event on falling edge?
-			
-1h	- improve global system launch
-		- one shell to launch rfmanager first (and monitor forever) and then python
+x	- use python 3.4 instead of 2.7?
+
+1h	- try SCANA+ logic analyzer
+		- find out how to show MISO/MOSI as hex digits (based on SCK)
+1h	- update and commit README
+
+1h	- finally remove alarm-system/central dir? (or keep small app for debug?)
+
+1h	- improve global system launch (for DEBUG first, then for PROD TBD)
+		- one shell script to launch rfmanager and then python
+		- also allow proper exit of python flask application (with some signal)
+			http://flask.pocoo.org/snippets/67/
 	
-1h	- update requirements.txt and README
-2h	- use python 3.4 instead of 2.7?
-
-	- abandon virtualenv?
-
 4h	- improve RFManager / Web to include monitoring of RF errors
 		- new REQ/REP STATUS > OK X Y Z
 		- new admin screen (dialog?) to show this status
 		
-	- try SCANA+ logic analyzer
+30'	- bug: go to monitoring when there is no active configuration...
+	
 	- try arduino build on netbeans?
 	- try python build on netbeans?
 		
-1h	- finally remove alarm-system/central dir? (or keep small app for debug?)
+	- abandon virtualenv on RPi?
 
 	- review PCB design of keypad module
 		- no debug LED
@@ -76,8 +77,6 @@ x		- FIXME to properly remove all log files
 		- or consider using serial number (One Wire Interface, to be checked with Cosa)
 			- also need to buy some of these components (check available sensors also)
 			
-	- bug: go to monitoring when there is no active configuration...
-	
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?
 30'	- configuration changes of an active config should be limited
