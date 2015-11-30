@@ -1,8 +1,6 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
-1h	- finally remove alarm-system/central dir? (or keep small app for debug?)
-
 1h	- improve global system launch (for DEBUG first, then for PROD TBD)
 		- one shell script to launch rfmanager and then python
 		- also allow proper exit of python flask application (with some signal)
