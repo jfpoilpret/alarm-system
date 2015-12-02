@@ -71,5 +71,11 @@ public:
 	virtual std::string execute(const std::string& verb, std::istringstream& input);
 };
 
+class StatusCommand: public Command {
+public:
+	static const char* VERB;
+	virtual std::string execute(const std::string& verb, std::istringstream& input);
+};
+
 #endif	/* COMMANDS_H */
 

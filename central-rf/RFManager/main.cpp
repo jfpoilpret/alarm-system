@@ -24,6 +24,7 @@ static LockCommand cmd_lock;
 static UnlockCommand cmd_unlock;
 static StopCommand cmd_stop;
 static ExitCommand cmd_exit;
+static StatusCommand cmd_status;
 
 static PingHandler handler_ping;
 static LockHandler handler_lock;
@@ -50,6 +51,7 @@ int main(int argc, char** argv) {
 	manager.add_command(cmd_unlock.VERB, &cmd_unlock);
 	manager.add_command(cmd_stop.VERB, &cmd_stop);
 	manager.add_command(cmd_exit.VERB, &cmd_exit);
+	manager.add_command(cmd_status.VERB, &cmd_status);
 	// Finally start manager
 	manager.start();
 	// Block until exit

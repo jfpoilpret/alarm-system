@@ -76,6 +76,13 @@ void DevicesHandler::stop() {
 	}
 }
 
+void DevicesHandler::get_status(uint16_t& trans, uint16_t& retrans, uint16_t& drops, uint16_t& missing_irqs) const {
+	trans = nrf.get_trans();
+	retrans = nrf.get_retrans();
+	drops = nrf.get_drops();
+	missing_irqs = nrf.get_missing_irq();
+}
+
 void DevicesHandler::run() {
 	// Infinite loop waiting for devices messages
 	nrf.begin();

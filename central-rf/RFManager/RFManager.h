@@ -38,6 +38,8 @@ public:
 	void start();
 	void stop();
 	
+	void get_status(uint16_t& trans, uint16_t& retrans, uint16_t& drops, uint16_t& missing_irqs) const;
+	
 private:
 	void run();
 	

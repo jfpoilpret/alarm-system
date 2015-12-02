@@ -98,3 +98,12 @@ std::string UnlockCommand::execute(const std::string& verb, std::istringstream& 
 	status().locked = false;
 	return "OK";
 }
+
+const char* StatusCommand::VERB = "STATE";
+std::string StatusCommand::execute(const std::string& verb, std::istringstream& input) {
+	uint16_t trans, retrans, drops, missing_irqs;
+	handler().get_status(trans, retrans, drops, missing_irqs);
+	std::ostringstream output;
+	output << "STATE " << std::dec << trans << ' ' << retrans << ' ' << drops << ' ' << missing_irqs << std::flush;
+	return output.str();
+}
