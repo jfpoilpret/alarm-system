@@ -56,13 +56,23 @@ class DevicesManager(AbstractDevicesManager, Thread):
         AbstractDevicesManager.set_status(self, status)
         self.send_command('LOCK' if status == AlarmStatus.LOCKED else 'UNLOCK')
         
-    def send_command(self, command):
+    def get_rf_status(self):
+        # Parse get low-level RF status from RFManager
+        result = self.send_command('STATE', False)
+        # Parse result
+        values = [int(s) for s in result.split() if s.is_digit()]
+        return values[0], values[1], values[2], values[3]
+    
+    def send_command(self, command, check_ok = True):
         print(command)
         #self.command.send(command.encode('ascii'))
         self.command.send_string(command)
         result = self.command.recv_string()
         print(result)
-        return result == "OK"
+        if check_ok:
+            return result == "OK"
+        else:
+            return result
     
     def deactivate(self):
         self.stop.set()

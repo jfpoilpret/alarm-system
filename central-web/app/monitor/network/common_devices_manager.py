@@ -18,3 +18,6 @@ class AbstractDevicesManager(object):
 
     def set_code(self, code):
         self.code = code
+    
+    def get_rf_status(self):
+        return 0, 0, 0, 0

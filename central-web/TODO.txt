@@ -1,21 +1,19 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
-4h	- improve RFManager / Web to include monitoring of RF errors
+	- improve RFManager / Web to include monitoring of RF errors
 x		- new REQ/REP STATUS > OK X Y Z
-		- check with interactive command.py
-		- new admin screen (dialog?) to show this status
+			- check with interactive command.py
+x		- new REST resource to read RF status in JSON (part of monitor.py)
+x		- new tab in monitoring (for admin only) to read RF status (auto-refresh?)
+		- debug
 		
 1h	- improve global system launch (for DEBUG first, then for PROD TBD)
 		- one shell script to launch rfmanager and then python
 		- also allow proper exit of python flask application (with some signal)
 			http://flask.pocoo.org/snippets/67/
 	
-4h	- improve RFManager / Web to include monitoring of RF errors
-		- new REQ/REP STATUS > OK X Y Z
-		- new admin screen (dialog?) to show this status
-		
-30'	- bug: go to monitoring when there is no active configuration...
+30'	- bug: go to monitoring when there is no <active> configuration...
 	
 	- try arduino build on netbeans?
 	- try python build on netbeans?
@@ -24,9 +22,16 @@ x		- new REQ/REP STATUS > OK X Y Z
 
 	- review PCB design of keypad module
 		- no debug LED
-		- more DIP switches?
-		- or consider using serial number (One Wire Interface, to be checked with Cosa)
-			- also need to buy some of these components (check available sensors also)
+		- review green LED resistor value (0 Ohm?)
+		- use serial number component instead of DIP switches to identify sensor
+			- first check Cosa support
+			- then define protocol for:
+				- devices configuration
+				(need to get ID from device the first time and store to EEPROM)
+				- devices registration
+		- once device registration protocol is defined, think about potential extensions:
+			- define also NETWORK ID
+			- SERVER ID...
 			
 30'	- if "current" config is changed, previous config must be forced inactive if needed
 		- maybe need confirm message?

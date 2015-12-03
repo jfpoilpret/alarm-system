@@ -50,8 +50,9 @@ from .resources import VoltageAlertThresholdsResource
 restApi.add_resource(VoltageAlertThresholdsResource, 
     '/configurations/<int:id>/alert-thresholds/voltage', endpoint = 'voltage')
 
-from .resources import MonitorAlertsResource, MonitorDevicesResource, MonitorStatusResource
+from .resources import MonitorAlertsResource, MonitorDevicesResource, MonitorStatusResource, MonitorRFStatusResource
 restApi.add_resource(MonitorStatusResource, '/monitoring/status')
+restApi.add_resource(MonitorRFStatusResource, '/monitoring/rfstatus')
 restApi.add_resource(MonitorMapResource, '/monitoring/map')
 restApi.add_resource(MonitorAlertsResource, '/monitoring/alerts')
 restApi.add_resource(MonitorDevicesResource, '/monitoring/devices')

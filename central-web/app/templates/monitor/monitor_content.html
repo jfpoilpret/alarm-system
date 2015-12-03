@@ -13,12 +13,20 @@
 			<li role="presentation">
 				<a id = "tab_history" href="#history" aria-controls="history" role="tab" data-toggle="tab">History</a>
 			</li>
+			<!-- ko if: $root.currentUser().isAdmin -->
+			<li role="presentation">
+				<a id = "tab_rfstatus" href="#rfstatus" aria-controls="rfstatus" role="tab" data-toggle="tab">RF Status</a>
+			</li>
+			<!-- /ko -->
 		</ul>
 		<div class="tab-content">
 			{% include "monitor/monitoring_control.html" %}
 			{% include "monitor/monitoring_map.html" %}
 			{% include "monitor/monitoring_alerts.html" %}
 			{% include "monitor/monitoring_history.html" %}
+			<!-- ko if: $root.currentUser().isAdmin -->
+			{% include "monitor/monitoring_rfstatus.html" %}
+			<!-- /ko -->
 		</div>
 	</div>
 </div>

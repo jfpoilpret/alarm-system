@@ -6,6 +6,7 @@ from .configurations import ConfigurationsResource, ConfigurationResource
 from .configurations import CurrentConfigurationResource, ConfigurationMapResource
 from .devices import DevicesResource, DeviceResource
 from .thresholds import NoPingAlertThresholdsResource, VoltageAlertThresholdsResource
-from .monitor import MonitorAlertsResource, MonitorDevicesResource, MonitorMapResource, MonitorStatusResource
+from .monitor import MonitorAlertsResource, MonitorDevicesResource, MonitorMapResource, \
+    MonitorStatusResource, MonitorRFStatusResource
 from .alerts_history import AlertsHistoryResource
 from .token import TokenResource

@@ -174,6 +174,9 @@ class MonitoringManager(object):
     def get_status(self):
         return self.status
     
+    def get_rf_status(self):
+        return self.devices_manager.get_rf_status()
+    
     #FIXME should we clone each device under locking (multi-thread!!!)
     def get_devices(self):
         return self.devices

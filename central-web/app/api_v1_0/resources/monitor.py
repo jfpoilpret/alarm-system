@@ -7,7 +7,8 @@ from webargs import Arg
 from webargs.flaskparser import use_args, use_kwargs
 
 from app.models import Configuration, Alert, AlertType, Device
-from app.common import CodeToLabelField, label_to_code, string_to_date, check_alarm_setter, prepare_map
+from app.common import CodeToLabelField, label_to_code, string_to_date, check_alarm_setter, prepare_map,\
+    check_admin
 from app.monitor.monitoring import AlarmStatus, MonitoringManager
 from time import time
 from datetime import datetime
@@ -65,6 +66,29 @@ class MonitorStatusResource(Resource):
             'name': config.name,
             'active': config.active, 
             'locked': locked
+        }
+
+class MonitorRFStatusResource(Resource):
+    RF_STATUS_FIELDS = {
+        'trans': fields.Integer,
+        'retrans': fields.Integer,
+        'drops': fields.Integer,
+        'missing_irqs': fields.Integer
+    }
+    
+    @marshal_with(RF_STATUS_FIELDS)
+    def get(self):
+        # Only admin can access this low-level information
+        check_admin()
+        # RF status is accessible only when there is an active configuration
+        config = Configuration.query.filter_by(current = True, active = True).first_or_404()
+        # Obtain information from device monitor
+        trans, retrans, drops, missing_irqs = MonitoringManager.instance.get_rf_status()
+        return {
+            'trans': trans,
+            'retrans': retrans,
+            'drops': drops,
+            'missing_irqs': missing_irqs
         }
 
 class MonitorMapResource(Resource):

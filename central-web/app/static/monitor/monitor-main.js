@@ -104,6 +104,39 @@ $(document).ready(function() {
 		self.errors.clear();
 	}
 
+	// ViewModel in charge of RF status update (auto-refresh) for RFStatus tab
+	function RFStatusViewModel() {
+		var self = this;
+		
+		self.trans = ko.observable();
+		self.retrans = ko.observable();
+		self.drops = ko.observable();
+		self.missing_irqs = ko.observable();
+
+		var timer = null;
+		self.autoRefresh = function(refresh) {
+			timer = autoRefresh(timer, refresh, self.refresh, 5000);
+		}
+		
+		// Click handlers
+		var updateStatusDone = function(status) {
+			self.trans(status.trans);
+			self.retrans(status.retrans);
+			self.drops(status.drops);
+			self.missing_irqs(status.missing_irqs);
+		}
+		var updateStatusFail = function(xhr) {
+			self.trans(null);
+			self.retrans(null);
+			self.drops(null);
+			self.missing_irqs(null);
+		}
+		
+		self.refresh = function() {
+			$.getJSON('/api/1.0/monitoring/rfstatus').done(updateStatusDone).fail(updateStatusFail);
+		}
+	}
+
 	// Utility function to convert alert level to CSS class
 	function alertLevelClass(level) {
 		var ALERT_LEVEL_CLASS = {
@@ -332,6 +365,7 @@ $(document).ready(function() {
 		var self = this;
 		
 		self.statusMonitor = new StatusViewModel();
+		self.rfstatusMonitor = new RFStatusViewModel();
 		self.alertsMonitor = new AlertsViewModel();
 		self.mapMonitor = new MapViewModel();
 		self.alertsHistory = new AlertsHistoryViewModel(self.statusMonitor);
@@ -362,7 +396,9 @@ $(document).ready(function() {
 					self.mapMonitor.autoRefresh(false);
 				} else if ($(e.target).attr('id') === 'tab_alerts') {
 					self.alertsMonitor.autoRefresh(false);
-				}
+				} else if ($(e.target).attr('id') === 'tab_rfstatus') {
+					self.rfstatusMonitor.autoRefresh(false);
+				} 
 			}
 			// Hide all popovers
 			if ($(e.target).attr('id') === 'tab_map') {
@@ -396,6 +432,9 @@ $(document).ready(function() {
 					self.mapMonitor.autoRefresh(true);
 				} else if (targetTab === 'tab_alerts') {
 					self.alertsMonitor.autoRefresh(true);
+				} else if (targetTab === 'tab_rfstatus') {
+					self.rfstatusMonitor.refresh();
+					self.rfstatusMonitor.autoRefresh(true);
 				}
 			}
 		}
@@ -421,6 +460,7 @@ $(document).ready(function() {
 		self.uninstall = function() {
 			// Stop all refresh timers
 			self.statusMonitor.autoRefresh(false);
+			self.rfstatusMonitor.autoRefresh(false);
 			self.alertsMonitor.autoRefresh(false);
 			self.mapMonitor.autoRefresh(false);
 			// Unregister all event handlers

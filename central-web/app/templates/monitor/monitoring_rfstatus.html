@@ -1,0 +1,13 @@
+{% import "forms.html" as forms %}
+<div role="tabpanel" class="tab-pane" id="rfstatus" data-bind="with: rfstatusMonitor">
+	<div class="form-rfstatus">
+		<form	id="rfstatus_form" 
+				class="form form-horizontal" 
+				role="form">
+			{{ forms.static('trans', 'Total transmissions', prefix = 'rfstatus_', label_class = 'col-sm-3', control_class = 'col-sm-9') }}
+			{{ forms.static('retrans', 'Total re-transmissions', prefix = 'rfstatus_', label_class = 'col-sm-3', control_class = 'col-sm-9') }}
+			{{ forms.static('drops', 'Dropped transmissions', prefix = 'rfstatus_', label_class = 'col-sm-3', control_class = 'col-sm-9') }}
+			{{ forms.static('missing_irqs', 'Missing IRQ occurrences', prefix = 'rfstatus_', label_class = 'col-sm-3', control_class = 'col-sm-9') }}
+		</form>
+	</div>
+</div>
