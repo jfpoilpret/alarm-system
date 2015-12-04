@@ -150,13 +150,12 @@ void CommandManager::add_command(const std::string& verb, Command* command) {
 
 std::string CommandManager::handle_command(const std::string& verb, std::istringstream& input, bool log) {
 	// Check command and dispatch where needed
-	try {
-		Command* command = command_handlers[verb];
-		command->log = log;
-		return command->execute(verb, input);
-	} catch (std::out_of_range e) {
-		return "INVALID COMMAND";
+	auto command = command_handlers.find(verb);
+	if (command != command_handlers.end()) {
+		command->second->log =log;
+		return command->second->execute(verb, input);
 	}
+	return "INVALID COMMAND";
 }
 
 void CommandManager::run() {
