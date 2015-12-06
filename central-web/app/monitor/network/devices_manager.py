@@ -60,7 +60,7 @@ class DevicesManager(AbstractDevicesManager, Thread):
         # Parse get low-level RF status from RFManager
         result = self.send_command('STATE', False)
         # Parse result
-        values = [int(s) for s in result.split() if s.is_digit()]
+        values = [int(s) for s in result.split() if s.isdigit()]
         return values[0], values[1], values[2], values[3]
     
     def send_command(self, command, check_ok = True):

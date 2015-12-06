@@ -2,11 +2,7 @@ x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
 	- improve RFManager / Web to include monitoring of RF errors
-x		- new REQ/REP STATUS > OK X Y Z
-			- check with interactive command.py
-x		- new REST resource to read RF status in JSON (part of monitor.py)
-x		- new tab in monitoring (for admin only) to read RF status (auto-refresh?)
-		- debug
+		- debug is_digit!!!
 		
 1h	- improve global system launch (for DEBUG first, then for PROD TBD)
 		- one shell script to launch rfmanager and then python
