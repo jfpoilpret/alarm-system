@@ -41,6 +41,11 @@ $(document).ready(function() {
 			timer = autoRefresh(timer, refresh, self.refresh, 5000);
 		}
 		
+		var clearHistoryFail = function(xhr) {
+			if (xhr.status !== 404)
+				self.errors.errorHandler(xhr);
+		}
+		
 		// Click handlers
 		self.clearHistory = function() {
 			if (window.confirm('Are you sure you want to clear all alerts?')) {
@@ -48,7 +53,7 @@ $(document).ready(function() {
 				$.ajax({
 					url: url,
 					method: 'DELETE',
-				}).fail(self.errors.errorHandler).done(function() {
+				}).fail(clearHistoryFail).done(function() {
 					// Clear history form
 					self.clear_until(null);
 					// Notify MonitoringViewModel that history has been cleared 
@@ -89,6 +94,7 @@ $(document).ready(function() {
 			var status = xhr.status;
 			var result = xhr.responseJSON.message;
 			if (status === 404) {
+				self.id(null);
 				self.name(null);
 				self.active(null);
 				self.locked(null);
@@ -232,10 +238,19 @@ $(document).ready(function() {
 				alignAlertsListColumns();
 		}
 		
+		var updateAlertsFail = function(xhr) {
+			if (xhr.status === 404)
+				// If no current configuration just removes list of alerts
+				self.alerts([]);
+			else
+				// Call default error handler
+				self.errors.errorHandler(xhr);
+		}
+		
 		self.refresh = function(newFilter, done) {
 			newFilter = newFilter || filter;
 			done = done || updateAlertsDone;
-			$.getJSON('/api/1.0/monitoring/alerts', newFilter).done(done).fail(self.errors.errorHandler);
+			$.getJSON('/api/1.0/monitoring/alerts', newFilter).done(done).fail(updateAlertsFail);
 		}
 		
 		self.errors.clear();
@@ -292,9 +307,7 @@ $(document).ready(function() {
 				self.backgroundMap('');
 				var status = xhr.status;
 				var result = xhr.responseJSON.message;
-				if (status === 404) {
-					globalViewModel.flashMessages.error(result);
-				} else if (status >= 500) {
+				if (status >= 500) {
 					alert('A server error ' + status + ' has occurred:\n' + result);
 				}
 			});
@@ -353,7 +366,8 @@ $(document).ready(function() {
 		self.firstPage = function() { self.gotoPage(1); }
 		self.lastPage = function() { self.gotoPage(self.pages()); }
 		self.gotoPage = function(page) {
-			$.getJSON(self.url(), { page: page }).done(historyLoadDone);
+			if (statusMonitor.id())
+				$.getJSON(self.url(), { page: page }).done(historyLoadDone);
 		}
 		
 		self.refresh = function() {

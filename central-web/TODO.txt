@@ -1,20 +1,15 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
-	- improve RFManager / Web to include monitoring of RF errors
-		- debug is_digit!!!
-		
 1h	- improve global system launch (for DEBUG first, then for PROD TBD)
 		- one shell script to launch rfmanager and then python
 		- also allow proper exit of python flask application (with some signal)
 			http://flask.pocoo.org/snippets/67/
 	
-30'	- bug: go to monitoring when there is no <active> configuration...
-	
 	- try arduino build on netbeans?
 	- try python build on netbeans?
 		
-	- abandon virtualenv on RPi?
+	- abandon virtualenv on RPi (for prod only, not for dev)?
 
 	- review PCB design of keypad module
 		- no debug LED
