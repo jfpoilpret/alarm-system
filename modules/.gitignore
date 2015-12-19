@@ -1,5 +1,4 @@
-**/*.o
-**/*.o.d
-**/*.a
+**/dist
+**/build
 **/.dep.inc
 **/nbproject/private
