@@ -1,14 +1,34 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
+	- fix sourcetree/git setup on Windows to keep chmod +x on shell script(s)
+	
 1h	- improve global system launch (for DEBUG first, then for PROD TBD)
 		- one shell script to launch rfmanager and then python
 		- also allow proper exit of python flask application (with some signal)
 			http://flask.pocoo.org/snippets/67/
-	
-	- try arduino build on netbeans?
-	- try python build on netbeans?
+
+	- port Arduino projects to netbeans
+		- arduino build on netbeans
+x			- install Arduino 1.6.6 (from ZIP)
+x			- setup netbeans build tools 
+				http://mattzz.no-ip.org/wiki/Projects/ArduinoAndNetbeans
+x			- ensure to use the correct make (not available in Arduino), I used MinGW
+		- ActivationModule port
+			- copy netbeans stuff from temporary try
+			- update directories references in project config
+			- rebuild
+		- Copy arduino_cosa_lib project to working dir
+		- document (README.md?) netbeans configuration
+			- tools configuration
+			- makefile stuff
+		- test latest cosa in new branch
+		- factor out network stuff (constants and a few others) to external library
+		  for reuse in future modules
+
+
 		
+	- try python build on netbeans?
 	- abandon virtualenv on RPi (for prod only, not for dev)?
 
 	- review PCB design of keypad module
