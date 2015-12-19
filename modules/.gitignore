@@ -1,0 +1,5 @@
+**/*.o
+**/*.o.d
+**/*.a
+**/.dep.inc
+**/nbproject/private
