@@ -14,11 +14,8 @@ x			- install Arduino 1.6.6 (from ZIP)
 x			- setup netbeans build tools 
 				http://mattzz.no-ip.org/wiki/Projects/ArduinoAndNetbeans
 x			- ensure to use the correct make (not available in Arduino), I used MinGW
-		- ActivationModule port
-			- copy netbeans stuff from temporary try
-			- update directories references in project config
-			- rebuild
-		- Copy arduino_cosa_lib project to working dir
+x		- ActivationModule port
+x		- Copy arduino_cosa_lib project to working dir
 		- document (README.md?) netbeans configuration
 			- tools configuration
 			- makefile stuff
