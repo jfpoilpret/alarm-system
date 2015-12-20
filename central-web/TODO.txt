@@ -18,11 +18,12 @@ x		- ActivationModule port
 x		- Copy arduino_cosa_lib project to working dir
 		- test latest cosa in new branch
 x			- clone cosa at same level as alarm-system
-1h			- setup new arduino_cosa_lib project
-				- ensure all cosa sublibs are included: include one-by-one in project.xml & configurations.xml
-1h			- setup tools configuration (4 different configs)
-1h			- check build
-			- update ActivationModule to use new library (new branch)
+x			- setup new arduino_cosa_lib project
+x				- ensure all cosa sublibs are included: 
+x			- setup tools configuration (2 UNO different configs)
+x			- check build
+x			- add 2 ATmega328p configs
+1h			- update ActivationModule to use new library (new branch)
 			
 		- document (README.md?) netbeans configuration
 			- tools configuration
