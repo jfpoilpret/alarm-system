@@ -2,19 +2,20 @@
  * LedPanel.hh
  *
  *  Created on: 21 janv. 2015
- *      Author: Jean-François
+ *      Author: Jean-Franï¿½ois
  */
 
 #ifndef LEDPANEL_HH_
 #define LEDPANEL_HH_
 
+#include <Cosa/Periodic.hh>
 #include "Pins.hh"
 
 class LedPanel
 {
 public:
-	LedPanel()
-		:_locked(LED_LOCKED, 0), _unlocked(LED_UNLOCKED, 0) {}
+	LedPanel(Periodic& timer)
+		:_locked(timer, LED_LOCKED, 0), _unlocked(timer, LED_UNLOCKED, 0) {}
 
 	void setLocked(bool on)
 	{

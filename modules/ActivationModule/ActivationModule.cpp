@@ -1,7 +1,5 @@
 #include <Cosa/Watchdog.hh>
 
-#include "WDTAlarm.hh"
-
 #include "ActivationKeypad.hh"
 #include "ActivationNetwork.hh"
 #include "LedPanel.hh"
@@ -21,11 +19,18 @@ const uint32_t PING_PERIOD_SEC = 5;
 const uint32_t VOLTAGE_PERIOD_SEC = 60;
 //const uint32_t VOLTAGE_PERIOD_SEC = 3600;
 
-// Needed for Alarms to work properly
-static WDTAlarm::Scheduler scheduler;
+// Needed for Periodics and Alarms to work properly
+static Watchdog::Scheduler scheduler;
+static Watchdog::Clock clock;
+
+// Periodic timer used for LowPowerLed
+static Periodic ledTimer = Periodic(&scheduler, LowPowerLed::REFRESH_MS);
+
+// Periodic timer used for MatrixKeypad
+static Periodic keypadTimer = Periodic(&scheduler, ActivationKeypad::SAMPLE_MS);
 
 // Declare sensors and actuators
-static LedPanel ledPanel;
+static LedPanel ledPanel(ledTimer);
 static ActivationTransmitter transmitter(NETWORK, MODULE_ID, SERVER_ID);
 static ActivationKeypad keypad;
 
@@ -33,8 +38,8 @@ static ActivationKeypad keypad;
 static LockNotificationTask lockTask(transmitter, ledPanel);
 
 // Declare periodic tasks
-static PingTask pingTask(PING_PERIOD_SEC, transmitter, ledPanel);
-static VoltageNotificationTask voltageTask(VOLTAGE_PERIOD_SEC, transmitter);
+static PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter, ledPanel);
+static VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
 
 // Watchdog period must be the minimum of periods required by all watchdog timer users:
 // - keypad scan		  64ms
@@ -45,12 +50,12 @@ static const uint16_t WATCHDOG_PERIOD = 32;
 // Get the device ID from DIP switch pins
 uint8_t readConfigId()
 {
-	InputPin::set_mode(CONFIG_ID1, InputPin::Mode::PULLUP_MODE);
-	InputPin::set_mode(CONFIG_ID2, InputPin::Mode::PULLUP_MODE);
+	InputPin::mode(CONFIG_ID1, InputPin::Mode::PULLUP_MODE);
+	InputPin::mode(CONFIG_ID2, InputPin::Mode::PULLUP_MODE);
 	uint8_t id = (InputPin::read(CONFIG_ID1) ? 0: 1);
 	id += (InputPin::read(CONFIG_ID2) ? 0 : 2);
-	InputPin::set_mode(CONFIG_ID1, InputPin::Mode::NORMAL_MODE);
-	InputPin::set_mode(CONFIG_ID2, InputPin::Mode::NORMAL_MODE);
+	InputPin::mode(CONFIG_ID1, InputPin::Mode::NORMAL_MODE);
+	InputPin::mode(CONFIG_ID2, InputPin::Mode::NORMAL_MODE);
 	return id;
 }
 
@@ -83,19 +88,20 @@ void setup()
 	RTCAdapter::init();
 
 	// Additional setup for transmitter goes here...
-	transmitter.set_address(NETWORK, MODULE_ID + readConfigId());
+	transmitter.address(NETWORK, MODULE_ID + readConfigId());
 
-	// Start all tasks
-	pingTask.enable();
-	voltageTask.enable();
-
+	keypad.begin(keypadTimer);
 	keypad.attachListener(&lockTask);
 
 	// Start watchdog and keypad
-	Watchdog::begin(WATCHDOG_PERIOD, Watchdog::push_timeout_events);
-	scheduler.begin();
-	keypad.begin();
-	pingTask.enable();
+	Watchdog::begin(WATCHDOG_PERIOD);
+
+	// Start all tasks
+	ledTimer.start();
+	keypadTimer.start();
+	pingTask.start();
+	voltageTask.start();
+	pingTask.start();
 }
 
 // The loop function is called in an endless loop

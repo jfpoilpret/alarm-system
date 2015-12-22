@@ -2,22 +2,22 @@
  * PingTask.hh
  *
  *  Created on: 21 janv. 2015
- *      Author: Jean-François
+ *      Author: Jean-Franï¿½ois
  */
 
 #ifndef PINGTASK_HH_
 #define PINGTASK_HH_
 
-#include "WDTAlarm.hh"
+#include <Cosa/Alarm.hh>
 
 #include "ActivationNetwork.hh"
 #include "LedPanel.hh"
 
-class PingTask: public WDTAlarm
+class PingTask: public Alarm
 {
 public:
-	PingTask(uint32_t period, ActivationTransmitter& transmitter, LedPanel& ledPanel)
-		:	WDTAlarm(period),
+	PingTask(::Clock* clock, uint32_t period, ActivationTransmitter& transmitter, LedPanel& ledPanel)
+		:	Alarm(clock, period),
 		 	_transmitter(transmitter),
 		 	_ledPanel(ledPanel) {}
 

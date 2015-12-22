@@ -2,15 +2,13 @@
  * RTCAdapter.hh
  *
  *  Created on: 24 janv. 2015
- *      Author: Jean-François
+ *      Author: Jean-Franï¿½ois
  */
 
 #ifndef RTCADAPTER_HH_
 #define RTCADAPTER_HH_
 
-#include <Cosa/RTC.hh>
-
-#include "DebugLed.hh"
+#include <Cosa/RTT.hh>
 
 //TODO rename to auto_RTC
 //TODO refactor in 2 utility classes one for RTC enable, one for yield change
@@ -25,8 +23,8 @@ public:
 		// At first time it is called, RTC::begin() sets ::delay to RTC::delay
 		// but we don't want it as default delay method, so restore the original method
 		void (*saveDelay)(uint32_t) = ::delay;
-		RTC::begin();
-		RTC::end();
+		RTT::begin();
+		RTT::end();
 		::delay = saveDelay;
 	}
 
@@ -44,7 +42,7 @@ public:
 			TCNT0 = 0;
 			TIFR0 = 0;
 		}
-		RTC::micros(0);
+		RTT::micros(0);
 	}
 
 	~RTCAdapter()
@@ -62,7 +60,6 @@ public:
 private:
 	static void yield()
 	{
-//		debug(3);
 		Power::sleep(SLEEP_MODE_IDLE);
 	}
 

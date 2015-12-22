@@ -2,13 +2,13 @@
  * ActivationNetwork.hh
  *
  *  Created on: 19 janv. 2015
- *      Author: Jean-François
+ *      Author: Jean-Franï¿½ois
  */
 
 #ifndef ACTIVATIONNETWORK_HH_
 #define ACTIVATIONNETWORK_HH_
 
-#include <Cosa/Wireless/Driver/NRF24L01P.hh>
+#include <NRF24L01P.h>
 
 #include "Cipher.hh"
 #include "RTCAdapter.hh"

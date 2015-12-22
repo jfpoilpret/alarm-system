@@ -3,17 +3,22 @@
 
 #include <util/delay.h>
 #include <Cosa/OutputPin.hh>
+#include <Cosa/Periodic.hh>
 
 class LowPowerLed: private Link, private OutputPin
 {
 public:
-	LowPowerLed(const Board::DigitalPin pin,
-				uint8_t initial = 0,
-				uint16_t period = REFRESH_MS)
+	// if REFRESH_MS > 32, then the LED will blink instead of appearing
+	// NB: that default value may be too long, depending on MCU activity...
+	static const uint16_t REFRESH_MS = 32;
+	
+	LowPowerLed(Periodic& timer,
+				const Board::DigitalPin pin,
+				uint8_t initial = 0)
 		:	OutputPin(pin), _state(0)
 	{
 		_set(initial);
-		Watchdog::attach(this, period);
+		timer.attach(this);
 	}
 
 	void on()
@@ -39,9 +44,6 @@ public:
 private:
 	void _set(bool value);
 
-	// if REFRESH_MS > 32, then the LED will blink instead of appearing
-	// NB: that default value may be too long, depending on MCU activity...
-	static const uint16_t REFRESH_MS = 32;
 	static const uint16_t DURATION_US = 500;
 
     uint8_t _state;

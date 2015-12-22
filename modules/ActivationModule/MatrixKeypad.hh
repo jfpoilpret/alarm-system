@@ -16,6 +16,9 @@ template<int INPUTS, int OUTPUTS>
 class MatrixKeypad: private Link
 {
 public:
+	/** Keypad sampling period in milli-seconds. */
+	static const uint16_t SAMPLE_MS = 64;
+
 	MatrixKeypad(	const Board::DigitalPin inputs[INPUTS],
 					const Board::DigitalPin outputs[OUTPUTS],
 					const char mapping[INPUTS][OUTPUTS])
@@ -24,10 +27,10 @@ public:
 		 	_mapping((const char*) mapping),
 		 	_key(0) {}
 
-	void begin()
+	void begin(Periodic& timer)
 		__attribute__((always_inline))
 	{
-		Watchdog::attach(this, SAMPLE_MS);
+		timer.attach(this);
 	}
 
 	void end()
@@ -61,9 +64,6 @@ private:
 	virtual void on_event(uint8_t type, uint16_t value);
 
 	char scan();
-
-	/** Keypad sampling period in milli-seconds. */
-	static const uint16_t SAMPLE_MS = 64;
 
 	// static storage for rows and columns pins instances
 	ArrayAlloc<INPUTS, InputPin> _inputs;

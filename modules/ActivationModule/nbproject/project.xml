@@ -9,7 +9,7 @@
             <header-extensions>hh</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects>
-                <make-dep-project>../arduino_cosa_lib</make-dep-project>
+                <make-dep-project>../arduino_cosa_111_lib</make-dep-project>
             </make-dep-projects>
             <sourceRootList>
                 <sourceRootElem>.</sourceRootElem>

@@ -21,7 +21,7 @@ FC=gfortran
 AS=avr-as
 
 # Macros
-CND_PLATFORM=Arduino-1.6.6-Windows
+CND_PLATFORM=Arduino-1.6.6-Cosa-1.1.1-Windows
 CND_DLIB_EXT=dll
 CND_CONF=UNO-Release
 CND_DISTDIR=dist
@@ -52,13 +52,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../arduino_cosa_lib/dist/UNO-Release/Arduino-1.6.6-Windows/libarduino_cosa_lib.a
+LDLIBSOPTIONS=../arduino_cosa_111_lib/dist/UNO-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/libarduino_cosa_111_lib.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule.exe: ../arduino_cosa_lib/dist/UNO-Release/Arduino-1.6.6-Windows/libarduino_cosa_lib.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule.exe: ../arduino_cosa_111_lib/dist/UNO-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/libarduino_cosa_111_lib.a
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
@@ -67,11 +67,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule.exe: ${OBJECTFILES}
 ${OBJECTDIR}/ActivationModule.o: ActivationModule.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../../arduino/tools/arduino-1.5.8/sketchbook/hardware/Cosa/avr/cores/cosa -I../../../../arduino/tools/arduino-1.5.8/sketchbook/hardware/Cosa/avr/variants/${VARIANT} -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationModule.o ActivationModule.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationModule.o ActivationModule.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../arduino_cosa_lib && ${MAKE}  -f Makefile CONF=UNO-Release
+	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=UNO-Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -80,7 +80,7 @@ ${OBJECTDIR}/ActivationModule.o: ActivationModule.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../arduino_cosa_lib && ${MAKE}  -f Makefile CONF=UNO-Release clean
+	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=UNO-Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl
