@@ -14,7 +14,7 @@
       <itemPath>MatrixKeypad.hh</itemPath>
       <itemPath>PingTask.hh</itemPath>
       <itemPath>Pins.hh</itemPath>
-      <itemPath>RTCAdapter.hh</itemPath>
+      <itemPath>RTTUtils.hh</itemPath>
       <itemPath>SparkFunKeypad3x4.hh</itemPath>
       <itemPath>VoltageNotificationTask.hh</itemPath>
     </logicalFolder>
@@ -110,7 +110,7 @@
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="RTCAdapter.hh" ex="false" tool="3" flavor2="0">
+      <item path="RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="SparkFunKeypad3x4.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -191,7 +191,7 @@
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="RTCAdapter.hh" ex="false" tool="3" flavor2="0">
+      <item path="RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="SparkFunKeypad3x4.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -264,7 +264,7 @@
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="RTCAdapter.hh" ex="false" tool="3" flavor2="0">
+      <item path="RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="SparkFunKeypad3x4.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -343,7 +343,7 @@
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="RTCAdapter.hh" ex="false" tool="3" flavor2="0">
+      <item path="RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="SparkFunKeypad3x4.hh" ex="false" tool="3" flavor2="0">
       </item>
