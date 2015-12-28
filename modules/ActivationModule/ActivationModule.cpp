@@ -37,9 +37,9 @@ static VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitt
 
 // Watchdog period must be the minimum of periods required by all watchdog timer users:
 // - keypad scan		  64ms
-// - LED low powering	  32ms
-// - WDTAlarm			1024ms
-static const uint16_t WATCHDOG_PERIOD = 32;
+// - LED low powering	  16ms
+// - Alarm				  1024ms
+static const uint16_t WATCHDOG_PERIOD = 16;
 
 // Get the device ID from DIP switch pins
 uint8_t readConfigId()

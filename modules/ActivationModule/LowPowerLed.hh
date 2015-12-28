@@ -37,9 +37,9 @@ public:
 	}
 	
 private:
-	// if REFRESH_MS > 32, then the LED will blink instead of appearing
+	// if REFRESH_MS > 16, then the LED will blink instead of appearing
 	// NB: that default value may be too long, depending on MCU activity...
-	static const uint8_t REFRESH_MS = 32;
+	static const uint8_t REFRESH_MS = 16;
 	
 	static const uint16_t LIT_TIME_US = 500;
 };
