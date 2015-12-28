@@ -8,11 +8,9 @@
       <itemPath>ActivationNetwork.hh</itemPath>
       <itemPath>ArrayAlloc.hh</itemPath>
       <itemPath>Cipher.hh</itemPath>
-      <itemPath>DebugLed.hh</itemPath>
       <itemPath>LedPanel.hh</itemPath>
       <itemPath>LockNotificationTask.hh</itemPath>
       <itemPath>LowPowerLed.hh</itemPath>
-      <itemPath>LowPowerLedBlinker.hh</itemPath>
       <itemPath>MatrixKeypad.hh</itemPath>
       <itemPath>PingTask.hh</itemPath>
       <itemPath>Pins.hh</itemPath>
@@ -100,15 +98,11 @@
       </item>
       <item path="Cipher.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="DebugLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="LedPanel.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="LockNotificationTask.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="LowPowerLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LowPowerLedBlinker.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="MatrixKeypad.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -185,15 +179,11 @@
       </item>
       <item path="Cipher.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="DebugLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="LedPanel.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="LockNotificationTask.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="LowPowerLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LowPowerLedBlinker.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="MatrixKeypad.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -262,15 +252,11 @@
       </item>
       <item path="Cipher.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="DebugLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="LedPanel.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="LockNotificationTask.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="LowPowerLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LowPowerLedBlinker.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="MatrixKeypad.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -345,15 +331,11 @@
       </item>
       <item path="Cipher.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="DebugLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="LedPanel.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="LockNotificationTask.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="LowPowerLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LowPowerLedBlinker.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="MatrixKeypad.hh" ex="false" tool="3" flavor2="0">
       </item>

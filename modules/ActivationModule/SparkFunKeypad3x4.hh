@@ -1,10 +1,3 @@
-/*
- * SparkFunKeypad3x4.hh
- *
- *  Created on: 18 janv. 2015
- *      Author: Jean-François
- */
-
 #ifndef SPARKFUNKEYPAD3X4_HH_
 #define SPARKFUNKEYPAD3X4_HH_
 
@@ -25,13 +18,14 @@ template<uint8_t SIZE>
 class SparkFunKeypad3x4: public BufferedMatrixKeypad<INPUTS, OUTPUTS, SIZE>
 {
 public:
-	SparkFunKeypad3x4(	const Board::DigitalPin inputs[INPUTS],
+	SparkFunKeypad3x4(	Job::Scheduler* scheduler,
+						const Board::DigitalPin inputs[INPUTS],
 						const Board::DigitalPin outputs[OUTPUTS],
 						const uint8_t eventType,
 						const char* validate = "#*",
 						const BufferInputOverflowBehavior overflowBehavior = SHIFT_BUFFER)
 		:	BufferedMatrixKeypad<INPUTS, OUTPUTS, SIZE>(
-				inputs, outputs, KEYPAD_MAP, validate, overflowBehavior),
+				scheduler, inputs, outputs, KEYPAD_MAP, validate, overflowBehavior),
 		 	_eventType(eventType), _validate(0) {}
 
 	void attachListener(::Linkage *listener)

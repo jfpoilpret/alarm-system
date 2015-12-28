@@ -1,10 +1,3 @@
-/*
- * VoltageNotificationTask.hh
- *
- *  Created on: 21 janv. 2015
- *      Author: Jean-Fran�ois
- */
-
 #ifndef VOLTAGENOTIFICATIONTASK_HH_
 #define VOLTAGENOTIFICATIONTASK_HH_
 

@@ -1,10 +1,3 @@
-/*
- * LockNotificationTask.hh
- *
- *  Created on: 22 janv. 2015
- *      Author: Jean-François
- */
-
 #ifndef LOCKNOTIFICATIONTASK_HH_
 #define LOCKNOTIFICATIONTASK_HH_
 

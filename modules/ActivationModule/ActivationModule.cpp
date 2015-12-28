@@ -23,16 +23,10 @@ const uint32_t VOLTAGE_PERIOD_SEC = 60;
 static Watchdog::Scheduler scheduler;
 static Watchdog::Clock clock;
 
-// Periodic timer used for LowPowerLed
-static Periodic ledTimer = Periodic(&scheduler, LowPowerLed::REFRESH_MS);
-
-// Periodic timer used for MatrixKeypad
-static Periodic keypadTimer = Periodic(&scheduler, ActivationKeypad::SAMPLE_MS);
-
 // Declare sensors and actuators
-static LedPanel ledPanel(ledTimer);
+static LedPanel ledPanel(&scheduler);
 static ActivationTransmitter transmitter(NETWORK, MODULE_ID, SERVER_ID);
-static ActivationKeypad keypad;
+static ActivationKeypad keypad(&scheduler);
 
 // Declare listeners
 static LockNotificationTask lockTask(transmitter, ledPanel);
@@ -64,14 +58,14 @@ void setup()
 {
 	// Initialize power settings: disable every unneeded component
 	Power::twi_disable();
+	Power::timer0_disable();
 	Power::timer1_disable();
-	Power::timer2_disable();
 	Power::usart0_disable();
 	// ADC is used to get the voltage level
-	// Timer0 is used by intermittent RTC, no need to disable/re-enable it all the time
+	// Timer2 is used by intermittent new RTT, no need to disable/re-enable it all the time
 	// SPI is used by NRF24L01
 //	Power::adc_disable();
-//	Power::timer0_disable();
+//	Power::timer2_disable();
 //	Power::spi_disable();
 
 	// Sleep modes by order of increasing consumption
@@ -84,24 +78,18 @@ void setup()
 	// Only this mode works when using serial output and full-time RTC
 //	Power::set(SLEEP_MODE_IDLE);			// 15mA
 
-	// Initialize RTC adapter properly
-	RTCAdapter::init();
-
 	// Additional setup for transmitter goes here...
 	transmitter.address(NETWORK, MODULE_ID + readConfigId());
 
-	keypad.begin(keypadTimer);
 	keypad.attachListener(&lockTask);
 
 	// Start watchdog and keypad
 	Watchdog::begin(WATCHDOG_PERIOD);
 
 	// Start all tasks
-	ledTimer.start();
-	keypadTimer.start();
+	keypad.start();
 	pingTask.start();
 	voltageTask.start();
-	pingTask.start();
 }
 
 // The loop function is called in an endless loop

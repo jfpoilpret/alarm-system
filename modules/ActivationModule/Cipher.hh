@@ -1,10 +1,3 @@
-/*
- * Cipher.hh
- *
- *  Created on: 25 janv. 2015
- *      Author: Jean-François
- */
-
 #ifndef CIPHER_HH_
 #define CIPHER_HH_
 

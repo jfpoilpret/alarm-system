@@ -1,10 +1,3 @@
-/*
- * ActivationNetwork.hh
- *
- *  Created on: 19 janv. 2015
- *      Author: Jean-Fran�ois
- */
-
 #ifndef ACTIVATIONNETWORK_HH_
 #define ACTIVATIONNETWORK_HH_
 
@@ -94,7 +87,7 @@ int ActivationTransmitter::recv(uint8_t& src, uint8_t& port, void* buf, size_t c
 		result = NRF24L01P::recv(src, port, buf, count, ms);
 	else
 	{
-		RTCAdapter rtc;
+		auto_RTT rtc;
 		result = NRF24L01P::recv(src, port, buf, count, ms);
 	}
 	return result;

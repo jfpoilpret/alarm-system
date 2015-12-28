@@ -1,10 +1,3 @@
-/*
- * ArrayAlloc.hh
- *
- *  Created on: 11 janv. 2015
- *      Author: Jean-François
- */
-
 #ifndef ARRAYALLOC_HH_
 #define ARRAYALLOC_HH_
 

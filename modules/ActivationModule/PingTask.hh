@@ -1,10 +1,3 @@
-/*
- * PingTask.hh
- *
- *  Created on: 21 janv. 2015
- *      Author: Jean-Fran�ois
- */
-
 #ifndef PINGTASK_HH_
 #define PINGTASK_HH_
 

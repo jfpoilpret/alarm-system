@@ -24,6 +24,16 @@ x			- setup tools configuration (2 UNO different configs)
 x			- check build
 x			- add 2 ATmega328p configs
 1h			- update ActivationModule to use new library (new branch)
+x				- rewrite LowPowerLed to subclass Periodic
+x				- rewrite PingTask and VoltageNotificationTask to subclass Alarm
+x				- rewrite MatrixKeypad to subclass Periodic
+x				- rewrite main to instantiate Clock and Scheduler, and pass them to each
+				Periodic/Alarm
+x				- rewrite RTCAdapter to take advantage of better RTT in newest Cosa
+			- debug
+			- rename RTCAdapter.hh to auto_RTT.hh
+			- refactor MatrixKeypad to isolate non-generic stuff to its own .cpp
+				- some kind of Impl class without templates
 			
 		- document (README.md?) netbeans configuration
 			- tools configuration

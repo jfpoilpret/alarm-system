@@ -5,65 +5,47 @@
  *      Author: Jean-Fran�ois
  */
 
-#ifndef RTCADAPTER_HH_
-#define RTCADAPTER_HH_
+#ifndef AUTO_RTT_HH_
+#define AUTO_RTT_HH_
 
 #include <Cosa/RTT.hh>
 
-//TODO rename to auto_RTC
-//TODO refactor in 2 utility classes one for RTC enable, one for yield change
 // This class is used to automatically enable/disable RTC clock for programs where we need it sometimes
 // but don't want it working permanently (in order to benefit from lower power levels that are normally
 // not possible when using RTC all the time)
-class RTCAdapter
+class auto_RTT
 {
 public:
-	static void init()
+	auto_RTT()
 	{
-		// At first time it is called, RTC::begin() sets ::delay to RTC::delay
-		// but we don't want it as default delay method, so restore the original method
-		void (*saveDelay)(uint32_t) = ::delay;
-		RTT::begin();
-		RTT::end();
-		::delay = saveDelay;
-	}
-
-	RTCAdapter()
-	{
-		// Force our own yield() to use SLEEP_IDLE_MODE instead of SLEEP_MODE_PWR_DOWN,
+		// Force our own yield() to use SLEEP_MODE_PWR_SAVE instead of SLEEP_MODE_PWR_DOWN,
 		// otherwise RTC will not work during ::yield() calls, failing several timeout waiting loops
+		_saveDelay = ::delay;
 		_saveYield = ::yield;
-		::yield = RTCAdapter::yield;
-		synchronized
-		{
-			// And enable interrupt on overflow
-			TIMSK0 = _BV(TOIE0);
-			// Reset the counter and clear interrupts
-			TCNT0 = 0;
-			TIFR0 = 0;
-		}
+		RTT::begin();
 		RTT::micros(0);
+		::yield = auto_RTT::yield;
 	}
 
-	~RTCAdapter()
+	~auto_RTT()
 		__attribute__((always_inline))
 	{
-		// Disable interrupt on overflow
-		synchronized
-		{
-			// And enable interrupt on overflow
-			TIMSK0 = 0;
-		}
+		RTT::end();
 		::yield = _saveYield;
+		::delay = _saveDelay;
 	}
 
 private:
 	static void yield()
 	{
-		Power::sleep(SLEEP_MODE_IDLE);
+		// As timer2 is used, the best sleep mode we can use is SLEEP_MODE_PWR_SAVE
+		// If another timer was used instead, we would have to use SLEEP_MODE_IDLE instead
+		Power::sleep(SLEEP_MODE_PWR_SAVE);
+//		Power::sleep(SLEEP_MODE_IDLE);
 	}
 
 	void (*_saveYield)();
+	void (*_saveDelay)(uint32_t);
 };
 
-#endif /* RTCADAPTER_HH_ */
+#endif /* AUTO_RTT_HH_ */
