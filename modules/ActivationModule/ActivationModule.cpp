@@ -8,7 +8,7 @@
 #include "VoltageNotificationTask.hh"
 #include "LockNotificationTask.hh"
 
-#include "RTCAdapter.hh"
+#include "RTTUtils.hh"
 
 //TODO Externalize these constants?
 const uint16_t NETWORK = 0xC05A;

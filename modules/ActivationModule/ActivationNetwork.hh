@@ -4,7 +4,7 @@
 #include <NRF24L01P.h>
 
 #include "Cipher.hh"
-#include "RTCAdapter.hh"
+#include "RTTUtils.hh"
 #include "Pins.hh"
 
 enum LockStatus
