@@ -24,16 +24,14 @@ x			- setup tools configuration (2 UNO different configs)
 x			- check build
 x			- add 2 ATmega328p configs
 x			- update ActivationModule to use new library (new branch)
-			- rename RTCAdapter.hh to auto_RTT.hh
-			- refactor MatrixKeypad to isolate non-generic stuff to its own .cpp
-				- some kind of Impl class without templates
+x			- rename RTCAdapter.hh to auto_RTT.hh
 			- push branch and merge
 			- remove old cosa library?
+		- factor out network stuff (constants and a few others) to external library
+		  for reuse in future modules
 		- document (README.md?) netbeans configuration
 			- tools configuration
 			- makefile stuff
-		- factor out network stuff (constants and a few others) to external library
-		  for reuse in future modules
 	
 	- compute consumption
 		LED 500us every 16ms
