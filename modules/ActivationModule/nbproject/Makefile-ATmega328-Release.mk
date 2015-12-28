@@ -35,7 +35,10 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/ActivationModule.o
+	${OBJECTDIR}/ActivationModule.o \
+	${OBJECTDIR}/ActivationNetwork.o \
+	${OBJECTDIR}/Cipher.o \
+	${OBJECTDIR}/NetworkUtils.o
 
 
 # C Compiler Flags
@@ -68,6 +71,21 @@ ${OBJECTDIR}/ActivationModule.o: ActivationModule.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationModule.o ActivationModule.cpp
+
+${OBJECTDIR}/ActivationNetwork.o: ActivationNetwork.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationNetwork.o ActivationNetwork.cpp
+
+${OBJECTDIR}/Cipher.o: Cipher.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Cipher.o Cipher.cpp
+
+${OBJECTDIR}/NetworkUtils.o: NetworkUtils.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/NetworkUtils.o NetworkUtils.cpp
 
 # Subprojects
 .build-subprojects:

@@ -25,13 +25,15 @@ x			- check build
 x			- add 2 ATmega328p configs
 x			- update ActivationModule to use new library (new branch)
 x			- rename RTCAdapter.hh to auto_RTT.hh
-			- push branch and merge
+x			- push branch
 			- remove old cosa library?
+			- push branch
 		- factor out network stuff (constants and a few others) to external library
 		  for reuse in future modules
 		- document (README.md?) netbeans configuration
 			- tools configuration
 			- makefile stuff
+		- push branch and merge
 	
 	- compute consumption
 		LED 500us every 16ms
