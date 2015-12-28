@@ -35,10 +35,10 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/742743469/Cipher.o \
+	${OBJECTDIR}/_ext/742743469/NetworkUtils.o \
 	${OBJECTDIR}/ActivationModule.o \
-	${OBJECTDIR}/ActivationNetwork.o \
-	${OBJECTDIR}/Cipher.o \
-	${OBJECTDIR}/NetworkUtils.o
+	${OBJECTDIR}/ActivationNetwork.o
 
 
 # C Compiler Flags
@@ -67,25 +67,25 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule ${OBJECTFILES} ${LDLIBSOPTIONS} -Os -Wl,--gc-sections -Wl,-relax -flto -mmcu=${MCU} -lm
 
+${OBJECTDIR}/_ext/742743469/Cipher.o: ../ModuleCommons/Cipher.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/Cipher.o ../ModuleCommons/Cipher.cpp
+
+${OBJECTDIR}/_ext/742743469/NetworkUtils.o: ../ModuleCommons/NetworkUtils.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/NetworkUtils.o ../ModuleCommons/NetworkUtils.cpp
+
 ${OBJECTDIR}/ActivationModule.o: ActivationModule.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationModule.o ActivationModule.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationModule.o ActivationModule.cpp
 
 ${OBJECTDIR}/ActivationNetwork.o: ActivationNetwork.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationNetwork.o ActivationNetwork.cpp
-
-${OBJECTDIR}/Cipher.o: Cipher.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Cipher.o Cipher.cpp
-
-${OBJECTDIR}/NetworkUtils.o: NetworkUtils.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/NetworkUtils.o NetworkUtils.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationNetwork.o ActivationNetwork.cpp
 
 # Subprojects
 .build-subprojects:

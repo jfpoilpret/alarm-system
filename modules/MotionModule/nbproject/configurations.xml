@@ -4,19 +4,13 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>ActivationKeypad.hh</itemPath>
       <itemPath>ActivationNetwork.hh</itemPath>
       <itemPath>ArrayAlloc.hh</itemPath>
       <itemPath>../ModuleCommons/Cipher.hh</itemPath>
-      <itemPath>LedPanel.hh</itemPath>
-      <itemPath>LockNotificationTask.hh</itemPath>
-      <itemPath>LowPowerLed.hh</itemPath>
-      <itemPath>MatrixKeypad.hh</itemPath>
       <itemPath>../ModuleCommons/NetworkUtils.hh</itemPath>
       <itemPath>PingTask.hh</itemPath>
       <itemPath>Pins.hh</itemPath>
       <itemPath>../ModuleCommons/RTTUtils.hh</itemPath>
-      <itemPath>SparkFunKeypad3x4.hh</itemPath>
       <itemPath>VoltageNotificationTask.hh</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -26,9 +20,9 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>ActivationModule.cpp</itemPath>
-      <itemPath>ActivationNetwork.cpp</itemPath>
       <itemPath>../ModuleCommons/Cipher.cpp</itemPath>
+      <itemPath>MotionModule.cpp</itemPath>
+      <itemPath>MotionNetwork.cpp</itemPath>
       <itemPath>../ModuleCommons/NetworkUtils.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -104,29 +98,17 @@
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ActivationKeypad.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="ActivationModule.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ActivationNetwork.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="ActivationNetwork.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ArrayAlloc.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="LedPanel.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionModule.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="LockNotificationTask.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LowPowerLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MatrixKeypad.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionNetwork.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PingTask.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="SparkFunKeypad3x4.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="VoltageNotificationTask.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -194,29 +176,17 @@
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ActivationKeypad.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="ActivationModule.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ActivationNetwork.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="ActivationNetwork.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ArrayAlloc.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="LedPanel.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionModule.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="LockNotificationTask.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LowPowerLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MatrixKeypad.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionNetwork.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PingTask.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="SparkFunKeypad3x4.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="VoltageNotificationTask.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -276,29 +246,17 @@
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ActivationKeypad.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="ActivationModule.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ActivationNetwork.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="ActivationNetwork.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ArrayAlloc.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="LedPanel.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionModule.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="LockNotificationTask.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LowPowerLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MatrixKeypad.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionNetwork.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PingTask.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="SparkFunKeypad3x4.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="VoltageNotificationTask.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -364,29 +322,17 @@
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ActivationKeypad.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="ActivationModule.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ActivationNetwork.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="ActivationNetwork.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ArrayAlloc.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="LedPanel.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionModule.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="LockNotificationTask.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LowPowerLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MatrixKeypad.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionNetwork.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PingTask.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="SparkFunKeypad3x4.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="VoltageNotificationTask.hh" ex="false" tool="3" flavor2="0">
       </item>

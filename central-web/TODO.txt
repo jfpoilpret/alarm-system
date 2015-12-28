@@ -26,10 +26,11 @@ x			- add 2 ATmega328p configs
 x			- update ActivationModule to use new library (new branch)
 x			- rename RTCAdapter.hh to auto_RTT.hh
 x			- push branch
-			- remove old cosa library?
-			- push branch
 		- factor out network stuff (constants and a few others) to external library
 		  for reuse in future modules
+		- push branch
+		- remove old cosa library?
+		- push branch
 		- document (README.md?) netbeans configuration
 			- tools configuration
 			- makefile stuff

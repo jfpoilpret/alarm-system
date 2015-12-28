@@ -1,17 +1,14 @@
 #include <Cosa/Watchdog.hh>
 
-#include "ActivationKeypad.hh"
-#include "ActivationNetwork.hh"
-#include "LedPanel.hh"
+#include "MotionNetwork.hh"
 
 #include "PingTask.hh"
 #include "VoltageNotificationTask.hh"
-#include "LockNotificationTask.hh"
 
 //TODO Externalize these constants?
 const uint16_t NETWORK = 0xC05A;
 const uint8_t SERVER_ID = 0x01;
-const uint8_t MODULE_ID = 0x10;
+const uint8_t MODULE_ID = 0x20;
 
 const uint32_t PING_PERIOD_SEC = 5;
 const uint32_t VOLTAGE_PERIOD_SEC = 60;
@@ -22,22 +19,15 @@ static Watchdog::Scheduler scheduler;
 static Watchdog::Clock clock;
 
 // Declare sensors and actuators
-static LedPanel ledPanel(&scheduler);
 static ActivationTransmitter transmitter(NETWORK, MODULE_ID, SERVER_ID);
-static ActivationKeypad keypad(&scheduler);
-
-// Declare listeners
-static LockNotificationTask lockTask(transmitter, ledPanel);
 
 // Declare periodic tasks
-static PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter, ledPanel);
+static PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
 static VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
 
 // Watchdog period must be the minimum of periods required by all watchdog timer users:
-// - keypad scan		  64ms
-// - LED low powering	  16ms
 // - Alarm				  1024ms
-static const uint16_t WATCHDOG_PERIOD = 16;
+static const uint16_t WATCHDOG_PERIOD = 1024;
 
 // Get the device ID from DIP switch pins
 uint8_t readConfigId()
@@ -79,13 +69,10 @@ void setup()
 	// Additional setup for transmitter goes here...
 	transmitter.address(NETWORK, MODULE_ID + readConfigId());
 
-	keypad.attachListener(&lockTask);
-
 	// Start watchdog and keypad
 	Watchdog::begin(WATCHDOG_PERIOD);
 
 	// Start all tasks
-	keypad.start();
 	pingTask.start();
 	voltageTask.start();
 }
