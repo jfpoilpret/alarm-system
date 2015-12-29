@@ -10,13 +10,11 @@ class AbstractTask: public Alarm
 {
 public:
 	AbstractTask(::Clock* clock, uint32_t period, AbstractTransmitter& transmitter)
-		:	Alarm(clock, period),
-		 	_transmitter(transmitter) {}
+		:Alarm(clock, period), _transmitter(transmitter) {}
 
 protected:
 	AbstractTransmitter& _transmitter;
 };
-
 
 class DefaultPingTask: public AbstractTask
 {

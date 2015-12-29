@@ -61,6 +61,12 @@ ifeq ($(findstring ATmega328,${CONF}),ATmega328)
 	VARIANT=arduino/atmega328p
 	MCU=atmega328p
 	F_CPU=8000000L
+else
+ifeq ($(findstring ATtiny84,${CONF}),ATtiny84)
+	VARIANT=arduino/attinyx4
+	MCU=attiny84
+	F_CPU=8000000L
+endif
 endif
 endif
 # JFP END special variables stuff

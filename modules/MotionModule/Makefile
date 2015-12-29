@@ -52,7 +52,6 @@ CCADMIN=CCadmin
 # JFP BEGIN special variables stuff
 # set variables based on each configuration
 ARDUINO=166
-
 ifeq ($(findstring UNO,${CONF}),UNO)
 	VARIANT=arduino/uno
 	MCU=atmega328p
@@ -62,8 +61,13 @@ ifeq ($(findstring ATmega328,${CONF}),ATmega328)
 	VARIANT=arduino/atmega328p
 	MCU=atmega328p
 	F_CPU=8000000L
+else
+ifeq ($(findstring ATtiny84,${CONF}),ATtiny84)
+	VARIANT=arduino/attinyx4
+	MCU=attiny84
+	F_CPU=8000000L
 endif
-#TODO Add other targets here (Mega, Leonardo, ATtiny)
+endif
 endif
 
 # Set upload options

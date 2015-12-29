@@ -15,19 +15,15 @@
             </sourceRootList>
             <confList>
                 <confElem>
-                    <name>UNO-Debug</name>
-                    <type>3</type>
-                </confElem>
-                <confElem>
                     <name>UNO-Release</name>
                     <type>3</type>
                 </confElem>
                 <confElem>
-                    <name>ATmega328-Debug</name>
+                    <name>ATmega328-Release</name>
                     <type>3</type>
                 </confElem>
                 <confElem>
-                    <name>ATmega328-Release</name>
+                    <name>ATtiny84-Release</name>
                     <type>3</type>
                 </confElem>
             </confList>

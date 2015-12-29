@@ -17,15 +17,7 @@
             </sourceRootList>
             <confList>
                 <confElem>
-                    <name>UNO-Debug</name>
-                    <type>1</type>
-                </confElem>
-                <confElem>
                     <name>UNO-Release</name>
-                    <type>1</type>
-                </confElem>
-                <confElem>
-                    <name>ATmega328-Debug</name>
                     <type>1</type>
                 </confElem>
                 <confElem>

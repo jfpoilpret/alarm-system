@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=ActivationModule
 
 # Active Configuration
-DEFAULTCONF=UNO-Debug
+DEFAULTCONF=UNO-Release
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=UNO-Debug UNO-Release ATmega328-Debug ATmega328-Release 
+ALLCONFS=UNO-Release ATmega328-Release 
 
 
 # build

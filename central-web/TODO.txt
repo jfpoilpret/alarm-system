@@ -33,13 +33,14 @@ x		- rework modules projects to have logical folder for ModuleCommons
 x		- check what can be commonalized further (PingTask? VoltageNotificationTask?)
 		- improve size of common code (too big for ATtiny)
 x			- make XTEA an option at compile-time (NetworkUtils.*)
-		- document (README.md?) netbeans configuration
-			- tools configuration
-			- makefile stuff
-		- push branch and merge
+x	- remove all DEBUG configs
+x	- add NB configuration for ATtiny84
 	
-	- add NB configuration for ATtiny84
-	- remove all DEBUG configs?
+	- document (README.md?) netbeans configuration
+		- tools configuration
+		- makefile stuff
+	- push branch and merge
+	
 	
 	- compute consumption
 		MAIN CONSUMER: LED 500us every 16ms => can this be reduced further (eg 250us)?

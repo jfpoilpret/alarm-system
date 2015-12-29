@@ -46,72 +46,6 @@
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="UNO-Debug" type="1">
-      <toolsSet>
-        <compilerSet>Arduino-1.6.6-Cosa-1.1.1|Unknown</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
-        <rebuildPropChanged>false</rebuildPropChanged>
-      </toolsSet>
-      <compileType>
-        <cTool>
-          <developmentMode>0</developmentMode>
-          <incDir>
-            <pElem>../../../Cosa/cores/cosa</pElem>
-            <pElem>../../../Cosa/variants/${VARIANT}</pElem>
-          </incDir>
-          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -Wextra -flto -O0 -g -ffunction-sections -fdata-sections</commandLine>
-          <warningLevel>2</warningLevel>
-        </cTool>
-        <ccTool>
-          <developmentMode>0</developmentMode>
-          <incDir>
-            <pElem>../../../Cosa/cores/cosa</pElem>
-            <pElem>../../../Cosa/variants/${VARIANT}</pElem>
-            <pElem>../../../Cosa/libraries/NRF24L01P</pElem>
-            <pElem>../ModuleCommons</pElem>
-          </incDir>
-          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -O0 -g -ffunction-sections -fdata-sections</commandLine>
-          <warningLevel>2</warningLevel>
-        </ccTool>
-        <linkerTool>
-          <linkerLibItems>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../arduino_cosa_111_lib"
-                            CT="3"
-                            CN="UNO-Debug"
-                            AC="false"
-                            BL="true"
-                            WD="../arduino_cosa_111_lib"
-                            BC="${MAKE}  -f Makefile CONF=UNO-Debug"
-                            CC="${MAKE}  -f Makefile CONF=UNO-Debug clean"
-                            OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libarduino_cosa_111_lib.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
-          </linkerLibItems>
-          <commandLine>-Os -Wl,--gc-sections -Wl,-relax -flto -mmcu=${MCU} -lm</commandLine>
-        </linkerTool>
-      </compileType>
-      <item path="../ModuleCommons/Cipher.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../ModuleCommons/Cipher.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../ModuleCommons/CommonTasks.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../ModuleCommons/NetworkUtils.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../ModuleCommons/NetworkUtils.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MotionModule.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="MotionNetwork.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="MotionNetwork.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Pins.hh" ex="false" tool="3" flavor2="0">
-      </item>
-    </conf>
     <conf name="UNO-Release" type="1">
       <toolsSet>
         <compilerSet>Arduino-1.6.6-Cosa-1.1.1|Unknown</compilerSet>
@@ -186,7 +120,7 @@
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
-    <conf name="ATmega328-Debug" type="1">
+    <conf name="ATmega328-Release" type="1">
       <toolsSet>
         <compilerSet>Arduino-1.6.6-Cosa-1.1.1|Unknown</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -199,7 +133,7 @@
             <pElem>../../../Cosa/cores/cosa</pElem>
             <pElem>../../../Cosa/variants/${VARIANT}</pElem>
           </incDir>
-          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -Wextra -flto -O0 -g -ffunction-sections -fdata-sections</commandLine>
+          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -Wextra -flto -g -Os -ffunction-sections -fdata-sections</commandLine>
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
@@ -210,20 +144,26 @@
             <pElem>../../../Cosa/libraries/NRF24L01P</pElem>
             <pElem>../ModuleCommons</pElem>
           </incDir>
-          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -O0 -g -ffunction-sections -fdata-sections -DNO_CIPHER</commandLine>
+          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -g -Os -ffunction-sections -fdata-sections -DNO_CIPHER</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
         <linkerTool>
           <linkerLibItems>
             <linkerLibProjectItem>
               <makeArtifact PL="../arduino_cosa_111_lib"
                             CT="3"
-                            CN="ATmega328-Debug"
-                            AC="false"
+                            CN="ATmega328-Release"
+                            AC="true"
                             BL="true"
                             WD="../arduino_cosa_111_lib"
-                            BC="${MAKE}  -f Makefile CONF=ATmega328-Debug"
-                            CC="${MAKE}  -f Makefile CONF=ATmega328-Debug clean"
+                            BC="${MAKE}  -f Makefile CONF=ATmega328-Release"
+                            CC="${MAKE}  -f Makefile CONF=ATmega328-Release clean"
                             OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libarduino_cosa_111_lib.a">
               </makeArtifact>
             </linkerLibProjectItem>
@@ -252,7 +192,7 @@
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
-    <conf name="ATmega328-Release" type="1">
+    <conf name="ATtiny84-Release" type="1">
       <toolsSet>
         <compilerSet>Arduino-1.6.6-Cosa-1.1.1|Unknown</compilerSet>
         <dependencyChecking>true</dependencyChecking>
