@@ -55,13 +55,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../arduino_cosa_111_lib/dist/ATmega328-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/libarduino_cosa_111_lib.a
+LDLIBSOPTIONS=../arduino_cosa_111_lib/dist/ATtiny84-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/libarduino_cosa_111_lib.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule.exe: ../arduino_cosa_111_lib/dist/ATmega328-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/libarduino_cosa_111_lib.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule.exe: ../arduino_cosa_111_lib/dist/ATtiny84-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/libarduino_cosa_111_lib.a
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
@@ -89,7 +89,7 @@ ${OBJECTDIR}/MotionNetwork.o: MotionNetwork.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=ATmega328-Release
+	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=ATtiny84-Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -98,7 +98,7 @@ ${OBJECTDIR}/MotionNetwork.o: MotionNetwork.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=ATmega328-Release clean
+	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=ATtiny84-Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

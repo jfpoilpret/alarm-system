@@ -7,10 +7,7 @@
       <itemPath>MotionNetwork.hh</itemPath>
       <itemPath>Pins.hh</itemPath>
     </logicalFolder>
-    <logicalFolder name="f1"
-                   displayName="ModuleCommons"
-                   projectFiles="true"
-                   kind="ROOT">
+    <logicalFolder name="f1" displayName="ModuleCommons" projectFiles="true">
       <itemPath>../ModuleCommons/Cipher.cpp</itemPath>
       <itemPath>../ModuleCommons/Cipher.hh</itemPath>
       <itemPath>../ModuleCommons/CommonTasks.hh</itemPath>
@@ -230,12 +227,12 @@
             <linkerLibProjectItem>
               <makeArtifact PL="../arduino_cosa_111_lib"
                             CT="3"
-                            CN="ATmega328-Release"
+                            CN="ATtiny84-Release"
                             AC="true"
                             BL="true"
                             WD="../arduino_cosa_111_lib"
-                            BC="${MAKE}  -f Makefile CONF=ATmega328-Release"
-                            CC="${MAKE}  -f Makefile CONF=ATmega328-Release clean"
+                            BC="${MAKE}  -f Makefile CONF=ATtiny84-Release"
+                            CC="${MAKE}  -f Makefile CONF=ATtiny84-Release clean"
                             OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libarduino_cosa_111_lib.a">
               </makeArtifact>
             </linkerLibProjectItem>

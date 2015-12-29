@@ -45,16 +45,19 @@ uint8_t readConfigId()
 void setup()
 {
 	// Initialize power settings: disable every unneeded component
-	Power::twi_disable();
-	Power::timer0_disable();
 	Power::timer1_disable();
+#ifdef __AVR_ATmega328P__
+	Power::twi_disable();
 	Power::usart0_disable();
+	Power::timer0_disable();
+#endif
+#ifdef __AVR_ATtiny84__
+	Power::usi_disable();
+#endif
 	// ADC is used to get the voltage level
-	// Timer2 is used by intermittent new RTT, no need to disable/re-enable it all the time
+	// Timer2 (on ATmega) or Timer0 (on ATtiny) is used by intermittent new RTT, no need to disable/re-enable it 
+	// all the time
 	// SPI is used by NRF24L01
-//	Power::adc_disable();
-//	Power::timer2_disable();
-//	Power::spi_disable();
 
 	// Sleep modes by order of increasing consumption
 	// Lowest consumption mode (works on Arduino, not tested yet on breadboard ATmega)

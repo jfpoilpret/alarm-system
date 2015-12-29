@@ -11,15 +11,8 @@ AbstractTransmitter::AbstractTransmitter(uint16_t network, uint8_t device, uint8
 
 int AbstractTransmitter::recv(uint8_t& src, uint8_t& port, void* buf, size_t count, uint32_t ms)
 {
-	int result;
-	if (ms == 0)
-		result = NRF24L01P::recv(src, port, buf, count, ms);
-	else
-	{
-		auto_RTT rtc;
-		result = NRF24L01P::recv(src, port, buf, count, ms);
-	}
-	return result;
+	auto_RTT rtc;
+	return NRF24L01P::recv(src, port, buf, count, ms);
 }
 
 LockStatus AbstractTransmitter::pingServerAndGetLockStatus()
