@@ -2,7 +2,9 @@
 #define NETWORKUTILS_HH_
 
 #include <NRF24L01P.h>
+#ifndef NO_CIPHER
 #include "Cipher.hh"
+#endif
 
 enum LockStatus
 {
@@ -37,7 +39,9 @@ enum MessageType
 struct RxPingServer
 {
 	bool locked;
+#ifndef NO_CIPHER
 	uint8_t key[XTEA::KEY_SIZE];
+#endif
 };
 
 union RxPayload
@@ -65,7 +69,9 @@ protected:
 //	static const uint8_t RECV_TIMEOUT_MS = 5;
 	static const uint8_t RECV_TIMEOUT_MS = 10;
 	const uint8_t _server;
+#ifndef NO_CIPHER
 	XTEA _cipher;
+#endif
 };
 
 #endif /* NETWORKUTILS_HH_ */

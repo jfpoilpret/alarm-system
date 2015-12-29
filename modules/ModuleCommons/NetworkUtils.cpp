@@ -39,9 +39,11 @@ LockStatus AbstractTransmitter::pingServerAndGetLockStatus()
 		return UNKNOWN;
 	if (source == _server && port == PING_SERVER)
 	{
+#ifndef NO_CIPHER
 		if ((unsigned) size >= sizeof(response))
 			// Update key
 			_cipher.set_key(response.key);
+#endif
 		return response.locked ? LOCKED : UNLOCKED;
 	}
 	// We received a wrong message what do we do with it?

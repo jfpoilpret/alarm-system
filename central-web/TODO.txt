@@ -28,15 +28,21 @@ x			- rename RTCAdapter.hh to auto_RTT.hh
 x			- push branch
 x		- factor out network stuff (constants and a few others) to external library
 		  for reuse in future modules
-		- remove old cosa library?
-		- push branch
+x		- remove old cosa library?
+x		- rework modules projects to have logical folder for ModuleCommons
+x		- check what can be commonalized further (PingTask? VoltageNotificationTask?)
+		- improve size of common code (too big for ATtiny)
+x			- make XTEA an option at compile-time (NetworkUtils.*)
 		- document (README.md?) netbeans configuration
 			- tools configuration
 			- makefile stuff
 		- push branch and merge
 	
+	- add NB configuration for ATtiny84
+	- remove all DEBUG configs?
+	
 	- compute consumption
-		LED 500us every 16ms
+		MAIN CONSUMER: LED 500us every 16ms => can this be reduced further (eg 250us)?
 		scan keypad once every 64ms
 		ping (NRF24L01) every 5 seconds
 		voltage measure (ADC, NRF24L01) every 3600 seconds

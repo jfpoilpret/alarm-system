@@ -4,8 +4,8 @@
 #include "ActivationNetwork.hh"
 #include "LedPanel.hh"
 
+#include "CommonTasks.hh"
 #include "PingTask.hh"
-#include "VoltageNotificationTask.hh"
 #include "LockNotificationTask.hh"
 
 //TODO Externalize these constants?

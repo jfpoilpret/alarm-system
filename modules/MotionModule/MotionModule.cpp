@@ -1,9 +1,10 @@
+#include <Cosa/InputPin.hh>
 #include <Cosa/Watchdog.hh>
 
+#include "Pins.hh"
 #include "MotionNetwork.hh"
 
-#include "PingTask.hh"
-#include "VoltageNotificationTask.hh"
+#include "CommonTasks.hh"
 
 //TODO Externalize these constants?
 const uint16_t NETWORK = 0xC05A;
@@ -14,15 +15,14 @@ const uint32_t PING_PERIOD_SEC = 5;
 const uint32_t VOLTAGE_PERIOD_SEC = 60;
 //const uint32_t VOLTAGE_PERIOD_SEC = 3600;
 
-// Needed for Periodics and Alarms to work properly
-static Watchdog::Scheduler scheduler;
+// Needed for Alarms to work properly
 static Watchdog::Clock clock;
 
 // Declare sensors and actuators
-static ActivationTransmitter transmitter(NETWORK, MODULE_ID, SERVER_ID);
+static MotionTransmitter transmitter(NETWORK, MODULE_ID, SERVER_ID);
 
 // Declare periodic tasks
-static PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
+static DefaultPingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
 static VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
 
 // Watchdog period must be the minimum of periods required by all watchdog timer users:

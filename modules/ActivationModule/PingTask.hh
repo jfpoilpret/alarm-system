@@ -4,20 +4,17 @@
 #include <Cosa/Alarm.hh>
 
 #include "ActivationNetwork.hh"
+#include "CommonTasks.hh"
 #include "LedPanel.hh"
 
-class PingTask: public Alarm
+class PingTask: public DefaultPingTask
 {
 public:
 	PingTask(::Clock* clock, uint32_t period, ActivationTransmitter& transmitter, LedPanel& ledPanel)
-		:	Alarm(clock, period),
-		 	_transmitter(transmitter),
-		 	_ledPanel(ledPanel) {}
+		:DefaultPingTask(clock, period, transmitter), _ledPanel(ledPanel) {}
 
-	virtual void run()
+	virtual void status(LockStatus status)
 	{
-		// Get lock status from server
-		LockStatus status = _transmitter.pingServerAndGetLockStatus();
 		// Dispatch status to LedPanel
 		switch (status)
 		{
@@ -39,7 +36,6 @@ public:
 	}
 
 private:
-	ActivationTransmitter& _transmitter;
 	LedPanel& _ledPanel;
 };
 
