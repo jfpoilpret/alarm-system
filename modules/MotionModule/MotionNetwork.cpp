@@ -1,6 +1,14 @@
 #include "MotionNetwork.hh"
+#include "MotionDetector.hh"
 #include "Pins.hh"
 
 MotionTransmitter::MotionTransmitter(uint16_t network, uint8_t device, uint8_t server)
-	:AbstractTransmitter(network, device, server, RF_CSN, RF_CE, RF_IRQ) {}
+	:AbstractTransmitter(network, device, server, RF_CSN, RF_CE, RF_IRQ), Handler() {}
 
+void MotionTransmitter::on_event(uint8_t type, uint16_t value)
+{
+	UNUSED(value);
+	UNUSED(type);
+	auto_standby standby(*this);
+	send(_server, MOTION_DETECTED, 0, 0);
+}

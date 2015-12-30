@@ -5,6 +5,7 @@
 #include "MotionNetwork.hh"
 
 #include "CommonTasks.hh"
+#include "MotionDetector.hh"
 
 //TODO Externalize these constants?
 const uint16_t NETWORK = 0xC05A;
@@ -20,6 +21,7 @@ static Watchdog::Clock clock;
 
 // Declare sensors and actuators
 static MotionTransmitter transmitter(NETWORK, MODULE_ID, SERVER_ID);
+static MotionDetector detector;
 
 // Declare periodic tasks
 static DefaultPingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
@@ -32,18 +34,22 @@ static const uint16_t WATCHDOG_PERIOD = 1024;
 // Get the device ID from DIP switch pins
 uint8_t readConfigId()
 {
-	InputPin::mode(CONFIG_ID1, InputPin::Mode::PULLUP_MODE);
-	InputPin::mode(CONFIG_ID2, InputPin::Mode::PULLUP_MODE);
-	uint8_t id = (InputPin::read(CONFIG_ID1) ? 0: 1);
-	id += (InputPin::read(CONFIG_ID2) ? 0 : 2);
-	InputPin::mode(CONFIG_ID1, InputPin::Mode::NORMAL_MODE);
-	InputPin::mode(CONFIG_ID2, InputPin::Mode::NORMAL_MODE);
-	return id;
+//	InputPin::mode(CONFIG_ID1, InputPin::Mode::PULLUP_MODE);
+//	InputPin::mode(CONFIG_ID2, InputPin::Mode::PULLUP_MODE);
+//	uint8_t id = (InputPin::read(CONFIG_ID1) ? 0: 1);
+//	id += (InputPin::read(CONFIG_ID2) ? 0 : 2);
+//	InputPin::mode(CONFIG_ID1, InputPin::Mode::NORMAL_MODE);
+//	InputPin::mode(CONFIG_ID2, InputPin::Mode::NORMAL_MODE);
+//	return id;
+	return 0;
 }
 
 //The setup function is called once at startup of the sketch
 void setup()
 {
+	// First wait 1 minute for PIR sensor to stabilize
+//	sleep(60);//TODO add constant!!!
+	
 	// Initialize power settings: disable every unneeded component
 	Power::timer1_disable();
 #ifdef __AVR_ATmega328P__
@@ -72,10 +78,13 @@ void setup()
 	// Additional setup for transmitter goes here...
 	transmitter.address(NETWORK, MODULE_ID + readConfigId());
 
-	// Start watchdog and keypad
+	// Start watchdog
 	Watchdog::begin(WATCHDOG_PERIOD);
 
 	// Start all tasks
+	PinChangeInterrupt::begin();
+	detector.attachHandler(&transmitter);
+	detector.enable();
 	pingTask.start();
 	voltageTask.start();
 }

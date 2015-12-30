@@ -3,11 +3,12 @@
 
 #include <Cosa/Board.hh>
 
-//TODO Pins for Motion Detector
-
 // Pins used for device address configuration (2-bits only)
 static const Board::DigitalPin CONFIG_ID1	= Board::D0;
 static const Board::DigitalPin CONFIG_ID2	= Board::D1;
+
+// Pin used for PIR output connection (interrupt)
+static const Board::InterruptPin PIR_OUTPUT = Board::PCI3;
 
 // Pins used to connect to NRF24L01 (in addition to SPI pins: SCK, MISO, MOSI)
 //

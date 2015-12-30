@@ -37,6 +37,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/742743469/Cipher.o \
 	${OBJECTDIR}/_ext/742743469/NetworkUtils.o \
+	${OBJECTDIR}/MotionDetector.o \
 	${OBJECTDIR}/MotionModule.o \
 	${OBJECTDIR}/MotionNetwork.o
 
@@ -76,6 +77,11 @@ ${OBJECTDIR}/_ext/742743469/NetworkUtils.o: ../ModuleCommons/NetworkUtils.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
 	${RM} "$@.d"
 	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/NetworkUtils.o ../ModuleCommons/NetworkUtils.cpp
+
+${OBJECTDIR}/MotionDetector.o: MotionDetector.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotionDetector.o MotionDetector.cpp
 
 ${OBJECTDIR}/MotionModule.o: MotionModule.cpp 
 	${MKDIR} -p ${OBJECTDIR}

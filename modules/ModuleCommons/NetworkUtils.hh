@@ -32,6 +32,9 @@ enum MessageType
 	LOCK_CODE = 0x10,
 	UNLOCK_CODE = 0x11,
 
+	// Messages specific to the motion detection module
+	MOTION_DETECTED = 0x20
+			
 	// Other messages will go there
 
 } __attribute__((packed));
