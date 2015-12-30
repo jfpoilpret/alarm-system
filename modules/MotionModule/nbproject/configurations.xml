@@ -23,9 +23,11 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>../ModuleCommons/CommonTasks.cpp</itemPath>
       <itemPath>MotionDetector.cpp</itemPath>
       <itemPath>MotionModule.cpp</itemPath>
       <itemPath>MotionNetwork.cpp</itemPath>
+      <itemPath>../ModuleCommons/RTTUtils.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -102,11 +104,15 @@
       </item>
       <item path="../ModuleCommons/Cipher.hh" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../ModuleCommons/CommonTasks.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="../ModuleCommons/CommonTasks.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/RTTUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -178,11 +184,15 @@
       </item>
       <item path="../ModuleCommons/Cipher.hh" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../ModuleCommons/CommonTasks.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="../ModuleCommons/CommonTasks.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/RTTUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -254,11 +264,15 @@
       </item>
       <item path="../ModuleCommons/Cipher.hh" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../ModuleCommons/CommonTasks.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="../ModuleCommons/CommonTasks.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/RTTUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>

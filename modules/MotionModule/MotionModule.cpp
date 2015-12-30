@@ -20,8 +20,8 @@ const uint32_t VOLTAGE_PERIOD_SEC = 60;
 static Watchdog::Clock clock;
 
 // Declare sensors and actuators
-static MotionTransmitter transmitter(NETWORK, MODULE_ID, SERVER_ID);
-static MotionDetector detector;
+static MotionTransmitter transmitter(SERVER_ID);
+static MotionDetector detector(&transmitter);
 
 // Declare periodic tasks
 static DefaultPingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
@@ -83,7 +83,6 @@ void setup()
 
 	// Start all tasks
 	PinChangeInterrupt::begin();
-	detector.attachHandler(&transmitter);
 	detector.enable();
 	pingTask.start();
 	voltageTask.start();

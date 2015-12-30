@@ -8,7 +8,7 @@
 class MotionTransmitter: public AbstractTransmitter, public Event::Handler
 {
 public:
-	MotionTransmitter(uint16_t network, uint8_t device, uint8_t server);
+	MotionTransmitter(uint8_t server);
 	virtual void on_event(uint8_t type, uint16_t value);
 };
 

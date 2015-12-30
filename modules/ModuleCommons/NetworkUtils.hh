@@ -16,7 +16,7 @@ enum LockStatus
 class auto_standby
 {
 public:
-	auto_standby(NRF24L01P& rf):_rf(rf) {}
+	auto_standby(NRF24L01P& rf);
 	~auto_standby() { _rf.standby(); }
 private:
 	NRF24L01P& _rf;
@@ -64,7 +64,7 @@ public:
 	void sendVoltageLevel(uint16_t level);
 
 protected:
-	AbstractTransmitter(uint16_t network, uint8_t device, uint8_t server, 
+	AbstractTransmitter(uint8_t server, 
 		Board::DigitalPin csn, Board::DigitalPin ce, Board::ExternalInterruptPin irq);
 
 	virtual int recv(uint8_t& src, uint8_t& port, void* buf, size_t count, uint32_t ms = 0L);

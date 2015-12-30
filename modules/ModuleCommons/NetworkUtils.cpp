@@ -1,9 +1,11 @@
 #include "NetworkUtils.hh"
 #include "RTTUtils.hh"
 
-AbstractTransmitter::AbstractTransmitter(uint16_t network, uint8_t device, uint8_t server, 
+auto_standby::auto_standby(NRF24L01P& rf) : _rf(rf) {}
+
+AbstractTransmitter::AbstractTransmitter(uint8_t server, 
 	Board::DigitalPin csn, Board::DigitalPin ce, Board::ExternalInterruptPin irq)
-	:	NRF24L01P(network, device, csn, ce, irq), _server(server)
+	:	NRF24L01P(0, 0, csn, ce, irq), _server(server)
 {
 	begin();
 //		set_output_power_level(-18);
