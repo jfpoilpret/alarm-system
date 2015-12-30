@@ -15,15 +15,14 @@
       <itemPath>Pins.hh</itemPath>
       <itemPath>SparkFunKeypad3x4.hh</itemPath>
     </logicalFolder>
-    <logicalFolder name="f1"
-                   displayName="ModuleCommons"
-                   projectFiles="true"
-                   kind="ROOT">
+    <logicalFolder name="f1" displayName="ModuleCommons" projectFiles="true">
       <itemPath>../ModuleCommons/Cipher.cpp</itemPath>
       <itemPath>../ModuleCommons/Cipher.hh</itemPath>
+      <itemPath>../ModuleCommons/CommonTasks.cpp</itemPath>
       <itemPath>../ModuleCommons/CommonTasks.hh</itemPath>
       <itemPath>../ModuleCommons/NetworkUtils.cpp</itemPath>
       <itemPath>../ModuleCommons/NetworkUtils.hh</itemPath>
+      <itemPath>../ModuleCommons/RTTUtils.cpp</itemPath>
       <itemPath>../ModuleCommons/RTTUtils.hh</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -111,11 +110,15 @@
       </item>
       <item path="../ModuleCommons/Cipher.hh" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../ModuleCommons/CommonTasks.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="../ModuleCommons/CommonTasks.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/RTTUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
@@ -199,11 +202,15 @@
       </item>
       <item path="../ModuleCommons/Cipher.hh" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../ModuleCommons/CommonTasks.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="../ModuleCommons/CommonTasks.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/RTTUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>

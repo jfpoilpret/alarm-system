@@ -23,7 +23,7 @@ static Watchdog::Clock clock;
 
 // Declare sensors and actuators
 static LedPanel ledPanel(&scheduler);
-static ActivationTransmitter transmitter(NETWORK, MODULE_ID, SERVER_ID);
+static ActivationTransmitter transmitter(SERVER_ID);
 static ActivationKeypad keypad(&scheduler);
 
 // Declare listeners

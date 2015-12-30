@@ -7,7 +7,7 @@
 class ActivationTransmitter: public AbstractTransmitter
 {
 public:
-	ActivationTransmitter(uint16_t network, uint8_t device, uint8_t server);
+	ActivationTransmitter(uint8_t server);
 
 	// Send the newly typed code to the center and get updated state (locked/unlocked)
 	LockStatus sendCodeAndGetLockStatus(const char* input, bool locking);

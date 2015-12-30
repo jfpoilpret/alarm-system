@@ -1,8 +1,8 @@
 #include "ActivationNetwork.hh"
 #include "Pins.hh"
 
-ActivationTransmitter::ActivationTransmitter(uint16_t network, uint8_t device, uint8_t server)
-	:AbstractTransmitter(network, device, server, RF_CSN, RF_CE, RF_IRQ) {}
+ActivationTransmitter::ActivationTransmitter(uint8_t server)
+	:AbstractTransmitter(server, RF_CSN, RF_CE, RF_IRQ) {}
 
 LockStatus ActivationTransmitter::sendCodeAndGetLockStatus(const char* input, bool locking)
 {
