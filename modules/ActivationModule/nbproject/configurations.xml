@@ -22,7 +22,6 @@
       <itemPath>../ModuleCommons/CommonTasks.hh</itemPath>
       <itemPath>../ModuleCommons/NetworkUtils.cpp</itemPath>
       <itemPath>../ModuleCommons/NetworkUtils.hh</itemPath>
-      <itemPath>../ModuleCommons/RTTUtils.cpp</itemPath>
       <itemPath>../ModuleCommons/RTTUtils.hh</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -118,8 +117,6 @@
       </item>
       <item path="../ModuleCommons/NetworkUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../ModuleCommons/RTTUtils.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ActivationKeypad.hh" ex="false" tool="3" flavor2="0">
@@ -209,8 +206,6 @@
       <item path="../ModuleCommons/NetworkUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/NetworkUtils.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../ModuleCommons/RTTUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>

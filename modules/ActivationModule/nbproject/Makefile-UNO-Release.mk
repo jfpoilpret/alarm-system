@@ -38,7 +38,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/742743469/Cipher.o \
 	${OBJECTDIR}/_ext/742743469/CommonTasks.o \
 	${OBJECTDIR}/_ext/742743469/NetworkUtils.o \
-	${OBJECTDIR}/_ext/742743469/RTTUtils.o \
 	${OBJECTDIR}/ActivationModule.o \
 	${OBJECTDIR}/ActivationNetwork.o
 
@@ -83,11 +82,6 @@ ${OBJECTDIR}/_ext/742743469/NetworkUtils.o: ../ModuleCommons/NetworkUtils.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
 	${RM} "$@.d"
 	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/NetworkUtils.o ../ModuleCommons/NetworkUtils.cpp
-
-${OBJECTDIR}/_ext/742743469/RTTUtils.o: ../ModuleCommons/RTTUtils.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
-	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/RTTUtils.o ../ModuleCommons/RTTUtils.cpp
 
 ${OBJECTDIR}/ActivationModule.o: ActivationModule.cpp 
 	${MKDIR} -p ${OBJECTDIR}
