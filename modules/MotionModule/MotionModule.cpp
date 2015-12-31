@@ -16,17 +16,6 @@ const uint32_t PING_PERIOD_SEC = 5;
 const uint32_t VOLTAGE_PERIOD_SEC = 60;
 //const uint32_t VOLTAGE_PERIOD_SEC = 3600;
 
-// Needed for Alarms to work properly
-static Watchdog::Clock clock;
-
-// Declare sensors and actuators
-static MotionTransmitter transmitter(SERVER_ID);
-static MotionDetector detector(&transmitter);
-
-// Declare periodic tasks
-static DefaultPingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
-static VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
-
 // Watchdog period must be the minimum of periods required by all watchdog timer users:
 // - Alarm				  1024ms
 static const uint16_t WATCHDOG_PERIOD = 1024;
@@ -44,36 +33,34 @@ uint8_t readConfigId()
 	return 0;
 }
 
-//The setup function is called once at startup of the sketch
-void setup()
+int main()
 {
+	// Disable analog comparator
+	ACSR = _BV(ACD);
+	// Disable all modules
+	Power::all_disable();
+	// Allow interrupts from here
+	sei();
+
 	// First wait 1 minute for PIR sensor to stabilize
 //	sleep(60);//TODO add constant!!!
 	
-	// Initialize power settings: disable every unneeded component
-	Power::timer1_disable();
-#ifdef __AVR_ATmega328P__
-	Power::twi_disable();
-	Power::usart0_disable();
-	Power::timer0_disable();
-#endif
-#ifdef __AVR_ATtiny84__
-	Power::usi_disable();
-#endif
-	// ADC is used to get the voltage level
-	// Timer2 (on ATmega) or Timer0 (on ATtiny) is used by intermittent new RTT, no need to disable/re-enable it 
-	// all the time
-	// SPI is used by NRF24L01
-
 	// Sleep modes by order of increasing consumption
 	// Lowest consumption mode (works on Arduino, not tested yet on breadboard ATmega)
 	Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
-//	Power::set(SLEEP_MODE_STANDBY);			// 0.84mA
-//	Power::set(SLEEP_MODE_PWR_SAVE);		// 1.65mA
-//	Power::set(SLEEP_MODE_EXT_STANDBY);		// 1.65mA
-//	Power::set(SLEEP_MODE_ADC);				// 6.5 mA
 	// Only this mode works when using serial output and full-time RTC
 //	Power::set(SLEEP_MODE_IDLE);			// 15mA
+
+	// Needed for Alarms to work properly
+	Watchdog::Clock clock;
+
+	// Declare sensors and actuators
+	MotionTransmitter transmitter(SERVER_ID);
+	MotionDetector detector(&transmitter);
+
+	// Declare periodic tasks
+	DefaultPingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
+	VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
 
 	// Additional setup for transmitter goes here...
 	transmitter.address(NETWORK, MODULE_ID + readConfigId());
@@ -86,14 +73,13 @@ void setup()
 	detector.enable();
 	pingTask.start();
 	voltageTask.start();
-}
 
-// The loop function is called in an endless loop
-void loop()
-{
-	Watchdog::await();
+	while (true)
+	{
+		Watchdog::await();
 
-	Event event;
-	while (Event::queue.dequeue(&event))
-		event.dispatch();
+		Event event;
+		while (Event::queue.dequeue(&event))
+			event.dispatch();
+	}
 }

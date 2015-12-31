@@ -35,6 +35,10 @@ x		- check what can be commonalized further (PingTask? VoltageNotificationTask?)
 x			- make XTEA an option at compile-time (NetworkUtils.*)
 x	- remove all DEBUG configs
 x	- add NB configuration for ATtiny84
+	- improve code size:
+		- avr-strip does not change anything
+			avr-strip -s -R .comment -R .gnu.version --strip-unneeded
+		- override main() and remove setup() and loop()
 	
 	- document (README.md?) netbeans configuration
 		- tools configuration
