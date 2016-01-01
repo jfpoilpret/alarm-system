@@ -92,6 +92,8 @@ build: .build-post
 .build-post: .build-impl
 # Add your post 'build' code here...
 	avr-objcopy -O ihex ${CND_ARTIFACT_PATH_${CONF}} ${CND_ARTIFACT_PATH_${CONF}}.hex
+	avr-nm --synthetic -S -C --size-sort ${CND_ARTIFACT_PATH_${CONF}} >${CND_ARTIFACT_PATH_${CONF}}.nm.txt
+	avr-objdump -m avr25 -x -d -C ${CND_ARTIFACT_PATH_${CONF}} >${CND_ARTIFACT_PATH_${CONF}}.dump.txt
 	avr-size -C --mcu=${MCU} ${CND_ARTIFACT_PATH_${CONF}}
 
 # JFP BEGIN upload target

@@ -919,7 +919,7 @@
             <pElem>../../../Cosa/libraries/W5200</pElem>
             <pElem>../../../Cosa/libraries/W5X00</pElem>
           </incDir>
-          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -g -Os -ffunction-sections -fdata-sections</commandLine>
+          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -3313,7 +3313,7 @@
             <pElem>../../../Cosa/libraries/W5200</pElem>
             <pElem>../../../Cosa/libraries/W5X00</pElem>
           </incDir>
-          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -g -Os -ffunction-sections -fdata-sections</commandLine>
+          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
