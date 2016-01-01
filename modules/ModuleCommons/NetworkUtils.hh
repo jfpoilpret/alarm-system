@@ -13,15 +13,6 @@ enum LockStatus
 	UNLOCKED,
 };
 
-class auto_standby
-{
-public:
-	auto_standby(NRF24L01P& rf);
-	~auto_standby() { _rf.standby(); }
-private:
-	NRF24L01P& _rf;
-};
-
 enum MessageType
 {
 	// General messages, used by all sensors
@@ -52,9 +43,10 @@ union RxPayload
 	RxPingServer pingServer;
 };
 
-class AbstractTransmitter: public NRF24L01P
+class AbstractTransmitter
 {
 public:
+    void address(int16_t net, uint8_t dev);
 	// Register the activation module to the alarm center, get new cipher key,
 	// get current alarm status (locked/unlocked).
 	// Normally this method is called every 5 seconds.
@@ -63,11 +55,15 @@ public:
 	// This method is typically called once per hour or so
 	void sendVoltageLevel(uint16_t level);
 
+private:
+	NRF24L01P _nrf;
+	
 protected:
 	AbstractTransmitter(uint8_t server, 
 		Board::DigitalPin csn, Board::DigitalPin ce, Board::ExternalInterruptPin irq);
 
-	virtual int recv(uint8_t& src, uint8_t& port, void* buf, size_t count, uint32_t ms = 0L);
+	int recv(uint8_t& src, uint8_t& port, void* buf, size_t count, uint32_t ms = 0L);
+	int send(uint8_t dest, uint8_t port, const void* buf, size_t len);
 
 //	static const uint8_t RECV_TIMEOUT_MS = 5;
 	static const uint8_t RECV_TIMEOUT_MS = 10;
@@ -75,6 +71,16 @@ protected:
 #ifndef NO_CIPHER
 	XTEA _cipher;
 #endif
+	friend class auto_standby;
+};
+
+class auto_standby
+{
+public:
+	auto_standby(AbstractTransmitter& transmitter);
+	~auto_standby() { _rf.standby(); }
+private:
+	NRF24L01P& _rf;
 };
 
 #endif /* NETWORKUTILS_HH_ */

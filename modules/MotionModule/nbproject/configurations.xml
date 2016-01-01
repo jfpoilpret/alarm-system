@@ -228,7 +228,7 @@
             <pElem>../../../Cosa/libraries/NRF24L01P</pElem>
             <pElem>../ModuleCommons</pElem>
           </incDir>
-          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -g -Os -ffunction-sections -fdata-sections -mcall-prologues -DNO_CIPHER</commandLine>
+          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues -DNO_CIPHER</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -252,7 +252,7 @@
               </makeArtifact>
             </linkerLibProjectItem>
           </linkerLibItems>
-          <commandLine>-Os -Wl,--gc-sections -Wl,--relax -flto -mmcu=${MCU} -lm</commandLine>
+          <commandLine>-Os -Wl,--gc-sections -Wl,--relax -flto -mmcu=${MCU} -Wl,-Map,${CND_ARTIFACT_PATH_${CONF}}.map</commandLine>
         </linkerTool>
       </compileType>
       <item path="../ModuleCommons/Cipher.cpp" ex="false" tool="1" flavor2="0">

@@ -1,20 +1,30 @@
 #include "NetworkUtils.hh"
 #include "RTTUtils.hh"
 
-auto_standby::auto_standby(NRF24L01P& rf) : _rf(rf) {}
+auto_standby::auto_standby(AbstractTransmitter& transmitter) : _rf(transmitter._nrf) {}
 
 AbstractTransmitter::AbstractTransmitter(uint8_t server, 
 	Board::DigitalPin csn, Board::DigitalPin ce, Board::ExternalInterruptPin irq)
-	:	NRF24L01P(0, 0, csn, ce, irq), _server(server)
+	:	_nrf(0, 0, csn, ce, irq), _server(server)
 {
-	begin();
+	_nrf.begin();
 //		set_output_power_level(-18);
+}
+
+void AbstractTransmitter::address(int16_t net, uint8_t dev)
+{
+	_nrf.address(net, dev);
 }
 
 int AbstractTransmitter::recv(uint8_t& src, uint8_t& port, void* buf, size_t count, uint32_t ms)
 {
 	auto_RTT rtc;
-	return NRF24L01P::recv(src, port, buf, count, ms);
+	return _nrf.recv(src, port, buf, count, ms);
+}
+
+int AbstractTransmitter::send(uint8_t dest, uint8_t port, const void* buf, size_t len)
+{
+	return _nrf.send(dest, port, buf, len);
 }
 
 LockStatus AbstractTransmitter::pingServerAndGetLockStatus()
