@@ -67,7 +67,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule.exe: ../arduino_cosa_111
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule ${OBJECTFILES} ${LDLIBSOPTIONS} -Os -Wl,--gc-sections -Wl,-relax -flto -mmcu=${MCU} -lm
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule ${OBJECTFILES} ${LDLIBSOPTIONS} -Os -Wl,--gc-sections -Wl,--relax -flto -mmcu=${MCU} -lm
 
 ${OBJECTDIR}/_ext/742743469/Cipher.o: ../ModuleCommons/Cipher.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
