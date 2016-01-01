@@ -36,7 +36,7 @@ x			- make XTEA an option at compile-time (NetworkUtils.*)
 x	- remove all DEBUG configs
 x	- add NB configuration for ATtiny84
 x	- improve code size
-1h	- update compile/link/makefile improvements to all configs in all projects
+x	- update compile/link/makefile improvements to all configs in all projects
 
 	- document (README.md?) netbeans configuration
 		- tools configuration
