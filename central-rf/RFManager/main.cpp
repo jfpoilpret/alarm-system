@@ -29,21 +29,26 @@ static StatusCommand cmd_status;
 static PingHandler handler_ping;
 static LockHandler handler_lock;
 static VoltageHandler handler_voltage;
+static MotionHandler handler_motion;
 
 int main(int argc, char** argv) {
 	// Ensure temp dir exists (used for ZMQ IPC file descriptors)
 	create_temp_dir();
+	
 	// Initialize Managers
 	AlarmStatus status;
 	zmq::context_t context(1);
-	DevicesHandler handler(context, status);
+	
 	// Setup all payload handlers
+	DevicesHandler handler(context, status);
 	handler.add_handler(handler_ping.PORT, &handler_ping);
 	handler.add_handler(handler_voltage.PORT, &handler_voltage);
 	handler.add_handler(handler_lock.PORT1, &handler_lock);
 	handler.add_handler(handler_lock.PORT2, &handler_lock);
-	CommandManager manager(context, handler, status);
+	handler.add_handler(handler_motion.PORT, &handler_motion);
+	
 	// Setup all handlers for commands received from Web system
+	CommandManager manager(context, handler, status);
 	manager.add_command(cmd_init.VERB, &cmd_init);
 	manager.add_command(cmd_code.VERB, &cmd_code);
 	manager.add_command(cmd_start.VERB, &cmd_start);
@@ -52,6 +57,7 @@ int main(int argc, char** argv) {
 	manager.add_command(cmd_stop.VERB, &cmd_stop);
 	manager.add_command(cmd_exit.VERB, &cmd_exit);
 	manager.add_command(cmd_status.VERB, &cmd_status);
+
 	// Finally start manager
 	manager.start();
 	// Block until exit
