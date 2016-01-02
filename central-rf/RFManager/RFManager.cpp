@@ -97,7 +97,8 @@ void DevicesHandler::run() {
 				s_send(data, port_handlers[port]->execute(device, static_cast<MessageType>(port), msg));
 			} else {
 				// log error
-				std::cerr << "Received unknown port " << std::hex << port << " from device " << device << std::endl;
+				std::cerr	<< "Received unknown port " << std::hex << (uint16_t) port 
+							<< " from device " << (uint16_t) device << std::endl;
 			}
 		}
 	}
