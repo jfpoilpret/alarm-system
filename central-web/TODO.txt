@@ -1,48 +1,30 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
-	- fix sourcetree/git setup on Windows to keep chmod +x on shell script(s)
+1h	- debug MotionModule (on UNO)
+
+2h	- breadboard prototype for MotionModule (ATtiny84)
+		- test and debug
+4h	- design and make stripboard for MotionModule
+
+1h	- document MotionModule making
+		- careful about PIR sensor changes
+
+8h	- improve modules by using DS18B20
+		- infer on initial registration time Vs. startup time
+		- AVR part: check size on ATtiny84!
+		- Web part:
+			- DB model
+			- special configuration screen
 	
+	- fix sourcetree/git setup on Windows to keep chmod +x on shell script(s)
 1h	- improve global system launch (for DEBUG first, then for PROD TBD)
 		- one shell script to launch rfmanager and then python
 		- also allow proper exit of python flask application (with some signal)
 			http://flask.pocoo.org/snippets/67/
-
-	- port Arduino projects to netbeans
-		- arduino build on netbeans
-x			- install Arduino 1.6.6 (from ZIP)
-x			- setup netbeans build tools 
-				http://mattzz.no-ip.org/wiki/Projects/ArduinoAndNetbeans
-x			- ensure to use the correct make (not available in Arduino), I used MinGW
-x		- ActivationModule port
-x		- Copy arduino_cosa_lib project to working dir
-		- test latest cosa in new branch
-x			- clone cosa at same level as alarm-system
-x			- setup new arduino_cosa_lib project
-x				- ensure all cosa sublibs are included: 
-x			- setup tools configuration (2 UNO different configs)
-x			- check build
-x			- add 2 ATmega328p configs
-x			- update ActivationModule to use new library (new branch)
-x			- rename RTCAdapter.hh to auto_RTT.hh
-x			- push branch
-x		- factor out network stuff (constants and a few others) to external library
-		  for reuse in future modules
-x		- remove old cosa library?
-x		- rework modules projects to have logical folder for ModuleCommons
-x		- check what can be commonalized further (PingTask? VoltageNotificationTask?)
-		- improve size of common code (too big for ATtiny)
-x			- make XTEA an option at compile-time (NetworkUtils.*)
-x	- remove all DEBUG configs
-x	- add NB configuration for ATtiny84
-x	- improve code size
-x	- update compile/link/makefile improvements to all configs in all projects
-
-	- document (README.md?) netbeans configuration
+1h	- document (README.md?) netbeans configuration
 		- tools configuration
 		- makefile stuff
-	- push branch and merge
-	
 	
 	- compute consumption
 		MAIN CONSUMER: LED 500us every 16ms => can this be reduced further (eg 250us)?
@@ -50,8 +32,7 @@ x	- update compile/link/makefile improvements to all configs in all projects
 		ping (NRF24L01) every 5 seconds
 		voltage measure (ADC, NRF24L01) every 3600 seconds
 		remaining time: SLEEP_MODE_PWR_DOWN
-
-		
+	
 	- try python build on netbeans?
 	- abandon virtualenv on RPi (for prod only, not for dev)?
 
