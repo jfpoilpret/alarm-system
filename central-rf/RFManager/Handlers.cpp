@@ -53,7 +53,16 @@ std::string PingHandler::execute(uint8_t id, MessageType port, ReceptionPayload&
 			dev->cipher.set_key(&sent_payload[1]);
 			dev->creation_time = now();
 		} else {
-			std::cerr << "Cipher update failed: " << std::endl; 
+			time_t current = now();
+			struct tm date = *localtime(&current);
+			std::cerr	<< "Cipher update failed on device " << std::hex << (uint16_t) id << " ("
+						<< std::dec << std::right << std::setfill('0')
+						<< std::setw(2) << date.tm_mday << '.' 
+						<< std::setw(2) << (date.tm_mon + 1) << '.' 
+						<< std::setw(2) << date.tm_year << ' '
+						<< std::setw(2) << date.tm_hour << ':' 
+						<< std::setw(2) << date.tm_min << ':' 
+						<< std::setw(2) << date.tm_sec << ')' << std::endl; 
 		}
 	} else {
 		// Simply return lock
@@ -80,3 +89,11 @@ std::string LockHandler::execute(uint8_t id, MessageType port, ReceptionPayload&
 	output << (uint16_t) id << ' ' << now() << (port == MessageType::LOCK_CODE ? " LOCK " : " UNLOCK ") << payload.code;
 	return output.str();
 }
+
+const MessageType MotionHandler::PORT = MessageType::MOTION_DETECTED;
+std::string MotionHandler::execute(uint8_t id, MessageType port, ReceptionPayload& payload) {
+	std::ostringstream output;
+	output << (uint16_t) id << ' ' << now() << " MOTION";
+	return output.str();
+}
+
