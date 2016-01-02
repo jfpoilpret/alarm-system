@@ -1,5 +1,6 @@
 #include <Cosa/InputPin.hh>
 #include <Cosa/Watchdog.hh>
+#include <stdint-gcc.h>
 
 #include "Pins.hh"
 #include "MotionNetwork.hh"
@@ -15,6 +16,7 @@ const uint8_t MODULE_ID = 0x20;
 const uint32_t PING_PERIOD_SEC = 5;
 const uint32_t VOLTAGE_PERIOD_SEC = 60;
 //const uint32_t VOLTAGE_PERIOD_SEC = 3600;
+const uint32_t PIR_STARTUP_TIME_MS = 60000L;
 
 // Watchdog period must be the minimum of periods required by all watchdog timer users:
 // - Alarm				  1024ms
@@ -43,9 +45,6 @@ int main()
 	// Allow interrupts from here
 	sei();
 
-	// First wait 1 minute for PIR sensor to stabilize
-//	sleep(60);//TODO add constant!!!
-	
 	// Sleep modes by order of increasing consumption
 	// Lowest consumption mode (works on Arduino, not tested yet on breadboard ATmega)
 	Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
@@ -68,8 +67,9 @@ int main()
 
 	// Start watchdog
 	Watchdog::begin(WATCHDOG_PERIOD);
-	delay(60000);
-//	sleep(60);
+	// First wait 1 minute for PIR sensor to stabilize
+	//TODO move all objects instatiation afterwards
+	delay(PIR_STARTUP_TIME_MS);
 
 	// Start all tasks
 	PinChangeInterrupt::begin();
