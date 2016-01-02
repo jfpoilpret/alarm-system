@@ -37,8 +37,9 @@ int main()
 {
 	// Disable analog comparator
 	ACSR = _BV(ACD);
-	// Disable all modules
+	// Disable all modules but ADC (required for bandgap reading)
 	Power::all_disable();
+	Power::adc_enable();
 	// Allow interrupts from here
 	sei();
 
@@ -67,6 +68,8 @@ int main()
 
 	// Start watchdog
 	Watchdog::begin(WATCHDOG_PERIOD);
+	delay(60000);
+//	sleep(60);
 
 	// Start all tasks
 	PinChangeInterrupt::begin();

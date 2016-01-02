@@ -39,8 +39,9 @@ int main()
 {
 	// Disable analog comparator
 	ACSR = _BV(ACD);
-	// Disable all modules
+	// Disable all modules but ADC (required for bandgap reading)
 	Power::all_disable();
+	Power::adc_enable();
 	// Allow interrupts from here
 	sei();
 
