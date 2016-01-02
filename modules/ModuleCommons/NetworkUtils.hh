@@ -46,7 +46,7 @@ union RxPayload
 class AbstractTransmitter
 {
 public:
-    void address(int16_t net, uint8_t dev);
+    void begin(int16_t net, uint8_t dev);
 	// Register the activation module to the alarm center, get new cipher key,
 	// get current alarm status (locked/unlocked).
 	// Normally this method is called every 5 seconds.

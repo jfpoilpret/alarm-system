@@ -55,16 +55,19 @@ ARDUINO=166
 ifeq ($(findstring UNO,${CONF}),UNO)
 	VARIANT=arduino/uno
 	MCU=atmega328p
+	ARCH=avr5
 	F_CPU=16000000L
 else
 ifeq ($(findstring ATmega328,${CONF}),ATmega328)
 	VARIANT=arduino/atmega328p
 	MCU=atmega328p
+	ARCH=avr5
 	F_CPU=8000000L
 else
 ifeq ($(findstring ATtiny84,${CONF}),ATtiny84)
 	VARIANT=arduino/attinyx4
 	MCU=attiny84
+	ARCH=avr25
 	F_CPU=8000000L
 endif
 endif
@@ -97,7 +100,7 @@ build: .build-post
 # Add your post 'build' code here...
 	avr-objcopy -O ihex ${CND_ARTIFACT_PATH_${CONF}} ${CND_ARTIFACT_PATH_${CONF}}.hex
 	avr-nm --synthetic -S -C --size-sort ${CND_ARTIFACT_PATH_${CONF}} >${CND_ARTIFACT_PATH_${CONF}}.nm.txt
-	avr-objdump -m avr25 -x -d -C ${CND_ARTIFACT_PATH_${CONF}} >${CND_ARTIFACT_PATH_${CONF}}.dump.txt
+	avr-objdump -m ${ARCH} -x -d -C ${CND_ARTIFACT_PATH_${CONF}} >${CND_ARTIFACT_PATH_${CONF}}.dump.txt
 	avr-size -C --mcu=${MCU} ${CND_ARTIFACT_PATH_${CONF}}
 
 # JFP BEGIN upload target

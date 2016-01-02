@@ -1,7 +1,7 @@
 #ifndef SPARKFUNKEYPAD3X4_HH_
 #define SPARKFUNKEYPAD3X4_HH_
 
-#include <Cosa/Linkage.hh>
+#include <Cosa/Event.hh>
 
 #include "MatrixKeypad.hh"
 
@@ -22,16 +22,12 @@ public:
 						const Board::DigitalPin inputs[INPUTS],
 						const Board::DigitalPin outputs[OUTPUTS],
 						const uint8_t eventType,
+						Event::Handler* handler,
 						const char* validate = "#*",
 						const BufferInputOverflowBehavior overflowBehavior = SHIFT_BUFFER)
 		:	BufferedMatrixKeypad<INPUTS, OUTPUTS, SIZE>(
 				scheduler, inputs, outputs, KEYPAD_MAP, validate, overflowBehavior),
-		 	_eventType(eventType), _validate(0) {}
-
-	void attachListener(::Linkage *listener)
-	{
-		_listeners.attach(listener);
-	}
+		 	_eventType(eventType), _handler(handler), _validate(0) {}
 
 	char validate() const
 	{
@@ -44,8 +40,8 @@ protected:
 	virtual void on_input(const char* input, char validate);
 
 private:
-	Head _listeners;
 	const uint8_t _eventType;
+	Event::Handler* _handler;
 	char _validate;
 };
 
@@ -54,7 +50,7 @@ void SparkFunKeypad3x4<SIZE>::on_input(const char* input, char validate)
 {
 	UNUSED(input);
 	_validate = validate;
-	Event::push(_eventType, &_listeners, this);
+	Event::push(_eventType, _handler, this);
 }
 
 #endif /* SPARKFUNKEYPAD3X4_HH_ */

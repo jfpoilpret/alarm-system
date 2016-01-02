@@ -63,7 +63,7 @@ int main()
 	VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
 
 	// Additional setup for transmitter goes here...
-	transmitter.address(NETWORK, MODULE_ID + readConfigId());
+	transmitter.begin(NETWORK, MODULE_ID + readConfigId());
 
 	// Start watchdog
 	Watchdog::begin(WATCHDOG_PERIOD);

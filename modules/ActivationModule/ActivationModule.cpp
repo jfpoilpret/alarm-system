@@ -17,22 +17,6 @@ const uint32_t PING_PERIOD_SEC = 5;
 const uint32_t VOLTAGE_PERIOD_SEC = 60;
 //const uint32_t VOLTAGE_PERIOD_SEC = 3600;
 
-// Needed for Periodics and Alarms to work properly
-static Watchdog::Scheduler scheduler;
-static Watchdog::Clock clock;
-
-// Declare sensors and actuators
-static LedPanel ledPanel(&scheduler);
-static ActivationTransmitter transmitter(SERVER_ID);
-static ActivationKeypad keypad(&scheduler);
-
-// Declare listeners
-static LockNotificationTask lockTask(transmitter, ledPanel);
-
-// Declare periodic tasks
-static PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter, ledPanel);
-static VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
-
 // Watchdog period must be the minimum of periods required by all watchdog timer users:
 // - keypad scan		  64ms
 // - LED low powering	  16ms
@@ -51,35 +35,39 @@ uint8_t readConfigId()
 	return id;
 }
 
-//The setup function is called once at startup of the sketch
-void setup()
+int main()
 {
-	// Initialize power settings: disable every unneeded component
-	Power::twi_disable();
-	Power::timer0_disable();
-	Power::timer1_disable();
-	Power::usart0_disable();
-	// ADC is used to get the voltage level
-	// Timer2 is used by intermittent new RTT, no need to disable/re-enable it all the time
-	// SPI is used by NRF24L01
-//	Power::adc_disable();
-//	Power::timer2_disable();
-//	Power::spi_disable();
+	// Disable analog comparator
+	ACSR = _BV(ACD);
+	// Disable all modules
+	Power::all_disable();
+	// Allow interrupts from here
+	sei();
 
 	// Sleep modes by order of increasing consumption
 	// Lowest consumption mode (works on Arduino, not tested yet on breadboard ATmega)
 	Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
-//	Power::set(SLEEP_MODE_STANDBY);			// 0.84mA
-//	Power::set(SLEEP_MODE_PWR_SAVE);		// 1.65mA
-//	Power::set(SLEEP_MODE_EXT_STANDBY);		// 1.65mA
-//	Power::set(SLEEP_MODE_ADC);				// 6.5 mA
 	// Only this mode works when using serial output and full-time RTC
 //	Power::set(SLEEP_MODE_IDLE);			// 15mA
 
-	// Additional setup for transmitter goes here...
-	transmitter.address(NETWORK, MODULE_ID + readConfigId());
+	// Needed for Periodics and Alarms to work properly
+	Watchdog::Scheduler scheduler;
+	Watchdog::Clock clock;
 
-	keypad.attachListener(&lockTask);
+	// Declare sensors and actuators
+	LedPanel ledPanel(&scheduler);
+	ActivationTransmitter transmitter(SERVER_ID);
+
+	// Declare listeners
+	LockNotificationTask lockTask(transmitter, ledPanel);
+	ActivationKeypad keypad(&scheduler, &lockTask);
+
+	// Declare periodic tasks
+	PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter, ledPanel);
+	VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
+
+	// Additional setup for transmitter goes here...
+	transmitter.begin(NETWORK, MODULE_ID + readConfigId());
 
 	// Start watchdog and keypad
 	Watchdog::begin(WATCHDOG_PERIOD);
@@ -88,14 +76,13 @@ void setup()
 	keypad.start();
 	pingTask.start();
 	voltageTask.start();
-}
 
-// The loop function is called in an endless loop
-void loop()
-{
-	Watchdog::await();
+	while (true)
+	{
+		Watchdog::await();
 
-	Event event;
-	while (Event::queue.dequeue(&event))
-		event.dispatch();
+		Event event;
+		while (Event::queue.dequeue(&event))
+			event.dispatch();
+	}
 }
