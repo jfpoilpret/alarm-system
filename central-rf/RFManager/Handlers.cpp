@@ -59,7 +59,7 @@ std::string PingHandler::execute(uint8_t id, MessageType port, ReceptionPayload&
 						<< std::dec << std::right << std::setfill('0')
 						<< std::setw(2) << date.tm_mday << '.' 
 						<< std::setw(2) << (date.tm_mon + 1) << '.' 
-						<< std::setw(2) << date.tm_year << ' '
+						<< std::setw(4) << date.tm_year +1900 << ' '
 						<< std::setw(2) << date.tm_hour << ':' 
 						<< std::setw(2) << date.tm_min << ':' 
 						<< std::setw(2) << date.tm_sec << ')' << std::endl; 
