@@ -1,10 +1,3 @@
-/*
- * ActivationKeypad.hh
- *
- *  Created on: 18 janv. 2015
- *      Author: Jean-François
- */
-
 #ifndef ACTIVATIONKEYPAD_HH_
 #define ACTIVATIONKEYPAD_HH_
 
@@ -34,8 +27,8 @@ static const uint8_t SIZE = 6;
 class ActivationKeypad: public SparkFunKeypad3x4<SIZE>
 {
 public:
-	ActivationKeypad()
-		:	SparkFunKeypad3x4<SIZE>(INPUT_PINS, OUTPUT_PINS, LOCK_EVENT),
+	ActivationKeypad(Job::Scheduler* scheduler, Event::Handler* handler)
+		:	SparkFunKeypad3x4<SIZE>(scheduler, INPUT_PINS, OUTPUT_PINS, LOCK_EVENT, handler),
 		 	_typing(LED_TYPING, 0) {}
 
 	static const uint8_t LOCK_EVENT = Event::USER_TYPE + 1;

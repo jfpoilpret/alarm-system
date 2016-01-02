@@ -23,14 +23,33 @@ x				- ensure all cosa sublibs are included:
 x			- setup tools configuration (2 UNO different configs)
 x			- check build
 x			- add 2 ATmega328p configs
-1h			- update ActivationModule to use new library (new branch)
-			
-		- document (README.md?) netbeans configuration
-			- tools configuration
-			- makefile stuff
-		- factor out network stuff (constants and a few others) to external library
+x			- update ActivationModule to use new library (new branch)
+x			- rename RTCAdapter.hh to auto_RTT.hh
+x			- push branch
+x		- factor out network stuff (constants and a few others) to external library
 		  for reuse in future modules
+x		- remove old cosa library?
+x		- rework modules projects to have logical folder for ModuleCommons
+x		- check what can be commonalized further (PingTask? VoltageNotificationTask?)
+		- improve size of common code (too big for ATtiny)
+x			- make XTEA an option at compile-time (NetworkUtils.*)
+x	- remove all DEBUG configs
+x	- add NB configuration for ATtiny84
+x	- improve code size
+x	- update compile/link/makefile improvements to all configs in all projects
 
+	- document (README.md?) netbeans configuration
+		- tools configuration
+		- makefile stuff
+	- push branch and merge
+	
+	
+	- compute consumption
+		MAIN CONSUMER: LED 500us every 16ms => can this be reduced further (eg 250us)?
+		scan keypad once every 64ms
+		ping (NRF24L01) every 5 seconds
+		voltage measure (ADC, NRF24L01) every 3600 seconds
+		remaining time: SLEEP_MODE_PWR_DOWN
 
 		
 	- try python build on netbeans?

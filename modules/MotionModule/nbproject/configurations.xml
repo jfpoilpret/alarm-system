@@ -4,16 +4,9 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>ActivationKeypad.hh</itemPath>
-      <itemPath>ActivationNetwork.hh</itemPath>
-      <itemPath>ArrayAlloc.hh</itemPath>
-      <itemPath>LedPanel.hh</itemPath>
-      <itemPath>LockNotificationTask.hh</itemPath>
-      <itemPath>LowPowerLed.hh</itemPath>
-      <itemPath>MatrixKeypad.hh</itemPath>
-      <itemPath>PingTask.hh</itemPath>
+      <itemPath>MotionDetector.hh</itemPath>
+      <itemPath>MotionNetwork.hh</itemPath>
       <itemPath>Pins.hh</itemPath>
-      <itemPath>SparkFunKeypad3x4.hh</itemPath>
     </logicalFolder>
     <logicalFolder name="f1" displayName="ModuleCommons" projectFiles="true">
       <itemPath>../ModuleCommons/Cipher.cpp</itemPath>
@@ -31,8 +24,9 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>ActivationModule.cpp</itemPath>
-      <itemPath>ActivationNetwork.cpp</itemPath>
+      <itemPath>MotionDetector.cpp</itemPath>
+      <itemPath>MotionModule.cpp</itemPath>
+      <itemPath>MotionNetwork.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -77,7 +71,7 @@
             <pElem>../../../Cosa/libraries/NRF24L01P</pElem>
             <pElem>../ModuleCommons</pElem>
           </incDir>
-          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues</commandLine>
+          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues -DNO_CIPHER</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -119,29 +113,17 @@
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ActivationKeypad.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionDetector.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="ActivationModule.cpp" ex="false" tool="1" flavor2="0">
+      <item path="MotionDetector.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ActivationNetwork.cpp" ex="false" tool="1" flavor2="0">
+      <item path="MotionModule.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="ActivationNetwork.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionNetwork.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="ArrayAlloc.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LedPanel.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LockNotificationTask.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LowPowerLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MatrixKeypad.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="PingTask.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionNetwork.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="SparkFunKeypad3x4.hh" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="ATmega328-Release" type="1">
@@ -168,7 +150,7 @@
             <pElem>../../../Cosa/libraries/NRF24L01P</pElem>
             <pElem>../ModuleCommons</pElem>
           </incDir>
-          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues</commandLine>
+          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues -DNO_CIPHER</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -209,29 +191,95 @@
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ActivationKeypad.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionDetector.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="ActivationModule.cpp" ex="false" tool="1" flavor2="0">
+      <item path="MotionDetector.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="ActivationNetwork.cpp" ex="false" tool="1" flavor2="0">
+      <item path="MotionModule.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="ActivationNetwork.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionNetwork.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="ArrayAlloc.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LedPanel.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LockNotificationTask.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="LowPowerLed.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MatrixKeypad.hh" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="PingTask.hh" ex="false" tool="3" flavor2="0">
+      <item path="MotionNetwork.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="SparkFunKeypad3x4.hh" ex="false" tool="3" flavor2="0">
+    </conf>
+    <conf name="ATtiny84-Release" type="1">
+      <toolsSet>
+        <compilerSet>Arduino-1.6.6-Cosa-1.1.1|Unknown</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>0</developmentMode>
+          <incDir>
+            <pElem>../../../Cosa/cores/cosa</pElem>
+            <pElem>../../../Cosa/variants/${VARIANT}</pElem>
+          </incDir>
+          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -Wextra -flto -g -Os -ffunction-sections -fdata-sections</commandLine>
+          <warningLevel>2</warningLevel>
+        </cTool>
+        <ccTool>
+          <developmentMode>0</developmentMode>
+          <incDir>
+            <pElem>../../../Cosa/cores/cosa</pElem>
+            <pElem>../../../Cosa/variants/${VARIANT}</pElem>
+            <pElem>../../../Cosa/libraries/NRF24L01P</pElem>
+            <pElem>../ModuleCommons</pElem>
+          </incDir>
+          <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues -DNO_CIPHER</commandLine>
+          <warningLevel>2</warningLevel>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../arduino_cosa_111_lib"
+                            CT="3"
+                            CN="ATtiny84-Release"
+                            AC="true"
+                            BL="true"
+                            WD="../arduino_cosa_111_lib"
+                            BC="${MAKE}  -f Makefile CONF=ATtiny84-Release"
+                            CC="${MAKE}  -f Makefile CONF=ATtiny84-Release clean"
+                            OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libarduino_cosa_111_lib.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+          </linkerLibItems>
+          <commandLine>-Os -Wl,--gc-sections -Wl,--relax -flto -mmcu=${MCU} -Wl,-Map,${CND_ARTIFACT_PATH_${CONF}}.map</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="../ModuleCommons/Cipher.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/Cipher.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/CommonTasks.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/CommonTasks.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/NetworkUtils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/NetworkUtils.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="MotionDetector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="MotionDetector.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="MotionModule.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="MotionNetwork.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="MotionNetwork.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Pins.hh" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

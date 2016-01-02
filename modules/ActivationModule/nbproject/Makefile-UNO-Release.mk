@@ -21,7 +21,7 @@ FC=gfortran
 AS=avr-as
 
 # Macros
-CND_PLATFORM=Arduino-1.6.6-Windows
+CND_PLATFORM=Arduino-1.6.6-Cosa-1.1.1-Windows
 CND_DLIB_EXT=dll
 CND_CONF=UNO-Release
 CND_DISTDIR=dist
@@ -35,15 +35,19 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/ActivationModule.o
+	${OBJECTDIR}/_ext/742743469/Cipher.o \
+	${OBJECTDIR}/_ext/742743469/CommonTasks.o \
+	${OBJECTDIR}/_ext/742743469/NetworkUtils.o \
+	${OBJECTDIR}/ActivationModule.o \
+	${OBJECTDIR}/ActivationNetwork.o
 
 
 # C Compiler Flags
 CFLAGS=-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -Wextra -flto -g -Os -ffunction-sections -fdata-sections
 
 # CC Compiler Flags
-CCFLAGS=-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -g -Os -ffunction-sections -fdata-sections
-CXXFLAGS=-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -g -Os -ffunction-sections -fdata-sections
+CCFLAGS=-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues
+CXXFLAGS=-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -52,26 +56,46 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../arduino_cosa_lib/dist/UNO-Release/Arduino-1.6.6-Windows/libarduino_cosa_lib.a
+LDLIBSOPTIONS=../arduino_cosa_111_lib/dist/UNO-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/libarduino_cosa_111_lib.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule.exe: ../arduino_cosa_lib/dist/UNO-Release/Arduino-1.6.6-Windows/libarduino_cosa_lib.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule.exe: ../arduino_cosa_111_lib/dist/UNO-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/libarduino_cosa_111_lib.a
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule ${OBJECTFILES} ${LDLIBSOPTIONS} -Os -Wl,--gc-sections -Wl,-relax -flto -mmcu=${MCU} -lm
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/activationmodule ${OBJECTFILES} ${LDLIBSOPTIONS} -Os -Wl,--gc-sections -Wl,--relax -flto -mmcu=${MCU} -Wl,-Map,${CND_ARTIFACT_PATH_${CONF}}.map
+
+${OBJECTDIR}/_ext/742743469/Cipher.o: ../ModuleCommons/Cipher.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/Cipher.o ../ModuleCommons/Cipher.cpp
+
+${OBJECTDIR}/_ext/742743469/CommonTasks.o: ../ModuleCommons/CommonTasks.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/CommonTasks.o ../ModuleCommons/CommonTasks.cpp
+
+${OBJECTDIR}/_ext/742743469/NetworkUtils.o: ../ModuleCommons/NetworkUtils.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/NetworkUtils.o ../ModuleCommons/NetworkUtils.cpp
 
 ${OBJECTDIR}/ActivationModule.o: ActivationModule.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../../arduino/tools/arduino-1.5.8/sketchbook/hardware/Cosa/avr/cores/cosa -I../../../../arduino/tools/arduino-1.5.8/sketchbook/hardware/Cosa/avr/variants/${VARIANT} -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationModule.o ActivationModule.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationModule.o ActivationModule.cpp
+
+${OBJECTDIR}/ActivationNetwork.o: ActivationNetwork.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ActivationNetwork.o ActivationNetwork.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../arduino_cosa_lib && ${MAKE}  -f Makefile CONF=UNO-Release
+	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=UNO-Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -80,7 +104,7 @@ ${OBJECTDIR}/ActivationModule.o: ActivationModule.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../arduino_cosa_lib && ${MAKE}  -f Makefile CONF=UNO-Release clean
+	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=UNO-Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

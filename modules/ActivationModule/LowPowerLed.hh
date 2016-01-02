@@ -3,67 +3,45 @@
 
 #include <util/delay.h>
 #include <Cosa/OutputPin.hh>
+#include <Cosa/Periodic.hh>
 
-class LowPowerLed: private Link, private OutputPin
+class LowPowerLed: private Periodic, private OutputPin
 {
 public:
-	LowPowerLed(const Board::DigitalPin pin,
-				uint8_t initial = 0,
-				uint16_t period = REFRESH_MS)
-		:	OutputPin(pin), _state(0)
+	LowPowerLed(Board::DigitalPin pin, Job::Scheduler* scheduler, uint8_t period_msecs = REFRESH_MS)
+		:Periodic(scheduler, period_msecs), OutputPin(pin, 0) {}
+
+	inline void set(int value)
 	{
-		_set(initial);
-		Watchdog::attach(this, period);
+		if (value) on(); else off();
 	}
-
-	void on()
-		__attribute__((always_inline))
+	inline void toggle()
 	{
-		set(true);
+		set(!Periodic::is_started());
 	}
-
-	void off()
-		__attribute__((always_inline))
+	inline void on()
 	{
-		set(false);
+		Periodic::start();
 	}
-
-	void set(bool value)
-		__attribute__((always_inline))
+	inline void off()
 	{
-		if (_state != value) _set(value);
+		OutputPin::off();
+		Periodic::stop();
 	}
-
-    virtual void on_event(uint8_t type, uint16_t value);
-
-private:
-	void _set(bool value);
-
-	// if REFRESH_MS > 32, then the LED will blink instead of appearing
-	// NB: that default value may be too long, depending on MCU activity...
-	static const uint16_t REFRESH_MS = 32;
-	static const uint16_t DURATION_US = 500;
-
-    uint8_t _state;
-};
-
-void LowPowerLed::on_event(uint8_t type, uint16_t value)
-{
-	UNUSED(value);
-	if (type == Event::TIMEOUT_TYPE && _state)
+	
+	virtual void run()
 	{
 		OutputPin::on();
-		_delay_us(DURATION_US);
-//		_delay_ms(DURATION_MS);
+		DELAY(LIT_TIME_US);
 		OutputPin::off();
 	}
-}
-
-void LowPowerLed::_set(bool value)
-{
-	_state = value;
-	if (!_state)
-		OutputPin::off();
-}
+	
+private:
+	// if REFRESH_MS > 16, then the LED will blink instead of appearing
+	// NB: that default value may be too long, depending on MCU activity...
+	static const uint8_t REFRESH_MS = 16;
+	
+	static const uint16_t LIT_TIME_US = 500;
+};
 
 #endif /* LOWPOWERLED_HH_ */

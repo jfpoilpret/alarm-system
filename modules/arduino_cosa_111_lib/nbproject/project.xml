@@ -3,30 +3,27 @@
     <type>org.netbeans.modules.cnd.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>arduino_cosa_lib</name>
+            <name>arduino_cosa_111_lib</name>
             <c-extensions/>
             <cpp-extensions>cpp</cpp-extensions>
             <header-extensions>h,hh</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
-                <sourceRootElem>../../../../arduino/tools/arduino-1.5.8/sketchbook/hardware/Cosa/avr/cores/cosa</sourceRootElem>
+                <sourceRootElem>../../../Cosa/cores/cosa</sourceRootElem>
+                <sourceRootElem>../../../Cosa/libraries</sourceRootElem>
             </sourceRootList>
             <confList>
-                <confElem>
-                    <name>UNO-Debug</name>
-                    <type>3</type>
-                </confElem>
                 <confElem>
                     <name>UNO-Release</name>
                     <type>3</type>
                 </confElem>
                 <confElem>
-                    <name>ATmega328-Debug</name>
+                    <name>ATmega328-Release</name>
                     <type>3</type>
                 </confElem>
                 <confElem>
-                    <name>ATmega328-Release</name>
+                    <name>ATtiny84-Release</name>
                     <type>3</type>
                 </confElem>
             </confList>

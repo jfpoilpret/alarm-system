@@ -1,20 +1,15 @@
-/*
- * LedPanel.hh
- *
- *  Created on: 21 janv. 2015
- *      Author: Jean-François
- */
-
 #ifndef LEDPANEL_HH_
 #define LEDPANEL_HH_
 
+#include <Cosa/Periodic.hh>
+#include "LowPowerLed.hh"
 #include "Pins.hh"
 
 class LedPanel
 {
 public:
-	LedPanel()
-		:_locked(LED_LOCKED, 0), _unlocked(LED_UNLOCKED, 0) {}
+	LedPanel(Job::Scheduler* scheduler)
+		:_locked(LED_LOCKED, scheduler), _unlocked(LED_UNLOCKED, scheduler) {}
 
 	void setLocked(bool on)
 	{
@@ -29,7 +24,5 @@ private:
 	LowPowerLed _locked;
 	LowPowerLed _unlocked;
 };
-
-
 
 #endif /* LEDPANEL_HH_ */

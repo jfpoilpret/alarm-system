@@ -1,11 +1,7 @@
-/*
- * MatrixKeypad.hh
- */
-
 #ifndef MATRIXKEYPAD_HH_
 #define MATRIXKEYPAD_HH_
 
-#include <Cosa/Linkage.hh>
+#include <Cosa/Periodic.hh>
 #include <Cosa/InputPin.hh>
 #include <Cosa/OutputPin.hh>
 #include <Cosa/Watchdog.hh>
@@ -13,33 +9,28 @@
 #include "ArrayAlloc.hh"
 
 template<int INPUTS, int OUTPUTS>
-class MatrixKeypad: private Link
+class MatrixKeypad: public Periodic
 {
 public:
-	MatrixKeypad(	const Board::DigitalPin inputs[INPUTS],
+	MatrixKeypad(	Job::Scheduler* scheduler,
+					const Board::DigitalPin inputs[INPUTS],
 					const Board::DigitalPin outputs[OUTPUTS],
 					const char mapping[INPUTS][OUTPUTS])
-		:	_inputs(InputsInit(inputs)),
+		:	Periodic(scheduler, SAMPLE_MS),
+			_inputs(InputsInit(inputs)),
 		 	_outputs(OutputsInit(outputs)),
 		 	_mapping((const char*) mapping),
 		 	_key(0) {}
 
-	void begin()
-		__attribute__((always_inline))
-	{
-		Watchdog::attach(this, SAMPLE_MS);
-	}
-
-	void end()
-		__attribute__((always_inline))
-	{
-		detach();
-	}
+	virtual void run();
 
 protected:
 	virtual void on_change(char key) = 0;
 
 private:
+	/** Keypad sampling period in milli-seconds. */
+	static const uint16_t SAMPLE_MS = 64;
+
 	class InputsInit
 	{
 	public:
@@ -58,12 +49,7 @@ private:
 		const Board::DigitalPin* _pins;
 	};
 
-	virtual void on_event(uint8_t type, uint16_t value);
-
 	char scan();
-
-	/** Keypad sampling period in milli-seconds. */
-	static const uint16_t SAMPLE_MS = 64;
 
 	// static storage for rows and columns pins instances
 	ArrayAlloc<INPUTS, InputPin> _inputs;
@@ -85,12 +71,13 @@ template<int INPUTS, int OUTPUTS, int BUFSIZE>
 class BufferedMatrixKeypad: public MatrixKeypad<INPUTS, OUTPUTS>
 {
 public:
-	BufferedMatrixKeypad(	const Board::DigitalPin inputs[INPUTS],
+	BufferedMatrixKeypad(	Job::Scheduler* scheduler,
+							const Board::DigitalPin inputs[INPUTS],
 							const Board::DigitalPin outputs[OUTPUTS],
 							const char mapping[INPUTS][OUTPUTS],
 							const char* validate,
 							const BufferInputOverflowBehavior overflowBehavior = REJECT_KEY)
-		:	MatrixKeypad<INPUTS, OUTPUTS>(inputs, outputs, mapping),
+		:	MatrixKeypad<INPUTS, OUTPUTS>(scheduler, inputs, outputs, mapping),
 			_validate(validate),
 			_overflowBehavior(overflowBehavior)
 	{
@@ -126,12 +113,8 @@ private:
 };
 
 template<int INPUTS, int OUTPUTS>
-void MatrixKeypad<INPUTS, OUTPUTS>::on_event(uint8_t type, uint16_t value)
+void MatrixKeypad<INPUTS, OUTPUTS>::run()
 {
-	UNUSED(value);
-	// Skip all but timeout events
-	if (type != Event::TIMEOUT_TYPE) return;
-
 	// Update the button state
 	char old_key = _key;
 	_key = scan();

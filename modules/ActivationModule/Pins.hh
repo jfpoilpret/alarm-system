@@ -1,16 +1,7 @@
-/*
- * Pins.hh
- *
- *  Created on: 18 janv. 2015
- *      Author: Jean-François
- */
-
 #ifndef PINS_HH_
 #define PINS_HH_
 
 #include <Cosa/Board.hh>
-
-//TODO set the correct values when adding NRF24L01 to prototype
 
 // Pins used to connect to the 4x3 Keypad (sparkfun COM-086553)
 //

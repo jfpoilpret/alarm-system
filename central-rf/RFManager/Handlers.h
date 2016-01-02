@@ -27,6 +27,9 @@ enum class MessageType: uint8_t {
 	LOCK_CODE = 0x10,
 	UNLOCK_CODE = 0x11,
 
+	// Messages specific to the motion detection module
+	MOTION_DETECTED = 0x20
+			
 	// Other messages will go there
 };
 
@@ -75,6 +78,12 @@ class LockHandler: public Handler {
 public:
 	static const MessageType PORT1;
 	static const MessageType PORT2;
+	virtual std::string execute(uint8_t id, MessageType port, ReceptionPayload& payload);
+};
+
+class MotionHandler: public Handler {
+public:
+	static const MessageType PORT;
 	virtual std::string execute(uint8_t id, MessageType port, ReceptionPayload& payload);
 };
 

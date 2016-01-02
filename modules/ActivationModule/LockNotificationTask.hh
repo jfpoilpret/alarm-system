@@ -1,23 +1,16 @@
-/*
- * LockNotificationTask.hh
- *
- *  Created on: 22 janv. 2015
- *      Author: Jean-François
- */
-
 #ifndef LOCKNOTIFICATIONTASK_HH_
 #define LOCKNOTIFICATIONTASK_HH_
 
-#include <Cosa/Linkage.hh>
+#include <Cosa/Event.hh>
 
 #include "ActivationNetwork.hh"
 #include "MatrixKeypad.hh"
 
-class LockNotificationTask: public Link
+class LockNotificationTask: public Event::Handler
 {
 public:
 	LockNotificationTask(ActivationTransmitter& transmitter, LedPanel& ledPanel)
-		:	Link(),
+		:	Handler(),
 		 	_transmitter(transmitter),
 		 	_ledPanel(ledPanel) {}
 

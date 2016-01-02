@@ -24,14 +24,14 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=arduino_cosa_lib
+PROJECTNAME=MotionModule
 
 # Active Configuration
-DEFAULTCONF=UNO-Debug
+DEFAULTCONF=UNO-Release
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=UNO-Debug UNO-Release ATmega328-Debug ATmega328-Release 
+ALLCONFS=UNO-Release ATmega328-Release ATtiny84-Release 
 
 
 # build
