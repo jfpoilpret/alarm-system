@@ -82,10 +82,10 @@ ifeq (${PROGRAMMER},ISP)
         AVRDUDE_OPTIONS+= -c arduinoisp 
 endif
 ifeq (${PROGRAMMER},SHIELD)
-        AVRDUDE_OPTIONS+= -c stk500v1 -b 19200 -P com3
+        AVRDUDE_OPTIONS+= -c stk500v1 -b 19200 -P com4
 endif
 ifeq (${PROGRAMMER},UNO)
-        AVRDUDE_OPTIONS+= -c arduino -b 115200 -P com3
+        AVRDUDE_OPTIONS+= -c arduino -b 115200 -P com4
 endif
 #TODO need to add options for other programmers: leonardo, mega...
 # JFP END special variables stuff
