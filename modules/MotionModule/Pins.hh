@@ -3,12 +3,18 @@
 
 #include <Cosa/Board.hh>
 
-// Pins used for device address configuration (2-bits only)
+// Pins used for device address configuration (4-bits)
 static const Board::DigitalPin CONFIG_ID1	= Board::D0;
 static const Board::DigitalPin CONFIG_ID2	= Board::D1;
+static const Board::DigitalPin CONFIG_ID3	= Board::D2;
+static const Board::DigitalPin CONFIG_ID4	= Board::D3;
 
 // Pin used for PIR output connection (interrupt)
+#ifdef BOARD_ATTINYX4
+static const Board::InterruptPin PIR_OUTPUT = Board::PCI8;
+#else
 static const Board::InterruptPin PIR_OUTPUT = Board::PCI3;
+#endif
 
 // Pins used to connect to NRF24L01 (in addition to SPI pins: SCK, MISO, MOSI)
 //
@@ -25,8 +31,13 @@ static const Board::InterruptPin PIR_OUTPUT = Board::PCI3;
 // (D10/EXT0)----------8-|IRQ         |
 //                       +------------+
 //
+#ifdef BOARD_ATTINYX4
+static const Board::DigitalPin RF_CE = Board::D10;
+static const Board::DigitalPin RF_CSN = Board::D9;
+#else
 static const Board::DigitalPin RF_CE = Board::D8;
 static const Board::DigitalPin RF_CSN = Board::D9;
+#endif
 static const Board::ExternalInterruptPin RF_IRQ = Board::EXT0;
 
 #endif /* PINS_HH_ */

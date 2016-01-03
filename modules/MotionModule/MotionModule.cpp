@@ -9,31 +9,44 @@
 #include "MotionDetector.hh"
 
 //TODO Externalize these constants?
-const uint16_t NETWORK = 0xC05A;
-const uint8_t SERVER_ID = 0x01;
-const uint8_t MODULE_ID = 0x20;
+static const uint16_t NETWORK = 0xC05A;
+static const uint8_t SERVER_ID = 0x01;
+static const uint8_t MODULE_ID = 0x20;
 
-const uint32_t PING_PERIOD_SEC = 5;
-const uint32_t VOLTAGE_PERIOD_SEC = 60;
-//const uint32_t VOLTAGE_PERIOD_SEC = 3600;
-const uint32_t PIR_STARTUP_TIME_MS = 60000L;
+static const uint32_t PING_PERIOD_SEC = 5;
+static const uint32_t VOLTAGE_PERIOD_SEC = 60;
+//static const uint32_t VOLTAGE_PERIOD_SEC = 3600;
+static const uint32_t PIR_STARTUP_TIME_MS = 60000L;
 
 // Watchdog period must be the minimum of periods required by all watchdog timer users:
-// - Alarm				  1024ms
-static const uint16_t WATCHDOG_PERIOD = 1024;
+// - Alarm			1024ms
+// - Event handling	16ms
+static const uint16_t WATCHDOG_PERIOD = 16;
+
+#ifdef BOARD_ATTINYX4
+static const Board::DigitalPin CONFIG_PINS[] = {CONFIG_ID1, CONFIG_ID2, CONFIG_ID3, CONFIG_ID4};
+static const uint8_t NUM_CONFIG_PINS = sizeof(CONFIG_PINS) / sizeof(Board::DigitalPin);
 
 // Get the device ID from DIP switch pins
-uint8_t readConfigId()
+static uint8_t readConfigId()
 {
-//	InputPin::mode(CONFIG_ID1, InputPin::Mode::PULLUP_MODE);
-//	InputPin::mode(CONFIG_ID2, InputPin::Mode::PULLUP_MODE);
-//	uint8_t id = (InputPin::read(CONFIG_ID1) ? 0: 1);
-//	id += (InputPin::read(CONFIG_ID2) ? 0 : 2);
-//	InputPin::mode(CONFIG_ID1, InputPin::Mode::NORMAL_MODE);
-//	InputPin::mode(CONFIG_ID2, InputPin::Mode::NORMAL_MODE);
-//	return id;
+	uint8_t id = 0;
+	for (uint8_t i = 0; i < NUM_CONFIG_PINS; ++i)
+	{
+		InputPin::mode(CONFIG_PINS[i], InputPin::Mode::PULLUP_MODE);
+		id <<= 1;
+		if (!InputPin::read(CONFIG_PINS[i])) ++id;
+		// Is it better to make it NORMAL_MODE? Some inputs are then left "open"!!!!
+//		InputPin::mode(CONFIG_PINS[i], InputPin::Mode::NORMAL_MODE);
+	}
+	return id;
+}
+#else
+static uint8_t readConfigId()
+{
 	return 0;
 }
+#endif
 
 int main()
 {
@@ -51,6 +64,11 @@ int main()
 	// Only this mode works when using serial output and full-time RTC
 //	Power::set(SLEEP_MODE_IDLE);			// 15mA
 
+	// Start watchdog
+	Watchdog::begin(WATCHDOG_PERIOD);
+	// First wait 1 minute for PIR sensor to stabilize
+	delay(PIR_STARTUP_TIME_MS);
+
 	// Needed for Alarms to work properly
 	Watchdog::Clock clock;
 
@@ -64,12 +82,6 @@ int main()
 
 	// Additional setup for transmitter goes here...
 	transmitter.begin(NETWORK, MODULE_ID + readConfigId());
-
-	// Start watchdog
-	Watchdog::begin(WATCHDOG_PERIOD);
-	// First wait 1 minute for PIR sensor to stabilize
-	//TODO move all objects instatiation afterwards
-	delay(PIR_STARTUP_TIME_MS);
 
 	// Start all tasks
 	PinChangeInterrupt::begin();

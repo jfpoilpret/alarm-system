@@ -106,6 +106,10 @@ build: .build-post
 # JFP BEGIN upload target
 upload: .build-post
 	avrdude ${AVRDUDE_OPTIONS} -Uflash:w:${CND_ARTIFACT_PATH_${CONF}}.hex:i 
+
+setfuses: .build-post
+	avrdude ${AVRDUDE_OPTIONS} -U lfuse:w:0xe2:m -U hfuse:w:0xdd:m -U efuse:w:0xff:m 
+	
 # JFP END upload target
 	
 # clean
