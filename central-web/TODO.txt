@@ -1,19 +1,14 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
-2h	- breadboard prototype for MotionModule (ATtiny84)
-		- test and debug
-
-2h	- debug MotionModule (on UNO)
-	- too many motion events generated?
-		- check signal (maybe need capacitor?)
-	- improve motion detection
-		if unlocked, disable PinChangeInterrupt
+2h	- improve MotionModule
+		- if alarm unlocked, disable PinChangeInterrupt
+		- check how we can remove double MOTION events hen there should be one only
 
 4h	- design and make stripboard for MotionModule
 
 1h	- document MotionModule making
-		- careful about PIR sensor changes
+		- careful about PIR sensor changes needed (bypass 3.3V regulator)
 
 8h	- improve modules by using DS18B20
 		- infer on initial registration time Vs. startup time

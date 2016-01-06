@@ -11,7 +11,7 @@ static const Board::DigitalPin CONFIG_ID4	= Board::D3;
 
 // Pin used for PIR output connection (interrupt)
 #ifdef BOARD_ATTINYX4
-static const Board::InterruptPin PIR_OUTPUT = Board::PCI8;
+static const Board::InterruptPin PIR_OUTPUT = Board::PCI7;
 #else
 static const Board::InterruptPin PIR_OUTPUT = Board::PCI3;
 #endif
@@ -31,13 +31,8 @@ static const Board::InterruptPin PIR_OUTPUT = Board::PCI3;
 // (D10/EXT0)----------8-|IRQ         |
 //                       +------------+
 //
-#ifdef BOARD_ATTINYX4
-static const Board::DigitalPin RF_CE = Board::D10;
-static const Board::DigitalPin RF_CSN = Board::D9;
-#else
 static const Board::DigitalPin RF_CE = Board::D8;
 static const Board::DigitalPin RF_CSN = Board::D9;
-#endif
 static const Board::ExternalInterruptPin RF_IRQ = Board::EXT0;
 
 #endif /* PINS_HH_ */
