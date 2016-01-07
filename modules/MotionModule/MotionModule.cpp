@@ -6,6 +6,7 @@
 #include "MotionNetwork.hh"
 
 #include "CommonTasks.hh"
+#include "PingTask.hh"
 #include "MotionDetector.hh"
 
 //TODO Externalize these constants?
@@ -72,19 +73,19 @@ int main()
 	// Needed for Alarms to work properly
 	Watchdog::Clock clock;
 
-	// Declare sensors and actuators
+	// Declare sensors, actuators and periodic tasks
 	MotionTransmitter transmitter(SERVER_ID);
 	MotionDetector detector(&transmitter);
 
-	// Declare periodic tasks
-	DefaultPingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
+	PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter, detector);
+//	DefaultPingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
 	VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
 
 	// Additional setup for transmitter goes here...
 	transmitter.begin(NETWORK, MODULE_ID + readConfigId());
 
-	// Start all tasks
-	PinChangeInterrupt::begin();
+	// Start all tasks except detection module (activated only if alarm is active (i.e. status is not UNLOCKED)
+//	PinChangeInterrupt::begin();
 	detector.enable();
 	pingTask.start();
 	voltageTask.start();

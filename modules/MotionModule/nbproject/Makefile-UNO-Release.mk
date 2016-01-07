@@ -40,7 +40,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/742743469/NetworkUtils.o \
 	${OBJECTDIR}/MotionDetector.o \
 	${OBJECTDIR}/MotionModule.o \
-	${OBJECTDIR}/MotionNetwork.o
+	${OBJECTDIR}/MotionNetwork.o \
+	${OBJECTDIR}/PingTask.o
 
 
 # C Compiler Flags
@@ -98,6 +99,11 @@ ${OBJECTDIR}/MotionNetwork.o: MotionNetwork.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotionNetwork.o MotionNetwork.cpp
+
+${OBJECTDIR}/PingTask.o: PingTask.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PingTask.o PingTask.cpp
 
 # Subprojects
 .build-subprojects:

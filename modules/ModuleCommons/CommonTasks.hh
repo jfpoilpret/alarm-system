@@ -21,6 +21,8 @@ public:
 	DefaultPingTask(::Clock* clock, uint32_t period, AbstractTransmitter& transmitter);
 
 	virtual void run();
+	
+protected:
 	virtual void status(LockStatus status);
 };
 

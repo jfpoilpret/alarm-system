@@ -1,11 +1,19 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
-2h	- improve MotionModule
-		- if alarm unlocked, disable PinChangeInterrupt
-		- check how we can remove double MOTION events hen there should be one only
+4h	- debug MotionModule
+		- check all PING return the right state (lock/unlock) on UNO proto (add 2 LEDs just for that)
+		- debug (UNO) disablable motion detection based on alarm status
+		- improve enable/disable PCI only if state has really changed (do it at 
+		DefaultPingTask level directly)
+		- if OK, check the same on ATtiny (more difficult: will have to disable DIP 
+		switches for this test)
 
-4h	- design and make stripboard for MotionModule
+		
+3h	- design stripboard for MotionModule
+4h	- make stripboard for MotionModule
+1h	- test stripboard for MotionModule
+	- check boxing possibilities...
 
 1h	- document MotionModule making
 		- careful about PIR sensor changes needed (bypass 3.3V regulator)
