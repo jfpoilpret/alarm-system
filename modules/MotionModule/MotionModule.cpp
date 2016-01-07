@@ -77,7 +77,7 @@ int main()
 	MotionTransmitter transmitter(SERVER_ID);
 	MotionDetector detector(&transmitter);
 
-	PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter, detector);
+	PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
 //	DefaultPingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
 	VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
 
@@ -85,7 +85,9 @@ int main()
 	transmitter.begin(NETWORK, MODULE_ID + readConfigId());
 
 	// Start all tasks except detection module (activated only if alarm is active (i.e. status is not UNLOCKED)
-//	PinChangeInterrupt::begin();
+	// However, do note that detection module is not really started until PinChangeInterrupt has begun
+	// which will occur only if alarm is active (i.e. status is LOCKED)
+	//TODO set enable in MotionDetector constructor to see if it uses less memory...
 	detector.enable();
 	pingTask.start();
 	voltageTask.start();

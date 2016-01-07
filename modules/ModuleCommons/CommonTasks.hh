@@ -23,7 +23,10 @@ public:
 	virtual void run();
 	
 protected:
-	virtual void status(LockStatus status);
+	virtual void status_changed(LockStatus status);
+	
+private:
+	LockStatus _status;
 };
 
 class VoltageNotificationTask: public AbstractTask
