@@ -45,12 +45,6 @@ int main()
 	// Allow interrupts from here
 	sei();
 
-	// Sleep modes by order of increasing consumption
-	// Lowest consumption mode (works on Arduino, not tested yet on breadboard ATmega)
-	Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
-	// Only this mode works when using serial output and full-time RTC
-//	Power::set(SLEEP_MODE_IDLE);			// 15mA
-
 	// Needed for Periodics and Alarms to work properly
 	Watchdog::Scheduler scheduler;
 	Watchdog::Clock clock;
@@ -80,7 +74,11 @@ int main()
 
 	while (true)
 	{
+		// Lowest consumption mode
+		Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
 		Watchdog::await();
+		// Only this mode works when using serial output and full-time RTC
+		Power::set(SLEEP_MODE_IDLE);			// 15mA
 
 		Event event;
 		while (Event::queue.dequeue(&event))

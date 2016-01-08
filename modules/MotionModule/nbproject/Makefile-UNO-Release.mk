@@ -107,7 +107,6 @@ ${OBJECTDIR}/PingTask.o: PingTask.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=UNO-Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -116,7 +115,6 @@ ${OBJECTDIR}/PingTask.o: PingTask.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=UNO-Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

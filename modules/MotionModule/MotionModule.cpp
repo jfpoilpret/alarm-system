@@ -59,12 +59,6 @@ int main()
 	// Allow interrupts from here
 	sei();
 
-	// Sleep modes by order of increasing consumption
-	// Lowest consumption mode (works on Arduino, not tested yet on breadboard ATmega)
-	Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
-	// Only this mode works when using serial output and full-time RTC
-//	Power::set(SLEEP_MODE_IDLE);			// 15mA
-
 	// Start watchdog
 	Watchdog::begin(WATCHDOG_PERIOD);
 	// First wait 1 minute for PIR sensor to stabilize
@@ -78,23 +72,24 @@ int main()
 	MotionDetector detector(&transmitter);
 
 	PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
-//	DefaultPingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
 	VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
 
 	// Additional setup for transmitter goes here...
 	transmitter.begin(NETWORK, MODULE_ID + readConfigId());
 
-	// Start all tasks except detection module (activated only if alarm is active (i.e. status is not UNLOCKED)
+	// Start all tasks
 	// However, do note that detection module is not really started until PinChangeInterrupt has begun
 	// which will occur only if alarm is active (i.e. status is LOCKED)
-	//TODO set enable in MotionDetector constructor to see if it uses less memory...
-	detector.enable();
 	pingTask.start();
 	voltageTask.start();
 
 	while (true)
 	{
+		// Lowest consumption mode
+		Power::set(SLEEP_MODE_PWR_DOWN);		// 0.36mA
 		Watchdog::await();
+		// Only this mode works when using serial output and full-time RTC
+		Power::set(SLEEP_MODE_IDLE);			// 15mA
 
 		Event event;
 		while (Event::queue.dequeue(&event))

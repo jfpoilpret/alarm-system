@@ -95,7 +95,6 @@ ${OBJECTDIR}/ActivationNetwork.o: ActivationNetwork.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=UNO-Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -104,7 +103,6 @@ ${OBJECTDIR}/ActivationNetwork.o: ActivationNetwork.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../arduino_cosa_111_lib && ${MAKE}  -f Makefile CONF=UNO-Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

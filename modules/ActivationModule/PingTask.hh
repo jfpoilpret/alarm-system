@@ -13,7 +13,7 @@ public:
 	PingTask(::Clock* clock, uint32_t period, ActivationTransmitter& transmitter, LedPanel& ledPanel)
 		:DefaultPingTask(clock, period, transmitter), _ledPanel(ledPanel) {}
 
-	virtual void status(LockStatus status)
+	virtual void status_changed(LockStatus status)
 	{
 		// Dispatch status to LedPanel
 		switch (status)
