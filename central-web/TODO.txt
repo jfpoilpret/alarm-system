@@ -1,15 +1,18 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
-30'	- recheck ActivationModule after all recent changes
-		
-3h	- design stripboard for MotionModule
-4h	- make stripboard for MotionModule
+x	- design stripboard for MotionModule
+4h+	- make stripboard for MotionModule
 1h	- test stripboard for MotionModule
+1h	- check hacking of other PIR modules
 	- check boxing possibilities...
 
+15'	- remove git obsolete branches
+	- further power consumption optimization possible:
+		- use output pin to supply power to PIR module (problem: no pin left...)
 1h	- document MotionModule making
 		- careful about PIR sensor changes needed (bypass 3.3V regulator)
+		- hack other PIR modules and check
 
 8h	- improve modules by using DS18B20
 		- infer on initial registration time Vs. startup time
@@ -27,7 +30,7 @@ http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbean
 		- tools configuration
 		- makefile stuff
 	
-	- compute consumption
+	- compute ActivationModule consumption
 		MAIN CONSUMER: LED 500us every 16ms => can this be reduced further (eg 250us)?
 		scan keypad once every 64ms
 		ping (NRF24L01) every 5 seconds
