@@ -7,7 +7,6 @@ x	- design stripboard for MotionModule
 1h	- check hacking of other PIR modules
 	- check boxing possibilities...
 
-15'	- remove git obsolete branches
 	- further power consumption optimization possible:
 		- use output pin to supply power to PIR module (problem: no pin left...)
 1h	- document MotionModule making
