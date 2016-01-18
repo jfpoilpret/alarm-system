@@ -38,6 +38,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/742743469/Cipher.o \
 	${OBJECTDIR}/_ext/742743469/CommonTasks.o \
 	${OBJECTDIR}/_ext/742743469/NetworkUtils.o \
+	${OBJECTDIR}/_ext/742743469/UniqueId.o \
 	${OBJECTDIR}/MotionDetector.o \
 	${OBJECTDIR}/MotionModule.o \
 	${OBJECTDIR}/MotionNetwork.o \
@@ -73,37 +74,42 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule.exe: ${OBJECTFILES}
 ${OBJECTDIR}/_ext/742743469/Cipher.o: ../ModuleCommons/Cipher.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/Cipher.o ../ModuleCommons/Cipher.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/Cipher.o ../ModuleCommons/Cipher.cpp
 
 ${OBJECTDIR}/_ext/742743469/CommonTasks.o: ../ModuleCommons/CommonTasks.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/CommonTasks.o ../ModuleCommons/CommonTasks.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/CommonTasks.o ../ModuleCommons/CommonTasks.cpp
 
 ${OBJECTDIR}/_ext/742743469/NetworkUtils.o: ../ModuleCommons/NetworkUtils.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/NetworkUtils.o ../ModuleCommons/NetworkUtils.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/NetworkUtils.o ../ModuleCommons/NetworkUtils.cpp
+
+${OBJECTDIR}/_ext/742743469/UniqueId.o: ../ModuleCommons/UniqueId.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/742743469/UniqueId.o ../ModuleCommons/UniqueId.cpp
 
 ${OBJECTDIR}/MotionDetector.o: MotionDetector.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotionDetector.o MotionDetector.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotionDetector.o MotionDetector.cpp
 
 ${OBJECTDIR}/MotionModule.o: MotionModule.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotionModule.o MotionModule.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotionModule.o MotionModule.cpp
 
 ${OBJECTDIR}/MotionNetwork.o: MotionNetwork.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotionNetwork.o MotionNetwork.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotionNetwork.o MotionNetwork.cpp
 
 ${OBJECTDIR}/PingTask.o: PingTask.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PingTask.o PingTask.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PingTask.o PingTask.cpp
 
 # Subprojects
 .build-subprojects:

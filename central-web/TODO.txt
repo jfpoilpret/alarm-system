@@ -1,6 +1,11 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
+	- rewrite OWI with as little code as necessary:
+		- use _clear/_set instead of clear/set
+		- avoid synchronised, use only sei/cli
+		- don't compute crc
+		
 x	- design stripboard for MotionModule
 4h+	- make stripboard for MotionModule
 1h	- test stripboard for MotionModule

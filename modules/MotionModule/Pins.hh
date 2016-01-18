@@ -3,11 +3,8 @@
 
 #include <Cosa/Board.hh>
 
-// Pins used for device address configuration (4-bits)
-static const Board::DigitalPin CONFIG_ID1	= Board::D0;
-static const Board::DigitalPin CONFIG_ID2	= Board::D1;
-static const Board::DigitalPin CONFIG_ID3	= Board::D2;
-static const Board::DigitalPin CONFIG_ID4	= Board::D3;
+// Pin used to communicate to DS18B20
+static const Board::DigitalPin TEMP_SENSOR_PIN	= Board::D0;
 
 // Pin used for PIR output connection (interrupt)
 #ifdef BOARD_ATTINYX4

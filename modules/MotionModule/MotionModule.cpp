@@ -8,6 +8,7 @@
 #include "CommonTasks.hh"
 #include "PingTask.hh"
 #include "MotionDetector.hh"
+#include "UniqueId.hh"
 
 //TODO Externalize these constants?
 static const uint16_t NETWORK = 0xC05A;
@@ -25,26 +26,20 @@ static const uint32_t PIR_STARTUP_TIME_MS = 60000L;
 static const uint16_t WATCHDOG_PERIOD = 16;
 
 #ifdef BOARD_ATTINYX4
-static const Board::DigitalPin CONFIG_PINS[] = {CONFIG_ID1, CONFIG_ID2, CONFIG_ID3, CONFIG_ID4};
-static const uint8_t NUM_CONFIG_PINS = sizeof(CONFIG_PINS) / sizeof(Board::DigitalPin);
-
 // Get the device ID from DIP switch pins
 static uint8_t readConfigId()
 {
-	uint8_t id = 0;
-	for (uint8_t i = 0; i < NUM_CONFIG_PINS; ++i)
-	{
-		InputPin::mode(CONFIG_PINS[i], InputPin::Mode::PULLUP_MODE);
-		id <<= 1;
-		if (!InputPin::read(CONFIG_PINS[i])) ++id;
-		// Is it better to make it NORMAL_MODE? Some inputs are then left "open"!!!!
-//		InputPin::mode(CONFIG_PINS[i], InputPin::Mode::NORMAL_MODE);
-	}
-	return id;
+	UniqueId uid = TEMP_SENSOR_PIN;
+	uint8_t id[UniqueId::ID_SIZE];
+	uid.get_id(id);
+	return 0;
 }
 #else
 static uint8_t readConfigId()
 {
+	UniqueId uid = TEMP_SENSOR_PIN;
+	uint8_t id[UniqueId::ID_SIZE];
+	uid.get_id(id);
 	return 0;
 }
 #endif
@@ -58,6 +53,8 @@ int main()
 	Power::adc_enable();
 	// Allow interrupts from here
 	sei();
+	
+	readConfigId();
 
 	// Start watchdog
 	Watchdog::begin(WATCHDOG_PERIOD);
@@ -75,7 +72,8 @@ int main()
 	VoltageNotificationTask voltageTask(&clock, VOLTAGE_PERIOD_SEC, transmitter);
 
 	// Additional setup for transmitter goes here...
-	transmitter.begin(NETWORK, MODULE_ID + readConfigId());
+	transmitter.begin(NETWORK, MODULE_ID);
+//	transmitter.begin(NETWORK, MODULE_ID + readConfigId());
 
 	// Start all tasks
 	// However, do note that detection module is not really started until PinChangeInterrupt has begun

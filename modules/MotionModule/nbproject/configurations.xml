@@ -17,6 +17,8 @@
       <itemPath>../ModuleCommons/NetworkUtils.cpp</itemPath>
       <itemPath>../ModuleCommons/NetworkUtils.hh</itemPath>
       <itemPath>../ModuleCommons/RTTUtils.hh</itemPath>
+      <itemPath>../ModuleCommons/UniqueId.cpp</itemPath>
+      <itemPath>../ModuleCommons/UniqueId.hh</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -72,6 +74,8 @@
             <pElem>../../../Cosa/variants/${VARIANT}</pElem>
             <pElem>../../../Cosa/libraries/NRF24L01P</pElem>
             <pElem>../ModuleCommons</pElem>
+            <pElem>../../../Cosa/libraries/OWI</pElem>
+            <pElem>../../../Cosa/libraries/DS18B20</pElem>
           </incDir>
           <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues -DNO_CIPHER</commandLine>
           <warningLevel>2</warningLevel>
@@ -115,6 +119,10 @@
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../ModuleCommons/UniqueId.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/UniqueId.hh" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="MotionDetector.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="MotionDetector.hh" ex="false" tool="3" flavor2="0">
@@ -155,6 +163,8 @@
             <pElem>../../../Cosa/variants/${VARIANT}</pElem>
             <pElem>../../../Cosa/libraries/NRF24L01P</pElem>
             <pElem>../ModuleCommons</pElem>
+            <pElem>../../../Cosa/libraries/OWI</pElem>
+            <pElem>../../../Cosa/libraries/DS18B20</pElem>
           </incDir>
           <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues -DNO_CIPHER</commandLine>
           <warningLevel>2</warningLevel>
@@ -197,6 +207,10 @@
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../ModuleCommons/UniqueId.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/UniqueId.hh" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="MotionDetector.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="MotionDetector.hh" ex="false" tool="3" flavor2="0">
@@ -237,6 +251,8 @@
             <pElem>../../../Cosa/variants/${VARIANT}</pElem>
             <pElem>../../../Cosa/libraries/NRF24L01P</pElem>
             <pElem>../ModuleCommons</pElem>
+            <pElem>../../../Cosa/libraries/OWI</pElem>
+            <pElem>../../../Cosa/libraries/DS18B20</pElem>
           </incDir>
           <commandLine>-mmcu=${MCU} -DF_CPU=${F_CPU} -DARDUINO=${ARDUINO} -fno-exceptions -Wextra -flto -std=gnu++11 -felide-constructors -Os -ffunction-sections -fdata-sections -mcall-prologues -DNO_CIPHER</commandLine>
           <warningLevel>2</warningLevel>
@@ -278,6 +294,10 @@
       <item path="../ModuleCommons/NetworkUtils.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../ModuleCommons/RTTUtils.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/UniqueId.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../ModuleCommons/UniqueId.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="MotionDetector.cpp" ex="false" tool="1" flavor2="0">
       </item>
