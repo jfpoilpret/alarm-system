@@ -27,20 +27,16 @@ static const uint16_t WATCHDOG_PERIOD = 16;
 
 #ifdef BOARD_ATTINYX4
 // Get the device ID from DIP switch pins
-static uint8_t readConfigId()
+static void readConfigId()
 {
-	UniqueId uid = TEMP_SENSOR_PIN;
 	uint8_t id[UniqueId::ID_SIZE];
-	uid.get_id(id);
-	return 0;
+	UniqueId::get_id(TEMP_SENSOR_PIN, id);
 }
 #else
-static uint8_t readConfigId()
+static void readConfigId()
 {
-	UniqueId uid = TEMP_SENSOR_PIN;
 	uint8_t id[UniqueId::ID_SIZE];
-	uid.get_id(id);
-	return 0;
+	UniqueId::get_id(TEMP_SENSOR_PIN, id);
 }
 #endif
 
@@ -51,11 +47,11 @@ int main()
 	// Disable all modules but ADC (required for bandgap reading)
 	Power::all_disable();
 	Power::adc_enable();
+	// Read device ID from OWI temperature sensor
+	readConfigId();
 	// Allow interrupts from here
 	sei();
 	
-	readConfigId();
-
 	// Start watchdog
 	Watchdog::begin(WATCHDOG_PERIOD);
 	// First wait 1 minute for PIR sensor to stabilize
