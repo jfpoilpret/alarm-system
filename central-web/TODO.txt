@@ -1,10 +1,16 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
-	- rewrite OWI with as little code as necessary:
-		- use _clear/_set instead of clear/set
-		- avoid synchronised, use only sei/cli
-		- don't compute crc
+x	- rewrite OWI with as little code as necessary
+2h	- add necessary code to register ROM code and get an ID
+		- careful about code size!
+		- also pass device kind in addition to ROM ID
+	- implement ROM ID registration on server side
+30'		- DB model update
+1h		- REST service update
+30'		- new service to get device ROM
+2h		- update screen and add function to get ROM
+		- debug (minimalist breadboard prototype)
 		
 x	- design stripboard for MotionModule
 4h+	- make stripboard for MotionModule
