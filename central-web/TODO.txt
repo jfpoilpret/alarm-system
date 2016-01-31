@@ -2,9 +2,12 @@ x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
 x	- rewrite OWI with as little code as necessary
+	- check how to remove unused virtual methods from final exe
+		- define them all as empty in a .o file: how to do that?
+		- link this .o file first so the empty symbols are used instead
+		
 2h	- add necessary code to register ROM code and get an ID
-		- careful about code size!
-		- also pass device kind in addition to ROM ID
+
 	- implement ROM ID registration on server side
 30'		- DB model update
 1h		- REST service update
@@ -13,9 +16,19 @@ x	- rewrite OWI with as little code as necessary
 		- debug (minimalist breadboard prototype)
 		
 x	- design stripboard for MotionModule
-4h+	- make stripboard for MotionModule
-1h	- test stripboard for MotionModule
+	- make stripboard for MotionModule
+		- connect IC, NRF, PIR
+		- check ISP programming
+		- voltage contact check messages
+		- battery cell check messages
+	- commit stripboard design
 1h	- check hacking of other PIR modules
+1h	- test stripboard for MotionModule
+		- check external supply
+		- check cell supply
+		- check consumption...
+	- boxing
+	- prepare other stripboard design with all strips (easier to saw, more balanced)
 	- check boxing possibilities...
 
 	- further power consumption optimization possible:
