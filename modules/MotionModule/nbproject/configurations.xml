@@ -31,6 +31,7 @@
       <itemPath>MotionModule.cpp</itemPath>
       <itemPath>MotionNetwork.cpp</itemPath>
       <itemPath>PingTask.cpp</itemPath>
+      <itemPath>Unused.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -139,6 +140,8 @@
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Unused.cpp" ex="false" tool="1" flavor2="0">
+      </item>
     </conf>
     <conf name="ATmega328-Release" type="1">
       <toolsSet>
@@ -227,6 +230,8 @@
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Unused.cpp" ex="false" tool="1" flavor2="0">
+      </item>
     </conf>
     <conf name="ATtiny84-Release" type="1">
       <toolsSet>
@@ -264,6 +269,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
+          <commandlineTool>avr-g++</commandlineTool>
           <linkerLibItems>
             <linkerLibProjectItem>
               <makeArtifact PL="../arduino_cosa_111_lib"
@@ -278,7 +284,7 @@
               </makeArtifact>
             </linkerLibProjectItem>
           </linkerLibItems>
-          <commandLine>-Os -Wl,--gc-sections -Wl,--relax -flto -mmcu=${MCU} -Wl,-Map,${CND_ARTIFACT_PATH_${CONF}}.map</commandLine>
+          <commandLine>-Wextra -ffunction-sections -fdata-sections -Os -Wl,--gc-sections -Wl,--relax -flto -mmcu=${MCU} -Wl,-Map,${CND_ARTIFACT_PATH_${CONF}}.map</commandLine>
         </linkerTool>
       </compileType>
       <item path="../ModuleCommons/Cipher.cpp" ex="false" tool="1" flavor2="0">
@@ -314,6 +320,8 @@
       <item path="PingTask.hh" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Pins.hh" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Unused.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>

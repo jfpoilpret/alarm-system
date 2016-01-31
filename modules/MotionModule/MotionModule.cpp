@@ -25,6 +25,7 @@ static const uint32_t PIR_STARTUP_TIME_MS = 60000L;
 // - Event handling	16ms
 static const uint16_t WATCHDOG_PERIOD = 16;
 
+static void readConfigId() __attribute__((OS_main));
 #ifdef BOARD_ATTINYX4
 // Get the device ID from DIP switch pins
 static void readConfigId()
@@ -39,6 +40,11 @@ static void readConfigId()
 	UniqueId::get_id(TEMP_SENSOR_PIN, id);
 }
 #endif
+
+void exit(int status)
+{
+	UNUSED(status);
+}
 
 int main()
 {

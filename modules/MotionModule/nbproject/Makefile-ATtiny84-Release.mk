@@ -42,7 +42,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/MotionDetector.o \
 	${OBJECTDIR}/MotionModule.o \
 	${OBJECTDIR}/MotionNetwork.o \
-	${OBJECTDIR}/PingTask.o
+	${OBJECTDIR}/PingTask.o \
+	${OBJECTDIR}/Unused.o
 
 
 # C Compiler Flags
@@ -69,7 +70,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule.exe: ../arduino_cosa_111
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule ${OBJECTFILES} ${LDLIBSOPTIONS} -Os -Wl,--gc-sections -Wl,--relax -flto -mmcu=${MCU} -Wl,-Map,${CND_ARTIFACT_PATH_${CONF}}.map
+	avr-g++ -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/motionmodule ${OBJECTFILES} ${LDLIBSOPTIONS} -Wextra -ffunction-sections -fdata-sections -Os -Wl,--gc-sections -Wl,--relax -flto -mmcu=${MCU} -Wl,-Map,${CND_ARTIFACT_PATH_${CONF}}.map
 
 ${OBJECTDIR}/_ext/742743469/Cipher.o: ../ModuleCommons/Cipher.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/742743469
@@ -110,6 +111,11 @@ ${OBJECTDIR}/PingTask.o: PingTask.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PingTask.o PingTask.cpp
+
+${OBJECTDIR}/Unused.o: Unused.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Unused.o Unused.cpp
 
 # Subprojects
 .build-subprojects:

@@ -42,7 +42,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/MotionDetector.o \
 	${OBJECTDIR}/MotionModule.o \
 	${OBJECTDIR}/MotionNetwork.o \
-	${OBJECTDIR}/PingTask.o
+	${OBJECTDIR}/PingTask.o \
+	${OBJECTDIR}/Unused.o
 
 
 # C Compiler Flags
@@ -110,6 +111,11 @@ ${OBJECTDIR}/PingTask.o: PingTask.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PingTask.o PingTask.cpp
+
+${OBJECTDIR}/Unused.o: Unused.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -I../../../Cosa/libraries/OWI -I../../../Cosa/libraries/DS18B20 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Unused.o Unused.cpp
 
 # Subprojects
 .build-subprojects:

@@ -4,6 +4,7 @@
 MotionDetector::MotionDetector(Event::Handler* handler)
 	:PinChangeInterrupt(PIR_OUTPUT, PinChangeInterrupt::ON_RISING_MODE), _handler(handler)
 {
+	//FIXME should not enable until Transmitter is started!
 	enable();
 }
 
