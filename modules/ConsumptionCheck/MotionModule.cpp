@@ -1,5 +1,5 @@
 #include <Cosa/Alarm.hh>
-//#include <Cosa/AnalogPin.hh>
+#include <Cosa/AnalogPin.hh>
 #include <Cosa/InputPin.hh>
 //#include <Cosa/PinChangeInterrupt.hh>
 #include <Cosa/RTT.hh>
@@ -20,9 +20,9 @@ static const uint8_t MODULE_ID = 0x20;
 
 // TIMING CONSTANTS
 static const uint32_t PING_PERIOD_SEC = 10;
+static const uint32_t VOLTAGE_PERIOD_SEC = 60;
 static const uint32_t STARTUP_LED_TIME_MS = 5000;
 
-//static const uint32_t VOLTAGE_PERIOD_SEC = 60;
 //static const uint32_t PIR_STARTUP_TIME_MS = 60000L;
 
 static const uint16_t WATCHDOG_PERIOD = 1024;
@@ -124,8 +124,16 @@ private:
 class PingTask: public Alarm
 {
 public:
-	PingTask(::Clock* clock, uint32_t period, LowCurrentNRF24L01P& nrf)
-	:Alarm(clock, period), _nrf(nrf) {}
+	PingTask(::Clock* clock, uint32_t ping_period, uint32_t voltage_period, LowCurrentNRF24L01P& nrf)
+	:	Alarm(clock, ping_period), 
+		_nrf(nrf), _ping_count(0), _pings_per_voltage(voltage_period / ping_period) {}
+	
+	//TODO refactor sendVoltageLevel and pingServerAndGetLockStatus into one method
+	LockStatus sendVoltageLevel(uint16_t level)
+	{
+		_nrf.send(VOLTAGE_LEVEL, &level, sizeof(level));
+		return UNKNOWN;
+	}
 	
 	LockStatus pingServerAndGetLockStatus()
 	{
@@ -144,12 +152,27 @@ public:
 	
 	virtual void run()
 	{
-		LockStatus status = pingServerAndGetLockStatus();
+		LockStatus status = UNKNOWN;
+		if (++_ping_count == _pings_per_voltage)
+		{
+			_ping_count = 0;
+			// Get current voltage level
+			uint16_t bandgap = AnalogPin::bandgap();
+			// Send it to server
+			status = sendVoltageLevel(bandgap);
+		}
+		else
+		{
+			// Get lock status from server
+			status = pingServerAndGetLockStatus();
+		}
 		UNUSED(status);
 	}
 
 private:
 	LowCurrentNRF24L01P& _nrf;
+	uint16_t _ping_count;
+	const uint16_t _pings_per_voltage;
 };
 
 int main()
@@ -166,8 +189,8 @@ int main()
 	Watchdog::begin(WATCHDOG_PERIOD);
 	Power::set(SLEEP_MODE_PWR_DOWN);		// 5uA
 	
+	// DEBUG First light startup LED for 5 seconds
 	{
-		// DEBUG First light startup LED for 5 seconds
 		OutputPin led = Board::D0;
 		led.on();
 		delay(STARTUP_LED_TIME_MS);
@@ -179,7 +202,7 @@ int main()
 
 	LowCurrentNRF24L01P transmitter = LowCurrentNRF24L01P(SERVER_ID, NRF_POWER, NRF_CSN, NRF_CE, NRF_IRQ);
 	transmitter.address(NETWORK, MODULE_ID);
-	PingTask pingTask(&clock, PING_PERIOD_SEC, transmitter);
+	PingTask pingTask(&clock, PING_PERIOD_SEC, VOLTAGE_PERIOD_SEC, transmitter);
 	
 //	PIRDetector1 detector;
 //	detector.enable();
