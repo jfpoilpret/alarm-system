@@ -1,7 +1,7 @@
 #include <Cosa/Alarm.hh>
 #include <Cosa/AnalogPin.hh>
 #include <Cosa/InputPin.hh>
-//#include <Cosa/PinChangeInterrupt.hh>
+#include <Cosa/PinChangeInterrupt.hh>
 #include <Cosa/RTT.hh>
 #include <Cosa/Watchdog.hh>
 #include <stdint-gcc.h>
@@ -12,6 +12,8 @@ static const Board::DigitalPin NRF_POWER			= Board::D8;
 static const Board::DigitalPin NRF_CSN				= Board::D7;
 static const Board::DigitalPin NRF_CE				= Board::D3;
 static const Board::ExternalInterruptPin NRF_IRQ	= Board::EXT0;
+static const Board::DigitalPin PIR_POWER			= Board::D2;
+static const Board::InterruptPin PIR_MOTION_INT		= Board::PCI1;
 
 // NETWORK ADDRESSES
 static const uint16_t NETWORK = 0xC05A;
@@ -19,11 +21,7 @@ static const uint8_t SERVER_ID = 0x01;
 static const uint8_t MODULE_ID = 0x20;
 
 // TIMING CONSTANTS
-static const uint32_t PING_PERIOD_SEC = 10;
-static const uint32_t VOLTAGE_PERIOD_SEC = 60;
 static const uint32_t STARTUP_LED_TIME_MS = 5000;
-
-//static const uint32_t PIR_STARTUP_TIME_MS = 60000L;
 
 static const uint16_t WATCHDOG_PERIOD = 1024;
 
@@ -61,20 +59,6 @@ union RxPayload
 {
 	RxPingServer pingServer;
 };
-
-//class PIRDetector1: public PinChangeInterrupt
-//{
-//public:
-//	static const uint8_t MOTION_EVENT = Event::USER_TYPE + 1;
-//	
-//	PIRDetector1():PinChangeInterrupt(Board::PCI7, PinChangeInterrupt::ON_RISING_MODE) {}
-//	virtual void on_interrupt(uint16_t arg)
-//	{
-//		// Do nothing yet
-//		UNUSED(arg);
-//		Event::push(MOTION_EVENT, 0, this);
-//	}
-//};
 
 class LowCurrentNRF24L01P: public NRF24L01P
 {
@@ -124,9 +108,10 @@ private:
 class PingTask: public Alarm
 {
 public:
-	PingTask(::Clock* clock, uint32_t ping_period, uint32_t voltage_period, LowCurrentNRF24L01P& nrf)
-	:	Alarm(clock, ping_period), 
-		_nrf(nrf), _ping_count(0), _pings_per_voltage(voltage_period / ping_period) {}
+	PingTask(::Clock* clock, LowCurrentNRF24L01P& nrf, Alarm& pirActivator)
+	:	Alarm(clock, PING_PERIOD_SEC), 
+		_nrf(nrf), _pirActivator(pirActivator), _pir_power(PIR_POWER), _status(UNKNOWN), 
+		_ping_count(0), _pings_per_voltage(VOLTAGE_PERIOD_SEC / PING_PERIOD_SEC) {}
 	
 	//TODO refactor sendVoltageLevel and pingServerAndGetLockStatus into one method
 	LockStatus sendVoltageLevel(uint16_t level)
@@ -166,13 +151,76 @@ public:
 			// Get lock status from server
 			status = pingServerAndGetLockStatus();
 		}
-		UNUSED(status);
+		if (_status != status && status != UNKNOWN)
+		{
+			_status = status;
+			bool locked = (_status == LOCKED);
+			if (locked)
+			{
+				// start PIR and delay until PIR ready before lsitening to PIR interrupts
+				_pirActivator.start();
+			}
+			else
+			{
+				// stop PIR & stop listening to PIR interrupts
+				_pirActivator.stop();
+				PinChangeInterrupt::end();
+			}
+			_pir_power.set(locked);
+		}
 	}
 
 private:
+	static const uint32_t PING_PERIOD_SEC = 10;
+	static const uint32_t VOLTAGE_PERIOD_SEC = 60;
+
 	LowCurrentNRF24L01P& _nrf;
+	Alarm& _pirActivator;
+	OutputPin _pir_power;
+	LockStatus _status;
 	uint16_t _ping_count;
 	const uint16_t _pings_per_voltage;
+};
+
+class PIRDetector: public PinChangeInterrupt, public Event::Handler
+{
+public:
+	static const uint8_t MOTION_EVENT = Event::USER_TYPE + 1;
+	
+	PIRDetector(LowCurrentNRF24L01P& nrf)
+		:	PinChangeInterrupt(PIR_MOTION_INT, PinChangeInterrupt::ON_RISING_MODE),
+			_nrf(nrf) {}
+	virtual void on_interrupt(uint16_t arg)
+	{
+		// Do nothing yet
+		UNUSED(arg);
+		Event::push(MOTION_EVENT, this, this);
+	}
+	
+	virtual void on_event(uint8_t type, uint16_t value)
+	{
+		UNUSED(type);
+		UNUSED(value);
+		_nrf.send(MOTION_DETECTED, 0, 0);
+	}
+	
+private:
+	LowCurrentNRF24L01P& _nrf;
+};
+
+class PIRActivator: public Alarm
+{
+public:
+	PIRActivator(::Clock* clock):Alarm(clock, PIR_STARTUP_TIME_MS) {}
+
+	virtual void run()
+	{
+		PinChangeInterrupt::begin();
+		Alarm::stop();
+	}
+	
+private:
+	static const uint32_t PIR_STARTUP_TIME_MS = 60;
 };
 
 int main()
@@ -190,22 +238,25 @@ int main()
 	Power::set(SLEEP_MODE_PWR_DOWN);		// 5uA
 	
 	// DEBUG First light startup LED for 5 seconds
-	{
-		OutputPin led = Board::D0;
-		led.on();
-		delay(STARTUP_LED_TIME_MS);
-		led.off();
-	}
+	//TODO if commenting out this code makes it work better (no high currents at start) then
+	// perform a new check but with first forcing 0 to Transistor output
+//	{
+//		OutputPin led = Board::D0;
+//		led.on();
+//		delay(STARTUP_LED_TIME_MS);
+//		led.off();
+//	}
 
 	// Needed for Alarms to work properly
 	Watchdog::Clock clock;
 
 	LowCurrentNRF24L01P transmitter = LowCurrentNRF24L01P(SERVER_ID, NRF_POWER, NRF_CSN, NRF_CE, NRF_IRQ);
 	transmitter.address(NETWORK, MODULE_ID);
-	PingTask pingTask(&clock, PING_PERIOD_SEC, VOLTAGE_PERIOD_SEC, transmitter);
+	PIRActivator pirActivator(&clock);
+	PingTask pingTask(&clock, transmitter, pirActivator);
 	
-//	PIRDetector1 detector;
-//	detector.enable();
+	PIRDetector detector(transmitter);
+	detector.enable();
 
 	// Start all tasks
 	// However, do note that detection module is not really started until PinChangeInterrupt has begun
@@ -225,7 +276,7 @@ int main()
 			// Start using RTT
 			RTT::begin();
 			//TODO Not sure the following is REALLY necessary...
-			RTT::micros(0);
+			RTT::millis(0);
 			// Start NRF
 			transmitter.power_on();
 			
