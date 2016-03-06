@@ -105,10 +105,31 @@ private:
 	OutputPin _power;
 };
 
+class PIRActivator: public Alarm
+{
+public:
+	PIRActivator(::Clock* clock):Alarm(clock, PIR_STARTUP_TIME_SEC) {}
+	
+	void restart()
+	{
+		Alarm::expire_at(Alarm::time() + PIR_STARTUP_TIME_SEC);
+		Alarm::start();
+	}
+
+	virtual void run()
+	{
+		PinChangeInterrupt::begin();
+		Alarm::stop();
+	}
+	
+private:
+	static const uint32_t PIR_STARTUP_TIME_SEC = 60;
+};
+
 class PingTask: public Alarm
 {
 public:
-	PingTask(::Clock* clock, LowCurrentNRF24L01P& nrf, Alarm& pirActivator)
+	PingTask(::Clock* clock, LowCurrentNRF24L01P& nrf, PIRActivator& pirActivator)
 	:	Alarm(clock, PING_PERIOD_SEC), 
 		_nrf(nrf), _pirActivator(pirActivator), _pir_power(PIR_POWER), _status(UNKNOWN), 
 		_ping_count(0), _pings_per_voltage(VOLTAGE_PERIOD_SEC / PING_PERIOD_SEC) {}
@@ -158,7 +179,7 @@ public:
 			if (locked)
 			{
 				// start PIR and delay until PIR ready before lsitening to PIR interrupts
-				_pirActivator.start();
+				_pirActivator.restart();
 			}
 			else
 			{
@@ -175,7 +196,7 @@ private:
 	static const uint32_t VOLTAGE_PERIOD_SEC = 60;
 
 	LowCurrentNRF24L01P& _nrf;
-	Alarm& _pirActivator;
+	PIRActivator& _pirActivator;
 	OutputPin _pir_power;
 	LockStatus _status;
 	uint16_t _ping_count;
@@ -208,21 +229,6 @@ private:
 	LowCurrentNRF24L01P& _nrf;
 };
 
-class PIRActivator: public Alarm
-{
-public:
-	PIRActivator(::Clock* clock):Alarm(clock, PIR_STARTUP_TIME_MS) {}
-
-	virtual void run()
-	{
-		PinChangeInterrupt::begin();
-		Alarm::stop();
-	}
-	
-private:
-	static const uint32_t PIR_STARTUP_TIME_MS = 60;
-};
-
 int main()
 {
 	// Disable analog comparator
@@ -252,6 +258,7 @@ int main()
 
 	LowCurrentNRF24L01P transmitter = LowCurrentNRF24L01P(SERVER_ID, NRF_POWER, NRF_CSN, NRF_CE, NRF_IRQ);
 	transmitter.address(NETWORK, MODULE_ID);
+	// TODO PIRActivator could be a member of PingTask instead (less arguments))
 	PIRActivator pirActivator(&clock);
 	PingTask pingTask(&clock, transmitter, pirActivator);
 	
