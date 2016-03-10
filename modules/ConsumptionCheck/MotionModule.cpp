@@ -21,7 +21,7 @@ static const uint8_t SERVER_ID = 0x01;
 static const uint8_t MODULE_ID = 0x20;
 
 // TIMING CONSTANTS
-static const uint32_t STARTUP_LED_TIME_MS = 5000;
+static const uint32_t STARTUP_LED_TIME_MS = 500;
 
 static const uint16_t WATCHDOG_PERIOD = 1024;
 
@@ -66,12 +66,12 @@ public:
 	LowCurrentNRF24L01P(uint8_t server, Board::DigitalPin power,
 						Board::DigitalPin csn, Board::DigitalPin ce, 
 						Board::ExternalInterruptPin irq)
-		:NRF24L01P(0, 0, csn, ce, irq), _server(server), _power(power) {}
+		:NRF24L01P(0, 0, csn, ce, irq), _server(server), _power(power, 1) {}
 	
 	void power_on()
 	{
 		// Power up the chip and wait for 100ms
-		_power.on();
+		_power.off();
 		delay(POWERUP_TIME_MS);
 		NRF24L01P::begin();
 		// Avoid infinite loop due to multiple spi.attach(this) in NRF24L01P::begin()
@@ -82,7 +82,7 @@ public:
 		// Power down the chip completely
 		NRF24L01P::end();
 		NRF24L01P::powerdown();
-		_power.off();
+		_power.on();
 	}
 	
 	int recv(uint8_t expected_port, void* buf, size_t count)
@@ -246,12 +246,12 @@ int main()
 	// DEBUG First light startup LED for 5 seconds
 	//TODO if commenting out this code makes it work better (no high currents at start) then
 	// perform a new check but with first forcing 0 to Transistor output
-//	{
-//		OutputPin led = Board::D0;
-//		led.on();
-//		delay(STARTUP_LED_TIME_MS);
-//		led.off();
-//	}
+	{
+		OutputPin led = Board::D0;
+		led.on();
+		delay(STARTUP_LED_TIME_MS);
+		led.off();
+	}
 
 	// Needed for Alarms to work properly
 	Watchdog::Clock clock;
