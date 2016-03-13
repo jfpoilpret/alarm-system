@@ -131,7 +131,7 @@ class PingTask: public Alarm
 public:
 	PingTask(::Clock* clock, LowCurrentNRF24L01P& nrf, PIRActivator& pirActivator)
 	:	Alarm(clock, PING_PERIOD_SEC), 
-		_nrf(nrf), _pirActivator(pirActivator), _pir_power(PIR_POWER), _status(UNKNOWN), 
+		_nrf(nrf), _pirActivator(pirActivator), _pir_power(PIR_POWER, 1), _status(UNKNOWN), 
 		_ping_count(0), _pings_per_voltage(VOLTAGE_PERIOD_SEC / PING_PERIOD_SEC) {}
 	
 	//TODO refactor sendVoltageLevel and pingServerAndGetLockStatus into one method
@@ -187,7 +187,7 @@ public:
 				_pirActivator.stop();
 				PinChangeInterrupt::end();
 			}
-			_pir_power.set(locked);
+			_pir_power.set(!locked);
 		}
 	}
 
