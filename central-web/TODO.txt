@@ -1,9 +1,14 @@
 x	- develop in C++ for RPi:
 http://www.raspberry-projects.com/pi/programming-in-c/compilers-and-ides/netbeans-windows/installing-netbeans-for-c-remote-development-on-a-raspberry-pi
 
-	- COSA issues
-		- Watchdog does not handle big values (>=1s) well 
-		(check ::Clock::tick() function)
+	- rework prototype for motion detector:
+		- 2 battery cells (1 main, 1 PIR only)
+		- 2 PNP to control supply of NRF24 and PIR
+			- ensure base current limited to the minimum
+		- use AD to check voltage of PIR supply
+		- rework Cosa NRF24 library to reduce size to the minimum
+		- add DS18B20 support later
+			- also need adaptation of RPi parts (RF protocol)
 		
 x	- design stripboard for MotionModule
 4h+	- make stripboard for MotionModule
