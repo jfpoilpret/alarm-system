@@ -5,7 +5,7 @@
 #include <Cosa/RTT.hh>
 #include <Cosa/Watchdog.hh>
 #include <stdint-gcc.h>
-#include <NRF24L01P.hh>
+#include "NRF24L01P.h"
 
 //PINS
 static const Board::DigitalPin NRF_POWER			= Board::D8;
@@ -60,51 +60,6 @@ union RxPayload
 	RxPingServer pingServer;
 };
 
-class LowCurrentNRF24L01P: public NRF24L01P
-{
-public:
-	LowCurrentNRF24L01P(uint8_t server, Board::DigitalPin power,
-						Board::DigitalPin csn, Board::DigitalPin ce, 
-						Board::ExternalInterruptPin irq)
-		:NRF24L01P(0, 0, csn, ce, irq), _server(server), _power(power, 1) {}
-	
-	void power_on()
-	{
-		// Power up the chip and wait for 100ms
-		_power.off();
-		delay(POWERUP_TIME_MS);
-		NRF24L01P::begin();
-		// Avoid infinite loop due to multiple spi.attach(this) in NRF24L01P::begin()
-		this->m_next = NULL;
-	}
-	void power_off()
-	{
-		// Power down the chip completely
-		NRF24L01P::end();
-		NRF24L01P::powerdown();
-		_power.on();
-	}
-	
-	int recv(uint8_t expected_port, void* buf, size_t count)
-	{
-		uint8_t src;
-		uint8_t port;
-		int size = NRF24L01P::recv(src, port, buf, count, RECV_TIMEOUT_MS);
-		return (src == _server && port == expected_port ? size : -1);
-	}
-	int send(uint8_t port, const void* buf, size_t len)
-	{
-		return NRF24L01P::send(_server, port, buf, len);
-	}
-	
-private:
-	static const uint8_t RECV_TIMEOUT_MS = 10;
-	static const uint32_t POWERUP_TIME_MS = 100;
-	
-	const uint8_t _server;
-	OutputPin _power;
-};
-
 class PIRActivator: public Alarm
 {
 public:
@@ -129,7 +84,7 @@ private:
 class PingTask: public Alarm
 {
 public:
-	PingTask(::Clock* clock, LowCurrentNRF24L01P& nrf, PIRActivator& pirActivator)
+	PingTask(::Clock* clock, NRF24L01P& nrf, PIRActivator& pirActivator)
 	:	Alarm(clock, PING_PERIOD_SEC), 
 		_nrf(nrf), _pirActivator(pirActivator), _pir_power(PIR_POWER, 1), _status(UNKNOWN), 
 		_ping_count(0), _pings_per_voltage(VOLTAGE_PERIOD_SEC / PING_PERIOD_SEC) {}
@@ -195,7 +150,7 @@ private:
 	static const uint32_t PING_PERIOD_SEC = 10;
 	static const uint32_t VOLTAGE_PERIOD_SEC = 60;
 
-	LowCurrentNRF24L01P& _nrf;
+	NRF24L01P& _nrf;
 	PIRActivator& _pirActivator;
 	OutputPin _pir_power;
 	LockStatus _status;
@@ -208,7 +163,7 @@ class PIRDetector: public PinChangeInterrupt, public Event::Handler
 public:
 	static const uint8_t MOTION_EVENT = Event::USER_TYPE + 1;
 	
-	PIRDetector(LowCurrentNRF24L01P& nrf)
+	PIRDetector(NRF24L01P& nrf)
 		:	PinChangeInterrupt(PIR_MOTION_INT, PinChangeInterrupt::ON_RISING_MODE),
 			_nrf(nrf) {}
 	virtual void on_interrupt(uint16_t arg)
@@ -226,7 +181,7 @@ public:
 	}
 	
 private:
-	LowCurrentNRF24L01P& _nrf;
+	NRF24L01P& _nrf;
 };
 
 int main()
@@ -256,7 +211,7 @@ int main()
 	// Needed for Alarms to work properly
 	Watchdog::Clock clock;
 
-	LowCurrentNRF24L01P transmitter = LowCurrentNRF24L01P(SERVER_ID, NRF_POWER, NRF_CSN, NRF_CE, NRF_IRQ);
+	NRF24L01P transmitter = NRF24L01P(SERVER_ID, NRF_POWER, NRF_CSN, NRF_CE, NRF_IRQ);
 	transmitter.address(NETWORK, MODULE_ID);
 	// TODO PIRActivator could be a member of PingTask instead (less arguments))
 	PIRActivator pirActivator(&clock);
@@ -283,16 +238,16 @@ int main()
 			// Start using RTT
 			RTT::begin();
 			//TODO Not sure the following is REALLY necessary...
-			RTT::millis(0);
+//			RTT::millis(0);
 			// Start NRF
-			transmitter.power_on();
+			transmitter.begin();
 			
 			Event event;
 			while (Event::queue.dequeue(&event))
 				event.dispatch();
 			
 			// Stop NRF
-			transmitter.power_off();
+			transmitter.end();
 			// Stop using RTT and restore Watchdog
 			RTT::end();
 			::delay = Watchdog::delay;

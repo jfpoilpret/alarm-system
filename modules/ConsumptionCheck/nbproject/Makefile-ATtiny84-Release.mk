@@ -35,7 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/MotionModule.o
+	${OBJECTDIR}/MotionModule.o \
+	${OBJECTDIR}/NRF24L01P.o
 
 
 # C Compiler Flags
@@ -67,7 +68,12 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/consumptioncheck.exe: ${OBJECTFILES}
 ${OBJECTDIR}/MotionModule.o: MotionModule.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotionModule.o MotionModule.cpp
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotionModule.o MotionModule.cpp
+
+${OBJECTDIR}/NRF24L01P.o: NRF24L01P.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/NRF24L01P.o NRF24L01P.cpp
 
 # Subprojects
 .build-subprojects:
