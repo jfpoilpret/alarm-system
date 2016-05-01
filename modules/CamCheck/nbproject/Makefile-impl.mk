@@ -24,14 +24,14 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=arduino_cosa_111_lib
+PROJECTNAME=CamCheck
 
 # Active Configuration
 DEFAULTCONF=UNO-Release
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=UNO-Release ATmega328-Release ATtiny84-Release MEGA-Release 
+ALLCONFS=UNO-Release ATmega328-Release MEGA-Release 
 
 
 # build

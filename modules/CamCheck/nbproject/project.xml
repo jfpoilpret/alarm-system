@@ -3,32 +3,29 @@
     <type>org.netbeans.modules.cnd.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>arduino_cosa_111_lib</name>
+            <name>CamCheck</name>
             <c-extensions/>
             <cpp-extensions>cpp</cpp-extensions>
-            <header-extensions>h,hh</header-extensions>
+            <header-extensions/>
             <sourceEncoding>UTF-8</sourceEncoding>
-            <make-dep-projects/>
+            <make-dep-projects>
+                <make-dep-project>../arduino_cosa_111_lib</make-dep-project>
+            </make-dep-projects>
             <sourceRootList>
-                <sourceRootElem>../../../Cosa/cores/cosa</sourceRootElem>
-                <sourceRootElem>../../../Cosa/libraries</sourceRootElem>
+                <sourceRootElem>.</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
                     <name>UNO-Release</name>
-                    <type>3</type>
+                    <type>1</type>
                 </confElem>
                 <confElem>
                     <name>ATmega328-Release</name>
-                    <type>3</type>
-                </confElem>
-                <confElem>
-                    <name>ATtiny84-Release</name>
-                    <type>3</type>
+                    <type>1</type>
                 </confElem>
                 <confElem>
                     <name>MEGA-Release</name>
-                    <type>3</type>
+                    <type>1</type>
                 </confElem>
             </confList>
             <formatting>

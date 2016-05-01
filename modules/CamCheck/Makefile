@@ -52,29 +52,47 @@ CCADMIN=CCadmin
 # JFP BEGIN special variables stuff
 # set variables based on each configuration
 ARDUINO=166
+
 ifeq ($(findstring UNO,${CONF}),UNO)
 	VARIANT=arduino/uno
 	MCU=atmega328p
+	ARCH=avr5
 	F_CPU=16000000L
 else
 ifeq ($(findstring ATmega328,${CONF}),ATmega328)
 	VARIANT=arduino/atmega328p
 	MCU=atmega328p
-	F_CPU=8000000L
-else
-ifeq ($(findstring ATtiny84,${CONF}),ATtiny84)
-	VARIANT=arduino/attinyx4
-	MCU=attiny84
+	ARCH=avr5
 	F_CPU=8000000L
 else
 ifeq ($(findstring MEGA,${CONF}),MEGA)
 	VARIANT=arduino/mega2560
 	MCU=atmega2560
+	ARCH=avr6
 	F_CPU=16000000L
+#TODO Add other targets here (Mega, Leonardo, ATtiny)
 endif
 endif
 endif
+
+# Set upload options
+ifeq (${PROGRAMMER},)
+	PROGRAMMER=UNO
 endif
+AVRDUDE_OPTIONS=-C ${AVRDUDE_CONF} -p ${MCU}
+ifeq (${PROGRAMMER},ISP)
+        AVRDUDE_OPTIONS+= -c arduinoisp 
+endif
+ifeq (${PROGRAMMER},SHIELD)
+        AVRDUDE_OPTIONS+= -c stk500v1 -b 19200 -P ${COM}
+endif
+ifeq (${PROGRAMMER},UNO)
+        AVRDUDE_OPTIONS+= -c arduino -b 115200 -P ${COM}
+endif
+ifeq (${PROGRAMMER},MEGA)
+        AVRDUDE_OPTIONS+= -c wiring -b 115200 -P ${COM}
+endif
+#TODO need to add options for other programmers: leonardo, mega...
 # JFP END special variables stuff
 
 # build
@@ -85,8 +103,16 @@ build: .build-post
 
 .build-post: .build-impl
 # Add your post 'build' code here...
+	avr-objcopy -O ihex ${CND_ARTIFACT_PATH_${CONF}} ${CND_ARTIFACT_PATH_${CONF}}.hex
+	avr-nm --synthetic -S -C --size-sort ${CND_ARTIFACT_PATH_${CONF}} >${CND_ARTIFACT_PATH_${CONF}}.nm.txt
+	avr-objdump -m ${ARCH} -x -d -C ${CND_ARTIFACT_PATH_${CONF}} >${CND_ARTIFACT_PATH_${CONF}}.dump.txt
+	avr-size -C --mcu=${MCU} ${CND_ARTIFACT_PATH_${CONF}}
 
-
+# JFP BEGIN upload target
+upload: .build-post
+	avrdude ${AVRDUDE_OPTIONS} -Uflash:w:${CND_ARTIFACT_PATH_${CONF}}.hex:i 
+# JFP END upload target
+	
 # clean
 clean: .clean-post
 

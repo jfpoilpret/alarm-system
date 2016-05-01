@@ -30,6 +30,14 @@ CND_ARTIFACT_PATH_ATtiny84-Release=dist/ATtiny84-Release/Arduino-1.6.6-Cosa-1.1.
 CND_PACKAGE_DIR_ATtiny84-Release=dist/ATtiny84-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/package
 CND_PACKAGE_NAME_ATtiny84-Release=arduinocosa111lib.tar
 CND_PACKAGE_PATH_ATtiny84-Release=dist/ATtiny84-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/package/arduinocosa111lib.tar
+# MEGA-Release configuration
+CND_PLATFORM_MEGA-Release=Arduino-1.6.6-Cosa-1.1.1-Windows
+CND_ARTIFACT_DIR_MEGA-Release=dist/MEGA-Release/Arduino-1.6.6-Cosa-1.1.1-Windows
+CND_ARTIFACT_NAME_MEGA-Release=libarduino_cosa_111_lib.a
+CND_ARTIFACT_PATH_MEGA-Release=dist/MEGA-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/libarduino_cosa_111_lib.a
+CND_PACKAGE_DIR_MEGA-Release=dist/MEGA-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/package
+CND_PACKAGE_NAME_MEGA-Release=arduinocosa111lib.tar
+CND_PACKAGE_PATH_MEGA-Release=dist/MEGA-Release/Arduino-1.6.6-Cosa-1.1.1-Windows/package/arduinocosa111lib.tar
 #
 # include compiler specific variables
 #
