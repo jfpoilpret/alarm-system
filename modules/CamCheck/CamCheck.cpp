@@ -17,7 +17,8 @@ static const size_t CAM_RX_BUFFER_MAX = 64;
 static const size_t CAM_TX_BUFFER_MAX = 16;
 
 static const size_t CAM_RECV_BUFFER_SIZE = 16;
-static const size_t CAM_PICT_BUFFER_SIZE = 32;
+static const size_t CAM_PICT_BUFFER_SIZE = 64;
+//static const size_t CAM_PICT_BUFFER_SIZE = 32;
 
 static const Board::DigitalPin CAM_TX_PIN = Board::D2;
 static const Board::InterruptPin CAM_RX_PIN = Board::PCI3;
@@ -44,7 +45,7 @@ public:
 	{
 		RES_640x480,
 		RES_320x240,
-		RES_160x120,
+		RES_160x120
 	};
 	
 	enum class BaudRate
@@ -59,17 +60,18 @@ public:
 	Camera(IOStream& cam, uint32_t timeout)
 		:_timeout(timeout * 1000), _cam(cam)
 	{
-		delay(3000);
-		_trace(true);
+		reset();
 	}
 	
 	void reset()
 	{
-//		trace << "reset" << endl;
+		trace << "reset" << endl;
 		_send({0x56, 0x00, 0x26, 0x00});
 		_receive({0x76, 0x00, 0x26, 0x00, 0x00});
-		//FIXME reset generates the power on init string: we should wait until it is received then!
+		// Reset generates the power on init string: wait until it is received
+//		_wait_init();
 		delay(3000);
+		_cam.device()->empty();
 //		_trace(true);
 	}
 	
@@ -131,12 +133,14 @@ public:
 	
 	void compression(uint8_t ratio)
 	{
+//		trace << "compression" << endl;
 		_send({0x56, 0x00, 0x31, 0x05, 0x01, 0x01, 0x12, 0x04, ratio});
 		_receive({0x76, 0x00, 0x31, 0x00, 0x00});
 	}
 	
 	void picture_resolution(Resolution resolution)
 	{
+//		trace << "picture_resolution" << endl;
 		uint8_t code;
 		switch (resolution)
 		{
@@ -164,6 +168,7 @@ public:
 	
 	void baud_rate(BaudRate baud)
 	{
+//		trace << "baud_rate" << endl;
 		uint16_t code;
 		switch (baud)
 		{
@@ -180,6 +185,27 @@ public:
 	}
 	
 private:
+	bool _wait_init()
+	{
+		// Wait until timeout or expected received
+		uint32_t now = RTT::millis();
+		do
+		{
+			char buffer[80];
+			if (	_cam.readline(buffer, sizeof(buffer), false)
+				&&	strstr(buffer, "Init end"))
+			{
+				_cam.device()->empty();
+				return true;
+			}
+			delay(1);
+		}
+		while (RTT::since(now) < 3000);
+		trace << "wait init timeout." << endl;
+		_cam.device()->empty();
+		return false;
+	}
+	
 	void _send(std::initializer_list<uint8_t> content)
 	{
 		for (auto i : content)
@@ -197,7 +223,7 @@ private:
 			{
 				if (*compare != i)
 				{
-					trace << "expected " << hex << i << ", actual " << *compare << endl;
+					trace << "expected " << hex << i << ", actual " << hex << *compare << endl;
 					return false;
 				}
 				++compare;
@@ -252,7 +278,6 @@ public:
 	CamHandler(Camera& cam, ::Clock* clock, uint32_t period)
 		:Alarm(clock, period), _cam(cam), _led(Board::LED, 0)
 	{
-		cam.reset();
 		cam.compression(0x36);
 		cam.picture_resolution(Camera::Resolution::RES_640x480);
 		cam.reset();
@@ -264,7 +289,7 @@ public:
 		_cam.exit_power_save();
 		_cam.take_picture();
 		int32_t size = _cam.picture_size();
-		trace << "picture size = " << size << endl;
+//		trace << "picture size = " << size << endl;
 		uint16_t address = 0;
 		while (size > 0)
 		{
@@ -272,6 +297,7 @@ public:
 			_cam.picture_content(address, CAM_PICT_BUFFER_SIZE, buffer);
 			address += CAM_PICT_BUFFER_SIZE;
 			size -= CAM_PICT_BUFFER_SIZE;
+			trace.device()->write(buffer, CAM_PICT_BUFFER_SIZE);
 		}
 		_cam.stop_picture();
 		_cam.enter_power_save();
