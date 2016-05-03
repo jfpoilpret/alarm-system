@@ -35,7 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/CamCheck.o
+	${OBJECTDIR}/CamCheck.o \
+	${OBJECTDIR}/Camera.o
 
 
 # C Compiler Flags
@@ -68,6 +69,11 @@ ${OBJECTDIR}/CamCheck.o: CamCheck.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CamCheck.o CamCheck.cpp
+
+${OBJECTDIR}/Camera.o: Camera.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -Wall -I../../../Cosa/cores/cosa -I../../../Cosa/variants/${VARIANT} -I../../../Cosa/libraries/NRF24L01P -I../ModuleCommons -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Camera.o Camera.cpp
 
 # Subprojects
 .build-subprojects:
