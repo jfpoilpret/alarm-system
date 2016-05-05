@@ -1,7 +1,6 @@
 #include "Camera.hh"
 #include <Cosa/RTT.hh>
 #include <Cosa/Trace.hh>
-//#include <stdint-gcc.h>
 
 static const size_t CAM_RECV_BUFFER_SIZE = 16;
 static const size_t CAM_PICT_BUFFER_SIZE = 64;

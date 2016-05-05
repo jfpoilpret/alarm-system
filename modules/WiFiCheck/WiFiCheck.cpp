@@ -4,8 +4,8 @@
 #include <Cosa/Trace.hh>
 #include <Cosa/UART.hh>
 #include <Cosa/Watchdog.hh>
-#include <stdint-gcc.h>
 
+#include "Camera.hh"
 #include "WifiEsp.hh"
 
 #if 0
@@ -20,47 +20,64 @@ static const uint16_t WATCHDOG_PERIOD = 16;
 //static const uint16_t WATCHDOG_PERIOD = 1024;
 
 static const uint32_t SEND_PERIOD_SECS = 60;
-static const uint32_t AT_REPLY_TIMEOUT_SECS = 10;
-static const size_t MAX_LINE_LEN = 80;
 
+static const uint32_t ESP_AT_REPLY_TIMEOUT_SECS = 10;
 static const size_t ESP_RX_BUFFER_MAX = 256;
 static const size_t ESP_TX_BUFFER_MAX = 64;
 
-static const char* PAYLOAD = "    abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345\n";
+static const uint32_t CAM_REPLY_TIMEOUT_SECS = 2;
+static const size_t CAM_RX_BUFFER_MAX = 64;
+static const size_t CAM_TX_BUFFER_MAX = 16;
 
 class WiFiHandler: public Alarm
 {
 public:
-	WiFiHandler(WiFiEsp& esp, ::Clock* clock, uint32_t period)
-		:Alarm(clock, period), _esp(esp), _led(Board::LED, 0)
+	WiFiHandler(WiFiEsp& wifi, Camera& camera, ::Clock* clock, uint32_t period)
+		:Alarm(clock, period), _wifi(wifi), _camera(camera), _led(Board::LED, 0)
 	{
-		_esp.connect(WIFI_AP, WIFI_PASSWORD);
+		_wifi.connect(WIFI_AP, WIFI_PASSWORD);
+		_camera.compression(0x36);
+		_camera.picture_resolution(Camera::Resolution::RES_640x480);
+		_camera.reset();
+		_camera.enter_power_save();
 	}
 	
 	virtual void run()
 	{
 		_led.toggle();
-		// Pass functor that sends 20 times the same string
-		Feeder feeder{20};
-		_esp.send("192.168.0.107", 9999U, feeder);
+
+		// Prepare camera for taking picture
+		_camera.exit_power_save();
+		_camera.take_picture();
+
+		// Feed picture payload to WIFI
+		PictureFeeder feeder{_camera};
+		_wifi.send("192.168.0.107", 9999U, feeder);
+
+		_camera.stop_picture();
+		_camera.enter_power_save();
+		// This delay seems necessary to avoid garbage sent to trace... (1ms is not long enough)
+		delay(5);
 	}
 	
 private:
-	class Feeder
+	class PictureFeeder
 	{
 	public:
-		Feeder(uint8_t units_count):_units_count(units_count), _unit_size(strlen(PAYLOAD)), _index(0)
+		PictureFeeder(Camera& camera):_camera(camera), _size(_camera.picture_size()), _address(0)
 		{
-			memcpy(_payload, PAYLOAD, _unit_size);
+			trace << "picture size = " << _size << endl;
 		}
 		
 		const uint8_t* operator()(uint16_t& size)
 		{
-			if (_index < _units_count)
+			if (_size > 0)
 			{
-				itoa(_index, (char*) _payload, 10);
-				++_index;
-				size = _unit_size;
+				_camera.picture_content(_address, PAYLOAD_SIZE, _payload);
+				_address += PAYLOAD_SIZE;
+				_size -= PAYLOAD_SIZE;
+				size = PAYLOAD_SIZE;
+//				trace.device()->write(_payload, PAYLOAD_SIZE);
 				return _payload;
 			}
 			size = 0;
@@ -69,13 +86,14 @@ private:
 		
 	private:
 		static const uint16_t PAYLOAD_SIZE = 64;
-		const uint8_t _units_count;
-		const uint16_t _unit_size;
+		Camera& _camera;
+		int32_t _size;
+		uint16_t _address;
 		uint8_t _payload[PAYLOAD_SIZE];
-		uint8_t _index;
 	};
 	
-	WiFiEsp& _esp;
+	WiFiEsp& _wifi;
+	Camera& _camera;
 	OutputPin _led;
 	bool _init;
 };
@@ -96,31 +114,35 @@ int main()
 	
 	// Start using RTT
 	RTT::begin();
+	delay(10000);
 	
 	// Reset ESP8266
-	OutputPin esp_reset = OutputPin(Board::D7, 0);
-	delay(1);
+	OutputPin esp_reset{Board::D7, 0};
+	delay(10);
 	esp_reset._set();
 	delay(10);
 	
 	uart.begin(115200);
 	trace.begin(&uart, PSTR("WiFiCheck: started"));
 	
-	IOBuffer<ESP_RX_BUFFER_MAX> ibuf;
-	IOBuffer<ESP_TX_BUFFER_MAX> obuf;
+	IOBuffer<ESP_RX_BUFFER_MAX> esp_ibuf;
+	IOBuffer<ESP_TX_BUFFER_MAX> esp_obuf;
+	UART esp_uart{2, &esp_ibuf, &esp_obuf};
+	esp_uart.eol(IOStream::Mode::CRLF_MODE);
+	esp_uart.begin(115200);
+	IOStream esp_stream(&esp_uart);
+	WiFiEsp wifi{esp_stream, ESP_AT_REPLY_TIMEOUT_SECS};
 
-	UART uartESP(2, &ibuf, &obuf);
-	uartESP.eol(IOStream::Mode::CRLF_MODE);
-//	uartESP.eol(IOStream::Mode::LF_MODE);
-//	uartESP.eol(IOStream::Mode::CR_MODE);
-	uartESP.begin(115200);
-	IOStream esp(&uartESP);
-	
-	WiFiEsp wifiEsp(esp, AT_REPLY_TIMEOUT_SECS);
+	IOBuffer<CAM_RX_BUFFER_MAX> cam_ibuf;
+	IOBuffer<CAM_TX_BUFFER_MAX> cam_obuf;
+	UART cam_uart{1, &cam_ibuf, &cam_obuf};
+	cam_uart.begin(38400);
+	IOStream cam_stream{&cam_uart};
+	Camera camera{cam_stream, CAM_REPLY_TIMEOUT_SECS};
 	
 	// Needed for Alarms to work properly
 	Watchdog::Clock clock;
-	WiFiHandler handler(wifiEsp, &clock, SEND_PERIOD_SECS);
+	WiFiHandler handler(wifi, camera, &clock, SEND_PERIOD_SECS);
 	
 	// Stop using RTT and restore Watchdog
 	RTT::end();

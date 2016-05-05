@@ -8,9 +8,7 @@ static const size_t MAX_LINE_LEN = 80;
 WiFiEsp::WiFiEsp(IOStream& esp, uint32_t timeout)
 	:_timeout(timeout * 1000), _esp(esp)
 {
-	_init =	_at({"AT"}) &&
-			reset() && 
-			_at({"AT+CWMODE_CUR=1"});
+	_init =	reset() && _at({"AT+CWMODE_CUR=1"});
 }
 
 bool WiFiEsp::_at(	std::initializer_list<const char*> commands, 
