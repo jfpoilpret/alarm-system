@@ -1,32 +1,33 @@
 #ifndef NETWORK_HH
 #define	NETWORK_HH
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <string.h>
-#include <unistd.h>
+#include <unordered_map>
+#include <thread>
+#include <mutex>
 
-#include <fstream>
-#include <sstream>
+class Socket
+{
+public:
+	// Constructor for server
+	Socket(uint16_t port);
+	virtual ~Socket();
+	
+	void accept(uint16_t max_connections = 10);
+	//TODO Add stop() method
+	
+protected:
+	virtual void process() = 0;
+	int read(void* buffer, size_t size);
+	int write(const void* buffer, size_t size);
+	
+private:
+	void _process(int client_socket);
 
-const size_t READ_BUFFER_SIZE = 256;
-
-void serve();
-void process(int socket);
-
-//class Socket
-//{
-//public:
-//	//TODO
-//	// Constructor for server
-//	Socket(uint16_t port);
-//	// Constructor for client
-//	Socket(const std::string& host, uint16_t port);
-//	
-//	void connect();
-//	void disconnect();
-//};
+	int _server_socket;
+	std::unordered_map<std::thread::id, std::thread> _threads;
+	std::mutex _threads_mutex;
+	//TODO add information about client address as thread_local?
+	static thread_local int _client_socket;
+};
 
 #endif	/* NETWORK_HH */
-
