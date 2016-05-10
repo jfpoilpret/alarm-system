@@ -40,7 +40,11 @@ void Socket::accept(uint16_t max_connections)
 		{
 			std::unique_lock<std::mutex> lock{_threads_mutex};
 			std::thread t{&Socket::_process, this, client_socket};
-			_threads[t.get_id()] = std::move(t);
+			_running_threads[t.get_id()] = std::move(t);
+			
+			for (auto& t: _finished_threads)
+				t.join();
+			_finished_threads.clear();
 		}
 	}
 }
@@ -54,7 +58,8 @@ void Socket::_process(int client_socket)
 	std::cout << "Processing complete." << std::endl;
 	close(_client_socket);
 	std::unique_lock<std::mutex> lock{_threads_mutex};
-	_threads.erase(std::this_thread::get_id());
+	_finished_threads.push_back(std::move(_running_threads[std::this_thread::get_id()]));
+	_running_threads.erase(std::this_thread::get_id());
 }
 
 int Socket::read(void* buffer, size_t size)

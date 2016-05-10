@@ -1,6 +1,7 @@
 #ifndef NETWORK_HH
 #define	NETWORK_HH
 
+#include <list>
 #include <unordered_map>
 #include <thread>
 #include <mutex>
@@ -24,7 +25,8 @@ private:
 	void _process(int client_socket);
 
 	int _server_socket;
-	std::unordered_map<std::thread::id, std::thread> _threads;
+	std::unordered_map<std::thread::id, std::thread> _running_threads;
+	std::list<std::thread> _finished_threads;
 	std::mutex _threads_mutex;
 	//TODO add information about client address as thread_local?
 	static thread_local int _client_socket;
