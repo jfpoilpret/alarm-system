@@ -14,7 +14,7 @@ public:
 	virtual ~Socket();
 	
 	void accept(uint16_t max_connections = 10);
-	//TODO Add stop() method
+	void stop(bool wait_for_pending_requests = true);
 	
 protected:
 	virtual void process() = 0;
@@ -24,6 +24,7 @@ protected:
 private:
 	void _process(int client_socket);
 
+	bool _stop;
 	int _server_socket;
 	std::unordered_map<std::thread::id, std::thread> _running_threads;
 	std::list<std::thread> _finished_threads;
