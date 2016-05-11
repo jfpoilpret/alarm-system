@@ -6,7 +6,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <chrono>
 #include <iostream>
+
+using namespace std::chrono;
 
 thread_local int Socket::_client_socket;
 
@@ -77,7 +80,6 @@ void Socket::accept(uint16_t max_connections)
 				std::thread t{&Socket::_process, this, client_socket};
 				_running_threads[t.get_id()] = std::move(t);
 				
-				//TODO Do this everytime but based on some atomic bool value to avoid extra lock every second?
 				for (auto& t: _finished_threads)
 					t.join();
 				_finished_threads.clear();
@@ -88,14 +90,16 @@ void Socket::accept(uint16_t max_connections)
 	}
 }
 
-//TODO Add processing time...
 void Socket::_process(int client_socket)
 {
 	// Start new thread and pass client_socket
 	_client_socket = client_socket;
 	std::cout << "Client accepted, processing..." << std::endl;
+	auto t0 = high_resolution_clock::now();
 	process();
-	std::cout << "Processing complete." << std::endl;
+	auto t1 = high_resolution_clock::now();
+	auto duration = duration_cast<seconds>(t1 - t0).count();
+	std::cout << "Processing complete after " << duration << " seconds." << std::endl;
 	close(_client_socket);
 	std::unique_lock<std::mutex> lock{_threads_mutex};
 	_finished_threads.push_back(std::move(_running_threads[std::this_thread::get_id()]));
