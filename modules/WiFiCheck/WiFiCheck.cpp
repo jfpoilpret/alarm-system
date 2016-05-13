@@ -137,15 +137,14 @@ int main()
 	cam_uart.begin(38400);
 	IOStream cam_stream{&cam_uart};
 	Camera camera{cam_stream, CAM_REPLY_TIMEOUT_SECS};
-	// Change initial settings
-	// TODO check higher compression rates with image quality good enough
-	camera.compression(0x36);
+	// Change initial settings that need a reset
 	// Transmission time divided by 4 with this resolution, pictures still OK
 	camera.picture_resolution(Camera::Resolution::RES_320x240);
 //	camera.picture_resolution(Camera::Resolution::RES_640x480);
 	// Must reset camera after changing resolution
 	camera.reset();
-	// Change baud rate to improve speed... Be careful not to reset camera afterwards (it will reset rate to default)
+	// Change initial settings that are changed back to default after reset
+	// Change baud rate to improve speed
 	trace << "Change baud rate" << endl;
 	camera.baud_rate(Camera::BaudRate::BAUD_230400);
 //	camera.baud_rate(Camera::BaudRate::BAUD_115200);
@@ -154,6 +153,9 @@ int main()
 //	cam_uart.begin(115200);
 	// NOTE: I'm not sure this delay is necessary, but it works...
 	delay(100);
+	// Set higher compression rate with good enough image quality 
+	camera.compression(0x80);
+//	camera.compression(0x36);
 	
 	// Needed for Alarms to work properly
 	Watchdog::Clock clock;
