@@ -36,9 +36,6 @@ public:
 		:Alarm(clock, period), _wifi(wifi), _camera(camera), _led(Board::LED, 0)
 	{
 		_wifi.connect(WIFI_AP, WIFI_PASSWORD);
-		_camera.compression(0x36);
-		_camera.picture_resolution(Camera::Resolution::RES_640x480);
-		_camera.reset();
 		_camera.enter_power_save();
 	}
 	
@@ -114,6 +111,7 @@ int main()
 	
 	// Start using RTT
 	RTT::begin();
+	// This delay is only to give me time to open serial monitor for traces after board reset...
 	delay(10000);
 	
 	// Reset ESP8266
@@ -139,6 +137,23 @@ int main()
 	cam_uart.begin(38400);
 	IOStream cam_stream{&cam_uart};
 	Camera camera{cam_stream, CAM_REPLY_TIMEOUT_SECS};
+	// Change initial settings
+	// TODO check higher compression rates with image quality good enough
+	camera.compression(0x36);
+	// Transmission time divided by 4 with this resolution, pictures still OK
+	camera.picture_resolution(Camera::Resolution::RES_320x240);
+//	camera.picture_resolution(Camera::Resolution::RES_640x480);
+	// Must reset camera after changing resolution
+	camera.reset();
+	// Change baud rate to improve speed... Be careful not to reset camera afterwards (it will reset rate to default)
+	trace << "Change baud rate" << endl;
+	camera.baud_rate(Camera::BaudRate::BAUD_230400);
+//	camera.baud_rate(Camera::BaudRate::BAUD_115200);
+	cam_uart.end();
+	cam_uart.begin(230400);
+//	cam_uart.begin(115200);
+	// NOTE: I'm not sure this delay is necessary, but it works...
+	delay(100);
 	
 	// Needed for Alarms to work properly
 	Watchdog::Clock clock;

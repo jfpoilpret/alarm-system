@@ -20,7 +20,9 @@ public:
 		BAUD_19200,
 		BAUD_38400,
 		BAUD_57600,
-		BAUD_115200
+		BAUD_115200,
+		// Non official baud rate (to be checked and used with caution)
+		BAUD_230400
 	};
 	
 	Camera(IOStream& cam, uint32_t timeout);

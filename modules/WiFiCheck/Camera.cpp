@@ -38,7 +38,6 @@ void Camera::reset()
 //		_trace(true);
 }
 
-//TODO method to take picture and notify callback for content
 template<typename CB>
 void Camera::take_picture(CB& callback)
 {
@@ -140,6 +139,10 @@ void Camera::baud_rate(BaudRate baud)
 		case BaudRate::BAUD_38400: code = 0x2AF2; break;
 		case BaudRate::BAUD_57600: code = 0x1C4C; break;
 		case BaudRate::BAUD_115200: code = 0x0DA6; break;
+		// Non official baud rate (to be checked and used with caution)
+		// I inferred this formula to calculate value from baud rate:
+		//		code = 432'000'000/baud - 256
+		case BaudRate::BAUD_230400: code = 0x0653; break;
 	}
 	_send({
 		0x56, 0x00, 0x24, 0x03, 0x01, 
