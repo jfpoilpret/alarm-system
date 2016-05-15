@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /home/pi/alarm-system/central-rf/Simulators
+source venv/bin/activate
+python command.py "`echo $*`"

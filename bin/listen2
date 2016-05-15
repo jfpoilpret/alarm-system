@@ -1,0 +1,6 @@
+#!/bin/bash
+CURRENT_DIR=`pwd`
+TARGET_DIR=/home/pi/alarm-system/central-rf/Simulators
+cd $TARGET_DIR
+source venv/bin/activate
+python data.py

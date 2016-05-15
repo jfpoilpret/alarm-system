@@ -1,0 +1,5 @@
+#!/bin/bash
+CURRENT_DIR=`pwd`
+TARGET_DIR=/home/pi/alarm-system/central-rf
+cd $TARGET_DIR
+./rfmgr-launch >$CURENT_DIR/rfm.log 2>&1
