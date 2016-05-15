@@ -55,6 +55,7 @@
       </toolsSet>
       <compileType>
         <ccTool>
+          <standard>8</standard>
           <commandlineTool>g++</commandlineTool>
           <commandLine>-std=c++0x -pthread</commandLine>
         </ccTool>
@@ -114,7 +115,7 @@
     </conf>
     <conf name="Release" type="1">
       <toolsSet>
-        <compilerSet>default</compilerSet>
+        <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -124,6 +125,8 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
+          <standard>8</standard>
+          <commandLine>-std=c++0x -pthread</commandLine>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -133,6 +136,11 @@
         </asmTool>
         <linkerTool>
           <output>${CND_DISTDIR}/rfmanager</output>
+          <linkerLibItems>
+            <linkerOptionItem>-lzmq</linkerOptionItem>
+            <linkerOptionItem>-lrt</linkerOptionItem>
+            <linkerOptionItem>-lbcm2835</linkerOptionItem>
+          </linkerLibItems>
         </linkerTool>
       </compileType>
       <item path="Cipher.cpp" ex="false" tool="1" flavor2="0">
