@@ -5,10 +5,13 @@
 
 static const size_t MAX_LINE_LEN = 80;
 
-WiFiEsp::WiFiEsp(IOStream& esp, uint32_t timeout)
-	:_timeout(timeout * 1000), _esp(esp)
+WiFiEsp::WiFiEsp(IOStream& esp, uint32_t timeout, bool debug)
+	:_esp(esp), _timeout(timeout * 1000), _debug(debug), _init(false), _handling_timeout(false) {}
+
+bool WiFiEsp::begin()
 {
-	_init =	reset() && _at({"AT+CWMODE_CUR=1"});
+	_init = reset() && _at({"AT+CWMODE_CUR=1"});
+	return _init;
 }
 
 bool WiFiEsp::_at(	std::initializer_list<const char*> commands, 
@@ -20,9 +23,12 @@ bool WiFiEsp::_at(	std::initializer_list<const char*> commands,
 	for (auto cmd: commands)
 		_esp << cmd;
 	_esp << endl << flush;
-	for (auto cmd: commands)
-		trace << cmd;
-	trace << " sent" << endl;
+	if (_debug)
+	{
+		for (auto cmd: commands)
+			trace << cmd;
+		trace << " sent" << endl;
+	}
 	// Wait for expected reply until timeout
 	uint32_t now = RTT::millis();
 	do
@@ -34,7 +40,8 @@ bool WiFiEsp::_at(	std::initializer_list<const char*> commands,
 		{
 			// Remove \n before echo
 			line[strlen(line) - 1] = 0;
-			trace << line << endl;
+			if (_debug)
+				trace << line << endl;
 
 			if (strstr(line, expected_success)) return true;
 			if (strstr(line, expected_error)) return false;
@@ -42,6 +49,14 @@ bool WiFiEsp::_at(	std::initializer_list<const char*> commands,
 		delay(1);
 	}
 	while (RTT::since(now) < _timeout);
-	trace << "_at() timeout" << endl;
+	if (_debug)
+		trace << "_at() timeout" << endl;
+	//FIXME do something here to restore connection...
+	if (!_handling_timeout)
+	{
+		_handling_timeout = true;
+		on_timeout();
+		_handling_timeout = false;
+	}
 	return false;
 }

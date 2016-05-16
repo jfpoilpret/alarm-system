@@ -20,22 +20,23 @@ static uint16_t SWAP(uint16_t in)
 	return (LO(in) << 8) | HI(in);
 }
 
-Camera::Camera(IOStream& cam, uint32_t timeout)
-	:_timeout(timeout * 1000), _cam(cam)
+Camera::Camera(IOStream& cam, uint32_t timeout, bool debug)
+	: _cam(cam), _timeout(timeout * 1000), _debug(debug)
 {
 	reset();
 }
 
 void Camera::reset()
 {
-	trace << "reset" << endl;
+	if (_debug)
+		trace << "reset" << endl;
 	_send({0x56, 0x00, 0x26, 0x00});
 	_receive({0x76, 0x00, 0x26, 0x00, 0x00});
 	// Reset generates the power on init string: wait until it is received
 //		_wait_init();
 	delay(3000);
 	_cam.device()->empty();
-//		_trace(true);
+		_trace(true);
 }
 
 template<typename CB>
@@ -58,21 +59,24 @@ void Camera::take_picture(CB& callback)
 
 void Camera::take_picture()
 {
-//		trace << "take_picture" << endl;
+	if (_debug)
+		trace << "take_picture" << endl;
 	_send({0x56, 0x00, 0x36, 0x01, 0x00});
 	_receive({0x76, 0x00, 0x36, 0x00, 0x00});
 }
 
 void Camera::stop_picture()
 {
-//		trace << "stop_picture" << endl;
+	if (_debug)
+		trace << "stop_picture" << endl;
 	_send({0x56, 0x00, 0x36, 0x01, 0x03});
 	_receive({0x76, 0x00, 0x36, 0x00, 0x00});
 }
 
 uint16_t Camera::picture_size()
 {
-//		trace << "get picture_size" << endl;
+	if (_debug)
+		trace << "get picture_size" << endl;
 	_send({0x56, 0x00, 0x34, 0x01, 0x00});
 	uint16_t size;
 	if (	_receive({0x76, 0x00, 0x34, 0x00, 0x04, 0x00, 0x00})
@@ -95,14 +99,16 @@ void Camera::picture_content(uint16_t address, uint16_t size, uint8_t* buffer)
 
 void Camera::compression(uint8_t ratio)
 {
-//		trace << "compression" << endl;
+	if (_debug)
+		trace << "compression" << endl;
 	_send({0x56, 0x00, 0x31, 0x05, 0x01, 0x01, 0x12, 0x04, ratio});
 	_receive({0x76, 0x00, 0x31, 0x00, 0x00});
 }
 
 void Camera::picture_resolution(Resolution resolution)
 {
-//		trace << "picture_resolution" << endl;
+	if (_debug)
+		trace << "picture_resolution" << endl;
 	uint8_t code = 0x00;
 	switch (resolution)
 	{
@@ -116,21 +122,24 @@ void Camera::picture_resolution(Resolution resolution)
 
 void Camera::enter_power_save()
 {
-//		trace << "enter_power_save" << endl;
+	if (_debug)
+		trace << "enter_power_save" << endl;
 	_send({0x56, 0x00, 0x3E, 0x03, 0x00, 0x01, 0x01});
 	_receive({0x76, 0x00, 0x3E, 0x00, 0x00});
 }
 
 void Camera::exit_power_save()
 {
-//		trace << "exit_power_save" << endl;
+	if (_debug)
+		trace << "exit_power_save" << endl;
 	_send({0x56, 0x00, 0x3E, 0x03, 0x00, 0x01, 0x00});
 	_receive({0x76, 0x00, 0x3E, 0x00, 0x00});
 }
 
 void Camera::baud_rate(BaudRate baud)
 {
-//		trace << "baud_rate" << endl;
+	if (_debug)
+		trace << "baud_rate" << endl;
 	uint16_t code = 0x2AF2;
 	switch (baud)
 	{
@@ -166,7 +175,8 @@ bool Camera::_wait_init()
 		delay(1);
 	}
 	while (RTT::since(now) < 3000);
-	trace << "wait init timeout." << endl;
+	if (_debug)
+		trace << "wait init timeout." << endl;
 	_cam.device()->empty();
 	return false;
 }
@@ -188,7 +198,8 @@ bool Camera::_receive(std::initializer_list<uint8_t> expected)
 		{
 			if (*compare != i)
 			{
-				trace << "expected " << hex << i << ", actual " << hex << *compare << endl;
+				if (_debug)
+					trace << "expected " << hex << i << ", actual " << hex << *compare << endl;
 				return false;
 			}
 			++compare;
@@ -214,20 +225,24 @@ bool Camera::_receive(uint8_t* content, uint8_t size)
 		delay(1);
 	}
 	while (RTT::since(now) < _timeout);
-	trace << "receive timeout. Expected size " << size << ", actual " << count << endl;
+	if (_debug)
+		trace << "receive timeout. Expected size " << size << ", actual " << count << endl;
 	return false;
 }
 
 void Camera::_trace(bool ascii_response)
 {
-	trace << "<< ";
-	while (_cam.device()->available()) 
+	if (_debug)
 	{
-		int c = _cam.device()->getchar();
-		if (ascii_response)
-			trace << (char) c;
-		else
-			trace << hex << c << ' ';
+		trace << "<< ";
+		while (_cam.device()->available()) 
+		{
+			int c = _cam.device()->getchar();
+			if (ascii_response)
+				trace << (char) c;
+			else
+				trace << hex << c << ' ';
+		}
+		trace << endl;
 	}
-	trace << endl;
 }

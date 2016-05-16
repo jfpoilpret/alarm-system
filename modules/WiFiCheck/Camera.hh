@@ -4,6 +4,9 @@
 #include <Cosa/IOStream.hh>
 #include "initializer_list"
 
+//TODO include powering pin
+//TODO handle reset if needed. How?
+//TODO directly handle UART/IOStream
 class Camera
 {
 public:
@@ -25,7 +28,7 @@ public:
 		BAUD_230400
 	};
 	
-	Camera(IOStream& cam, uint32_t timeout);
+	Camera(IOStream& cam, uint32_t timeout, bool debug = false);
 	
 	void reset();
 	template<typename CB> void take_picture(CB& callback);
@@ -46,8 +49,9 @@ private:
 	bool _receive(uint8_t* content, uint8_t size);
 	void _trace(bool ascii_response = false);
 
-	const uint32_t _timeout;
 	IOStream& _cam;
+	const uint32_t _timeout;
+	const bool _debug;
 };
 
 #endif	/* CAMERA_HH */
